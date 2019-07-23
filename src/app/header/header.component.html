@@ -9,7 +9,7 @@
       <a routerLink="/home" class="df-logo">dash<span>forge</span></a>
       <a id="mainMenuClose" href=""><i></i></a>
     </div><!-- navbar-menu-header -->
-    <ul class="nav navbar-menu" *ngIf="userRole">
+    <!-- <ul class="nav navbar-menu" *ngIf="userRole">
       <li class="nav-label pd-l-20 pd-lg-l-25 d-lg-none">Main Navigation</li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
@@ -82,7 +82,7 @@
       </li>
       <li class="nav-item"><a routerLink="oops" class="nav-link" *ngIf="userRole.can_access_g2n"><i></i> G2N</a></li>
       <li class="nav-item"><a routerLink="sales" class="nav-link" *ngIf="userRole.can_access_sales"><i></i> Sales </a></li>
-    </ul>
+    </ul> -->
   </div><!-- navbar-menu-wrapper -->
   <div class="navbar-right">
     <a id="navbarSearch" href="" class="search-link"><i></i></a>
@@ -141,9 +141,9 @@
         <div class="avatar avatar-lg mg-b-15"><img
             src="http://www.mecgale.com/wp-content/uploads/2017/08/dummy-profile.png" class="rounded-circle" alt="">
         </div>
-        <h6 class="tx-semibold mg-b-5" *ngIf="authService.user">{{me.first_name | titlecase}}
-          {{me.last_name | titlecase}}</h6>
-        <p class="mg-b-25 tx-12 tx-color-03" *ngIf="authService.user">{{me.position | titlecase}}</p>
+        <!-- <h6 class="tx-semibold mg-b-5" *ngIf="authService.user">{{me.first_name | titlecase}}
+          {{me.last_name | titlecase}}</h6> -->
+        <!-- <p class="mg-b-25 tx-12 tx-color-03" *ngIf="authService.user">{{me.position | titlecase}}</p> -->
 
         <a routerLink="auth/editprofile" class="dropdown-item"><i data-feather="edit-3"></i> Edit Profile</a>
         <a routerLink="auth/profile" class="dropdown-item"><i data-feather="user"></i> View Profile</a>
