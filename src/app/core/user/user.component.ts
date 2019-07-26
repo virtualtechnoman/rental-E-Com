@@ -154,7 +154,7 @@ export class UserComponent implements OnInit {
 
   setFormValue(user) {
     this.userForm.controls['email'].setValue(user.email);
-    this.userForm.controls['last_name'].setValue(user.last_name);
+    this.userForm.controls['full_name'].setValue(user.full_name);
     this.userForm.controls['password'].setValue(user.password);
     this.userForm.controls['role'].setValue(user.role);
     this.userForm.controls['is_active'].setValue(user.is_active);

@@ -1,4 +1,4 @@
-<app-header *ngIf="loggedin" ></app-header>
+<app-header *ngIf="authService.isAuthenticated()" ></app-header>
 
 <div class="content content-fixed">
   <!-- <app-maintainance></app-maintainance> -->

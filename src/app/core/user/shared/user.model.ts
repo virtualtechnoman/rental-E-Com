@@ -1,33 +1,11 @@
 var current_time = new Date();
 export class UserModel {
     _id: string;
-    employee_id: string = "EMP" + current_time.getFullYear() + current_time.getMonth() + current_time.getDate + current_time.getHours() + current_time.getMinutes() + current_time.getSeconds();
-    first_name: string;
-    last_name: string;
+    full_name: string;
     email: string;
-    joining_date: Date;
-    job_title: string;
     is_active: boolean;
-    password: string;
-    repeatPassword: string;
-    therapy_line: string;
-    therapy_line_id: string;
-    manager_id: string;
-    position: string;
-    title: string;
+    role: string;
     mobile_phone: string;
-    home_phone: string;
-    business_phone: string;
-    business_extension: string;
-    region: string;
-    city: string;
-    district: string;
-    address: string;
-    postal_code: string;
-    notes: string;
-    photo: string;
-    attachments: string;
-    user_role: string;
 }
 
 export class UserRoleModel {

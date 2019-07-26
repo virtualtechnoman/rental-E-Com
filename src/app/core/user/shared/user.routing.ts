@@ -6,10 +6,11 @@ import { UserroleComponent } from '../userrole/userrole.component';
 import { AuthGuard } from '../../../auth/auth-guard.service';
 
 const routes: Routes = [
-    { path: 'user', children: [{  path: '', component: UserComponent, canActivate: [AuthGuard] }],
+  {
+    path: 'user', children: [{ path: '', component: UserComponent, canActivate: [AuthGuard] }],
     // , canActivate: [OnlyAdminUsersGuard], 
   },
-  { path: 'userrole', children: [{  path: '', component: UserroleComponent, canActivate: [AuthGuard] }]}
+  { path: 'userrole', children: [{ path: '', component: UserroleComponent, canActivate: [AuthGuard] }] }
 ];
 
 @NgModule({
@@ -17,4 +18,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 
-export class UserRoutingModule {}
+export class UserRoutingModule { }

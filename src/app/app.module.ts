@@ -23,13 +23,15 @@ import { LoginAuthGraud } from './auth/loginpage.gaurd.service';
 import { DataTablesModule } from 'angular-datatables';
 import { ToastrService, ToastrModule } from 'ngx-toastr';
 import { UserModule } from './core/user/user.module';
+import { CoreComponent } from './core/core.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     HomeComponent,
-    MaintainanceComponent
+    MaintainanceComponent,
+    CoreComponent
   ],
   imports: [
     BrowserModule,
@@ -39,7 +41,6 @@ import { UserModule } from './core/user/user.module';
     FormsModule,
     RouterModule,
     ReactiveFormsModule,
-
     AdminModule,
     AuthModule,
     AppRoutingModule,
