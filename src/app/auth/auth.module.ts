@@ -8,8 +8,8 @@ import { RegisterComponent } from './register/register.component';
 import { AuthService } from './auth.service';
 import { TokenStorage } from './token.storage';
 import { AuthRoutingModule } from './auth-routing.module';
-import { DistrictComponent } from './territory/district/district.component';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { ToastrService, ToastrModule } from 'ngx-toastr';
 
 
 @NgModule({
@@ -17,18 +17,16 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     CommonModule,
     SharedModule,
     AuthRoutingModule,
-
-    
-    InputSwitchModule
+    InputSwitchModule,
   ],
   declarations: [
     LoginComponent,
     RegisterComponent,
-    DistrictComponent
   ],
   providers: [
     AuthService,
-    TokenStorage
+    TokenStorage,
+    ToastrService
   ]
 })
 export class AuthModule { }

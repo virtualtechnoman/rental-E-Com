@@ -1,0 +1,144 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="float-left">User Management</h2>
+      <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal3">Add New User</a>
+      <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal2">Upload CSV</a>
+    </div>
+    <div class="card-body">
+      <table id="example1" class="table table-hover table-striped " datatable [dtOptions]="dtOptions"
+        [dtTrigger]="dtTrigger">
+        <thead>
+          <tr>
+            <th class="wd-25p">Name</th>
+            <th class="wd-20p">Email</th>
+            <th class="wd-20p">Position</th>
+            <th class="wd-20p">Mobile NUmber</th>
+            <th class="wd-20p">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of allUsers; let i = index">
+            <td>{{user.full_name | titlecase}} {{user.last_name | titlecase }}</td>
+            <td>{{user.email}}</td>
+            <td>{{user.role }}</td>
+            <td>{{user.mobile_phone  }}</td>
+            <td>
+              <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editUser(i)"><i
+                  class="fas fa-edit mx-2"></i></a>
+              <a style="cursor:pointer" (click)="deleteUser(i)"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel3">Add New User</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="userForm" (ngSubmit)="submit()">
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="inputPassword4">First Name</label>
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="First Name" formControlName="full_name" required
+                  [ngClass]="{ 'is-invalid': submitted && f.full_name.errors }">
+                <div *ngIf="submitted && f.full_name.errors" class="invalid-feedback">
+                  <div *ngIf="f.full_name.errors.required">Name is required</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="inputEmail4">Email</label>
+              <input type="email" class="form-control" placeholder="Email" formControlName="email" required
+                [ngClass]="{ 'is-invalid': submitted && f.email.errors }">
+              <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                <div *ngIf="f.email.errors.required">Email is required</div>
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="inputPassword4">Password</label>
+              <input type="password" class="form-control" placeholder="Password" formControlName="password" required
+                [ngClass]="{ 'is-invalid': submitted && f.password.errors }">
+              <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                <div *ngIf="f.password.errors.required">Password is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="inputEmail4">Position</label>
+              <select class="custom-select" name="user_role" formControlName="role"
+                [ngClass]="{ 'is-invalid': submitted && f.role.errors }" required>
+                <option value="" selected>Role*</option>
+                <option value="{{userRole.user_role}}" *ngFor="let userRole of userRoles">{{userRole.user_role}}
+                </option>
+              </select>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="inputEmail4">Mobile No</label>
+              <input type="text" class="form-control" placeholder="Mobile No*" maxlength="10"
+                formControlName="mobile_phone" required
+                [ngClass]="{ 'is-invalid': submitted && f.mobile_phone.errors }">
+              <div *ngIf="submitted && f.mobile_phone.errors" class="invalid-feedback">
+                <div *ngIf="f.mobile_phone.errors.required">Mobile Phone is required</div>
+              </div>
+            </div>
+            <div class="form-group text-center col-md-4">
+              <label for="inputAddress2" class=" ">Activate/Deactivate</label>
+              <p-inputSwitch class="form-control text-center" formControlName="is_active" required
+                [ngClass]="{ 'is-invalid': submitted && f.is_active.errors }"></p-inputSwitch>
+              <div *ngIf="submitted && f.is_active.errors" class="invalid-feedback">
+                <div *ngIf="f.is_active.errors.required">Status is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="text-center btn btn-primary text-center">Submit
+              Form</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel2">Upload CSV</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="file" id="file" class="for mx-1 float-right" (change)="uploadCSV($event.target.files)">
+      </div>
+      <div class="modal-footer">
+        <div class="float-left text-left">
+          <a href="https://firebasestorage.googleapis.com/v0/b/dummy-f382e.appspot.com/o/Sample%20Files%2FUsers.csv?alt=media&token=ab0e7809-6db3-4e45-acd2-390ab08cb010"
+            class="float-left text-left">Download Sample CSV</a>
+        </div>
+        <button type="button" class="btn btn-secondary tx-13" [disabled]="uploading" data-dismiss="modal">Close</button>
+        <button class="btn btn-primary" type="button" disabled *ngIf="uploading">
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Uploading...
+        </button>
+        <button type="button" class="btn btn-primary tx-13" *ngIf="!uploading" (click)="extractData()"> Upload</button>
+      </div>
+    </div>
+  </div>
+</div>

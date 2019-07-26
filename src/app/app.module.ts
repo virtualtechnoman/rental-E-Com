@@ -21,6 +21,8 @@ import { LoginGaurd } from './auth/login/shared/login-gaurd.service';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { LoginAuthGraud } from './auth/loginpage.gaurd.service';
 import { DataTablesModule } from 'angular-datatables';
+import { ToastrService, ToastrModule } from 'ngx-toastr';
+import { UserModule } from './core/user/user.module';
 
 @NgModule({
   declarations: [
@@ -42,13 +44,17 @@ import { DataTablesModule } from 'angular-datatables';
     AuthModule,
     AppRoutingModule,
     SharedModule,
+    
     // core Modules
+    UserModule,
     // ngPrime
-    InputSwitchModule
+    InputSwitchModule,
+    ToastrModule.forRoot(),
   ],
   providers: [
     LoginAuthGraud,
     LoginGaurd,
+    ToastrService,
     {
     provide: HTTP_INTERCEPTORS,
     useClass: AuthHeaderInterceptor,

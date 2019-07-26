@@ -9,8 +9,10 @@ import { LoginAuthGraud } from './loginpage.gaurd.service';
 const routes: Routes = [
   {
     path: 'auth', children: [
-      // { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
-      { path: 'login', component: LoginComponent, canActivate:[LoginAuthGraud] },
+      { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
+      { path: 'login', component: LoginComponent
+      // , canActivate:[LoginAuthGraud] 
+    },
       { path: 'register', component: RegisterComponent },
     ]
   }

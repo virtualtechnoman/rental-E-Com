@@ -2,14 +2,15 @@
   <a id="mainMenuOpen" class="burger-menu"><i></i></a>
   <div class="navbar-brand">
     <!-- <a  class="df-logo">dash<span>forge</span></a> -->
-    <a routerLink="/home"> <img style="height: 50px" src="../../assets//img/binsar logo main.png" class="df-logo" alt="src/assets/img/binsar logo main.png"></a>
+    <a routerLink="/home"> <img style="height: 50px" src="../../assets//img/binsar logo main.png" class="df-logo"
+        alt="src/assets/img/binsar logo main.png"></a>
   </div><!-- navbar-brand -->
   <div id="navbarMenu" class="navbar-menu-wrapper">
     <div class="navbar-menu-header">
       <a routerLink="/home" class="df-logo">dash<span>forge</span></a>
       <a id="mainMenuClose" href=""><i></i></a>
     </div><!-- navbar-menu-header -->
-    <!-- <ul class="nav navbar-menu" *ngIf="userRole">
+    <ul class="nav navbar-menu">
       <li class="nav-label pd-l-20 pd-lg-l-25 d-lg-none">Main Navigation</li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
@@ -17,13 +18,13 @@
           User
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" *ngIf="userRole.can_access_users" routerLink="user">User
+          <a class="dropdown-item" routerLink="user">User
             Management</a>
           <a class="dropdown-item" routerLink="userrole">User
             Roles</a>
         </div>
       </li>
-      <li class="nav-item dropdown">
+      <!-- <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           Customer
@@ -81,8 +82,8 @@
         </div>
       </li>
       <li class="nav-item"><a routerLink="oops" class="nav-link" *ngIf="userRole.can_access_g2n"><i></i> G2N</a></li>
-      <li class="nav-item"><a routerLink="sales" class="nav-link" *ngIf="userRole.can_access_sales"><i></i> Sales </a></li>
-    </ul> -->
+      <li class="nav-item"><a routerLink="sales" class="nav-link" *ngIf="userRole.can_access_sales"><i></i> Sales </a></li> -->
+    </ul>
   </div><!-- navbar-menu-wrapper -->
   <div class="navbar-right">
     <a id="navbarSearch" href="" class="search-link"><i></i></a>

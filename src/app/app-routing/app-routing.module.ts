@@ -6,11 +6,11 @@ import { MaintainanceComponent } from '../extra/maintainance/maintainance.compon
 import { LoginAuthGraud } from '../auth/loginpage.gaurd.service';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
-  // { path: 'home', component: HomeComponent },
-  // { path: 'auth', loadChildren: 'app/auth/auth.module#AuthModule', canActivate:[LoginAuthGraud] },
-  // { path: 'admin', loadChildren: 'app/admin/admin.module#AdminModule' },
-  // { path: 'oops', component: MaintainanceComponent, canActivate:[AuthGuard] }
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
+  { path: 'auth', loadChildren: 'app/auth/auth.module#AuthModule', canActivate: [LoginAuthGraud] },
+  { path: 'admin', loadChildren: 'app/admin/admin.module#AdminModule' },
+  { path: 'oops', component: MaintainanceComponent, canActivate: [AuthGuard] }
 ];
 
 @NgModule({

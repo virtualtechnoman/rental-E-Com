@@ -1,0 +1,342 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="float-left">User Role Management</h2>
+      <a class="btn btn-secondary  float-right text-white" data-toggle="modal" data-target="#userRoleModal">Add User
+        Role</a>
+    </div>
+    <div class="card-body">
+      <table id="example1" class="table table-bordered table-hover  table-striped " datatable [dtOptions]="dtOptions"
+        [dtTrigger]="dtTrigger">
+        <thead>
+          <th>S.No</th>
+          <th>User Role </th>
+          <th>Action</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of allUserRoles; let i= index">
+            <td>{{i+1}}</td>
+            <td>{{user.user_role}}</td>
+            <td>
+              <i class="fas fa-edit mx-1" data-toggle="modal" data-target="#userRoleModal"
+                (click)="editUserRole(i)"></i>
+              <i class="fas fa-trash-alt" (click)="deleteUser(i)"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="userRoleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add User Role</h5>
+        <a href="#" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </a>
+      </div>
+      <form [formGroup]="userRoleForm" (submit)="submit()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col">
+              <div class="form-row">
+                <div class="col-md-4">
+                  <label for="inputPrice3" class=" col-form-label">User Role</label>
+                </div>
+                <div class="col-md-8">
+                  <input type="text" class="form-control" formControlName="user_role" placeholder="Enter User Role here"
+                    id="user_role" name="user_role" required>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="card">
+              <div class="card-header text-center ">Users</div>
+              <div class="card-body">
+                <div class="form-row">
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">User Role</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_user_role" >
+                      </p-inputSwitch>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="col-md-4"> <label for="inputPrice3" class="col-form-label">User
+                        Management</label>
+                    </div>
+                    <div class="col-md-8">
+                      <p-inputSwitch class="form-control text-center" formControlName="can_access_users" >
+                      </p-inputSwitch>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="card">
+              <div class="card-header text-center ">Customers</div>
+              <div class="card-body">
+                <div class="form-row">
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Customer Type</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_customer_type" >
+                      </p-inputSwitch>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Customer
+                      Management</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_customer" >
+                      </p-inputSwitch>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Distirbutor</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_distirbutor" >
+                      </p-inputSwitch>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="card">
+              <div class="card-header text-center ">Territory</div>
+              <div class="card-body">
+                <div class="form-row">
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Country</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_country" ></p-inputSwitch>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Region</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_region" ></p-inputSwitch>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">City</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_city" ></p-inputSwitch>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">District</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_district" >
+                      </p-inputSwitch>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="card">
+              <div class="card-header text-center ">Portfolio</div>
+              <div class="card-body">
+                <div class="form-row">
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Therapy</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_therapy" ></p-inputSwitch>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Products</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_products" >
+                      </p-inputSwitch>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Inventory</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_inventory" >
+                      </p-inputSwitch>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Buisness Unit</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_bu" ></p-inputSwitch>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="card">
+              <div class="card-header text-center ">Incentive</div>
+              <div class="card-body">
+                <div class="form-row">
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Incentive Period</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_incentive_period" >
+                      </p-inputSwitch>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">ProIncentive Share</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_incentive_share" >
+                      </p-inputSwitch>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="card">
+              <div class="card-header text-center ">Target</div>
+              <div class="card-body">
+                <div class="form-row">
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Target Setting</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_target_setting" >
+                      </p-inputSwitch>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Target Forecasting</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_target_forecasting" >
+                      </p-inputSwitch>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="card">
+              <div class="card-header text-center ">Others</div>
+              <div class="card-body">
+                <div class="form-row">
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">G2N</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_g2n" ></p-inputSwitch>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Sales</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_sales" ></p-inputSwitch>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="inputPrice3" class="col-sm-8 col-form-label">Reports</label>
+                    <div class="col-sm-8">
+                      <p-inputSwitch class="form-control" formControlName="can_access_reports" ></p-inputSwitch>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer text-center">
+          <a class="btn btn-secondary" data-dismiss="modal">Close</a>
+          <button type="submit" class="btn btn-success"> Save </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- <div class="container">
+  <div data-label="Example" class="df-example">
+    <div class="media align-items-stretch">
+      <ul class="nav nav-tabs flex-column wd-150" id="myTab4" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="home-tab4" data-toggle="tab" href="#home4" role="tab" aria-controls="home"
+            aria-selected="true">Users</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="profile-tab4" data-toggle="tab" href="#profile4" role="tab" aria-controls="profile"
+            aria-selected="false">Customer</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="contact-tab4" data-toggle="tab" href="#contact4" role="tab" aria-controls="contact"
+            aria-selected="false">Terrotory</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="contact-tab4" data-toggle="tab" href="#contact4" role="tab" aria-controls="contact"
+            aria-selected="false">Portfolio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="contact-tab4" data-toggle="tab" href="#contact4" role="tab" aria-controls="contact"
+            aria-selected="false">Incentive</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="contact-tab4" data-toggle="tab" href="#contact4" role="tab" aria-controls="contact"
+            aria-selected="false">Target</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="contact-tab4" data-toggle="tab" href="#contact4" role="tab" aria-controls="contact"
+            aria-selected="false">Sales</a>
+        </li>
+      </ul>
+      <div class="media-body">
+        <div class="tab-content bd bd-gray-300 bd-l-0 pd-20" id="myTabContent4">
+          <div class="tab-pane fade show active" id="home4" role="tabpanel" aria-labelledby="home-tab4">
+            <h6>User</h6>
+            <div class="form-row">
+
+            </div>
+          </div>
+          <div class="tab-pane fade" id="profile4" role="tabpanel" aria-labelledby="profile-tab4">
+            <h6>Customer</h6>
+            <p class="mg-b-0">Fugiat veniam incididunt anim aliqua enim pariatur veniam sunt est aute sit dolor anim.
+              Velit non irure adipisicing aliqua ullamco irure incididunt irure non esse consectetur nostrud minim non
+              minim occaecat.</p>
+          </div>
+          <div class="tab-pane fade" id="contact4" role="tabpanel" aria-labelledby="contact-tab4">
+            <h6>Territory</h6>
+            <p class="mg-b-0">Amet duis do nisi duis veniam non est eiusmod tempor incididunt tempor dolor ipsum in qui
+              sit. Exercitation mollit sit culpa nisi culpa non adipisicing reprehenderit do dolore. Duis reprehenderit
+              occaecat anim ullamco ad duis occaecat ex.</p>
+          </div>
+          <div class="tab-pane fade" id="contact4" role="tabpanel" aria-labelledby="contact-tab4">
+            <h6>Portfolio</h6>
+            <p class="mg-b-0">Amet duis do nisi duis veniam non est eiusmod tempor incididunt tempor dolor ipsum in qui
+              sit. Exercitation mollit sit culpa nisi culpa non adipisicing reprehenderit do dolore. Duis reprehenderit
+              occaecat anim ullamco ad duis occaecat ex.</p>
+          </div>
+          <div class="tab-pane fade" id="contact4" role="tabpanel" aria-labelledby="contact-tab4">
+            <h6>Incentive</h6>
+            <p class="mg-b-0">Amet duis do nisi duis veniam non est eiusmod tempor incididunt tempor dolor ipsum in qui
+              sit. Exercitation mollit sit culpa nisi culpa non adipisicing reprehenderit do dolore. Duis reprehenderit
+              occaecat anim ullamco ad duis occaecat ex.</p>
+          </div>
+          <div class="tab-pane fade" id="contact4" role="tabpanel" aria-labelledby="contact-tab4">
+            <h6>Target</h6>
+            <p class="mg-b-0">Amet duis do nisi duis veniam non est eiusmod tempor incididunt tempor dolor ipsum in qui
+              sit. Exercitation mollit sit culpa nisi culpa non adipisicing reprehenderit do dolore. Duis reprehenderit
+              occaecat anim ullamco ad duis occaecat ex.</p>
+          </div>
+        </div>
+      </div>
+</div>
+</div>
+<!-- </div>  -->
