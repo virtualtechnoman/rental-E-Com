@@ -3,13 +3,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../auth/auth-guard.service';
 import { HomeComponent } from '../home/home.component';
 import { MaintainanceComponent } from '../extra/maintainance/maintainance.component';
-import { LoginAuthGraud } from '../auth/loginpage.gaurd.service';
+import { LoginComponent } from '../auth/login/login.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'home', redirectTo: 'user', canActivate: [AuthGuard] },
-  { path: 'auth', loadChildren: 'app/auth/auth.module#AuthModule', canActivate: [LoginAuthGraud] },
-  { path: 'admin', loadChildren: 'app/admin/admin.module#AdminModule' },
+  { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
+  // { path: 'auth', loadChildren: 'app/auth/auth.module#AuthModule', canActivate: [AuthGuard] },
+  // { path: 'admin', loadChildren: 'app/admin/admin.module#AdminModule' },
+  { path: 'login', component: LoginComponent },
   { path: 'oops', component: MaintainanceComponent, canActivate: [AuthGuard] }
 ];
 
