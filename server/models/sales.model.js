@@ -2,21 +2,19 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const SalesSchema = new Schema({
-    customer_name: { type: String, required: true },
+    amount: { type: String, required: true },
+    // customer_name: { type: String, required: true }, // not required i.e Redundant
     customer_id: { type: String, required: true },
     discount: { type: String, required: true },
-    gross_amount: { type: String, required: true },
     foc: { type: String, required: true },
-    invoice: { type: Number, required: true },
+    invoice_number: { type: Number, required: true },
     invoice_date: { type: Date, required: true },
-    net_price: { type: String, required: true },
-    product_id: { type: String, required: true },
-    product_name: { type: String, required: true },
+    net_amount: { type: String, required: true },
+    sku_id: { type: String, required: true },
+    product: { type: mongoose.Schema.Types.ObjectId , ref:'product', required: true },  // added ref to product
     price: { type: String, required: true },
     quantity: { type: String, required: true },
     region: { type: String, required: true },
-    sector: { type: String, required: true },
-    is_active: { type: Boolean, required: true },
     created_date: { type: Date, default: Date.now },
 });
 

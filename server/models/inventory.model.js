@@ -5,7 +5,6 @@ const InventorySchema = new Schema({
     batch_no: { type: String, required: true },
     created_date: { type: Date, default: Date.now },
     expiry_date: { type: Date, required: true },
-    is_active: { type: Boolean, required: true },
     notes: { type: String, required: false },
     quantity: { type: String, required: true },
     region: { type: String, required: true },

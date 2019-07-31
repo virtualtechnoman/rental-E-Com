@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 // Create Schema
 const CompanySchema = new Schema({
-    company_id: { type: String, required: true },
+    // company_id: { type: String, required: true },  // duplicate property
     company_name: {
         type: String,
         required: true

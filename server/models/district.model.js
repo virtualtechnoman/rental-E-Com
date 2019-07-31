@@ -7,7 +7,7 @@ const DistrictSchema = new Schema({
     district_name: { type: String, required: true },
     created_date: { type: Date, default: Date.now },
     is_active: { type: Boolean, required: true },
-    owner: { type: mongoose.Schema.Types.ObjectId, required: true }
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 });
 
 module.exports = District = mongoose.model('district', DistrictSchema);
