@@ -30,8 +30,6 @@ function login(req, res) {
   res.json({ user, token });
 }
 
-
-
 router.post('/register', (req, res) => {
   let result = userCtrl.insert(req.body);
   if (!isEmpty(result.errors)) {
