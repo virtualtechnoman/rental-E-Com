@@ -1,6 +1,6 @@
 const express = require('express');
 const userRoutes = require('./user.route');
-// const authRoutes = require('./auth.route');
+const authRoutes = require('./auth.route');
 const categoryRoutes = require("./category.route");
 const productRoutes = require('./products.route');
 // const therapyRoutes = require('./therapy.route');
@@ -26,7 +26,7 @@ router.get('/health-check', (req, res) =>
   res.send('OK')
 );
 
-// router.use('/auth', authRoutes);
+router.use('/auth', authRoutes);
 router.use('/user', userRoutes);
 
 
