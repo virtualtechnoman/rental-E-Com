@@ -3,24 +3,23 @@ const Schema = mongoose.Schema;
 
 // Create Schema
 const ProductSchema = new Schema({
+    name: { type: String, required: true },
+    product_id: { type: String, required: true , unique:true},
+    image: { type: String, required: false },
+    created_date: { type: Date, default: Date.now },
+    category: { type: String, required: true },
+    // category: { type: mongoose.Schema.Types.ObjectId, ref:'category', required: true },
+    is_active: { type: Boolean, default:true, required: true },
+    farm_price: { type: Number, required: false },
+    selling_price: { type: Number, required: true },
+    product_dms: { type: String, required: true },
     brand: { type: String, required: true },
-    cif_price: { type: String, required: true },
-    business_unit: { type: String, required: true },
-    // business_unit_id: { type: String, required: true },
-    date: { type: Date, default: Date.now },
-    distirbutor: { type: String, required: true },
-    form: { type: String, required: true },
-    is_active: { type: Boolean, required: true },
-    notes: { type: String, required: false },
-    pack_size: { type: String, required: true },
-    promoted: { type: Boolean, required: true },
-    range: { type: String, required: true },
-    registered: { type: Boolean, required: true },
-    strength: { type: String, required: true },
-    sku_id: { type: String, required: true },
-    sku_name: { type: String, required: true },
-    therapy_line: { type: String, required: true },
-    whole_price: { type: String, required: true },
+    // brand: { type: mongoose.Schema.Types.ObjectId, ref:'brand', required: true },
+    details: { type: String, required: true },
+    created_by: { type: String, required: true },
+    // created_by: { type: mongoose.Schema.Types.ObjectId,ref:'user', required: true },
+    available_for: { type: String, required: true }
+    // available_for: { type: mongoose.Schema.Types.ObjectId,ref:'user', required: true }
 });
 
 module.exports = Product = mongoose.model('product', ProductSchema);
