@@ -39,8 +39,15 @@ router.post('/role', async (req, res) => {
   console.log(req.body.role)
   if (mongodb.ObjectId.isValid(req.body.role)) {
     try {
-      const allUsers = await User.find({ role: req.body.role }).populate("role").exec()
-      res.json(allUsers);
+      const allUsers = await User.find({ role: req.body.role }, res => {
+        console.log(req.body.role)
+        console.log(res)
+      }).populate("role").exec()
+      if (allUsers.length > 0) {
+        res.status(200).json(allUsers)
+      } else {
+        res.json({ message: "No User Found" });
+      }
     } catch (err) {
       console.log(err)
       res.json({ message: "Error while searching for users associated with this role" })

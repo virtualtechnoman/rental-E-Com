@@ -89,7 +89,7 @@
               <select class="custom-select" name="user_role" formControlName="role"
                 [ngClass]="{ 'is-invalid': submitted && f.role.errors }" required>
                 <option value="" selected>Role*</option>
-                <option [ngValue]="userRole._id" *ngFor="let userRole of userRoles">{{userRole.user_role}}
+                <option [ngValue]="userRole._id" *ngFor="let userRole of allUserRoles">{{userRole.user_role}}
                 </option>
               </select>
             </div>
