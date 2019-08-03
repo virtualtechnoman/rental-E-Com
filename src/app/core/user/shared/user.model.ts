@@ -9,6 +9,7 @@ export class UserModel {
 }
 
 export class UserRoleModel {
+    _id: string;
     user_role: String;
     can_access_bu: boolean;
     can_access_city: boolean;

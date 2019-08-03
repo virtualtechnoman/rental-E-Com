@@ -36,11 +36,13 @@ router.get('/', async (req, res) => {
 
 // GET all users by role
 router.post('/role', async (req, res) => {
+  console.log(req.body.role)
   if (mongodb.ObjectId.isValid(req.body.role)) {
     try {
       const allUsers = await User.find({ role: req.body.role }).populate("role").exec()
       res.json(allUsers);
     } catch (err) {
+      console.log(err)
       res.json({ message: "Error while searching for users associated with this role" })
     }
 
@@ -118,7 +120,7 @@ router.post("/", (req, res) => {
       });
     });
   }
-  else{
+  else {
     res.json(result.errors);
   }
 })

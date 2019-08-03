@@ -24,6 +24,7 @@ import { DataTablesModule } from 'angular-datatables';
 import { ToastrService, ToastrModule } from 'ngx-toastr';
 import { UserModule } from './core/user/user.module';
 import { CoreComponent } from './core/core.component';
+import { ProductsModule } from './core/products/products.module';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,8 @@ import { CoreComponent } from './core/core.component';
     AuthModule,
     AppRoutingModule,
     SharedModule,
+
+    ProductsModule,
     
     // core Modules
     UserModule,

@@ -1,12 +1,13 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { UserService } from './shared/user-service.service';
-import { UserModel } from './shared/user.model';
+import { UserModel, UserRoleModel } from './shared/user.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as $ from "jquery";
 import { Subject } from 'rxjs';
 import { UserRoleService } from './shared/userrole.service';
 import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-user',
@@ -16,29 +17,33 @@ import * as moment from 'moment';
 export class UserComponent implements OnInit {
   id = "EMP" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second()
 
-  jQuery: any;
   allTherapies: any[] = [];
   allTherayId: any[] = [];
   allUsers: any[] = [];
-  title: any[] = ["Mr.", "Ms.", "Mrs."]
+  CSV: File = null;
   currentUser: UserModel;
   currentUserId: string;
   currentIndex: number;
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
   editing: boolean = false;
-  userForm: FormGroup;
-  userRoles: any[] = [];
-  CSV: File = null;
-  fileReader: FileReader = new FileReader();
+  jQuery: any;
+  maxDate = new Date().toISOString().substring(0, 10);
   parsedCSV;
   submitted: boolean = false;
+  selectedUserRole:UserRoleModel;
+  userForm: FormGroup;
+  allUserRoles: any[] = [];
+  userRole;
   uploading: boolean = false;
-  maxDate = new Date().toISOString().substring(0, 10);
 
-  constructor(private userService: UserService, private formBuilder: FormBuilder, private UserroleService: UserRoleService, private toastr: ToastrService,) {
-    this.currentUser = new UserModel();
+  constructor(private userService: UserService, private formBuilder: FormBuilder,
+    private UserroleService: UserRoleService, private toastr: ToastrService, private activatedRoute: ActivatedRoute) {
     this.initForm();
+    this.userService.getAllUsers().subscribe((res: UserModel[]) => {
+      console.log(res)
+      this.allUsers = res;
+    })
   }
 
   ngOnInit() {
@@ -64,14 +69,8 @@ export class UserComponent implements OnInit {
       ]
     };
 
-    this.userService.getAllUsers().subscribe((res: UserModel[]) => {
-      this.allUsers = res;
-      console.log("Data from client to server", this.allUsers);
-      this.dtTrigger.next();
-    })
-
     this.UserroleService.getAllUserRoles().subscribe((res: any[]) => {
-      this.userRoles = res
+      this.allUserRoles = res
     })
 
   }
@@ -159,6 +158,20 @@ export class UserComponent implements OnInit {
     this.userForm.controls['role'].setValue(user.role);
     this.userForm.controls['is_active'].setValue(user.is_active);
     this.userForm.controls['mobile_phone'].setValue(user.mobile_phone);
+  }
+
+  getUserbyRole() {
+    console.log(this.selectedUserRole)
+    this.userService.getUserByRole(this.selectedUserRole._id).subscribe((res: any) => {
+      if (res.message) {
+        this.toastr.warning('No Data Available', res.message)
+      } else {
+        this.allUsers = res;
+        console.log(res)
+        console.log("Data from client to server", this.allUsers);
+        this.dtTrigger.next();
+      }
+    })
   }
 
   public uploadCSV(files: FileList) {

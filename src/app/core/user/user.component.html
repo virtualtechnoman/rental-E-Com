@@ -6,6 +6,12 @@
         data-target="#modal3">Add New User</a>
       <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
         data-target="#modal2">Upload CSV</a>
+      <select class="form-control float-right" [(ngModel)]="selectedUserRole" (change)="getUserbyRole()"
+        style="width:20%" name="customer_name">
+        <option value="" selected>Select User Role</option>
+        <option [ngValue]="userRole" *ngFor="let userRole of allUserRoles">
+          {{userRole.user_role | titlecase}}</option>
+      </select>
     </div>
     <div class="card-body">
       <table id="example1" class="table table-hover table-striped " datatable [dtOptions]="dtOptions"
@@ -23,12 +29,13 @@
           <tr *ngFor="let user of allUsers; let i = index">
             <td>{{user.full_name | titlecase}} {{user.last_name | titlecase }}</td>
             <td>{{user.email}}</td>
-            <td>{{user.role }}</td>
+            <td>{{user.role.user_role | titlecase }}</td>
             <td>{{user.mobile_phone  }}</td>
             <td>
               <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editUser(i)"><i
                   class="fas fa-edit mx-2"></i></a>
-              <a style="cursor:pointer" (click)="deleteUser(i)"><i class="fas fa-trash-alt"></i></a>
+              <a *ngIf="!user.role.user_role == 'admin'" style="cursor:pointer" (click)="deleteUser(i)"><i
+                  class="fas fa-trash-alt"></i></a>
             </td>
           </tr>
         </tbody>
@@ -82,7 +89,7 @@
               <select class="custom-select" name="user_role" formControlName="role"
                 [ngClass]="{ 'is-invalid': submitted && f.role.errors }" required>
                 <option value="" selected>Role*</option>
-                <option value="{{userRole.user_role}}" *ngFor="let userRole of userRoles">{{userRole.user_role}}
+                <option [ngValue]="userRole._id" *ngFor="let userRole of userRoles">{{userRole.user_role}}
                 </option>
               </select>
             </div>

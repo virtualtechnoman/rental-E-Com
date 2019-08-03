@@ -4,11 +4,13 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
 import { TokenStorage } from './token.storage';
+import { UserModel } from '../core/user/shared/user.model';
 
 @Injectable()
 export class AuthService {
 
-  error: any ;
+  error: any;
+  user: UserModel;
   constructor(private http: HttpClient, private token: TokenStorage) { }
 
   public $userSource = new Subject<any>();
@@ -24,7 +26,7 @@ export class AuthService {
         this.token.saveToken(data.token);
         observer.complete();
       }, (error: HttpErrorResponse) => {
-        observer.next({error:error});
+        observer.next({ error: error });
         observer.complete();
       })
     });
@@ -46,7 +48,8 @@ export class AuthService {
   setUser(user): void {
     // if (user) user.isAdmin = (user.position.indexOf('admin') > -1);
     this.$userSource.next(user);
-    (<any>window).user = user;
+    this.user = user;
+      (<any>window).user = user;
   }
 
   getUser(): Observable<any> {
@@ -71,8 +74,8 @@ export class AuthService {
     delete (<any>window).user;
   }
 
-  isAuthenticated(){
-    if(localStorage.getItem('AuthToken') ){
+  isAuthenticated() {
+    if (localStorage.getItem('AuthToken')) {
       return true;
     } return false;
   }
