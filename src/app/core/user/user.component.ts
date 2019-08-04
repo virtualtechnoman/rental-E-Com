@@ -21,6 +21,7 @@ export class UserComponent implements OnInit {
   allTherayId: any[] = [];
   allUsers: any[] = [];
   CSV: File = null;
+  confirmPassword: any = '';
   currentUser: UserModel;
   currentUserId: string;
   currentIndex: number;
@@ -30,8 +31,10 @@ export class UserComponent implements OnInit {
   jQuery: any;
   maxDate = new Date().toISOString().substring(0, 10);
   parsedCSV;
+  passwordMatched: boolean = false;
+  showPassword: boolean = false;
   submitted: boolean = false;
-  selectedUserRole:UserRoleModel;
+  selectedUserRole: UserRoleModel;
   userForm: FormGroup;
   allUserRoles: any[] = [];
   userRole;
@@ -80,7 +83,7 @@ export class UserComponent implements OnInit {
   submit() {
     console.log("USER FORM VALUES ====>>>", this.userForm.value)
     this.submitted = true;
-    if (this.userForm.invalid) {
+    if (this.userForm.invalid && !this.passwordMatched) {
       return;
     }
     this.currentUser = this.userForm.value;
@@ -140,7 +143,7 @@ export class UserComponent implements OnInit {
       is_active: [true, Validators.required],
       password: ['', Validators.required],
       role: ['', Validators.required],
-      mobile_phone: ['', Validators.required],
+      mobile_number: ['', Validators.required],
     })
   }
 
@@ -157,7 +160,7 @@ export class UserComponent implements OnInit {
     this.userForm.controls['password'].setValue(user.password);
     this.userForm.controls['role'].setValue(user.role);
     this.userForm.controls['is_active'].setValue(user.is_active);
-    this.userForm.controls['mobile_phone'].setValue(user.mobile_phone);
+    this.userForm.controls['mobile_number'].setValue(user.mobile_number);
   }
 
   getUserbyRole() {
@@ -267,6 +270,27 @@ export class UserComponent implements OnInit {
       return true;
     }
     return false
+  }
+
+  checkPassword() {
+    console.log(this.confirmPassword)
+    if (this.confirmPassword != this.userForm.get('password').value) {
+      this.passwordMatched = false;
+      console.log("TRUE")
+      return true;
+    } else {
+      this.passwordMatched = true;
+      return false
+    };
+  }
+
+  togglePassword() {
+    var x = <HTMLInputElement>document.getElementById("password");
+    if (x.type === "password") {
+      x.type = "text";
+    } else {
+      x.type = "password";
+    }
   }
 
   ngOnDestroy(): void {

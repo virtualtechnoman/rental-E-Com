@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const UserSchema = new mongoose.Schema({
   user_id: { type: String, required: true, unique: true, },
   full_name: { type: String, required: true },
+  mobile_number: { type: String, required: true },
   email: {
     type: String, required: true, unique: true,
     // Regexp to validate emails with more strict rules as added in tests/users.js which also conforms mostly with RFC2822 guide lines
@@ -11,20 +12,20 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String, // required: true
   },
-  role: { type: mongoose.Schema.Types.ObjectId ,ref:"user_role", required: true }
+  role: { type: mongoose.Schema.Types.ObjectId, ref: "user_role", required: true }
 }, {
     versionKey: false
   });
 
-  UserSchema.methods.getPublicFields = function () {
-    var returnObject = {
-      id:this._id,
-      full_name: this.full_name,
-      user_id: this.user_id,
-      email: this.email,
-      role:this.role
-    };
-    return returnObject;
+UserSchema.methods.getPublicFields = function () {
+  var returnObject = {
+    id: this._id,
+    full_name: this.full_name,
+    user_id: this.user_id,
+    email: this.email,
+    role: this.role
+  };
+  return returnObject;
 };
 
 module.exports = mongoose.model('User', UserSchema);

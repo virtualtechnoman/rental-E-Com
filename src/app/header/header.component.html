@@ -1,27 +1,16 @@
 <header class="navbar navbar-header navbar-header-fixed" style="width:100%">
   <a id="mainMenuOpen" class="burger-menu"><i></i></a>
   <div class="navbar-brand">
-    <!-- <a  class="df-logo">dash<span>forge</span></a> -->
     <a routerLink="/home"> <img style="height: 50px" src="../../assets//img/binsar logo main.png" class="df-logo"
         alt="src/assets/img/binsar logo main.png"></a>
-  </div><!-- navbar-brand -->
+  </div>
   <div id="navbarMenu" class="navbar-menu-wrapper">
     <div class="navbar-menu-header">
       <a routerLink="/home" class="df-logo">dash<span>forge</span></a>
       <a id="mainMenuClose" href=""><i></i></a>
-    </div><!-- navbar-menu-header -->
+    </div>
     <ul class="nav navbar-menu">
       <li class="nav-label pd-l-20 pd-lg-l-25 d-lg-none">Main Navigation</li>
-      <!-- <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          User
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" routerLink="user">User
-            Management</a>
-        </div>
-      </li> -->
       <li class="nav-item with-sub dropdown">
         <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false" class="nav-link"><i data-feather="layers"></i> User Management</a>
@@ -34,92 +23,19 @@
                   <i data-feather="log-in"></i> User Management
                 </a>
               </li>
-              <!-- <li class="nav-label mg-t-20">User Pages</li>
-              <li class="nav-sub-item"><a href="page-profile-view.html" class="nav-sub-link"><i data-feather="user"></i> View Profile</a></li>
-              <li class="nav-sub-item"><a href="page-connections.html" class="nav-sub-link"><i data-feather="users"></i> Connections</a></li>
-              <li class="nav-sub-item"><a href="page-groups.html" class="nav-sub-link"><i data-feather="users"></i> Groups</a></li>
-              <li class="nav-sub-item"><a href="page-events.html" class="nav-sub-link"><i data-feather="calendar"></i> Events</a></li> -->
             </ul>
             <ul>
               <li class="nav-label">Manage User Roles</li>
               <a class="dropdown-item" routerLink="userrole">User
                 Roles</a>
-              <!-- <li class="nav-sub-item"><a href="page-404.html" class="nav-sub-link"><i data-feather="file"></i> 404 Page Not Found</a></li>
-              <li class="nav-sub-item"><a href="page-500.html" class="nav-sub-link"><i data-feather="file"></i> 500 Internal Server</a></li>
-              <li class="nav-sub-item"><a href="page-503.html" class="nav-sub-link"><i data-feather="file"></i> 503 Service Unavailable</a></li>
-              <li class="nav-sub-item"><a href="page-505.html" class="nav-sub-link"><i data-feather="file"></i> 505 Forbidden</a></li>
-              <li class="nav-label mg-t-20">Other Pages</li>
-              <li class="nav-sub-item"><a href="page-timeline.html" class="nav-sub-link"><i data-feather="file-text"></i> Timeline</a></li>
-              <li class="nav-sub-item"><a href="page-pricing.html" class="nav-sub-link"><i data-feather="file-text"></i> Pricing</a></li>
-              <li class="nav-sub-item"><a href="page-help-center.html" class="nav-sub-link"><i data-feather="file-text"></i> Help Center</a></li>
-              <li class="nav-sub-item"><a href="page-invoice.html" class="nav-sub-link"><i data-feather="file-text"></i> Invoice</a></li> -->
             </ul>
           </div>
-        </div><!-- nav-sub -->
+        </div>
       </li>
       <li class="nav-item"><a routerLink="product" class="nav-link"><i data-feather="box"></i> Produts Management</a>
       </li>
-      <!-- <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          Customer
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" routerLink="distirbutor" *ngIf="userRole.can_access_users">Distirbutor</a>
-          <a class="dropdown-item" routerLink="customer" *ngIf="userRole.can_access_customer">Customer</a>
-          <a class="dropdown-item" routerLink="customertype" *ngIf="userRole.can_access_customer_type">Customer Type</a>
-          <a class="dropdown-item" routerLink="assigncustomer" >Customer Assignment</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          Territory
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" routerLink="territory/country" *ngIf="userRole.can_access_country">Manage Country</a>
-          <a class="dropdown-item" routerLink="territory/region" *ngIf="userRole.can_access_region">Manage Region</a>
-          <a class="dropdown-item" routerLink="territory/city" *ngIf="userRole.can_access_city">Manage City</a>
-          <a class="dropdown-item" routerLink="territory/district" *ngIf="userRole.can_access_district">Manage District</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          Portfolio
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" routerLink="bu" *ngIf="userRole.can_access_bu">Buisness Unit</a>
-          <a class="dropdown-item" routerLink="therapy" *ngIf="userRole.can_access_therapy">Therapy Line</a>
-          <a class="dropdown-item" routerLink="products" *ngIf="userRole.can_access_products">Products</a>
-          <a class="dropdown-item" routerLink="inventory" *ngIf="userRole.can_access_inventory">Inventory</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          Incentive
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" routerLink="incentiveperiod" *ngIf="userRole.can_access_incentive_period">Incentive Period </a>
-          <a class="dropdown-item" routerLink="incentiveshare" *ngIf="userRole.can_access_incentive_share">Incentive Share</a>
-        </div>
-      </li>
-      <li class="nav-item"><a routerLink="oops" class="nav-link" *ngIf="userRole.can_access_reports"><i></i> Reports </a></li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          Target
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" routerLink="targetsetting" *ngIf="userRole.can_access_target_setting">Target Setting</a>
-          <a class="dropdown-item" routerLink="forecasting" *ngIf="userRole.can_access_target_forecasting">Forecasting</a>
-        </div>
-      </li>
-      <li class="nav-item"><a routerLink="oops" class="nav-link" *ngIf="userRole.can_access_g2n"><i></i> G2N</a></li>
-      <li class="nav-item"><a routerLink="sales" class="nav-link" *ngIf="userRole.can_access_sales"><i></i> Sales </a></li> -->
     </ul>
-  </div><!-- navbar-menu-wrapper -->
+  </div>
   <div class="navbar-right">
     <a id="navbarSearch" href="" class="search-link"><i></i></a>
     <div class="dropdown dropdown-message">
@@ -129,41 +45,41 @@
       </a>
       <div class="dropdown-menu dropdown-menu-right">
         <div class="dropdown-header">New Messages</div>
-        <!-- <a href="" class="dropdown-item">
-            <div class="media">
-              <div class="avatar avatar-sm avatar-online"><img
-                  src="https://cresscap.com/wp-content/uploads/bfi_thumb/dummy-profile-pic-353fq072wibz1xp0b9j75s.png"
-                  class="rounded-circle" alt=""></div>
-              <div class="media-body mg-l-15">
-                <strong>Dummy User Name</strong>
-                <p>Dummy Notification Content</p>
-                <span>Mar 15 12:32pm</span>
-              </div>
+        <a href="" class="dropdown-item">
+          <div class="media">
+            <div class="avatar avatar-sm avatar-online"><img
+                src="https://cresscap.com/wp-content/uploads/bfi_thumb/dummy-profile-pic-353fq072wibz1xp0b9j75s.png"
+                class="rounded-circle" alt=""></div>
+            <div class="media-body mg-l-15">
+              <strong>Dummy User Name</strong>
+              <p>Dummy Notification Content</p>
+              <span>Mar 15 12:32pm</span>
             </div>
-          </a> -->
-        <!-- <div class="dropdown-footer"><a href="">View all Messages</a></div> -->
-        <div class="dropdown-footer"><a href="">No New Messages</a></div>
+          </div>
+        </a>
+        <div class="dropdown-footer"><a href="">View all Messages</a></div>
+        <!-- <!-- <div class="dropdown-footer"><a href="">No New Messages</a></div> -->
       </div>
     </div>
     <div class="dropdown dropdown-notification">
       <a href="" class="dropdown-link new-indicator" data-toggle="dropdown">
-        <!-- <i data-feather="bell"></i> -->
-        <i class="far fa-bell"></i>
+        <i data-feather="bell"></i>
+        <!-- <!-- <i class="far fa-bell"></i> -->
         <span>0</span>
       </a>
       <div class="dropdown-menu dropdown-menu-right">
         <div class="dropdown-header">Notifications</div>
-        <!-- <a href="" class="dropdown-item">
-            <div class="media">
-              <div class="avatar avatar-sm avatar-online"><img
-                  src="https://cresscap.com/wp-content/uploads/bfi_thumb/dummy-profile-pic-353fq072wibz1xp0b9j75s.png"
-                  class="rounded-circle" alt=""></div>
-              <div class="media-body mg-l-15">
-                <p>Congratulate <strong>Socrates Itumay</strong> for work anniversaries</p>
-                <span>Mar 15 12:32pm</span>
-              </div>
+        <a href="" class="dropdown-item">
+          <div class="media">
+            <div class="avatar avatar-sm avatar-online"><img
+                src="https://cresscap.com/wp-content/uploads/bfi_thumb/dummy-profile-pic-353fq072wibz1xp0b9j75s.png"
+                class="rounded-circle" alt=""></div>
+            <div class="media-body mg-l-15">
+              <p>Congratulate <strong>Socrates Itumay</strong> for work anniversaries</p>
+              <span>Mar 15 12:32pm</span>
             </div>
-          </a> -->
+          </div>
+        </a> -->
         <div class="dropdown-footer"><a href="">View all Notifications</a></div>
         <div class="dropdown-footer"><a href="">No New Notifications</a></div>
       </div>
@@ -172,32 +88,32 @@
       <a href="" class="dropdown-link" data-toggle="dropdown" data-display="static">
         <div class="avatar avatar-sm"><img src="http://www.mecgale.com/wp-content/uploads/2017/08/dummy-profile.png"
             class="rounded-circle" alt=""></div>
-      </a><!-- dropdown-link -->
+      </a>
       <div class="dropdown-menu dropdown-menu-right tx-13">
         <div class="avatar avatar-lg mg-b-15"><img
             src="http://www.mecgale.com/wp-content/uploads/2017/08/dummy-profile.png" class="rounded-circle" alt="">
         </div>
-        <!-- <h6 class="tx-semibold mg-b-5" *ngIf="authService.user">{{me.first_name | titlecase}}
-          {{me.last_name | titlecase}}</h6> -->
-        <!-- <p class="mg-b-25 tx-12 tx-color-03" *ngIf="authService.user">{{me.position | titlecase}}</p> -->
+        <h6 class="tx-semibold mg-b-5" *ngIf="authService.user">{{me?.first_name | titlecase}}
+          {{me?.last_name | titlecase}}</h6>
+        <p class="mg-b-25 tx-12 tx-color-03" *ngIf="authService.user">{{me?.position | titlecase}}</p>
 
         <a routerLink="auth/editprofile" class="dropdown-item"><i data-feather="edit-3"></i> Edit Profile</a>
         <a routerLink="auth/profile" class="dropdown-item"><i data-feather="user"></i> View Profile</a>
-        <!-- <div class="dropdown-divider"></div>
-          <a href="page-help-center.html" class="dropdown-item"><i data-feather="help-circle"></i> Help Center</a>
-          <a href="" class="dropdown-item"><i data-feather="life-buoy"></i> Forum</a>
-          <a href="" class="dropdown-item"><i data-feather="settings"></i>Account Settings</a>
-          <a href="" class="dropdown-item"><i data-feather="settings"></i>Privacy Settings</a> -->
+        <div class="dropdown-divider"></div>
+        <a href="page-help-center.html" class="dropdown-item"><i data-feather="help-circle"></i> Help Center</a>
+        <a href="" class="dropdown-item"><i data-feather="life-buoy"></i> Forum</a>
+        <a href="" class="dropdown-item"><i data-feather="settings"></i>Account Settings</a>
+        <a href="" class="dropdown-item"><i data-feather="settings"></i>Privacy Settings</a>
         <a (click)="logout()" class="dropdown-item"><i data-feather="log-out"></i>Sign Out</a>
-      </div><!-- dropdown-menu -->
-    </div><!-- dropdown -->
-  </div><!-- navbar-right -->
+      </div>
+    </div>
+  </div>
   <div class="navbar-search">
     <div class="navbar-search-header">
       <input type="search" class="form-control" placeholder="Type and hit enter to search...">
       <button class="btn"><i data-feather="search"></i></button>
       <a id="navbarSearchClose" href="" class="link-03 mg-l-5 mg-lg-l-10"><i data-feather="x"></i></a>
-    </div><!-- navbar-search-header -->
+    </div>
     <div class="navbar-search-body">
       <label class="tx-10 tx-medium tx-uppercase tx-spacing-1 tx-color-03 mg-b-10 d-flex align-items-center">Recent
         Searches</label>
@@ -219,6 +135,6 @@
         <li><a routerLink="oops">form elements</a></li>
         <li><a routerLink="oops">contact app</a></li>
       </ul>
-    </div><!-- navbar-search-body -->
-  </div><!-- navbar-search -->
-</header><!-- navbar -->
+    </div>
+  </div>
+</header>
