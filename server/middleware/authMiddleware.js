@@ -40,14 +40,18 @@ module.exports = async (req, res, next) => {
                         return res.json({ message: "Something went wrong with your password" });
                     result.data.password = hash;
                     result.data.wallet = 0;
+                    result.data.user_id = "USR" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
                     const newUser = new User(result.data);
                     newUser.save().then(doc => {
+                        const u = {_id:doc._id,role:doc_role};
                         jwt.sign(u, process.env.JWT_SECRET, function (err, token) {
                             if (err) {
                                 console.log(err);
                             }
                             else {
-                                req.user = doc.getPublicFields();
+                                let u = doc.toObject();
+                                delete u.password;
+                                req.user = u;
                                 res.json({ message: "User registered successfully", token })
                             }
                         });
@@ -75,13 +79,14 @@ module.exports = async (req, res, next) => {
                                     return res.json({ message: "Error while validating your token details" })
                                 }
                                 if (doc) {
-                                    req.user = payload;
-                                    res.json({ message: "You are already logged in!", user: payload });
+                                    let u = doc.toObject();
+                                    delete u.password;
+                                    req.user = u;
+                                    res.json({ message: "You are already logged in!", user: u });
                                 }else{
                                     return res.json({ message: "Error while validating your token details" })
                                 }
                             })
-
                             // next();
                         }
                     })
@@ -92,7 +97,11 @@ module.exports = async (req, res, next) => {
                 res.json({ message: "invalid token" });
             }
         } else {
+            let result = UserController.verifyLogin(req.body);
             // console.log("NO TOKEN");
+            if(!isEmpty(result.errors)){
+                return res.json(result.errors);
+            }
             if (req.body.email && req.body.password) {
                 let email = req.body.email.trim();
                 // console.log("BODY IS ",req.body);
@@ -123,6 +132,7 @@ module.exports = async (req, res, next) => {
                                     else {
                                         user = user.toObject();
                                         delete user.password;
+                                        req.user = user;
                                         res.json({ message: "Login successfull", token, user })
                                     }
                                 });
@@ -135,8 +145,8 @@ module.exports = async (req, res, next) => {
                     }
 
                 })
-                let password = req.body.password;
-                User.find({ email: email, })
+                // let password = req.body.password;
+                // User.find({ email: email, })
             }
         }
     }
@@ -164,7 +174,7 @@ module.exports = async (req, res, next) => {
                                     res.json({ message: "User does not exist" });
                                 }
                             })
-                            res.json({ user: payload });
+                            // res.json({ user: payload });
                         }
                     })
                 } else {
@@ -186,11 +196,24 @@ module.exports = async (req, res, next) => {
                 jwt.verify(req.headers.token, process.env.JWT_SECRET, (err, payload) => {
                     if (err) {
                         console.log(err);
-                        res.json({ message: "Invalid token" })
+                        return res.json({ message: "Invalid token" })
                     } else {
-                        req.user = payload;
+                        User.findById(payload._id,(e,d)=>{
+                            if(e){
+                                return res.json({message:"Error while verifying your token details"});
+                            }
+                            if(d){
+                                let u = d.toObject();
+                                delete u.password;
+                                req.user =  u;
+                                next();
+                            }else{
+                                return res.json({message:"Your token is not valid anymore"})
+                            }
+                        })
+                        // req.user = payload;
                         // res.json({ message: "You are already logged in!" , user:payload});
-                        next();
+                        // next();
                     }
                 })
                 // }else{
