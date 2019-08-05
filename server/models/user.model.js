@@ -23,7 +23,8 @@ const UserSchema = new mongoose.Schema({
       full_name: this.full_name,
       user_id: this.user_id,
       email: this.email,
-      role:this.role
+      role:this.role,
+      is_active:this.is_active
     };
     return returnObject;
 };

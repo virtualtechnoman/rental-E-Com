@@ -73,7 +73,11 @@ router.post("/", (req, res) => {
   // let user = (({ full_name, email, password, role }) => ({ full_name, email, password, role }))(req.body);
   let result = userCtrl.verifyCreate(req.body)
   if (isEmpty(result.errors)) {
-    user.user_id = "USR" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
+    User.findOne({email:result.data.email},(err,doc)=>{
+      if(err)
+      return res.status(500).json({message:})
+    })
+    result.data.user_id = "USR" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     // console.log(user);
     bcrypt.genSalt(10, function (err, salt) {
       bcrypt.hash(result.data.password, salt, function (err, hash) {
