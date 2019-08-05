@@ -12,8 +12,12 @@ module.exports = async (req, res, next) => {
             if (typeof req.headers.token == "string" && req.headers.token.trim() !== "") {
                 try {
                     payload = jwt.verify(req.headers.token, process.env.JWT_SECRET)
-                    req.user = payload;
-                    res.json({ message: "You are already logged in!" });
+                    User.findById(payload._id).exec().then(doc => {
+                        let u = doc.toObject();
+                        delete u.hashedPassword;
+                        req.user = u;
+                        res.json({ message: "You are already logged in!" });
+                    })
                 } catch (err) {
                     if (err) {
                         res.json({ message: "Invalid token" })
@@ -32,19 +36,18 @@ module.exports = async (req, res, next) => {
             }
             bcrypt.genSalt(10, function (err, salt) {
                 bcrypt.hash(result.data.password, salt, function (err, hash) {
-                    if(err)
-                    return res.json({message:"Something went wrong with your password"});
+                    if (err)
+                        return res.json({ message: "Something went wrong with your password" });
                     result.data.password = hash;
                     result.data.wallet = 0;
                     const newUser = new User(result.data);
                     newUser.save().then(doc => {
-                        const u = { _id: doc._id, role: doc.role }
-                        req.user = u;
                         jwt.sign(u, process.env.JWT_SECRET, function (err, token) {
                             if (err) {
                                 console.log(err);
                             }
                             else {
+                                req.user = doc.getPublicFields();
                                 res.json({ message: "User registered successfully", token })
                             }
                         });
@@ -67,8 +70,18 @@ module.exports = async (req, res, next) => {
                             console.log(err);
                             res.json({ message: "Invalid token" })
                         } else {
-                            req.user = payload;
-                            res.json({ message: "You are already logged in!", user: payload });
+                            User.findById(payload._id, (err, doc) => {
+                                if (err) {
+                                    return res.json({ message: "Error while validating your token details" })
+                                }
+                                if (doc) {
+                                    req.user = payload;
+                                    res.json({ message: "You are already logged in!", user: payload });
+                                }else{
+                                    return res.json({ message: "Error while validating your token details" })
+                                }
+                            })
+
                             // next();
                         }
                     })
@@ -84,7 +97,7 @@ module.exports = async (req, res, next) => {
                 let email = req.body.email.trim();
                 // console.log("BODY IS ",req.body);
                 User.findOne({ email: email }, (err, user) => {
-                    
+
                     if (err) {
                         return res.json({ message: "Error while finding the user" });
                     }
@@ -105,22 +118,22 @@ module.exports = async (req, res, next) => {
                                 jwt.sign(u, process.env.JWT_SECRET, function (err, token) {
                                     if (err) {
                                         console.log(err);
-                                        res.json({message:"Error while generating token"})
+                                        res.json({ message: "Error while generating token" })
                                     }
                                     else {
-                                      user = user.toObject();
-                                      delete user.password;
+                                        user = user.toObject();
+                                        delete user.password;
                                         res.json({ message: "Login successfull", token, user })
                                     }
                                 });
-                            }else{
+                            } else {
                                 return res.status(401).json({ message: "Invalid Credentials" });
                             }
                         });
-                    }else{
-                        res.json({message:"User not exist"});
+                    } else {
+                        res.json({ message: "User not exist" });
                     }
-                    
+
                 })
                 let password = req.body.password;
                 User.find({ email: email, })
@@ -138,17 +151,17 @@ module.exports = async (req, res, next) => {
                             res.json({ message: "Invalid token" })
                         } else {
                             req.user = payload;
-                            User.findById(req.user._id,(e,d)=>{
-                                if(e){
-                                    res.json({message:"Error while retriving user details"})
+                            User.findById(req.user._id, (e, d) => {
+                                if (e) {
+                                    res.json({ message: "Error while retriving user details" })
                                 }
-                                if(d){
+                                if (d) {
                                     d = d.toObject();
                                     delete d.password;
-                                    res.json({user:d})
+                                    res.json({ user: d })
                                 }
-                                else{
-                                    res.json({message:"User does not exist"});
+                                else {
+                                    res.json({ message: "User does not exist" });
                                 }
                             })
                             res.json({ user: payload });

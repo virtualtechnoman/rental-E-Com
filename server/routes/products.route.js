@@ -12,12 +12,15 @@ router.post('/', async (req, res) => {
     if (!isEmpty(result.errors)) {
         return res.status(400).json(result.errors);
     }
+    result.data.created_by = req.user._id;
     let productId = "P" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     result.data.product_id = productId;
     let newProduct = new Product(result.data);
     newProduct
         .save()
-        .then(product => res.json(product))
+        .then(product => {
+            product.populate("created_by").execPopulate().then(p=>res.json(p)).catch(e=>{console.log(e); res.json({message:"Error while populating the saved product"})});      
+        })
         .catch(err => {
             console.log(err)
             res.json({ message: "Error while creating new product" })
@@ -34,16 +37,16 @@ router.put("/", (req, res) => {
     const productId = req.body._id;
     if (mongodb.ObjectId.isValid(productId)) {
         delete req.body._id;
-        Product.findByIdAndUpdate(productId,req.body,{new:true},(err,doc)=>{
-            if(err)
-            return res.status(500).json({message:"Error while updating product"});
-            else{
+        Product.findByIdAndUpdate(productId, req.body, { new: true }, (err, doc) => {
+            if (err)
+                return res.status(500).json({ message: "Error while updating product" });
+            else {
                 return res.status(200).json(doc);
             }
         })
     }
-    else{
-        res.json({message:"Invalid data"});
+    else {
+        res.json({ message: "Invalid data" });
     }
 })
 
@@ -52,7 +55,7 @@ router.put("/", (req, res) => {
 // router.delete("/",(req,res)=>{
 //     if(!mongodb.ObjectId.isValid(req.body._id)){
 //         res.json({message:"invalid data"});
-        
+
 //     }
 //     else{
 //         Product.findByIdAndDelete(req.body._id,(err,doc)=>{
@@ -65,18 +68,18 @@ router.put("/", (req, res) => {
 //         })
 //     }
 // })
-router.delete("/:id",(req,res)=>{
-    if(!mongodb.ObjectId.isValid(req.params.id)){
-        res.json({message:"invalid data"});
-        
+router.delete("/:id", (req, res) => {
+    if (!mongodb.ObjectId.isValid(req.params.id)) {
+        res.json({ message: "invalid data" });
+
     }
-    else{
-        Product.findByIdAndDelete(req.params.id,(err,doc)=>{
-            if(err){
-                res.json({message:"Error while deleting the product"})
+    else {
+        Product.findByIdAndDelete(req.params.id, (err, doc) => {
+            if (err) {
+                res.json({ message: "Error while deleting the product" })
             }
-            if(doc){
-                res.json({message:"product deleted successfully!"});
+            if (doc) {
+                res.json({ message: "product deleted successfully!" });
             }
         })
     }
@@ -87,12 +90,12 @@ router.delete("/:id",(req,res)=>{
 
 // GET ALL PRODUCTS
 
-router.get("/",(req,res)=>{
-    Product.find((err,docs)=>{
-        if(err){
-            res.json({message:"Error while getting products"})
+router.get("/", (req, res) => {
+    Product.find((err, docs) => {
+        if (err) {
+            res.json({ message: "Error while getting products" })
         }
-        if(docs){
+        if (docs) {
             res.json(docs);
         }
     })
@@ -101,17 +104,17 @@ router.get("/",(req,res)=>{
 
 // GET SPECIFIC PRODUCT
 
-router.post("/",(req,res)=>{
-    if(mongodb.ObjectId.isValid(req.body._id)){
-        Product.findById(req.body._id,(err,doc)=>{
-            if(err){
-                res.json({message:"Error while getting the product"})
-            }else{
+router.post("/", (req, res) => {
+    if (mongodb.ObjectId.isValid(req.body._id)) {
+        Product.findById(req.body._id, (err, doc) => {
+            if (err) {
+                res.json({ message: "Error while getting the product" })
+            } else {
                 res.json(doc);
             }
         })
-    }else{
-        res.json({message:"invalid data"});
+    } else {
+        res.json({ message: "invalid data" });
     }
 })
 module.exports = router;

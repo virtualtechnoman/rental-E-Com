@@ -20,13 +20,26 @@ router.get('/', async (req, res) => {
 })
 
 // GET all users by role
-router.get('/role/:role', async (req, res) => {
+router.post('/role', async (req, res) => {
+  console.log(req.body.role)
+  if (mongodb.ObjectId.isValid(req.body.role)) {
     try {
-      const allUsers = await User.find({ role: req.params.role }).populate("role").exec()
-      res.json(allUsers);
+      const allUsers = await User.find({ role: req.body.role }, res => {
+        console.log(req.body.role)
+        console.log(res)
+      }).populate("role").exec()
+      if (allUsers.length > 0) {
+        res.status(200).json(allUsers)
+      } else {
+        res.json({ message: "No User Found" });
+      }
     } catch (err) {
+      console.log(err)
       res.json({ message: "Error while searching for users associated with this role" })
     }
+  } else {
+    res.json({ message: "Invalid role id" });
+  }
 })
 
 // DELETE a user
@@ -49,7 +62,7 @@ router.put('/:id', (req, res) => {
   if (mongodb.ObjectID.isValid(req.params.id)) {
     // let user = (({ full_name, email, role }) => ({ full_name, email, role }))(req.body);
     const result = userCtrl.verifyUpdate(req.body);
-    if(!isEmpty(result.errors)){
+    if (!isEmpty(result.errors)) {
       return res.json(result.errors)
     }
     User.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
@@ -73,9 +86,9 @@ router.post("/", (req, res) => {
   // let user = (({ full_name, email, password, role }) => ({ full_name, email, password, role }))(req.body);
   let result = userCtrl.verifyCreate(req.body)
   if (isEmpty(result.errors)) {
-    User.findOne({email:result.data.email},(err,doc)=>{
-      if(err)
-      return res.status(500).json({message:})
+    User.findOne({ email: result.data.email }, (err, doc) => {
+      if (err)
+        return res.status(500).json({ message: "Error while verifying the email" })
     })
     result.data.user_id = "USR" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     // console.log(user);
@@ -91,7 +104,7 @@ router.post("/", (req, res) => {
       });
     });
   }
-  else{
+  else {
     res.json(result.errors);
   }
 })

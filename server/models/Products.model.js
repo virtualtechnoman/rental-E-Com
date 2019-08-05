@@ -16,8 +16,8 @@ const ProductSchema = new Schema({
     brand: { type: String, required: true },
     // brand: { type: mongoose.Schema.Types.ObjectId, ref:'brand', required: true },
     details: { type: String, required: true },
-    created_by: { type: String, required: true },
-    // created_by: { type: mongoose.Schema.Types.ObjectId,ref:'user', required: true },
+    // created_by: { type: String, required: true },
+    created_by: { type: mongoose.Schema.Types.ObjectId,ref:'user', required: true },
     available_for: { type: String, required: true }
     // available_for: { type: mongoose.Schema.Types.ObjectId,ref:'user', required: true }
 });
