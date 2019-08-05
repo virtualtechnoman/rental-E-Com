@@ -6,6 +6,7 @@ const productRoutes = require('./products.route');
 // const therapyRoutes = require('./therapy.route');
 // const buRoutes = require('./bu.route');
 const userRoleRoutes = require('./user_roles.route');
+const authMiddleware = require("../middleware/authMiddleware");
 // const cityRoutes = require('./city.route');
 // const regionRoutes = require('./region.route');
 // const districtRoutes = require('./district.route');
@@ -22,15 +23,16 @@ const userRoleRoutes = require('./user_roles.route');
 const router = express.Router(); // eslint-disable-line new-cap
 
 /** GET /health-check - Check service health */
+
 router.get('/health-check', (req, res) =>
   res.send('OK')
 );
 
 router.use('/auth', authRoutes);
-router.use('/user', userRoutes);
+router.use('/user', authMiddleware, userRoutes);
 
 
-router.use("/category",categoryRoutes);
+router.use("/category", authMiddleware, categoryRoutes);
 // router.use('/bu', buRoutes);
 // router.use('/city', cityRoutes);
 // router.use('/company', customertypeRoutes);
@@ -42,11 +44,11 @@ router.use("/category",categoryRoutes);
 // router.use('/incentiveshare', incentiveshareRoutes);
 // router.use('/incentiveperiod', incentivePeriodRoutes);
 // router.use('/inventory', inventoryRoutes);
-router.use('/products', productRoutes);
+router.use('/products',authMiddleware, productRoutes);
 // router.use('/region', regionRoutes);
 // router.use('/sales', salesRoutes);
 // router.use('/target', targetRoutes);
 // router.use('/therapy', therapyRoutes);
-router.use('/userrole', userRoleRoutes);
+router.use('/userrole', authMiddleware, userRoleRoutes);
 
 module.exports = router;
