@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
     newProduct
         .save()
         .then(product => {
-            product.populate("created_by").execPopulate().then(p=>res.json(p)).catch(e=>{console.log(e); res.json({message:"Error while populating the saved product"})});      
+            product.populate("created_by").execPopulate().then(p => res.json(p)).catch(e => { console.log(e); res.json({ message: "Error while populating the saved product" }) });
         })
         .catch(err => {
             console.log(err)
@@ -29,15 +29,13 @@ router.post('/', async (req, res) => {
 );
 
 //UPDATE A PRODUCT
-router.put("/", (req, res) => {
-    let result = productCtrl.verifyUpdate(req.body);
-    if (!isEmpty(result.errors)) {
-        return res.status(400).json(result.errors);
-    }
-    const productId = req.body._id;
-    if (mongodb.ObjectId.isValid(productId)) {
-        delete req.body._id;
-        Product.findByIdAndUpdate(productId, req.body, { new: true }, (err, doc) => {
+router.put("/:id", (req, res) => {
+    if (mongodb.ObjectId.isValid(req.params.id)) {
+        let result = productCtrl.verifyUpdate(req.body);
+        if (!isEmpty(result.errors)) {
+            return res.status(400).json(result.errors);
+        }
+        Product.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
             if (err)
                 return res.status(500).json({ message: "Error while updating product" });
             else {
@@ -91,28 +89,24 @@ router.delete("/:id", (req, res) => {
 // GET ALL PRODUCTS
 
 router.get("/", (req, res) => {
-    Product.find((err, docs) => {
-        if (err) {
-            res.json({ message: "Error while getting products" })
-        }
-        if (docs) {
-            res.json(docs);
-        }
+    Product.find().populate("created_by").exec().then(docs=>{
+        res.json(docs);
+    }).catch(err=> {
+        res.json({ message: "Error while getting products" })
     })
 })
 
 
 // GET SPECIFIC PRODUCT
 
-router.post("/", (req, res) => {
-    if (mongodb.ObjectId.isValid(req.body._id)) {
-        Product.findById(req.body._id, (err, doc) => {
-            if (err) {
-                res.json({ message: "Error while getting the product" })
-            } else {
+router.get("/:id", (req, res) => {
+    if (mongodb.ObjectId.isValid(req.params.id)) {
+        console.log(req.params.id);
+        Product.findById(req.params.id).populate("created_by").exec().then(doc=>{
                 res.json(doc);
-            }
-        })
+        }).catch(e=>
+                res.json({ message: "Error while getting the product" })
+            )
     } else {
         res.json({ message: "invalid data" });
     }

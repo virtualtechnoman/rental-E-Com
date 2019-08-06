@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userRole = require('../models/userRole.model');
-const userroleCtrl = require('.././controllers/userrole.controller');
+const UserRoleController = require('.././controllers/userrole.controller');
 const isEmpty = require('../utils/is-empty');
 const mongodb = require('mongoose').Types;
 
@@ -13,21 +13,25 @@ const mongodb = require('mongoose').Types;
 //GET ALL ROLES
 router.get("/", (req, res) => {
     userRole.find().exec().then(data => {
-        res.status(200).json(data);
+        res.status(200).json({status:200,message:"All users", errors:false,data});
     }).catch(err => {
         console.log(err);
-        res.status(500).json({ message: "Error while fetching the user roles" });
+        res.status(500).json({ status:500, data:null, errors:true, message: "Error while fetching the user roles" });
     })
 })
 
 
 //ADD New Role
 router.post('/', (req, res) => {
-    let user_role = new userRole(req.body);
-    user_role
-        .save()
-        .then(user => res.status(200).json(user))
-        .catch(err => console.log(err));
+    let result = UserRoleController.verifyCreate(req.body);
+    if (!isEmpty(result.errors)) {
+        return res.status(200).json({ status: 200, message:"Fields required", errors: result.errors, data: null })
+    }
+    let role = new userRole(result.data);
+    role.save().then(Role => res.status(200).json({ status: 200, message:"Role added successfully", errors: false, data: Role })).catch(err => {
+        console.log(err)
+        res.json({ status: 500, message:"Error while adding role", errors: true, data: null })
+    });
 }
 );
 
@@ -36,18 +40,18 @@ router.post('/', (req, res) => {
 router.put("/", (req, res) => {
     if (mongodb.ObjectId.isValid(req.body.id)) {
         let role = (({ name }) => ({ name }))(req.body);
-        userRole.findByIdAndUpdate(req.body.id, role,{new:true} ,(err, doc) => {
+        userRole.findByIdAndUpdate(req.body.id, role, { new: true }, (err, doc) => {
             if (err) {
                 console.log(err);
-                res.status(500).json({ message: "Error while updating the role" })
+                res.status(500).json({status:500,errors:true, data:null, message: "Error while updating the role" })
             }
             if (doc) {
-                res.status(200).json(doc)
+                res.status(200).json({status:200,errors:false, data:doc, message: "Role updated successfully" })
             }
         })
     }
     else {
-        res.json({ message: "Invalid data" })
+        res.json({status:400, message: "Invalid role id",errors:false, data:null })
     }
 })
 
@@ -56,12 +60,12 @@ router.delete("/", (req, res) => {
     if (mongodb.ObjectId.isValid(req.body.id)) {
         userRole.deleteOne({ _id: req.body.id }, (err, doc) => {
             if (err)
-                res.json({ message: "Error while deleting the role" })
+                res.json({ status:500, errors:true, data:null, message: "Error while deleting the role" })
             if (doc)
                 res.json(doc);
         })
     } else {
-        res.json({ message: "Invalid data" });
+        res.json({ status:400, errors:false, data:null, message: "Invalid data" });
     }
 })
 

@@ -5,6 +5,8 @@ const categoryRoutes = require("./category.route");
 const productRoutes = require('./products.route');
 // const therapyRoutes = require('./therapy.route');
 // const buRoutes = require('./bu.route');
+const orderRoutes = require("./order.route");
+const returnOrderRoutes = require("./return.order.route");
 const userRoleRoutes = require('./user_roles.route');
 const authMiddleware = require("../middleware/authMiddleware");
 // const cityRoutes = require('./city.route');
@@ -30,8 +32,8 @@ router.get('/health-check', (req, res) =>
 
 router.use('/auth', authRoutes);
 router.use('/user', authMiddleware, userRoutes);
-
-
+router.use("/order",authMiddleware,orderRoutes);
+router.use("/rorder",authMiddleware,returnOrderRoutes);
 router.use("/category", authMiddleware, categoryRoutes);
 // router.use('/bu', buRoutes);
 // router.use('/city', cityRoutes);
@@ -49,6 +51,6 @@ router.use('/products',authMiddleware, productRoutes);
 // router.use('/sales', salesRoutes);
 // router.use('/target', targetRoutes);
 // router.use('/therapy', therapyRoutes);
-router.use('/userrole', authMiddleware, userRoleRoutes);
+router.use('/role',  userRoleRoutes);
 
 module.exports = router;

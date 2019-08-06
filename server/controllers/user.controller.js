@@ -7,7 +7,7 @@ const userSchema = Joi.object({
   password: Joi.string().required(),
   email:Joi.string().email().required(),
   role:Joi.string().required(),
-  mobile_number:Joi.string().required(),
+  // mobile_number:Joi.string().required(),
   is_active:Joi.boolean().required()
   // repeatPassword: Joi.string().required().valid(Joi.ref('password')),
 })
@@ -24,13 +24,19 @@ const userRegisterSchema = Joi.object({
   role:Joi.string().required()
 })
 
+const userLoginSchema = Joi.object({
+  password: Joi.string().required(),
+  email:Joi.string().email().required()
+})
 module.exports = {
   verifyCreate:verifyCreate,
   verifyUpdate:verifyUpdate,
-  verifyRegister:verifyRegister
+  verifyRegister:verifyRegister,
+  verifyLogin:verifyLogin
 }
 
 function verifyCreate(user) { return helper.validator(user, userSchema) }
 function verifyUpdate(user) { return helper.validator(user, userUpdateSchema) }
 function verifyRegister(user) { return helper.validator(user, userRegisterSchema) }
+function verifyLogin(user) { return helper.validator(user, userLoginSchema) }
 
