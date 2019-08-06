@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { ProductModel } from '../../products/shared/product.model';
 import { AuthService } from '../../../auth/auth.service';
 import { ProductsService } from '../../products/shared/products.service';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
+import { OrderService } from '../shared/order.service';
+import { OrderModel } from '../shared/order.model';
+import { ResponseModel } from '../../../shared/shared.model';
+import { UserService } from '../../user/shared/user-service.service';
 
 @Component({
   selector: 'app-order',
@@ -29,9 +33,11 @@ export class OrderComponent implements OnInit {
   uploading: boolean = false;
   submitted: boolean = false;
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
-    private authService: AuthService
+    private authService: AuthService, private orderService: OrderService, private userService: UserService
   ) {
     this.initForm();
+    this.getOrders();
+    this.getUsers();
   }
 
   ngOnInit() {
@@ -63,8 +69,6 @@ export class OrderComponent implements OnInit {
 
   submit() {
     this.submitted = true;
-    this.orderForm.get('image').setValue("ASD");
-    this.orderForm.get('created_by').setValue("ASD");
     console.log(this.orderForm.value)
     if (this.orderForm.invalid) {
       return;
@@ -72,18 +76,23 @@ export class OrderComponent implements OnInit {
     this.currentOrder = this.orderForm.value;
     console.log(this.currentOrder)
     if (this.editing) {
-      this.updateProduct(this.currentOrder)
+      this.updateOrder(this.currentOrder)
     } else {
-      this.addProduct(this.orderForm.value);
+      this.addOrder(this.orderForm.value);
     }
   }
 
-  addProduct(product) {
-    this.productService.addProduct(product).subscribe(res => {
-      jQuery("#modal3").modal("hide");
-      this.toastr.success('Product Added!', 'Success!');
-      this.allproducts.push(res);
-      this.resetForm();
+  addOrder(order) {
+    this.orderService.addOrder(order).subscribe((res: ResponseModel) => {
+      if (res.error) {
+        this.toastr.warning("Error", res.error)
+      } else {
+        console.log(res)
+        jQuery("#modal3").modal("hide");
+        this.toastr.success('Order Added!', 'Success!');
+        this.allOrders.push(res.data);
+        this.resetForm();
+      }
     })
   }
 
@@ -95,11 +104,11 @@ export class OrderComponent implements OnInit {
     this.setFormValue();
   }
 
-  deleteProduct(i) {
-    if (confirm("You Sure you want to delete this Product")) {
-      this.productService.deleteProduct(this.allproducts[i]._id).toPromise().then(() => {
+  deleteOrder(i) {
+    if (confirm("You Sure you want to delete this Order")) {
+      this.orderService.deleteOrder(this.allOrders[i]._id).toPromise().then(() => {
         this.toastr.warning('Products Deleted!', 'Deleted!');
-        this.allproducts.splice(i, 1)
+        this.allOrders.splice(i, 1)
       }).catch((err) => console.log(err))
     }
   }
@@ -113,16 +122,43 @@ export class OrderComponent implements OnInit {
     })
   }
 
+  getUsers() {
+    this.allUsers.length = 0;
+    this.userService.getAllUsers().subscribe((res: ResponseModel) => {
+      console.log(res)
+      if (res.error) {
+        this.toastr.warning('Error', res.error)
+      } else {
+        this.allUsers = res.data;
+        console.log(this.allUsers)
+      }
+    })
+  }
 
-  updateProduct(product) {
-    let id = this.allproducts[this.currentIndex]._id;
-    product._id = id;
-    console.log(product);
-    this.productService.updateProduct(product).subscribe(res => {
+  getOrders() {
+    this.allOrders.length = 0;
+    this.orderService.getAllOrders().subscribe((res: ResponseModel) => {
+      console.log(res)
+      if (res.error) {
+        this.toastr.warning('Error', res.error)
+      } else {
+        this.allOrders = res.data;
+        console.log(this.allOrders)
+        this.dtTrigger.next();
+      }
+    })
+  }
+
+
+  updateOrder(order) {
+    let id = this.allOrders[this.currentIndex]._id;
+    order._id = id;
+    console.log(order);
+    this.orderService.updateOrder(order).subscribe(res => {
       jQuery("#modal3").modal("hide");
-      this.toastr.info('Product Updated Successfully!', 'Updated!!');
+      this.toastr.info('Order Updated Successfully!', 'Updated!!');
       this.resetForm();
-      this.allproducts.splice(this.currentIndex, 1, res)
+      this.allOrders.splice(this.currentIndex, 1, res)
       this.currentOrderId = null;
       this.editing = false;
     })
@@ -130,35 +166,37 @@ export class OrderComponent implements OnInit {
 
   initForm() {
     this.orderForm = this.formBuilder.group({
-      available_for: ['', Validators.required],
-      brand: ['', Validators.required],
-      category: ['', Validators.required],
-      created_by: ['No Value', Validators.required],
-      details: [''],
-      farm_price: ['', [Validators.required, Validators.pattern("^[0-9]*$"), Validators.minLength(1)]],
-      image: ['No Value', Validators.required],
-      is_active: [true],
-      name: ['', Validators.required],
-      product_id: ['', Validators.required],
-      product_dms: ['', Validators.required],
-      selling_price: ['', [Validators.required, Validators.pattern("^[0-9]*$"), Validators.minLength(1)]],
+      placed_by: ['', Validators],
+      placed_to: ['', Validators.required],
+      products: this.formBuilder.array([this.initItemRows()])
     })
   }
 
   setFormValue() {
     var product = this.allproducts[this.currentIndex];
-    this.orderForm.controls['available_for'].setValue(product.available_for);
-    this.orderForm.controls['brand'].setValue(product.brand);
-    this.orderForm.controls['category'].setValue(product.category);
-    this.orderForm.controls['created_by'].setValue(product.created_by);
-    this.orderForm.controls['details'].setValue(product.details);
-    this.orderForm.controls['farm_price'].setValue(product.farm_price);
-    this.orderForm.controls['image'].setValue(product.image);
-    this.orderForm.controls['is_active'].setValue(product.is_active);
-    this.orderForm.controls['name'].setValue(product.name);
-    this.orderForm.controls['product_id'].setValue(product.product_id);
-    this.orderForm.controls['product_dms'].setValue(product.product_dms);
-    this.orderForm.controls['selling_price'].setValue(product.selling_price);
+    this.orderForm.controls['placed_by'].setValue(product.placed_by);
+    this.orderForm.controls['placed_to'].setValue(product.placed_to);
+    this.orderForm.controls['products'].setValue(product.products);
+  }
+
+  get formArr() {
+    return this.orderForm.get('products') as FormArray;
+  }
+
+  initItemRows() {
+    return this.formBuilder.group({
+      product: [''],
+      quantity: [''],
+      // value: ['']
+    });
+  }
+
+  addPeriod() {
+    this.formArr.push(this.initItemRows())
+  }
+
+  removePeriod(i) {
+    this.formArr.removeAt(i);
   }
 
   public uploadCSV(files: FileList) {

@@ -8,6 +8,7 @@ import { UserRoleService } from './shared/userrole.service';
 import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 import { ActivatedRoute } from '@angular/router';
+import { ResponseModel } from '../../shared/shared.model';
 
 @Component({
   selector: 'app-user',
@@ -43,9 +44,13 @@ export class UserComponent implements OnInit {
   constructor(private userService: UserService, private formBuilder: FormBuilder,
     private UserroleService: UserRoleService, private toastr: ToastrService, private activatedRoute: ActivatedRoute) {
     this.initForm();
-    this.userService.getAllUsers().subscribe((res: UserModel[]) => {
-      console.log(res)
-      this.allUsers = res;
+    this.userService.getAllUsers().subscribe((res: ResponseModel) => {
+      if (res.error) {
+        this.toastr.warning('No Data Available', res.error)
+      } else {
+        console.log(res)
+        this.allUsers = res.data;
+      }
     })
   }
 
@@ -165,11 +170,11 @@ export class UserComponent implements OnInit {
 
   getUserbyRole() {
     console.log(this.selectedUserRole)
-    this.userService.getUserByRole(this.selectedUserRole._id).subscribe((res: any) => {
-      if (res.message) {
-        this.toastr.warning('No Data Available', res.message)
+    this.userService.getUserByRole(this.selectedUserRole._id).subscribe((res: ResponseModel) => {
+      if (res.error) {
+        this.toastr.warning('No Data Available', res.error)
       } else {
-        this.allUsers = res;
+        this.allUsers = res.data;
         console.log(res)
         console.log("Data from client to server", this.allUsers);
         this.dtTrigger.next();

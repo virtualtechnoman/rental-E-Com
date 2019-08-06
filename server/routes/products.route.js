@@ -92,7 +92,7 @@ router.get("/", (req, res) => {
     Product.find().populate("created_by").exec().then(docs=>{
         res.json(docs);
     }).catch(err=> {
-        res.json({ message: "Error while getting products" })
+        res.json({ message: "Error while getting products", error:err })
     })
 })
 

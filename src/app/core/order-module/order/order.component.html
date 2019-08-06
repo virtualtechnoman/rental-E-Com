@@ -12,32 +12,27 @@
         [dtTrigger]="dtTrigger">
         <thead>
           <tr>
-            <th scope="col">Product ID</th>
-            <th scope="col">Product Name</th>
-            <th scope="col">Category</th>
-            <th scope="col">Brand</th>
-            <th scope="col">Farm Price</th>
-            <th scope="col">Price</th>
-            <th scope="col">Created by</th>
-            <th scope="col">Status</th>
+            <th scope="col">S.no</th>
+            <th scope="col">Order No.</th>
+            <th scope="col">Order Date</th>
+            <th scope="col">Order To</th>
+            <!-- <th scope="col">Manager</th> -->
+            <th scope="col">Order By</th>
+            <!-- <th scope="col">Order by Manager</th> -->
             <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let product of allproducts; let i = index">
-            <td>{{product.product_id | uppercase}}</td>
-            <td>{{product.name | titlecase}}</td>
-            <td>{{product.category | titlecase}}</td>
-            <td>{{product.brand | titlecase}}</td>
-            <td>{{product.farm_price}}</td>
-            <td>{{product.selling_price }}</td>
-            <td>{{product.created_by }}</td>
-            <td *ngIf="product.is_active">Active</td>
-            <td *ngIf="!product.is_active">InActive</td>
+          <tr *ngFor="let order of allOrders; let i = index">
+            <td>{{i+1}}</td>
+            <td>{{order.order_id | uppercase}}</td>
+            <td>{{order.order_date | date:'dd/MM/yy'}}</td>
+            <td>{{order.placed_to | titlecase}}</td>
+            <td>{{product.placed_by}}</td>
             <td>
-              <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editProduct(i)"><i
+              <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editOrder(i)"><i
                   class="fas fa-edit mx-2"></i></a>
-              <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteProduct(i)"></i></a>
+              <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteOrder(i)"></i></a>
             </td>
           </tr>
         </tbody>
@@ -50,111 +45,64 @@
   <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header text-center">
-        <h6 class="modal-title" *ngIf="editing">Edit Product</h6>
-        <h6 class="modal-title  h4" *ngIf="!editing">Add New Product Product</h6>
+        <h6 class="modal-title" *ngIf="editing">Edit Order</h6>
+        <h6 class="modal-title  h4" *ngIf="!editing">Add New Order</h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="productForm" (ngSubmit)="submit()">
+        <form [formGroup]="orderForm" (ngSubmit)="submit()">
+          <div class="divider-text">Select Organisation to Send Order </div>
           <div class="form-row">
             <div class="form-group col-md-4">
-              <label for="inputEmail4">Product ID</label>
-              <input type="text" class="form-control" placeholder="Product ID here " formControlName="product_id"
-                required [ngClass]="{ 'is-invalid': submitted && f.product_id.errors }">
-              <div *ngIf="submitted && f.product_id.errors" class="invalid-feedback">
-                <div *ngIf="f.product_id.errors.required">Product ID is required</div>
-              </div>
-            </div>
-            <div class="form-group col-md-4">
-              <label for="inputEmail4">Brand</label>
-              <input type="text" class="form-control" placeholder="Brand here " formControlName="brand" required
-                [ngClass]="{ 'is-invalid': submitted && f.brand.errors }">
-              <div *ngIf="submitted && f.brand.errors" class="invalid-feedback">
-                <div *ngIf="f.brand.errors.required">Brand is required</div>
-              </div>
-            </div>
-            <div class="form-group col-md-4">
-              <label for="inputEmail4">Product Name</label>
-              <input type="text" class="form-control" placeholder="Product Name Here" formControlName="name" required
-                [ngClass]="{ 'is-invalid': submitted && f.name.errors }">
-              <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
-                <div *ngIf="f.name.errors.required">Product Name is required</div>
+              <label for="inputEmail4">Order To</label>
+              <select name="user" formControlName="placed_to" class="form-control">
+                <option value="" [selected]>Select User</option>
+                <option [ngValue]="user._id" *ngFor="let user of allUsers">{{user.full_name}}</option>
+              </select>
+              <div *ngIf="submitted && f.placed_to.errors" class="invalid-feedback">
+                <div *ngIf="f.placed_to.errors.required">Placed is required</div>
               </div>
             </div>
           </div>
+          <div class="divider-text">Select And Add Products </div>
           <div class="form-row">
-            <div class="form-group col-md-4">
-              <label for="inputEmail4">Category</label>
-              <input type="text" class="form-control" placeholder="Category here " formControlName="category" required
-                [ngClass]="{ 'is-invalid': submitted && f.category.errors }">
-              <div *ngIf="submitted && f.category.errors" class="invalid-feedback">
-                <div *ngIf="f.category.errors.required">Category is required</div>
+            <div class="col-md-8">
+              <div formArrayName="products">
+                <div *ngFor=" let product of orderForm.get('products')['controls']; let i = index" [formGroupName]="i">
+                  <div class="form-row">
+                    <div class="col-md-4">
+                      <div>
+                        <label for="period">Product</label>
+                        <select name="product" formControlName="product" class="form-control">
+                          <option value="" [selected]>Select Product</option>
+                          <option [ngValue]="product._id" *ngFor="let product of allproducts">{{product.name}}</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div>
+                        <label for="period">Quantity</label>
+                        <input type="text" name="from" id="from" class="form-control" formControlName="quantity">
+                      </div>
+                    </div>
+                    <div class="col-md-1">
+                      <label for="period">Remove</label>
+                      <button class="form-control" (click)="removePeriod(i)">-</button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="form-group col-md-4">
-              <label for="inputPassword4">Farm Price</label>
-              <input type="text" class="form-control" id="inputPassword4" placeholder="Farm Price here"
-                formControlName="farm_price" required [ngClass]="{ 'is-invalid': submitted && f.farm_price.errors }">
-              <div *ngIf="submitted && f.farm_price.errors" class="invalid-feedback">
-                <div *ngIf="f.farm_price.errors.required">Farm Price is required</div>
-              </div>
-              <div class="invalid-feedback" *ngIf="f.farm_price.errors && (f.farm_price.dirty || f.farm_price.touched)">
-                <p *ngIf="f.farm_price.errors.pattern" class="text-danger">Number Only</p>
-              </div>
-            </div>
-            <div class="form-group col-md-4">
-              <label for="inputEmail4">Selling Price</label>
-              <input type="text" class="form-control" placeholder="Selling Price here" formControlName="selling_price"
-                required [ngClass]="{ 'is-invalid': submitted && f.selling_price.errors }">
-              <div *ngIf="submitted && f.selling_price.errors" class="invalid-feedback">
-                <div *ngIf="f.selling_price.errors.required">Selling Price is required</div>
-              </div>
-              <div class="invalid-feedback"
-                *ngIf="f.selling_price.errors && (f.selling_price.dirty || f.selling_price.touched)">
-                <p *ngIf="f.selling_price.errors.pattern" class="text-danger">Number Only</p>
-              </div>
+            <div class="col-md-4">
+              <button class="btn btn-success" (click)="addPeriod()">Add New Product</button>
             </div>
           </div>
           <div class="form-row">
-            <div class="form-group col-md-4">
-              <label for="inputEmail4">Available for</label>
-              <input type="text" class="form-control" placeholder="Available here " formControlName="available_for"
-                required [ngClass]="{ 'is-invalid': submitted && f.available_for.errors }">
-              <div *ngIf="submitted && f.available_for.errors" class="invalid-feedback">
-                <div *ngIf="f.available_for.errors.required">Available for is required</div>
-              </div>
-            </div>
-            <div class="form-group col-md-4">
-              <label for="inputPassword4">Product DMS</label>
-              <input type="text" class="form-control" id="inputPassword4" placeholder="Product DMS here"
-                formControlName="product_dms" required [ngClass]="{ 'is-invalid': submitted && f.product_dms.errors }">
-              <div *ngIf="submitted && f.product_dms.errors" class="invalid-feedback">
-                <div *ngIf="f.product_dms.errors.required">Product DMS is required</div>
-              </div>
-            </div>
-            <div class="form-group col-md-4">
-              <label for="inputPassword4">Extra Details</label>
-              <input type="text" class="form-control" id="inputPassword4" placeholder="Any Extra Detail here"
-                formControlName="details" required [ngClass]="{ 'is-invalid': submitted && f.details.errors }">
-              <div *ngIf="submitted && f.details.errors" class="invalid-feedback">
-                <div *ngIf="f.details.errors.required">Details is required</div>
-              </div>
-            </div>
+            <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+            <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
           </div>
-          <div class="form-row">
-            <div class="form-group col-md-2 text-center">
-              <label for="inputPassword4">Active</label>
-              <p-inputSwitch class="form-control" formControlName="is_active" required
-                [ngClass]="{ 'is-invalid': submitted && f.is_active.errors }"></p-inputSwitch>
-              <div *ngIf="submitted && f.is_active.errors" class="invalid-feedback">
-                <div *ngIf="f.is_active.errors.required">Is Active is required</div>
-              </div>
-            </div>
-          </div>
-          <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-          <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
         </form>
       </div>
     </div>

@@ -32,8 +32,8 @@ router.get('/health-check', (req, res) =>
 
 router.use('/auth', authRoutes);
 router.use('/user', authMiddleware, userRoutes);
-router.use("/order",authMiddleware,orderRoutes);
-router.use("/rorder",authMiddleware,returnOrderRoutes);
+router.use("/order", authMiddleware, orderRoutes);
+router.use("/rorder", authMiddleware, returnOrderRoutes);
 router.use("/category", authMiddleware, categoryRoutes);
 // router.use('/bu', buRoutes);
 // router.use('/city', cityRoutes);
@@ -46,11 +46,11 @@ router.use("/category", authMiddleware, categoryRoutes);
 // router.use('/incentiveshare', incentiveshareRoutes);
 // router.use('/incentiveperiod', incentivePeriodRoutes);
 // router.use('/inventory', inventoryRoutes);
-router.use('/products',authMiddleware, productRoutes);
+router.use('/products', authMiddleware, productRoutes);
 // router.use('/region', regionRoutes);
 // router.use('/sales', salesRoutes);
 // router.use('/target', targetRoutes);
 // router.use('/therapy', therapyRoutes);
-router.use('/role',  userRoleRoutes);
+router.use('/role', userRoleRoutes);
 
 module.exports = router;

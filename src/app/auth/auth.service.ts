@@ -50,7 +50,7 @@ export class AuthService {
     // if (user) user.isAdmin = (user.position.indexOf('admin') > -1);
     this.$userSource.next(user);
     this.user = user;
-      (<any>window).user = user;
+    (<any>window).user = user;
   }
 
   getUser(): Observable<any> {
