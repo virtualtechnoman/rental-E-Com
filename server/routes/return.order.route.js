@@ -17,7 +17,7 @@ router.get("/:id",(req,res)=>{
             res.status(500).json({status:500,errors:true,data:null,message:"Error while getting the order"});
         })
     }else{
-        res.status(400).json({status:400,errors:false,data:null,message:"Invalid order id"});
+        res.status(400).json({status:400,errors:true,data:null,message:"Invalid order id"});
     }
 })
 
