@@ -4,7 +4,7 @@
   "newProjectRoot": "projects",
   "projects": {
     "angular-material": {
-      "root": "",
+      "root": "e2e",
       "sourceRoot": "src",
       "projectType": "application",
       "architect": {

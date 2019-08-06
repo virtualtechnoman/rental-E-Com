@@ -21,6 +21,7 @@ export class AuthService {
         email,
         password
       }).subscribe((data: any) => {
+        console.log(data)
         observer.next({ user: data.user });
         this.setUser(data.user);
         this.token.saveToken(data.token);

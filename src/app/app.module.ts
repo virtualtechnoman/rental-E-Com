@@ -25,6 +25,7 @@ import { ToastrService, ToastrModule } from 'ngx-toastr';
 import { UserModule } from './core/user/user.module';
 import { CoreComponent } from './core/core.component';
 import { ProductsModule } from './core/products/products.module';
+import { OrderModuleModule } from './core/order-module/order-module.module';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,7 @@ import { ProductsModule } from './core/products/products.module';
     SharedModule,
 
     ProductsModule,
-    
+    OrderModuleModule,
     // core Modules
     UserModule,
     // ngPrime
