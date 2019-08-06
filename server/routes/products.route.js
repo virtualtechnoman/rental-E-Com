@@ -62,6 +62,7 @@ router.get("/page/:page?",(req,res)=>{
     Product.find().limit(limit).skip(limit * page).sort(srt)
         .exec(function (err, products) {
             if(err){
+                console.log(err);
                 return res.status(500).json({status:500,data:null,errors:true,message:"Error while getting orders"})
             }
             res.json({status:200,data:products,errors:false,message:"Products"});
@@ -102,19 +103,19 @@ router.get("/", (req, res) => {
 
 // GET SPECIFIC PRODUCT
 
-router.get("/:id", (req, res) => {
-    if (mongodb.ObjectId.isValid(req.params.id)) {
-        console.log(req.params.id);
-        Product.findById(req.params.id).populate("created_by").exec().then(doc=>{
-                res.json(doc);
-        }).catch(e=>
-                res.json({ message: "Error while getting the product" })
-            )
-    } else {
-        res.json({ message: "invalid data" });
-    }
-})
-module.exports = router;
+// router.get("/:id", (req, res) => {
+//     if (mongodb.ObjectId.isValid(req.params.id)) {
+//         console.log(req.params.id);
+//         Product.findById(req.params.id).populate("created_by").exec().then(doc=>{
+//                 res.json(doc);
+//         }).catch(e=>
+//                 res.json({ message: "Error while getting the product" })
+//             )
+//     } else {
+//         res.json({ message: "invalid data" });
+//     }
+// })
+// module.exports = router;
 
 // // @route   PUT api/users/update/:id
 // // @desc    Return current user
