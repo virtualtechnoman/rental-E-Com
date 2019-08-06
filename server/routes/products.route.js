@@ -10,7 +10,7 @@ const moment = require('moment');
 router.post('/', async (req, res) => {
     let result = productCtrl.verifyCreate(req.body);
     if (!isEmpty(result.errors)) {
-        return res.status(400).json(result.errors);
+        return res.status(400).json({status:400,data:null,errors:result.errors,message:"Fields Required"});
     }
     result.data.created_by = req.user._id;
     let productId = "P" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
@@ -19,11 +19,12 @@ router.post('/', async (req, res) => {
     newProduct
         .save()
         .then(product => {
-            product.populate("created_by").execPopulate().then(p => res.json(p)).catch(e => { console.log(e); res.json({ message: "Error while populating the saved product" }) });
+            product.populate("created_by").execPopulate().then(p => res.json({status:200,data:p,errors:false, message: "Product added successfully" }))
+            .catch(e => { console.log(e); res.json({status:500,data:null,errors:true, message: "Error while populating the saved product" }) });
         })
         .catch(err => {
             console.log(err)
-            res.json({ message: "Error while creating new product" })
+            res.json({status:500,data:null,errors:true, message: "Error while creating new product" })
         });
 }
 );
@@ -33,51 +34,53 @@ router.put("/:id", (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         let result = productCtrl.verifyUpdate(req.body);
         if (!isEmpty(result.errors)) {
-            return res.status(400).json(result.errors);
+            return res.status(400).json({status:400,data:null,errors:result.errors, message: "Fields Required" });
         }
         Product.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
             if (err)
-                return res.status(500).json({ message: "Error while updating product" });
+                return res.status(500).json({status:500,data:null,errors:true, message: "Error while updating product" });
             else {
-                return res.status(200).json(doc);
+                return res.status(200).json({status:200,data:doc,errors:false,message:"Product Updated Successfully"});
             }
         })
     }
     else {
-        res.json({ message: "Invalid data" });
+        res.json({status:200,data:null,errors:true, message: "Invalid data" });
     }
+})
+
+
+//GET products for pagination
+router.get("/page/:page?",(req,res)=>{
+    let page = req.params.page || 0;
+    let limit = req.query.limit || 10;
+    limit = Number(limit);
+    let orderby = req.query.orderby || "name";
+    let order = req.query.order || 'asc';
+    let srt = {};
+    srt[orderby] = order;
+    Product.find().limit(limit).skip(limit * page).sort(srt)
+        .exec(function (err, products) {
+            if(err){
+                return res.status(500).json({status:500,data:null,errors:true,message:"Error while getting orders"})
+            }
+            res.json({status:200,data:products,errors:false,message:"Products"});
+        })
 })
 
 //DELETE A PRODUCT
 
-// router.delete("/",(req,res)=>{
-//     if(!mongodb.ObjectId.isValid(req.body._id)){
-//         res.json({message:"invalid data"});
-
-//     }
-//     else{
-//         Product.findByIdAndDelete(req.body._id,(err,doc)=>{
-//             if(err){
-//                 res.json({message:"Error while deleting the product"})
-//             }
-//             if(doc){
-//                 res.json({message:"product deleted successfully!"});
-//             }
-//         })
-//     }
-// })
 router.delete("/:id", (req, res) => {
     if (!mongodb.ObjectId.isValid(req.params.id)) {
-        res.json({ message: "invalid data" });
-
+        res.status(400).json({status:400,data:null,errors:true, message: "Invalid product id" });
     }
     else {
         Product.findByIdAndDelete(req.params.id, (err, doc) => {
             if (err) {
-                res.json({ message: "Error while deleting the product" })
+                return res.status(500).json({ status:500,data:null,errors:true,message: "Error while deleting the product" })
             }
             if (doc) {
-                res.json({ message: "product deleted successfully!" });
+                res.json({ status:200,data:doc,errors:false,message: "Product deleted successfully!" });
             }
         })
     }

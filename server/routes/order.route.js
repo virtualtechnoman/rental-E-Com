@@ -15,11 +15,16 @@ router.get("/",(req,res)=>{
     });
 })
 
+//GET orders for pagination
+//filters ====>
+// router.get("/page/:page",(req,res)=>{
+
+// })
 // Create an order
 router.post("/",(req,res)=>{
     let result = OrderController.verifyCreate(req.body);
     if(!isEmpty(result.errors))
-    return res.json({status:400,errors:result.errors,data:null,message:"Fields required"});
+    return res.status(400).json({status:400,errors:result.errors,data:null,message:"Fields required"});
     result.data.placed_by = req.user._id;
     result.data.order_id = "ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newOrder = new Order(result.data);
@@ -55,7 +60,7 @@ router.post("/",(req,res)=>{
 // })
 
 //GET specific order
-router.get("/:id",(req,res)=>{
+router.get("/id/:id",(req,res)=>{
     if(mongodb.ObjectID.isValid(req.params.id)){
         Order.findById(req.params.id).populate("placed_by products.product").exec().then(doc=>{
             if(doc)
@@ -66,7 +71,7 @@ router.get("/:id",(req,res)=>{
             res.status(500).json({status:500,errors:true,data:null,message:"Error while getting the order"});
         })
     }else{
-        res.status(400).json({status:400,errors:false,data:null,message:"Invalid order id"});
+        res.status(400).json({status:400,errors:true,data:null,message:"Invalid order id"});
     }
 })
 
