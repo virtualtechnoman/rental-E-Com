@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const User = require("../models/user.model");
 const isEmpty = require("../utils/is-empty");
 const UserController = require("../controllers/user.controller")
+const moment = require("moment");
 
 module.exports = async (req, res, next) => {
     let payload;
@@ -12,9 +13,9 @@ module.exports = async (req, res, next) => {
             if (typeof req.headers.token == "string" && req.headers.token.trim() !== "") {
                 try {
                     payload = jwt.verify(req.headers.token, process.env.JWT_SECRET)
-                    User.findById(payload._id).exec().then(doc => {
+                    User.findById(payload._id,"-password").populate("role").exec().then(doc => {
                         let u = doc.toObject();
-                        delete u.hashedPassword;
+                        // delete u.hashedPassword;
                         req.user = u;
                         res.json({ message: "You are already logged in!" });
                     })
@@ -34,33 +35,45 @@ module.exports = async (req, res, next) => {
                 console.log("HAS ERRORS");
                 return res.json(result.errors);
             }
-            bcrypt.genSalt(10, function (err, salt) {
-                bcrypt.hash(result.data.password, salt, function (err, hash) {
-                    if (err)
-                        return res.json({ message: "Something went wrong with your password" });
-                    result.data.password = hash;
-                    result.data.wallet = 0;
-                    result.data.user_id = "USR" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
-                    const newUser = new User(result.data);
-                    newUser.save().then(doc => {
-                        const u = {_id:doc._id,role:doc_role};
-                        jwt.sign(u, process.env.JWT_SECRET, function (err, token) {
-                            if (err) {
-                                console.log(err);
-                            }
-                            else {
-                                let u = doc.toObject();
-                                delete u.password;
-                                req.user = u;
-                                res.json({ message: "User registered successfully", token })
-                            }
+            User.findOne({ email: result.data.email }, (e, d) => {
+                if (e) {
+                    return res.json({ message: "Error while verifying user details" })
+                }
+                if (d) {
+                    return res.json({message:"Email already exists"})
+                } else {
+                    bcrypt.genSalt(10, function (err, salt) {
+                        bcrypt.hash(result.data.password, salt, function (err, hash) {
+                            if (err)
+                                return res.json({ message: "Something went wrong with your password" });
+                            result.data.password = hash;
+                            result.data.wallet = 0;
+                            result.data.user_id = "USR" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
+                            const newUser = new User(result.data);
+                            newUser.save().then(doc => {
+                                doc.populate("role",(e,d)=>{
+                                    const u = { _id: d._id, role: d.role._id };
+                                    jwt.sign(u, process.env.JWT_SECRET, function (err, token) {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                        else {
+                                            let u = d.toObject();
+                                            delete u.password;
+                                            req.user = u;
+                                            res.json({ message: "User registered successfully", token , user:u});
+                                        }
+                                    }); 
+                                })
+                                
+                            }).catch(e => {
+                                console.log(e);
+                                res.json({ message: "Error while registering user" });
+                            })
                         });
-                    }).catch(e => {
-                        console.log(e);
-                        res.json({ message: "Error while registering user" });
-                    })
-                });
-            });
+                    });
+                }
+            })
         }
     }
     else if (req.originalUrl === "/api/auth/login") {
@@ -83,7 +96,7 @@ module.exports = async (req, res, next) => {
                                     delete u.password;
                                     req.user = u;
                                     res.json({ message: "You are already logged in!", user: u });
-                                }else{
+                                } else {
                                     return res.json({ message: "Error while validating your token details" })
                                 }
                             })
@@ -99,14 +112,13 @@ module.exports = async (req, res, next) => {
         } else {
             let result = UserController.verifyLogin(req.body);
             // console.log("NO TOKEN");
-            if(!isEmpty(result.errors)){
+            if (!isEmpty(result.errors)) {
                 return res.json(result.errors);
             }
             if (req.body.email && req.body.password) {
                 let email = req.body.email.trim();
                 // console.log("BODY IS ",req.body);
                 User.findOne({ email: email }, (err, user) => {
-
                     if (err) {
                         return res.json({ message: "Error while finding the user" });
                     }
@@ -121,7 +133,8 @@ module.exports = async (req, res, next) => {
                                 return res.status(401).json({ message: "Error in validating Credentials" });
                             }
                             if (isMatched) {
-                                const u = { _id: user._id, role: user.role }
+                                const u = user.toObject();//{ _id: user._id, role: user.role }
+                                delete u.password;
                                 // console.log("USER MATCHED");
                                 req.user = u;
                                 jwt.sign(u, process.env.JWT_SECRET, function (err, token) {
@@ -154,32 +167,33 @@ module.exports = async (req, res, next) => {
         if (req.headers.token) {
             if (typeof req.headers.token == "string" && req.headers.token.trim() !== "") {
                 // console.log("HAS TOKEN");
-                if (req.method === "GET") {
+                // if (req.method === "GET") {
                     jwt.verify(req.headers.token, process.env.JWT_SECRET, (err, payload) => {
                         if (err) {
                             console.log(err);
                             res.json({ message: "Invalid token" })
                         } else {
-                            req.user = payload;
-                            User.findById(req.user._id, (e, d) => {
+                            // req.user = payload;
+                            User.findById(payload._id, (e, d) => {
                                 if (e) {
                                     res.json({ message: "Error while retriving user details" })
                                 }
                                 if (d) {
                                     d = d.toObject();
                                     delete d.password;
+                                    req.user = d;
                                     res.json({ user: d })
                                 }
                                 else {
-                                    res.json({ message: "User does not exist" });
+                                    res.json({ message: "Your token is not valid anymore" });
                                 }
                             })
                             // res.json({ user: payload });
                         }
                     })
-                } else {
-                    res.json({ message: "INVALID ROUTE" });
-                }
+                // } else {
+                //     res.json({ message: "INVALID ROUTE" });
+                // }
             } else {
                 res.json({ message: "invalid token" })
             }
@@ -198,19 +212,23 @@ module.exports = async (req, res, next) => {
                         console.log(err);
                         return res.json({ message: "Invalid token" })
                     } else {
-                        User.findById(payload._id,(e,d)=>{
-                            if(e){
-                                return res.json({message:"Error while verifying your token details"});
-                            }
-                            if(d){
+                        User.findById(payload._id).populate("role").exec().then(d=>{
+                            // console.log("FUNCTION EXECUTED")
+                            if (d) {
                                 let u = d.toObject();
                                 delete u.password;
-                                req.user =  u;
+                                req.user = u;
+                                // console.log("user data :  ",req.user);
                                 next();
-                            }else{
-                                return res.json({message:"Your token is not valid anymore"})
+                            } else {
+                                return res.json({ message: "Your token is not valid anymore" })
                             }
-                        })
+                        }).catch(e=>{
+                            if (e) {
+                                return res.json({ message: "Error while verifying your token details" });
+                            }
+                        });
+                            
                         // req.user = payload;
                         // res.json({ message: "You are already logged in!" , user:payload});
                         // next();
