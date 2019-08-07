@@ -4,6 +4,7 @@ const userRole = require('../models/userRole.model');
 const UserRoleController = require('.././controllers/userrole.controller');
 const isEmpty = require('../utils/is-empty');
 const mongodb = require('mongoose').Types;
+const privileges = require("../utils/privilege.template")();
 
 
 // @route   GET api/userrole
@@ -27,6 +28,7 @@ router.post('/', (req, res) => {
     if (!isEmpty(result.errors)) {
         return res.status(200).json({ status: 200, message:"Fields required", errors: result.errors, data: null })
     }
+    result.data.privileges = privileges;
     let role = new userRole(result.data);
     role.save().then(Role => res.status(200).json({ status: 200, message:"Role added successfully", errors: false, data: Role })).catch(err => {
         console.log(err)

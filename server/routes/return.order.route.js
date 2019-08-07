@@ -4,9 +4,10 @@ const ReturnOrderController = require('../controllers/return.order.controller');
 const ReturnOrder = require("../models/return.order.model");
 var mongodb = require("mongodb");
 const moment = require('moment');
+const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 //GET specific return order
-router.get("/:id",(req,res)=>{
+router.get("/:id",authorizePrivilege("GET_RETURN_ORDER"),(req,res)=>{
     if(mongodb.ObjectID.isValid(req.params.id)){
         ReturnOrder.findById(req.params.id).populate("placed_by products.product").exec().then(doc=>{
             if(doc)
@@ -22,7 +23,7 @@ router.get("/:id",(req,res)=>{
 })
 
 //GET Return orders
-router.get("/",(req,res)=>{
+router.get("/",authorizePrivilege("GET_ALL_RETURN_ORDERS"),(req,res)=>{
     ReturnOrder.find().populate("placed_by products.product").exec().then(doc=>{
         return res.json({status:200,data:doc,errors:false,message:"All Return Orders"});
     }).catch(err=>{
@@ -31,7 +32,7 @@ router.get("/",(req,res)=>{
 })
 
 //Create Return Order
-router.post("/",(req,res)=>{
+router.post("/",authorizePrivilege("ADD_NEW_RETURN_ORDER"),(req,res)=>{
     let result = ReturnOrderController.verifyCreate(req.body);
     if(!isEmpty(result.errors))
     return res.json({status:400,errors:result.errors,data:null,message:"Fields required"});
@@ -48,4 +49,20 @@ router.post("/",(req,res)=>{
     })
 })
 
+// Delete a return order
+router.delete("/:id",authorizePrivilege("DELETE_RETURN_ORDER"), (req, res) => {
+    if (!mongodb.ObjectId.isValid(req.params.id)) {
+        res.status(400).json({status:400,data:null,errors:true, message: "Invalid return order id" });
+    }
+    else {
+        ReturnOrder.findByIdAndDelete(req.params.id, (err, doc) => {
+            if (err) {
+                return res.status(500).json({ status:500,data:null,errors:true,message: "Error while deleting the return order" })
+            }
+            if (doc) {
+                res.json({ status:200,data:doc,errors:false,message: "Return order deleted successfully!" });
+            }
+        })
+    }
+})
 module.exports = router;

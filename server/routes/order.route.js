@@ -4,10 +4,11 @@ const OrderController = require('../controllers/order.controller');
 const Order = require('../models/order.model');
 var mongodb = require("mongodb");
 const moment = require('moment');
+const authorizePrivilege = require("../middleware/authorizationMiddleware");
 const router = express.Router();
 
 //GET all orders
-router.get("/", (req, res) => {
+router.get("/",authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
     Order.find().populate("placed_by products.product").exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
@@ -21,7 +22,7 @@ router.get("/", (req, res) => {
 
 // })
 // Create an order
-router.post("/", (req, res) => {
+router.post("/",authorizePrivilege("ADD_NEW_ORDER"), (req, res) => {
     let result = OrderController.verifyCreate(req.body);
     if(!isEmpty(result.errors))
     return res.status(400).json({status:400,errors:result.errors,data:null,message:"Fields required"});
@@ -37,6 +38,24 @@ router.post("/", (req, res) => {
         res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating the order" });
     })
 })
+
+// Delete a order
+router.delete("/:id",authorizePrivilege("DELETE_ORDER"), (req, res) => {
+    if (!mongodb.ObjectId.isValid(req.params.id)) {
+        res.status(400).json({status:400,data:null,errors:true, message: "Invalid Order id" });
+    }
+    else {
+        Order.findByIdAndDelete(req.params.id, (err, doc) => {
+            if (err) {
+                return res.status(500).json({ status:500,data:null,errors:true,message: "Error while deleting the order" })
+            }
+            if (doc) {
+                res.json({ status:200,data:doc,errors:false,message: "Order deleted successfully!" });
+            }
+        })
+    }
+})
+
 
 //Update order status
 // router.put("/:id",(req,res)=>{
@@ -60,7 +79,7 @@ router.post("/", (req, res) => {
 // })
 
 //GET specific order
-router.get("/id/:id",(req,res)=>{
+router.get("/:id",authorizePrivilege("GET_ORDER"),(req,res)=>{
     if(mongodb.ObjectID.isValid(req.params.id)){
         Order.findById(req.params.id).populate("placed_by products.product").exec().then(doc=>{
             if(doc)
@@ -74,6 +93,5 @@ router.get("/id/:id",(req,res)=>{
         res.status(400).json({status:400,errors:true,data:null,message:"Invalid order id"});
     }
 })
-
 
 module.exports = router;

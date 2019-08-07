@@ -5,26 +5,26 @@ const productCtrl = require('../controllers/products.controller');
 const isEmpty = require('../utils/is-empty');
 const mongodb = require('mongoose').Types;
 const moment = require('moment');
+const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 
 // GET ALL PRODUCTS
-
-router.get("/", (req, res) => {
-    Product.find().populate("created_by").exec().then(docs=>{
-        if(docs.length>0)
-        res.json({ status:200,data:docs,errors:false, message: "Error while getting products" });
+router.get("/",authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
+    Product.find().populate("created_by").exec().then(docs => {
+        if (docs.length > 0)
+            res.json({ status: 200, data: docs, errors: false, message: "All products" });
         else
-        res.json({ status:200,data:docs,errors:true, message: "No products found" });
-    }).catch(err=> {
-        res.status(500).json({ status:500,data:null,errors:true, message: "Error while getting products" })
+            res.json({ status: 200, data: docs, errors: true, message: "No products found" });
+    }).catch(err => {
+        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" })
     })
 })
 
 // ADD NEW PRODUCT
-router.post('/', async (req, res) => {
+router.post('/',authorizePrivilege("ADD_NEW_PRODUCT"), async (req, res) => {
     let result = productCtrl.verifyCreate(req.body);
     if (!isEmpty(result.errors)) {
-        return res.status(400).json({status:400,data:null,errors:result.errors,message:"Fields Required"});
+        return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
     }
     result.data.created_by = req.user._id;
     let productId = "P" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
@@ -33,39 +33,38 @@ router.post('/', async (req, res) => {
     newProduct
         .save()
         .then(product => {
-            product.populate("created_by").execPopulate().then(p => res.json({status:200,data:p,errors:false, message: "Product added successfully" }))
-            .catch(e => { console.log(e); res.json({status:500,data:null,errors:true, message: "Error while populating the saved product" }) });
+            product.populate("created_by").execPopulate().then(p => res.json({ status: 200, data: p, errors: false, message: "Product added successfully" }))
+                .catch(e => { console.log(e); res.json({ status: 500, data: null, errors: true, message: "Error while populating the saved product" }) });
         })
         .catch(err => {
             console.log(err)
-            res.json({status:500,data:null,errors:true, message: "Error while creating new product" })
+            res.json({ status: 500, data: null, errors: true, message: "Error while creating new product" })
         });
-}
-);
+});
 
 //UPDATE A PRODUCT
-router.put("/:id", (req, res) => {
+router.put("/:id",authorizePrivilege("UPDATE_PRODUCT"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         let result = productCtrl.verifyUpdate(req.body);
         if (!isEmpty(result.errors)) {
-            return res.status(400).json({status:400,data:null,errors:result.errors, message: "Fields Required" });
+            return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
         }
         Product.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
             if (err)
-                return res.status(500).json({status:500,data:null,errors:true, message: "Error while updating product" });
+                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating product" });
             else {
-                return res.status(200).json({status:200,data:doc,errors:false,message:"Product Updated Successfully"});
+                return res.status(200).json({ status: 200, data: doc, errors: false, message: "Product Updated Successfully" });
             }
         })
     }
     else {
-        res.json({status:200,data:null,errors:true, message: "Invalid data" });
+        res.json({ status: 200, data: null, errors: true, message: "Invalid data" });
     }
 })
 
 
 //GET products for pagination
-router.get("/page/:page?",(req,res)=>{
+router.get("/page/:page?",authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
     let page = req.params.page || 0;
     let limit = req.query.limit || 10;
     limit = Number(limit);
@@ -75,52 +74,47 @@ router.get("/page/:page?",(req,res)=>{
     srt[orderby] = order;
     Product.find().limit(limit).skip(limit * page).sort(srt)
         .exec(function (err, products) {
-            if(err){
+            if (err) {
                 console.log(err);
-                return res.status(500).json({status:500,data:null,errors:true,message:"Error while getting orders"})
+                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
             }
-            res.json({status:200,data:products,errors:false,message:"Products"});
+            res.json({ status: 200, data: products, errors: false, message: "Products" });
         })
 })
 
 //DELETE A PRODUCT
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id",authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
     if (!mongodb.ObjectId.isValid(req.params.id)) {
-        res.status(400).json({status:400,data:null,errors:true, message: "Invalid product id" });
+        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid product id" });
     }
     else {
         Product.findByIdAndDelete(req.params.id, (err, doc) => {
             if (err) {
-                return res.status(500).json({ status:500,data:null,errors:true,message: "Error while deleting the product" })
+                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while deleting the product" })
             }
             if (doc) {
-                res.json({ status:200,data:doc,errors:false,message: "Product deleted successfully!" });
+                res.json({ status: 200, data: doc, errors: false, message: "Product deleted successfully!" });
             }
         })
     }
 })
 
-
-
-
-
-
-
 // GET SPECIFIC PRODUCT
-
-// router.get("/:id", (req, res) => {
-//     if (mongodb.ObjectId.isValid(req.params.id)) {
-//         console.log(req.params.id);
-//         Product.findById(req.params.id).populate("created_by").exec().then(doc=>{
-//                 res.json(doc);
-//         }).catch(e=>
-//                 res.json({ message: "Error while getting the product" })
-//             )
-//     } else {
-//         res.json({ message: "invalid data" });
-//     }
-// })
+router.get("/:id",authorizePrivilege("GET_PRODUCT"), (req, res) => {
+    if (mongodb.ObjectId.isValid(req.params.id)) {
+        // console.log(req.params.id);
+        Product.findById(req.params.id).populate("created_by").exec().then(doc => {
+            res.json({ status: 200, data: doc, errors: false, message: "All products" });
+        }).catch(e => {
+            console.log(e);
+            res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting the product" })
+        });
+    } else {
+        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting the product" })
+        res.json({ message: "invalid data" });
+    }
+});
 module.exports = router;
 
 // // @route   PUT api/users/update/:id

@@ -6,10 +6,11 @@ var mongodb = require("mongodb");
 const moment = require('moment');
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 
 //GET all users
-router.get('/', async (req, res) => {
+router.get('/',authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   try {
     const allUsers = await User.find().populate("role").exec();
     // console.log(allUsers);
@@ -21,7 +22,7 @@ router.get('/', async (req, res) => {
 })
 
 // GET all users by role
-router.get('/:role', async (req, res) => {
+router.get('/:role',authorizePrivilege("GET_USER_BY_ROLE"), async (req, res) => {
   console.log(req.body.role)
   if (mongodb.ObjectId.isValid(req.params.role)) {
     try {
@@ -41,7 +42,7 @@ router.get('/:role', async (req, res) => {
 })
 
 // DELETE a user
-router.delete('/:id', (req, res) => {
+router.delete('/:id',authorizePrivilege("DELETE_USER"), (req, res) => {
   if (mongodb.ObjectID.isValid(req.params.id)) {
     User.deleteOne({ _id: req.params.id }, (err, user) => {
       if (err) throw err;
@@ -58,7 +59,7 @@ router.delete('/:id', (req, res) => {
 
 
 // UPDATE A USER
-router.put('/:id', (req, res) => {
+router.put('/:id',authorizePrivilege("UPDATE_USER"), (req, res) => {
   if (mongodb.ObjectID.isValid(req.params.id)) {
     // let user = (({ full_name, email, role }) => ({ full_name, email, role }))(req.body);
     const result = userCtrl.verifyUpdate(req.body);
@@ -93,7 +94,7 @@ router.put('/:id', (req, res) => {
 })
 
 // ADD NEW USER
-router.post("/", (req, res) => {
+router.post("/",authorizePrivilege("ADD_NEW_USER"), (req, res) => {
   // let result = userCtrl.insert(req.body);
   // let user = (({ full_name, email, password, role }) => ({ full_name, email, password, role }))(req.body);
   let result = userCtrl.verifyCreate(req.body)

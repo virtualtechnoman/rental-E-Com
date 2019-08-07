@@ -5,10 +5,11 @@ const Challan = require('../models/challan.model');
 var mongodb = require("mongodb");
 const moment = require('moment');
 const router = express.Router();
-const Joi = require("joi");
+const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 //GET all challans
-router.get("/",(req,res)=>{
+router.get("/",authorizePrivilege("GET_ALL_CHALLAN"),(req,res)=>{
+    // console.log(req.user);
     Challan.find().populate("processing_unit_incharge products.product").exec().then(doc=>{
         if(doc.length>0)
         return res.json({status:200,data:doc,errors:false,message:"All Challans"});
@@ -25,7 +26,7 @@ router.get("/",(req,res)=>{
 
 // })
 // Create Challan
-router.post("/", async(req,res)=>{
+router.post("/",authorizePrivilege("ADD_NEW_CHALLAN"), async(req,res)=>{
     let result = ChallanController.verifyCreate(req.body);
     // Joi.validate(req.body,ChallanController.challanCreateSchema,{ abortEarly: false },(err,value)=>{
     //     if(err)
@@ -70,7 +71,7 @@ router.post("/", async(req,res)=>{
 // })
 
 // Delete challan
-router.delete("/:id",(req,res)=>{
+router.delete("/:id",authorizePrivilege("DELETE_CHALLAN"),(req,res)=>{
     if(mongodb.ObjectID.isValid(req.params.id)){
         Challan.deleteOne({ _id: req.params.id }, (err, challan) => {
             if (err) throw err;
@@ -85,7 +86,7 @@ router.delete("/:id",(req,res)=>{
 })
 
 //GET specific challan
-router.get("/id/:id",(req,res)=>{
+router.get("/:id",authorizePrivilege("GET_CHALLAN"),(req,res)=>{
     if(mongodb.ObjectID.isValid(req.params.id)){
         Challan.findById(req.params.id).populate("processing_unit_incharge products.product").exec().then(doc=>{
             if(doc)
