@@ -115,7 +115,7 @@ router.get("/", (req, res) => {
 //         res.json({ message: "invalid data" });
 //     }
 // })
-// module.exports = router;
+module.exports = router;
 
 // // @route   PUT api/users/update/:id
 // // @desc    Return current user
