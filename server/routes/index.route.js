@@ -33,12 +33,14 @@ router.get('/health-check', (req, res) =>
 
 router.use('/auth', authRoutes);
 router.use('/user', authMiddleware, userRoutes);
-router.use("/order",authMiddleware,orderRoutes);
-router.use("/rorder",authMiddleware,returnOrderRoutes);
+router.use("/order", authMiddleware, orderRoutes);
+router.use("/rorder", authMiddleware, returnOrderRoutes);
 router.use("/category", authMiddleware, categoryRoutes);
 router.use('/products',authMiddleware, productRoutes);
 router.use('/challan',authMiddleware, challanRoutes);
 router.use('/role',  userRoleRoutes);
+router.use('/products', authMiddleware, productRoutes);
+router.use('/role', userRoleRoutes);
 // router.use('/bu', buRoutes);
 // router.use('/city', cityRoutes);
 // router.use('/company', customertypeRoutes);

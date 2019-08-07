@@ -7,11 +7,11 @@ const moment = require('moment');
 const router = express.Router();
 
 //GET all orders
-router.get("/",(req,res)=>{
-    Order.find().populate("placed_by products.product").exec().then(doc=>{
-        return res.json({status:200,data:doc,errors:false,message:"All Orders"});
-    }).catch(err=>{
-        return res.status(500).json({status:500,data:null,errors:true,message:"Error while getting orders"})
+router.get("/", (req, res) => {
+    Order.find().populate("placed_by products.product").exec().then(doc => {
+        return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
+    }).catch(err => {
+        return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
     });
 })
 
@@ -21,20 +21,20 @@ router.get("/",(req,res)=>{
 
 // })
 // Create an order
-router.post("/",(req,res)=>{
+router.post("/", (req, res) => {
     let result = OrderController.verifyCreate(req.body);
     if(!isEmpty(result.errors))
     return res.status(400).json({status:400,errors:result.errors,data:null,message:"Fields required"});
     result.data.placed_by = req.user._id;
     result.data.order_id = "ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newOrder = new Order(result.data);
-    newOrder.save().then(order=>{
-        Order.findById(order._id).populate("placed_by products.product").exec().then(doc=>{
-            res.json({status:200,data:doc,errors:false,message:"Order created successfully"});
+    newOrder.save().then(order => {
+        Order.findById(order._id).populate("placed_by products.product").exec().then(doc => {
+            res.json({ status: 200, data: doc, errors: false, message: "Order created successfully" });
         })
-    }).catch(e=>{
+    }).catch(e => {
         console.log(e);
-        res.status(500).json({status:500,errors:true,data:null,message:"Error while creating the order"});
+        res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating the order" });
     })
 })
 
@@ -66,9 +66,9 @@ router.get("/id/:id",(req,res)=>{
             if(doc)
             res.json({status:200,data:doc,errors:false,message:"Order created successfully"});
             else
-            res.json({status:200,data:doc,errors:false,message:"No orders found"});
-        }).catch(e=>{
-            res.status(500).json({status:500,errors:true,data:null,message:"Error while getting the order"});
+                res.json({ status: 200, data: doc, errors: false, message: "No orders found" });
+        }).catch(e => {
+            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while getting the order" });
         })
     }else{
         res.status(400).json({status:400,errors:true,data:null,message:"Invalid order id"});

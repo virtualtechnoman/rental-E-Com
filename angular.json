@@ -4,7 +4,7 @@
   "newProjectRoot": "projects",
   "projects": {
     "angular-material": {
-      "root": "",
+      "root": "e2e",
       "sourceRoot": "src",
       "projectType": "application",
       "architect": {
@@ -39,7 +39,9 @@
               "node_modules/datatables.net-buttons/js/buttons.flash.js",
               "node_modules/datatables.net-buttons/js/buttons.html5.js",
               "node_modules/datatables.net-buttons/js/buttons.print.js",
+              "node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js",
               "node_modules/parsleyjs/dist/parsley.min.js",
+              "node_modules/feather-icons/dist/feather.min.js",
               "./src/assets/js/dashforge.js",
               "./src/assets/js/dashforge.aside.js"
             ]

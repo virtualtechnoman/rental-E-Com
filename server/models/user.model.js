@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String, // required: true
   },
-  role: { type: mongoose.Schema.Types.ObjectId ,ref:"user_role", required: true }
+  role: { type: mongoose.Schema.Types.ObjectId, ref: "user_role", required: true }
 }, {
     versionKey: false
   });

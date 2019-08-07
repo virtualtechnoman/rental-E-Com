@@ -21,6 +21,7 @@ export class AuthService {
         email,
         password
       }).subscribe((data: any) => {
+        console.log(data)
         observer.next({ user: data.user });
         this.setUser(data.user);
         this.token.saveToken(data.token);
@@ -49,7 +50,7 @@ export class AuthService {
     // if (user) user.isAdmin = (user.position.indexOf('admin') > -1);
     this.$userSource.next(user);
     this.user = user;
-      (<any>window).user = user;
+    (<any>window).user = user;
   }
 
   getUser(): Observable<any> {
