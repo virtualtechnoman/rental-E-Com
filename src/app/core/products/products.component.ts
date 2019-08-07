@@ -65,8 +65,6 @@ export class ProductsComponent implements OnInit {
 
   submit() {
     this.submitted = true;
-    this.productForm.get('image').setValue("ASD");
-    this.productForm.get('created_by').setValue("ASD");
     console.log(this.productForm.value)
     if (this.productForm.invalid) {
       return;
@@ -109,6 +107,7 @@ export class ProductsComponent implements OnInit {
   getProducts() {
     this.allproducts.length = 0;
     this.productService.getAllProduct().subscribe((res: ProductModel[]) => {
+      console.log(res);
       this.allproducts = res;
       console.log(this.allproducts)
       this.dtTrigger.next();
@@ -118,9 +117,9 @@ export class ProductsComponent implements OnInit {
 
   updateProduct(product) {
     let id = this.allproducts[this.currentIndex]._id;
-    product._id = id;
+    // product._id = id;
     console.log(product);
-    this.productService.updateProduct(product).subscribe(res => {
+    this.productService.updateProduct(product, id).subscribe(res => {
       jQuery("#modal3").modal("hide");
       this.toastr.info('Product Updated Successfully!', 'Updated!!');
       this.resetForm();
@@ -135,13 +134,13 @@ export class ProductsComponent implements OnInit {
       available_for: ['', Validators.required],
       brand: ['', Validators.required],
       category: ['', Validators.required],
-      created_by: ['No Value', Validators.required],
+      // created_by: ['No Value', Validators.required],
       details: [''],
       farm_price: ['', [Validators.required, Validators.pattern("^[0-9]*$"), Validators.minLength(1)]],
-      image: ['No Value', Validators.required],
+      // image: ['No Value', Validators.required],
       is_active: [true],
       name: ['', Validators.required],
-      product_id: ['', Validators.required],
+      // product_id: ['', Validators.required],
       product_dms: ['', Validators.required],
       selling_price: ['', [Validators.required, Validators.pattern("^[0-9]*$"), Validators.minLength(1)]],
     })
@@ -152,13 +151,13 @@ export class ProductsComponent implements OnInit {
     this.productForm.controls['available_for'].setValue(product.available_for);
     this.productForm.controls['brand'].setValue(product.brand);
     this.productForm.controls['category'].setValue(product.category);
-    this.productForm.controls['created_by'].setValue(product.created_by);
+    // this.productForm.controls['created_by'].setValue(product.created_by);
     this.productForm.controls['details'].setValue(product.details);
     this.productForm.controls['farm_price'].setValue(product.farm_price);
-    this.productForm.controls['image'].setValue(product.image);
+    // this.productForm.controls['image'].setValue(product.image);
     this.productForm.controls['is_active'].setValue(product.is_active);
     this.productForm.controls['name'].setValue(product.name);
-    this.productForm.controls['product_id'].setValue(product.product_id);
+    // this.productForm.controls['product_id'].setValue(product.product_id);
     this.productForm.controls['product_dms'].setValue(product.product_dms);
     this.productForm.controls['selling_price'].setValue(product.selling_price);
   }
