@@ -4,6 +4,7 @@ const userRole = require('../models/userRole.model');
 const UserRoleController = require('.././controllers/userrole.controller');
 const isEmpty = require('../utils/is-empty');
 const mongodb = require('mongoose').Types;
+const privileges = require("../utils/privilege.template");
 
 
 // @route   GET api/userrole
@@ -13,7 +14,7 @@ const mongodb = require('mongoose').Types;
 //GET ALL ROLES
 router.get("/", (req, res) => {
     userRole.find().exec().then(data => {
-        res.status(200).json({status:200,message:"All users", errors:false,data});
+        res.status(200).json({status:200,message:"All Roles", errors:false,data});
     }).catch(err => {
         console.log(err);
         res.status(500).json({ status:500, data:null, errors:true, message: "Error while fetching the user roles" });
@@ -27,6 +28,7 @@ router.post('/', (req, res) => {
     if (!isEmpty(result.errors)) {
         return res.status(200).json({ status: 200, message:"Fields required", errors: result.errors, data: null })
     }
+    result.data.privileges = privileges(result.data.isAdmin);
     let role = new userRole(result.data);
     role.save().then(Role => res.status(200).json({ status: 200, message:"Role added successfully", errors: false, data: Role })).catch(err => {
         console.log(err)
@@ -37,7 +39,7 @@ router.post('/', (req, res) => {
 
 
 //Update a role
-router.put("/", (req, res) => {
+router.put("/:id", (req, res) => {
     if (mongodb.ObjectId.isValid(req.body.id)) {
         let role = (({ name }) => ({ name }))(req.body);
         userRole.findByIdAndUpdate(req.body.id, role, { new: true }, (err, doc) => {
