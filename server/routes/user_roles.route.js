@@ -13,7 +13,7 @@ const mongodb = require('mongoose').Types;
 //GET ALL ROLES
 router.get("/", (req, res) => {
     userRole.find().exec().then(data => {
-        res.status(200).json({status:200,message:"All users", errors:false,data});
+        res.status(200).json({status:200,message:"All Roles", errors:false,data});
     }).catch(err => {
         console.log(err);
         res.status(500).json({ status:500, data:null, errors:true, message: "Error while fetching the user roles" });

@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const isEmpty = require("../utils/is-empty");
-const OrderController = require('../controllers/order.controller');
+const ReturnOrderController = require('../controllers/return.order.controller');
 const ReturnOrder = require("../models/return.order.model");
 var mongodb = require("mongodb");
 const moment = require('moment');
@@ -32,7 +32,7 @@ router.get("/",(req,res)=>{
 
 //Create Return Order
 router.post("/",(req,res)=>{
-    let result = OrderController.verifyCreate(req.body);
+    let result = ReturnOrderController.verifyCreate(req.body);
     if(!isEmpty(result.errors))
     return res.json({status:400,errors:result.errors,data:null,message:"Fields required"});
     result.data.placed_by = req.user._id;

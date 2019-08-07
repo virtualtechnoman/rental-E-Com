@@ -6,6 +6,20 @@ const isEmpty = require('../utils/is-empty');
 const mongodb = require('mongoose').Types;
 const moment = require('moment');
 
+
+// GET ALL PRODUCTS
+
+router.get("/", (req, res) => {
+    Product.find().populate("created_by").exec().then(docs=>{
+        if(docs.length>0)
+        res.json({ status:200,data:docs,errors:false, message: "Error while getting products" });
+        else
+        res.json({ status:200,data:docs,errors:true, message: "No products found" });
+    }).catch(err=> {
+        res.status(500).json({ status:500,data:null,errors:true, message: "Error while getting products" })
+    })
+})
+
 // ADD NEW PRODUCT
 router.post('/', async (req, res) => {
     let result = productCtrl.verifyCreate(req.body);
@@ -90,15 +104,7 @@ router.delete("/:id", (req, res) => {
 
 
 
-// GET ALL PRODUCTS
 
-router.get("/", (req, res) => {
-    Product.find().populate("created_by").exec().then(docs=>{
-        res.json(docs);
-    }).catch(err=> {
-        res.json({ message: "Error while getting products" })
-    })
-})
 
 
 // GET SPECIFIC PRODUCT
