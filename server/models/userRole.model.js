@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 // Create Schema
 const User_Role_Schema = new Schema({
   name: { type: String, required: true, unique:true },
+  isAdmin:{type:Boolean,required:true},
   privileges:{
     //User Operations
     GET_ALL_USERS:false,

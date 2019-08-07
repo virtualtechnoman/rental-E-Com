@@ -2,7 +2,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 const User = require("../models/user.model");
 const isEmpty = require("../utils/is-empty");
-const UserController = require("../controllers/user.controller")
+const UserController = require("../controllers/user.controller");
+// const privileges = require("../utils/privilege.template")(true);
 const moment = require("moment");
 
 module.exports = async (req, res, next) => {
