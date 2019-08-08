@@ -221,6 +221,7 @@ module.exports = async (req, res, next) => {
                                 let u = d.toObject();
                                 delete u.password;
                                 req.user = u;
+                                // console.log("USER : ",req.user)
                                 // console.log("user data :  ",req.user);
                                 next();
                             } else {
