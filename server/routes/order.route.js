@@ -8,8 +8,8 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 const router = express.Router();
 
 //GET all orders
-router.get("/",authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
-    Order.find().populate("placed_by products.product").exec().then(doc => {
+router.get("/", authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
+    Order.find().populate("placed_by products.product placed_to").exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
@@ -22,15 +22,15 @@ router.get("/",authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
 
 // })
 // Create an order
-router.post("/",authorizePrivilege("ADD_NEW_ORDER"), (req, res) => {
+router.post("/", authorizePrivilege("ADD_NEW_ORDER"), (req, res) => {
     let result = OrderController.verifyCreate(req.body);
-    if(!isEmpty(result.errors))
-    return res.status(400).json({status:400,errors:result.errors,data:null,message:"Fields required"});
+    if (!isEmpty(result.errors))
+        return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
     result.data.placed_by = req.user._id;
     result.data.order_id = "ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newOrder = new Order(result.data);
     newOrder.save().then(order => {
-        Order.findById(order._id).populate("placed_by products.product").exec().then(doc => {
+        Order.findById(order._id).populate("placed_by products.product placed_to").exec().then(doc => {
             res.json({ status: 200, data: doc, errors: false, message: "Order created successfully" });
         })
     }).catch(e => {
@@ -40,17 +40,17 @@ router.post("/",authorizePrivilege("ADD_NEW_ORDER"), (req, res) => {
 })
 
 // Delete a order
-router.delete("/:id",authorizePrivilege("DELETE_ORDER"), (req, res) => {
+router.delete("/:id", authorizePrivilege("DELETE_ORDER"), (req, res) => {
     if (!mongodb.ObjectId.isValid(req.params.id)) {
-        res.status(400).json({status:400,data:null,errors:true, message: "Invalid Order id" });
+        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid Order id" });
     }
     else {
         Order.findByIdAndDelete(req.params.id, (err, doc) => {
             if (err) {
-                return res.status(500).json({ status:500,data:null,errors:true,message: "Error while deleting the order" })
+                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while deleting the order" })
             }
             if (doc) {
-                res.json({ status:200,data:doc,errors:false,message: "Order deleted successfully!" });
+                res.json({ status: 200, data: doc, errors: false, message: "Order deleted successfully!" });
             }
         })
     }
@@ -79,18 +79,22 @@ router.delete("/:id",authorizePrivilege("DELETE_ORDER"), (req, res) => {
 // })
 
 //GET specific order
-router.get("/:id",authorizePrivilege("GET_ORDER"),(req,res)=>{
-    if(mongodb.ObjectID.isValid(req.params.id)){
-        Order.findById(req.params.id).populate("placed_by products.product").exec().then(doc=>{
-            if(doc)
-            res.json({status:200,data:doc,errors:false,message:"Order created successfully"});
-            else
-                res.json({ status: 200, data: doc, errors: false, message: "No orders found" });
-        }).catch(e => {
-            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while getting the order" });
-        })
-    }else{
-        res.status(400).json({status:400,errors:true,data:null,message:"Invalid order id"});
+router.get("/:id", authorizePrivilege("GET_ORDER"), (req, res) => {
+    if (mongodb.ObjectID.isValid(req.params.id)) {
+        Order.findById(req.params.id)
+            .populate("placed_by products.product placed_to")
+            .exec()
+            .then(doc => {
+                if (doc)
+                    res.json({ status: 200, data: doc, errors: false, message: "Order created successfully" });
+                else
+                    res.json({ status: 200, data: doc, errors: false, message: "No orders found" });
+            })
+            .catch(e => {
+                res.status(500).json({ status: 500, errors: true, data: null, message: "Error while getting the order" });
+            })
+    } else {
+        res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid order id" });
     }
 })
 

@@ -9,7 +9,7 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 
 // GET ALL PRODUCTS
-router.get("/",authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
+router.get("/", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
     Product.find().populate("created_by").exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All products" });
@@ -21,7 +21,7 @@ router.get("/",authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
 })
 
 // ADD NEW PRODUCT
-router.post('/',authorizePrivilege("ADD_NEW_PRODUCT"), async (req, res) => {
+router.post('/', authorizePrivilege("ADD_NEW_PRODUCT"), async (req, res) => {
     let result = productCtrl.verifyCreate(req.body);
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
@@ -33,17 +33,23 @@ router.post('/',authorizePrivilege("ADD_NEW_PRODUCT"), async (req, res) => {
     newProduct
         .save()
         .then(product => {
-            product.populate("created_by").execPopulate().then(p => res.json({ status: 200, data: p, errors: false, message: "Product added successfully" }))
-                .catch(e => { console.log(e); res.json({ status: 500, data: null, errors: true, message: "Error while populating the saved product" }) });
+            product
+                .populate("created_by")
+                .execPopulate()
+                .then(p => res.json({ status: 200, data: p, errors: false, message: "Product added successfully" }))
+                .catch(e => {
+                    console.log(e);
+                    res.json({ status: 500, data: null, errors: true, message: "Error while populating the saved product" })
+                });
         })
         .catch(err => {
-            console.log(err)
-            res.json({ status: 500, data: null, errors: true, message: "Error while creating new product" })
+            console.log(err);
+            res.json({ status: 500, data: null, errors: true, message: "Error while creating new product" });
         });
 });
 
 //UPDATE A PRODUCT
-router.put("/:id",authorizePrivilege("UPDATE_PRODUCT"), (req, res) => {
+router.put("/:id", authorizePrivilege("UPDATE_PRODUCT"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         let result = productCtrl.verifyUpdate(req.body);
         if (!isEmpty(result.errors)) {
@@ -64,7 +70,7 @@ router.put("/:id",authorizePrivilege("UPDATE_PRODUCT"), (req, res) => {
 
 
 //GET products for pagination
-router.get("/page/:page?",authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
+router.get("/page/:page?", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
     let page = req.params.page || 0;
     let limit = req.query.limit || 10;
     limit = Number(limit);
@@ -84,7 +90,7 @@ router.get("/page/:page?",authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => 
 
 //DELETE A PRODUCT
 
-router.delete("/:id",authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
+router.delete("/:id", authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
     if (!mongodb.ObjectId.isValid(req.params.id)) {
         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid product id" });
     }
@@ -101,7 +107,7 @@ router.delete("/:id",authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
 })
 
 // GET SPECIFIC PRODUCT
-router.get("/:id",authorizePrivilege("GET_PRODUCT"), (req, res) => {
+router.get("/:id", authorizePrivilege("GET_PRODUCT"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         // console.log(req.params.id);
         Product.findById(req.params.id).populate("created_by").exec().then(doc => {

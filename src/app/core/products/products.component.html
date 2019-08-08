@@ -24,7 +24,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let product of allproducts; let i = index">
+          <tr *ngFor="let product of allproducts.data; let i = index">
             <td>{{product.product_id | uppercase}}</td>
             <td>{{product.name | titlecase}}</td>
             <td>{{product.category | titlecase}}</td>

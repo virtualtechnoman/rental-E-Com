@@ -30,6 +30,7 @@ export class OrderComponent implements OnInit {
   CSV: File = null;
   fileReader: FileReader = new FileReader();
   parsedCSV;
+  showSummary:boolean = false;
   uploading: boolean = false;
   submitted: boolean = false;
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
@@ -98,10 +99,17 @@ export class OrderComponent implements OnInit {
 
   editProduct(i) {
     this.editing = true;
-    this.currentOrder = this.allproducts[i];
-    this.currentOrderId = this.allproducts[i]._id;
+    this.currentOrder = this.allOrders[i];
+    this.currentOrderId = this.allOrders[i]._id;
     this.currentIndex = i;
     this.setFormValue();
+  }
+
+  viewSummary(i) {
+    this.showSummary = true;
+    console.log(i)
+    this.currentOrder = this.allOrders[i];
+    console.log(this.currentOrder)
   }
 
   deleteOrder(i) {
@@ -166,7 +174,6 @@ export class OrderComponent implements OnInit {
 
   initForm() {
     this.orderForm = this.formBuilder.group({
-      placed_by: ['', Validators],
       placed_to: ['', Validators.required],
       products: this.formBuilder.array([this.initItemRows()])
     })
@@ -174,7 +181,6 @@ export class OrderComponent implements OnInit {
 
   setFormValue() {
     var product = this.allproducts[this.currentIndex];
-    this.orderForm.controls['placed_by'].setValue(product.placed_by);
     this.orderForm.controls['placed_to'].setValue(product.placed_to);
     this.orderForm.controls['products'].setValue(product.products);
   }
@@ -253,4 +259,9 @@ export class OrderComponent implements OnInit {
     this.submitted = false;
     this.orderForm.reset();
   }
+
+  generateChallan(){
+    jQuery("#challanModel").modal("show");
+  }
+
 }

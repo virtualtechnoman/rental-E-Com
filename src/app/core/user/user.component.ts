@@ -76,11 +76,6 @@ export class UserComponent implements OnInit {
         'excel',
       ]
     };
-
-    this.UserroleService.getAllUserRoles().subscribe((res: any[]) => {
-      this.allUserRoles = res
-    })
-
   }
 
   get f() { return this.userForm.controls; }

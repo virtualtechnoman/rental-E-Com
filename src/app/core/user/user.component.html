@@ -29,7 +29,7 @@
           <tr *ngFor="let user of allUsers; let i = index">
             <td>{{user.full_name | titlecase}} {{user.last_name | titlecase }}</td>
             <td>{{user.email}}</td>
-            <td>{{user.role.user_role | titlecase }}</td>
+            <td>{{user.role.name | titlecase }}</td>
             <td>{{user.mobile_phone  }}</td>
             <td>
               <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editUser(i)"><i
