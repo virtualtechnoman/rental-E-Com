@@ -1,5 +1,5 @@
-var current_time = new Date();
 export class ProductModel {
+    _id: String;
     name: String;
     product_id: String;
     image: String;

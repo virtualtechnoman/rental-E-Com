@@ -29,9 +29,10 @@ export class OrderService {
     return this.http.delete(this.url + '/' + id, { headers: this.headers });
   }
 
-  updateOrder(order) {
-    return this.http.put(this.url, order, { headers: this.headers });
+  updateOrder(order, id) {
+    return this.http.put(this.url + '/' + id, order, { headers: this.headers });
   }
+
   // =================RETURN ORDER APIS==================//
   getAllReturnOrders() {
     return this.http.get(this.url2 + '/', { headers: this.headers })

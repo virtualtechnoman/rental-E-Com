@@ -1,3 +1,42 @@
-<p>
-  challan works!
-</p>
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="float-left">Challan Management</h2>
+      <a class="btn btn-secondary text-white float-right" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal3">Add New Order</a>
+    </div>
+    <div class="card-body">
+      <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
+        [dtTrigger]="dtTrigger">
+        <thead>
+          <tr>
+            <th scope="col">S.no</th>
+            <th scope="col">Challan No.</th>
+            <th scope="col">Challan Date</th>
+            <th scope="col">Challan To</th>
+            <!-- <th scope="col">Manager</th> -->
+            <th scope="col">Challan By</th>
+            <!-- <th scope="col">Order by Manager</th> -->
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of allOrders; let i = index">
+            <td>{{i+1}}</td>
+            <td>{{order.order_id | uppercase}}</td>
+            <td>{{order.order_date | date:'dd/MM/yy'}}</td>
+            <td>{{order.placed_to.full_name | titlecase}}</td>
+            <td>{{order.placed_by.full_name | titlecase}}</td>
+            <td>
+              <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editOrder(i)"><i
+                  class="fas fa-edit mx-2"></i></a>
+              <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteOrder(i)"></i></a>
+              <a style="cursor:pointer" data-toggle="modal" data-target="#summaryModel"
+                (click)="viewSummary(i)">View</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
