@@ -8,13 +8,15 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 const router = express.Router();
 
 //GET all orders
-router.get("/", authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
+router.get("/",authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
     Order.find().populate("placed_by products.product placed_to").exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
     });
 })
+
+
 
 //GET orders for pagination
 //filters ====>
@@ -57,44 +59,44 @@ router.delete("/:id", authorizePrivilege("DELETE_ORDER"), (req, res) => {
 })
 
 
-//Update order status
-// router.put("/:id",(req,res)=>{
-//     if(mongodb.ObjectID.isValid(req.params.id)){
-//         let result = OrderController.verifyUpdate(req.body);
-//         if(!isEmpty(result.errors)){
-//             return res.status(400).json({status:400,errors:false,data:null,message:"Fields required"});
-//         }
-//         Order.findByIdAndUpdate(req.params.id,result.data,{new:true},(err,doc)=>{
-//             if(err)
-//             return res.status(500).json({status:500,errors:true,data:null,message:"Error while updating order status"});
-//             if(doc){
-//                 return res.status(200).json({status:200,errors:false,data:doc,message:"Order status updated successfully"});
-//             }else{
-//                 return res.status(200).json({status:200,errors:false,data:null,message:"No records updated"});
-//             }
-//         })
-//     }else{
-//         res.status(400).json({status:400,errors:false,data:null,message:"Invalid order id"});
-//     }
-// })
+// Update order
+router.put("/:id",(req,res)=>{
+    if(mongodb.ObjectID.isValid(req.params.id)){
+        let result = OrderController.verifyUpdate(req.body);
+        if(!isEmpty(result.errors)){
+            return res.status(400).json({status:400,errors:false,data:null,message:"Fields required"});
+        }
+        Order.findByIdAndUpdate(req.params.id,result.data,{new:true},(err,doc)=>{
+            if(err)
+            return res.status(500).json({status:500,errors:true,data:null,message:"Error while updating order status"});
+            if(doc){
+                doc.populate("placed_by products.product placed_to").exec().then(d=>{
+                    return res.status(200).json({status:200,errors:false,data:d,message:"Order updated successfully"});
+                }).catch(e=>{
+                    return res.status(500).json({status:500,errors:true,data:d,message:"Order updated but error occured while populating"});
+                })
+            }else{
+                return res.status(200).json({status:200,errors:false,data:null,message:"No records updated"});
+            }
+        })
+    }else{
+        res.status(400).json({status:400,errors:false,data:null,message:"Invalid order id"});
+    }
+})
 
 //GET specific order
-router.get("/:id", authorizePrivilege("GET_ORDER"), (req, res) => {
-    if (mongodb.ObjectID.isValid(req.params.id)) {
-        Order.findById(req.params.id)
-            .populate("placed_by products.product placed_to")
-            .exec()
-            .then(doc => {
-                if (doc)
-                    res.json({ status: 200, data: doc, errors: false, message: "Order created successfully" });
-                else
-                    res.json({ status: 200, data: doc, errors: false, message: "No orders found" });
-            })
-            .catch(e => {
-                res.status(500).json({ status: 500, errors: true, data: null, message: "Error while getting the order" });
-            })
-    } else {
-        res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid order id" });
+router.get("/id/:id",authorizePrivilege("GET_ORDER"),(req,res)=>{
+    if(mongodb.ObjectID.isValid(req.params.id)){
+        Order.findById(req.params.id).populate("placed_by products.product placed_to").exec().then(doc=>{
+            if(doc)
+            res.json({status:200,data:doc,errors:false,message:"Order created successfully"});
+            else
+                res.json({ status: 200, data: doc, errors: false, message: "No orders found" });
+        }).catch(e => {
+            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while getting the order" });
+        })
+    }else{
+        res.status(400).json({status:400,errors:true,data:null,message:"Invalid order id"});
     }
 })
 
