@@ -20,7 +20,7 @@ router.get("/",authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
 })
 
 // GET ALL PRODUCTS
-router.get("/", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
+router.get("/all",authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
     Product.find().populate("created_by").exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All products" });
@@ -118,7 +118,7 @@ router.delete("/:id",authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
 })
 
 // GET SPECIFIC PRODUCT
-router.get("/:id", authorizePrivilege("GET_PRODUCT"), (req, res) => {
+router.get("/id/:id",authorizePrivilege("GET_PRODUCT"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         // console.log(req.params.id);
         Product.findById(req.params.id).populate("created_by").exec().then(doc => {
