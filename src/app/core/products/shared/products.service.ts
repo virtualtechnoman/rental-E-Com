@@ -25,8 +25,8 @@ export class ProductsService {
     return this.http.delete(this.url + '/' + id, { headers: this.headers });
   }
 
-  updateProduct(product) {
-    return this.http.put(this.url, product, { headers: this.headers });
+  updateProduct(product, id) {
+    return this.http.put(this.url + '/' + id, product, { headers: this.headers });
   }
 
   importCustomer(csv) {

@@ -18,12 +18,12 @@ const challanCreateSchema = Joi.object({
         dispatch: Joi.boolean().required()
     }).required(),
     // truck: Joi.object({
-        vehicle_no: Joi.string().required(),
-        vehicle_type: Joi.string().required(),
-        driver_name: Joi.string().required(),
-        driver_mobile: Joi.string().required(),
-        dl_no: Joi.string().required(),
-        departure: Joi.date().required()
+    vehicle_no: Joi.string().required(),
+    vehicle_type: Joi.string().required(),
+    driver_name: Joi.string().required(),
+    driver_mobile: Joi.string().required(),
+    dl_no: Joi.string().required(),
+    departure: Joi.date().required()
     // }).required()
 })
 

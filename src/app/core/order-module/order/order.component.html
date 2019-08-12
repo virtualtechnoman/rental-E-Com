@@ -27,12 +27,14 @@
             <td>{{i+1}}</td>
             <td>{{order.order_id | uppercase}}</td>
             <td>{{order.order_date | date:'dd/MM/yy'}}</td>
-            <td>{{order.placed_to | titlecase}}</td>
-            <td>{{product.placed_by}}</td>
+            <td>{{order.placed_to.full_name | titlecase}}</td>
+            <td>{{order.placed_by.full_name | titlecase}}</td>
             <td>
               <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editOrder(i)"><i
                   class="fas fa-edit mx-2"></i></a>
               <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteOrder(i)"></i></a>
+              <a style="cursor:pointer" data-toggle="modal" data-target="#summaryModel"
+                (click)="viewSummary(i)">View</a>
             </td>
           </tr>
         </tbody>
@@ -42,7 +44,7 @@
 </div>
 
 <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header text-center">
         <h6 class="modal-title" *ngIf="editing">Edit Order</h6>
@@ -55,7 +57,7 @@
         <form [formGroup]="orderForm" (ngSubmit)="submit()">
           <div class="divider-text">Select Organisation to Send Order </div>
           <div class="form-row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-4 offset-md-4">
               <label for="inputEmail4">Order To</label>
               <select name="user" formControlName="placed_to" class="form-control">
                 <option value="" [selected]>Select User</option>
@@ -68,7 +70,7 @@
           </div>
           <div class="divider-text">Select And Add Products </div>
           <div class="form-row">
-            <div class="col-md-8">
+            <div class="col-md-8  offset-md-3">
               <div formArrayName="products">
                 <div *ngFor=" let product of orderForm.get('products')['controls']; let i = index" [formGroupName]="i">
                   <div class="form-row">
@@ -77,7 +79,8 @@
                         <label for="period">Product</label>
                         <select name="product" formControlName="product" class="form-control">
                           <option value="" [selected]>Select Product</option>
-                          <option [ngValue]="product._id" *ngFor="let product of allproducts">{{product.name}}</option>
+                          <option [ngValue]="product._id" *ngFor="let product of allproducts.data">{{product.name}}
+                          </option>
                         </select>
                       </div>
                     </div>
@@ -95,11 +98,12 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 offset-md-5 mt-2">
               <button class="btn btn-success" (click)="addPeriod()">Add New Product</button>
             </div>
           </div>
-          <div class="form-row">
+          <br>
+          <div class=" text-center">
             <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
             <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
           </div>
@@ -108,7 +112,6 @@
     </div>
   </div>
 </div>
-
 
 <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -138,3 +141,252 @@
     </div>
   </div>
 </div>
+
+
+<div *ngIf="currentOrder" class="modal fade" id="summaryModel" tabindex="-1" role="dialog"
+  aria-labelledby="exampleModalLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel2">Order Summary</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="content content-fixed bd-b">
+        <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
+          <div class="d-sm-flex align-items-center justify-content-between">
+            <div>
+              <h4 class="mg-b-5">Invoice {{currentOrder?.order_id}}</h4>
+              <p class="mg-b-0 tx-color-03">Due on {{currentOrder?.order_date | date : 'dd/MM/yy'}}</p>
+            </div>
+            <div class="mg-t-20 mg-sm-t-0">
+              <button class="btn btn-white"><i data-feather="printer" class="mg-r-5"></i> Print</button>
+              <button class="btn btn-white mg-l-5" (click)="generateChallan()"><i data-feather="mail" class="mg-r-5"
+                  data-toggle="modal" data-target="#challanModel"></i> Generate Challan</button>
+            </div>
+          </div>
+        </div><!-- container -->
+      </div>
+      <div class="content tx-13">
+        <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
+          <div class="row">
+            <div class="col-sm-6">
+              <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed From</label>
+              <h6 class="tx-15 mg-b-10">{{currentOrder?.full_name}}</h6>
+              <!-- <p class="mg-b-0">{{currentOrder.placed_by.full_name}}</p> -->
+              <p class="mg-b-0">{{currentOrder?.placed_by.mobile_phone}}</p>
+              <p class="mg-b-0">{{currentOrder?.placed_by.email}}</p>
+            </div><!-- col -->
+            <div class="col-sm-6 tx-right d-none d-md-block">
+              <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice Number</label>
+              <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{currentOrder?.order_id}}</h1>
+            </div><!-- col -->
+            <div class="col-sm-6 col-lg-8 mg-t-40 mg-sm-t-0 mg-md-t-40">
+              <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
+              <h6 class="tx-15 mg-b-10">{{currentOrder?.full_name}}</h6>
+              <p class="mg-b-0">{{currentOrder?.placed_by.mobile_phone}}</p>
+              <p class="mg-b-0">{{currentOrder?.placed_by.email}}</p>
+              <!-- <p class="mg-b-0">Email: youremail@companyname.com</p> -->
+            </div><!-- col -->
+            <div class="col-sm-6 col-lg-4 mg-t-40">
+              <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice Information</label>
+              <ul class="list-unstyled lh-7">
+                <li class="d-flex justify-content-between">
+                  <span>Invoice Number</span>
+                  <span>{{currentOrder?.order_id}}</span>
+                </li>
+                <!-- <li class="d-flex justify-content-between">
+                  <span>Product ID</span>
+                  <span>32334300</span>
+                </li> -->
+                <li class="d-flex justify-content-between">
+                  <span>Issue Date</span>
+                  <span>{{currentOrder?.order_date | date:'dd/MM/yy'}}</span>
+                </li>
+                <!-- <li class="d-flex justify-content-between">
+                  <span>Due Date</span>
+                  <span>April 21, 2019</span>
+                </li> -->
+              </ul>
+            </div><!-- col -->
+          </div><!-- row -->
+
+          <div class="table-responsive mg-t-40">
+            <table class="table table-invoice bd-b">
+              <thead>
+                <tr>
+                  <th class="wd-20p">Type</th>
+                  <th class="wd-40p d-none d-sm-table-cell">Brand</th>
+                  <th class="tx-center">Requested Quantity</th>
+                  <th class="tx-center">Accepted Quantity</th>
+                  <!-- <th class="tx-right">Unit Price</th>
+                  <th class="tx-right">Amount</th> -->
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let product of currentOrder.products; let i = index">
+                  <td class="tx-nowrap">{{product?.product.name}}</td>
+                  <td class="d-none d-sm-table-cell tx-color-03">{{product?.product.brand}}</td>
+                  <td class="tx-center">{{product?.quantity}}</td>
+                  <td class="tx-center"> <input type="text" value="{{product?.accepted}}" class="form-control"
+                      placeholder="Accepted Quantity Here"></td>
+                  <!-- <td class="tx-right">${{product?.product.farm_price}}</td>
+                  <td class="tx-right">${{product?.product.farm_price * product.quantity}}</td> -->
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row justify-content-between">
+            <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-40 mg-sm-t-0">
+              <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Notes</label>
+            </div><!-- col -->
+            <div class="col-sm-6 float-right">
+              <button class="btn btn-primary mg-l-5" (click)="updateOrder()"><i data-feather="credit-card"
+                  class="mg-r-5"></i> Accept
+                And Save Order</button>
+            </div>
+          </div><!-- row -->
+        </div><!-- container -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" *ngIf="currentOrder" id="challanModel" tabindex="-1" role="dialog"
+  aria-labelledby="exampleModalLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content tx-14">
+      <form [formGroup]="challanForm" (ngSubmit)="saveChallan()">
+        <div class="col-md-7">
+          <div class="content content-fixed bd-b">
+            <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
+              <div class="d-sm-flex align-items-center justify-content-between">
+                <div>
+                  <h4 class="mg-b-5">Invoice {{currentOrder?.order_id}}</h4>
+                  <p class="mg-b-0 tx-color-03">Due on {{currentOrder?.order_date | date : 'dd/MM/yy'}}</p>
+                </div>
+                <div class="mg-t-20 mg-sm-t-0">
+                  <button class="btn btn-white"><i data-feather="printer" class="mg-r-5"></i> Print</button>
+                  <button class="btn btn-white mg-l-5"><i data-feather="mail" class="mg-r-5"></i> Generate
+                    Challan</button>
+                  <button class="btn btn-primary mg-l-5"><i data-feather="credit-card" class="mg-r-5"></i> Accept
+                    Challan</button>
+                </div>
+              </div>
+            </div><!-- container -->
+          </div>
+          <div class="content tx-13">
+            <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
+              <div class="row">
+                <div class="col-sm-6">
+                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed From</label>
+                  <h6 class="tx-15 mg-b-10">{{currentOrder?.full_name}}</h6>
+                  <!-- <p class="mg-b-0">{{currentOrder.placed_by.full_name}}</p> -->
+                  <p class="mg-b-0">{{currentOrder?.placed_by.mobile_phone}}</p>
+                  <p class="mg-b-0">{{currentOrder?.placed_by.email}}</p>
+                </div><!-- col -->
+                <div class="col-sm-6 tx-right d-none d-md-block">
+                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice Number</label>
+                  <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{currentOrder?.order_id}}</h1>
+                </div><!-- col -->
+                <div class="col-sm-6 col-lg-8 mg-t-40 mg-sm-t-0 mg-md-t-40">
+                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
+                  <h6 class="tx-15 mg-b-10">{{currentOrder?.full_name}}</h6>
+                  <p class="mg-b-0">{{currentOrder?.placed_by.mobile_phone}}</p>
+                  <p class="mg-b-0">{{currentOrder?.placed_by.email}}</p>
+                  <!-- <p class="mg-b-0">Email: youremail@companyname.com</p> -->
+                </div><!-- col -->
+                <div class="col-sm-6 col-lg-4 mg-t-40">
+                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice
+                    Information</label>
+                  <ul class="list-unstyled lh-7">
+                    <li class="d-flex justify-content-between">
+                      <span>Invoice Number</span>
+                      <span>{{currentOrder?.order_id}}</span>
+                    </li>
+                    <!-- <li class="d-flex justify-content-between">
+                      <span>Product ID</span>
+                      <span>32334300</span>
+                    </li> -->
+                    <li class="d-flex justify-content-between">
+                      <span>Issue Date</span>
+                      <span>{{currentOrder?.order_date | date:'dd/MM/yy'}}</span>
+                    </li>
+                    <!-- <li class="d-flex justify-content-between">
+                      <span>Due Date</span>
+                      <span>April 21, 2019</span>
+                    </li> -->
+                  </ul>
+                </div><!-- col -->
+              </div><!-- row -->
+
+              <div class="table-responsive mg-t-40">
+                <table class="table table-invoice bd-b">
+                  <thead>
+                    <tr>
+                      <th class="wd-20p">Type</th>
+                      <th class="wd-40p d-none d-sm-table-cell">Brand</th>
+                      <th class="tx-center">Requested Quantity</th>
+                      <th class="tx-center">Accepted Quantity</th>
+                      <th class="tx-right">Status</th>
+                      <th class="tx-right">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let product of currentOrder.products; let i = index">
+                      <td class="tx-nowrap">{{product?.product.name}}</td>
+                      <td class="d-none d-sm-table-cell tx-color-03">{{product?.product.brand}}</td>
+                      <td class="tx-center">{{product?.requested}}</td>
+                      <td class="tx-center">{{product?.accepted}}</td>
+                      <td class="tx-right">${{product?.dispatch}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="row justify-content-between">
+                <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-40 mg-sm-t-0">
+                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Notes</label>
+                  <p></p>
+                </div><!-- col -->
+              </div><!-- row -->
+            </div><!-- container -->
+          </div>
+        </div>
+        <div class="col-md-5">
+          <div class="form-row">
+            <div class="col-md-6"><label for="">Vehicle Number</label></div>
+            <div class="col-md-6"><input type="text" placeholder="Vehicle Number Here" formControlName="vehicle_no"
+                class="form-control"></div>
+          </div>
+          <div class="form-row">
+            <div class="col-md-6"><label for="">Vehicle Type</label></div>
+            <div class="col-md-6"><input type="text" placeholder="Vehicle Type Here" formControlName="vehicle_type"
+                class="form-control"></div>
+          </div>
+          <div class="form-row">
+            <div class="col-md-6"><label for="">Driver Name</label></div>
+            <div class="col-md-6"><input type="text" placeholder="driver_name Here" formControlName="driver_name"
+                class="form-control"></div>
+          </div>
+          <div class="form-row">
+            <div class="col-md-6"><label for="">Driver Mobile</label></div>
+            <div class="col-md-6"><input type="text" placeholder="Driver Mobile" formControlName="driver_mobile"
+                class="form-control"></div>
+          </div>
+          <div class="form-row">
+            <div class="col-md-6"><label for="">DL Number</label></div>
+            <div class="col-md-6"><input type="text" placeholder="dl_no" formControlName="dl_no" class="form-control">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col-md-6"><label for="">Departure Date</label></div>
+            <div class="col-md-6"><input type="date" formControlName="departure" class="form-control"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>

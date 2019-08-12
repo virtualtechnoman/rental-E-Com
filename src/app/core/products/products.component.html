@@ -24,14 +24,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let product of allproducts; let i = index">
+          <tr *ngFor="let product of allproducts.data; let i = index">
             <td>{{product.product_id | uppercase}}</td>
             <td>{{product.name | titlecase}}</td>
             <td>{{product.category | titlecase}}</td>
             <td>{{product.brand | titlecase}}</td>
             <td>{{product.farm_price}}</td>
             <td>{{product.selling_price }}</td>
-            <td>{{product.created_by }}</td>
+            <td>{{product.created_by.full_name }}</td>
             <td *ngIf="product.is_active">Active</td>
             <td *ngIf="!product.is_active">InActive</td>
             <td>
@@ -59,14 +59,14 @@
       <div class="modal-body">
         <form [formGroup]="productForm" (ngSubmit)="submit()">
           <div class="form-row">
-            <div class="form-group col-md-4">
+            <!-- <div class="form-group col-md-4">
               <label for="inputEmail4">Product ID</label>
               <input type="text" class="form-control" placeholder="Product ID here " formControlName="product_id"
                 required [ngClass]="{ 'is-invalid': submitted && f.product_id.errors }">
               <div *ngIf="submitted && f.product_id.errors" class="invalid-feedback">
                 <div *ngIf="f.product_id.errors.required">Product ID is required</div>
               </div>
-            </div>
+            </div> -->
             <div class="form-group col-md-4">
               <label for="inputEmail4">Brand</label>
               <input type="text" class="form-control" placeholder="Brand here " formControlName="brand" required
@@ -111,7 +111,8 @@
               <div *ngIf="submitted && f.selling_price.errors" class="invalid-feedback">
                 <div *ngIf="f.selling_price.errors.required">Selling Price is required</div>
               </div>
-              <div class="invalid-feedback" *ngIf="f.selling_price.errors && (f.selling_price.dirty || f.selling_price.touched)">
+              <div class="invalid-feedback"
+                *ngIf="f.selling_price.errors && (f.selling_price.dirty || f.selling_price.touched)">
                 <p *ngIf="f.selling_price.errors.pattern" class="text-danger">Number Only</p>
               </div>
             </div>

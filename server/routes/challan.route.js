@@ -27,9 +27,9 @@ router.get("/all",authorizePrivilege("GET_ALL_CHALLAN_OWN"),(req,res)=>{
         if(doc.length>0)
         return res.json({status:200,data:doc,errors:false,message:"All Challans"});
         else
-        return res.json({status:200,data:doc,errors:true,message:"No Challan found"});
-    }).catch(err=>{
-        return res.status(500).json({status:500,data:null,errors:true,message:"Error while getting Challans"})
+            return res.json({ status: 200, data: doc, errors: true, message: "No Challan found" });
+    }).catch(err => {
+        return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting Challans" })
     });
 })
 
@@ -39,21 +39,25 @@ router.get("/all",authorizePrivilege("GET_ALL_CHALLAN_OWN"),(req,res)=>{
 
 // })
 // Create Challan
-router.post("/",authorizePrivilege("ADD_NEW_CHALLAN"), async(req,res)=>{
+router.post("/", authorizePrivilege("ADD_NEW_CHALLAN"), async (req, res) => {
     let result = ChallanController.verifyCreate(req.body);
     if(!isEmpty(result.errors))
     return res.status(400).json({status:400,errors:result.errors,data:null,message:"Fields required"});
     result.data.processing_unit_incharge = req.user._id;
     result.data.challan_id = "CHLN" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newChallan = new Challan(result.data);
-    newChallan.save().then(challan=>{
-        Challan.findById(challan._id).populate("processing_unit_incharge products.product").exec().then(doc=>{
-            res.json({status:200,data:doc,errors:false,message:"Challan created successfully"});
+    newChallan.save()
+        .then(challan => {
+            Challan.findById(challan._id)
+                .populate("processing_unit_incharge products.product")
+                .exec()
+                .then(doc => {
+                    res.json({ status: 200, data: doc, errors: false, message: "Challan created successfully" });
+                })
+        }).catch(e => {
+            console.log(e);
+            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating the order" });
         })
-    }).catch(e=>{
-        console.log(e);
-        res.status(500).json({status:500,errors:true,data:null,message:"Error while creating the order"});
-    })
 })
 
 //Update order status
@@ -78,17 +82,17 @@ router.post("/",authorizePrivilege("ADD_NEW_CHALLAN"), async(req,res)=>{
 // })
 
 // Delete challan
-router.delete("/:id",authorizePrivilege("DELETE_CHALLAN"),(req,res)=>{
-    if(mongodb.ObjectID.isValid(req.params.id)){
+router.delete("/:id", authorizePrivilege("DELETE_CHALLAN"), (req, res) => {
+    if (mongodb.ObjectID.isValid(req.params.id)) {
         Challan.deleteOne({ _id: req.params.id }, (err, challan) => {
             if (err) throw err;
             res.send({ status: 200, errors: false, message: "Challan deleted successfully", data: challan })
-          }).catch(err => {
+        }).catch(err => {
             console.log(err);
             res.status(500).json({ status: 500, errors: true, data: null, message: "Error while deleting the challan" });
-          });
-    }else{
-        res.status(400).json({status:400,errors:false,data:null,message:"Invalid challan id"});
+        });
+    } else {
+        res.status(400).json({ status: 400, errors: false, data: null, message: "Invalid challan id" });
     }
 })
 
@@ -99,12 +103,12 @@ router.get("/id/:id",authorizePrivilege("GET_CHALLAN"),(req,res)=>{
             if(doc)
             res.json({status:200,data:doc,errors:false,message:"Challan"});
             else
-            res.json({status:200,data:doc,errors:true,message:"No challan found"});
-        }).catch(e=>{
-            res.status(500).json({status:500,errors:true,data:null,message:"Error while getting the challan"});
+                res.json({ status: 200, data: doc, errors: true, message: "No challan found" });
+        }).catch(e => {
+            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while getting the challan" });
         })
-    }else{
-        res.status(400).json({status:400,errors:true,data:null,message:"Invalid challan id"});
+    } else {
+        res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid challan id" });
     }
 })
 
