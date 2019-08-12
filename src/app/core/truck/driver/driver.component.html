@@ -1,0 +1,103 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="float-left">Driver Management</h2>
+      <a class="btn btn-secondary float-right text-white" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal3">Add New
+        Driver</a>
+    </div>
+    <div class="card-body">
+      <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
+        [dtTrigger]="dtTrigger">
+        <thead>
+          <tr>
+            <th scope="col">S.No</th>
+            <th scope="col">ID</th>
+            <th scope="col">Driver Name</th>
+            <th scope="col">Contact Number</th>
+            <th scope="col">DL Number</th>
+            <th scope="col">Is Avialable</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let driver of allDrivers; let i = index">
+            <td>{{i+1}}</td>
+            <td>{{driver.driver_id}}</td>
+            <td>{{driver.name}}</td>
+            <td>{{driver.mobile}}</td>
+            <td>{{customer.dl_number}}</td>
+            <td *ngIf="customer.isAvialable">Available</td>
+            <td *ngIf="!customer.isAvialable">Unavailable</td>
+            <td>
+              <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editDriver(i)"><i
+                  class="fas fa-edit mx-2"></i> </a>
+              <a style="cursor: pointer" (click)="deleteDriver(i)"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel3">Add New Driver</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="driverForm" (ngSubmit)="submit()">
+          <div class="form-row">
+            <div class="col-md-8">
+              <div class="divider-text">Fill Driver Details</div>
+              <div class="form-row">
+                <div class="form-group col-md-4">
+                  <label for="inputEmail4">Driver Name</label>
+                  <input type="text" class="form-control" placeholder="Customer Name" name="customer_name"
+                    formControlName="customer_name" [ngClass]="{ 'is-invalid': submitted && f.customer_name.errors }"
+                    required>
+                  <div *ngIf="submitted && f.customer_name.errors" class="invalid-feedback">
+                    <div *ngIf="f.customer_name.errors.required">Customer Name is required</div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-4">
+                  <label for="inputEmail4">DL Number</label>
+                  <input type="text" class="form-control" placeholder="dl_number Name" name="dl_number"
+                    formControlName="dl_number" [ngClass]="{ 'is-invalid': submitted && f.dl_number.errors }" required>
+                  <div *ngIf="submitted && f.dl_number.errors" class="invalid-feedback">
+                    <div *ngIf="f.dl_number.errors.required">dl_number is required</div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="inputEmail4">Mobile</label>
+                  <input type="text" class="form-control" placeholder="mobile" formControlName="mobile" name="mobile"
+                    formControlName="mobile" [ngClass]="{ 'is-invalid': submitted && f.mobile.errors }" required>
+                  <div *ngIf="submitted && f.mobile.errors" class="invalid-feedback">
+                    <div *ngIf="f.mobile.errors.required">mobile is required</div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <label for="inputPassword4">Is Available</label>
+                <p-inputSwitch class="form-control" formControlName="is_active" required></p-inputSwitch>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="form-row text-center">
+        <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+        <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

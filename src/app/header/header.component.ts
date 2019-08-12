@@ -21,7 +21,7 @@ export class HeaderComponent implements OnInit, OnChanges {
   ) {
     this.userRoleService.getAllUserRoles().subscribe((res: UserRoleModel[]) => {
       this.allUserRoles = res;
-    })
+    });
   }
 
   ngOnChanges() {

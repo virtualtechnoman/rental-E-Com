@@ -27,6 +27,7 @@ import { CoreComponent } from './core/core.component';
 import { ProductsModule } from './core/products/products.module';
 import { OrderModuleModule } from './core/order-module/order-module.module';
 import { CustomersModule } from './core/customers/customers.module';
+import { TruckModule } from './core/truck/truck.module';
 
 @NgModule({
   declarations: [
@@ -50,8 +51,9 @@ import { CustomersModule } from './core/customers/customers.module';
     SharedModule,
 
     CustomersModule,
-    ProductsModule,
     OrderModuleModule,
+    ProductsModule,
+    TruckModule,
     // core Modules
     UserModule,
     // ngPrime

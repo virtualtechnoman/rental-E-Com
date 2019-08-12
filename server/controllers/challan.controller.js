@@ -15,7 +15,7 @@ const challanCreateSchema = Joi.object({
         product: Joi.string().required(),
         requested: Joi.number().min(1).required(),
         accepted: Joi.number().min(1).required(),
-        dispatch: Joi.boolean().required()
+        // dispatch: Joi.boolean().required()
     }).required(),
     // truck: Joi.object({
     vehicle_no: Joi.string().required(),

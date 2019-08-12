@@ -6,9 +6,11 @@ module.exports = mongoose.model("order", new mongoose.Schema({
     products: [{
         product: { type: mongoose.Schema.Types.ObjectId, ref: "product", required: true },
         quantity: { type: Number, required: true },
-        accepted: { type: Number, required: true, default: 0 }
+        accepted: { type: Number, required: true, default: 0 },
+        versionKey: false
     }],
-    status:{type:Boolean ,default:false},
+    notes: { type: String, required: false },
+    status: { type: Boolean, default: false },
     // status:{type:String, required:true},
     order_date: { type: Date, default: Date.now }
 }, {

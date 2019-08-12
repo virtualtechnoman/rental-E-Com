@@ -6,7 +6,7 @@ var mongodb = require("mongodb");
 const router = express.Router();
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 //GET all vehicle
-router.get('/',authorizePrivilege("GET_ALL_VEHICLES"), async (req, res) => {
+router.get('/', authorizePrivilege("GET_ALL_VEHICLES"), async (req, res) => {
   try {
     const allVehicles = await Vehicle.find().exec();
     // console.log(allVehicles);
@@ -18,7 +18,7 @@ router.get('/',authorizePrivilege("GET_ALL_VEHICLES"), async (req, res) => {
 })
 
 //GET all available vehicle
-router.get('/available',authorizePrivilege("GET_ALL_VEHICLES"),async (req, res) => {
+router.get('/available', authorizePrivilege("GET_ALL_VEHICLES"), async (req, res) => {
   try {
     const allVehicles = await Vehicle.find({ isAvailable: true }).exec();
     // console.log(allVehicles);
@@ -50,7 +50,7 @@ router.get('/available',authorizePrivilege("GET_ALL_VEHICLES"),async (req, res) 
 // })
 
 // DELETE a vehicle
-router.delete('/:id',authorizePrivilege("DELETE_VEHICLE"),(req, res) => {
+router.delete('/:id', authorizePrivilege("DELETE_VEHICLE"), (req, res) => {
   if (mongodb.ObjectID.isValid(req.params.id)) {
     Vehicle.deleteOne({ _id: req.params.id }, (err, vehicle) => {
       if (err) throw err;
@@ -67,7 +67,7 @@ router.delete('/:id',authorizePrivilege("DELETE_VEHICLE"),(req, res) => {
 
 
 // UPDATE A Vehicle
-router.put('/:id',authorizePrivilege("UPDATE_VEHICLE"),(req, res) => {
+router.put('/:id', authorizePrivilege("UPDATE_VEHICLE"), (req, res) => {
   if (mongodb.ObjectID.isValid(req.params.id)) {
     // let user = (({ full_name, email, role }) => ({ full_name, email, role }))(req.body);
     const result = VehicleController.verifyUpdate(req.body);
@@ -91,7 +91,7 @@ router.put('/:id',authorizePrivilege("UPDATE_VEHICLE"),(req, res) => {
 })
 
 // ADD NEW VEHICLE
-router.post("/", authorizePrivilege("ADD_NEW_VEHICLE"),(req, res) => {
+router.post("/", authorizePrivilege("ADD_NEW_VEHICLE"), (req, res) => {
   let result = VehicleController.verifyCreate(req.body)
   if (isEmpty(result.errors)) {
     const newVehicle = new Vehicle(result.data);

@@ -15,9 +15,9 @@ const mongoose = require("mongoose");
             accepted: {
                 type: Number, required: true
             },
-            dispatch: {
-                type: Boolean, required: true
-            }
+            // dispatch: {
+            //     type: Boolean, required: true
+            // }
         }],
         vehicle_no: { type: String, required: true },
         vehicle_type: { type: String, required: true },

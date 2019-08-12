@@ -53,18 +53,22 @@ export class OrderService {
 
   // =================CHALLAN APIS==================//
   getAllChallan() {
+    return this.http.get(this.url3 + '/all', { headers: this.headers });
+  }
+
+  getOwnChallan() {
     return this.http.get(this.url3 + '/', { headers: this.headers });
   }
 
-  // addReturnOrder(returnOrder) {
-  //   return this.http.post(this.url2 + '/', returnOrder, { headers: this.headers });
-  // }
+  getSpecificChallan(id) {
+    return this.http.get(this.url3 + '/id' + id, { headers: this.headers });
+  }
 
-  // deleteReturnOrder(id) {
-  //   return this.http.delete(this.url2 + '/' + id, { headers: this.headers });
-  // }
+  deleteChallan(id) {
+    return this.http.delete(this.url3 + '/' + id, { headers: this.headers });
+  }
 
-  // updateReturnOrder(returnOrder) {
-  //   return this.http.put(this.url2, returnOrder, { headers: this.headers });
-  // }
+  addNewChallan(challan) {
+    return this.http.post(this.url3, challan, { headers: this.headers });
+  }
 }
