@@ -53,6 +53,7 @@ export class VehicleComponent implements OnInit {
     this.get_Vehicles();
   }
 
+  get f() { return this.VehicleForm.controls; }
 
   submit() {
     this.submitted = true;
