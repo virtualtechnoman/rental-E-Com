@@ -7,7 +7,7 @@ const moment = require('moment');
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 //GET specific return order
-router.get("/:id",authorizePrivilege("GET_RETURN_ORDER"),(req,res)=>{
+router.get("/id/:id",authorizePrivilege("GET_RETURN_ORDER"),(req,res)=>{
     if(mongodb.ObjectID.isValid(req.params.id)){
         ReturnOrder.findById(req.params.id).populate("placed_by products.product").exec().then(doc=>{
             if(doc)
@@ -22,8 +22,17 @@ router.get("/:id",authorizePrivilege("GET_RETURN_ORDER"),(req,res)=>{
     }
 })
 
+//GET Return orders placed by self
+router.get("/",authorizePrivilege("GET_ALL_RETURN_ORDERS_OWN"),(req,res)=>{
+    ReturnOrder.find({placed_by:req.user._id}).populate("placed_by placed_to products.product").exec().then(doc=>{
+        return res.json({status:200,data:doc,errors:false,message:"All Return Orders"});
+    }).catch(err=>{
+        return res.status(500).json({status:500,data:null,errors:true,message:"Error while getting orders"})
+    });
+})
+
 //GET Return orders
-router.get("/",authorizePrivilege("GET_ALL_RETURN_ORDERS"),(req,res)=>{
+router.get("/all",authorizePrivilege("GET_ALL_RETURN_ORDERS"),(req,res)=>{
     ReturnOrder.find().populate("placed_by products.product").exec().then(doc=>{
         return res.json({status:200,data:doc,errors:false,message:"All Return Orders"});
     }).catch(err=>{

@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-const Products =
 
     module.exports = mongoose.model("challan", new mongoose.Schema({
         challan_id: { type: String, required: true },

@@ -7,9 +7,24 @@ const mongodb = require('mongoose').Types;
 const moment = require('moment');
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
+//GET ALL PRODUCTS CREATED BY SELF
+router.get("/",authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
+    Product.find({created_by:req.user._id}).populate("created_by").exec().then(docs => {
+        if (docs.length > 0)
+            res.json({ status: 200, data: docs, errors: false, message: "All products" });
+        else
+            res.json({ status: 200, data: docs, errors: true, message: "No products found" });
+    }).catch(err => {
+        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" })
+    })
+})
 
 // GET ALL PRODUCTS
+<<<<<<< HEAD
+router.get("/all",authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
+=======
 router.get("/", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
+>>>>>>> 7edc2fdbe9d1b47293fdae5bedc34c124e9bdc23
     Product.find().populate("created_by").exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All products" });
@@ -19,6 +34,7 @@ router.get("/", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" })
     })
 })
+
 
 // ADD NEW PRODUCT
 router.post('/', authorizePrivilege("ADD_NEW_PRODUCT"), async (req, res) => {
@@ -89,8 +105,7 @@ router.get("/page/:page?", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) =>
 })
 
 //DELETE A PRODUCT
-
-router.delete("/:id", authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
+router.delete("/:id",authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
     if (!mongodb.ObjectId.isValid(req.params.id)) {
         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid product id" });
     }
@@ -107,7 +122,11 @@ router.delete("/:id", authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
 })
 
 // GET SPECIFIC PRODUCT
+<<<<<<< HEAD
+router.get("/id/:id",authorizePrivilege("GET_PRODUCT"), (req, res) => {
+=======
 router.get("/:id", authorizePrivilege("GET_PRODUCT"), (req, res) => {
+>>>>>>> 7edc2fdbe9d1b47293fdae5bedc34c124e9bdc23
     if (mongodb.ObjectId.isValid(req.params.id)) {
         // console.log(req.params.id);
         Product.findById(req.params.id).populate("created_by").exec().then(doc => {
