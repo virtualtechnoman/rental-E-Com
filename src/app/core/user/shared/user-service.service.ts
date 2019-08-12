@@ -16,7 +16,7 @@ export class UserService {
   }
 
   addUser(user) {
-    return this.http.post('/api/auth/register', user, { headers: this.headers });
+    return this.http.post('/api/user/', user, { headers: this.headers });
   }
 
   getAllUsers() {
