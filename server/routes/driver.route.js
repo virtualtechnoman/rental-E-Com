@@ -4,7 +4,7 @@ const DriverController = require('../controllers/driver.controller');
 const Driver = require('../models/driver.model');
 var mongodb = require("mongodb");
 const router = express.Router();
-// const authorizePrivilege = require("../middleware/authorizationMiddleware");
+const authorizePrivilege = require("../middleware/authorizationMiddleware");
 //GET all vehicle
 router.get('/',authorizePrivilege("GET_ALL_DRIVERS"), async (req, res) => {
   try {
