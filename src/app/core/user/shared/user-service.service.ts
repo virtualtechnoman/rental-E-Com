@@ -9,7 +9,7 @@ import { TokenStorage } from '../../../auth/token.storage';
 export class UserService {
   headers = new HttpHeaders({
     'Content-Type': 'application/json',
-    'token': localStorage.getItem('AuthToken')
+    'token': this.tokenService.getToken()
   });
   url = '/api/user';
   constructor(private http: HttpClient, private tokenService: TokenStorage) {
@@ -27,9 +27,8 @@ export class UserService {
     return this.http.get(this.url + '/flmId/' + id, { headers: this.headers });
   }
 
-  getUserByRole(role) {
-    const asd = { role: role };
-    return this.http.post(this.url + '/role', asd, { headers: this.headers });
+  getUserByRole(id) {
+    return this.http.post(this.url + '/role' + id, { headers: this.headers });
   }
 
   deleteUser(id) {

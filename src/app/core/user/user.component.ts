@@ -99,11 +99,11 @@ export class UserComponent implements OnInit {
 
   addUser(user) {
     try {
-      this.userService.addUser(user).subscribe((res) => {
+      this.userService.addUser(user).subscribe((res:ResponseModel) => {
         console.log(res);
         jQuery('#modal3').modal('hide');
         this.toastr.success('User Added!', 'Success!');
-        this.allUsers.push(res);
+        this.allUsers.push(res.data);
         this.resetForm();
       });
     } catch (error) {
@@ -173,7 +173,7 @@ export class UserComponent implements OnInit {
   }
 
   getUserbyRole() {
-    console.log(this.selectedUserRole)
+    console.log(this.selectedUserRole);
     this.userService.getUserByRole(this.selectedUserRole._id).subscribe((res: ResponseModel) => {
       if (res.error) {
         this.toastr.warning('No Data Available', res.error);

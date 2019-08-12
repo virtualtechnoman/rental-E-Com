@@ -10,7 +10,7 @@
         style="width:20%" name="customer_name">
         <option value="" selected>Select User Role</option>
         <option [ngValue]="userRole" *ngFor="let userRole of allUserRoles">
-          {{userRole.role | titlecase}}</option>
+          {{userRole.name | titlecase}}</option>
       </select>
     </div>
     <div class="card-body">

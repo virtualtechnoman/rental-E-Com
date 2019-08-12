@@ -10,9 +10,9 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 
 //GET all users
-router.get('/',authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
+router.get('/', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   try {
-    const allUsers = await User.find({_id:{$ne:req.user._id}}).populate("role").exec();
+    const allUsers = await User.find({ _id: { $ne: req.user._id } }).populate("role").exec();
     // console.log(allUsers);
     res.json({ status: 200, message: "All users", errors: false, data: allUsers });
   }
@@ -34,7 +34,7 @@ router.get('/',authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
 // })
 
 // GET all users by role
-router.get('/role/:role',authorizePrivilege("GET_USER_BY_ROLE"), async (req, res) => {
+router.get('/role/:role', authorizePrivilege("GET_USER_BY_ROLE"), async (req, res) => {
   console.log(req.body.role)
   if (mongodb.ObjectId.isValid(req.params.role)) {
     try {
@@ -54,7 +54,7 @@ router.get('/role/:role',authorizePrivilege("GET_USER_BY_ROLE"), async (req, res
 })
 
 // DELETE a user
-router.delete('/:id',authorizePrivilege("DELETE_USER"), (req, res) => {
+router.delete('/:id', authorizePrivilege("DELETE_USER"), (req, res) => {
   if (mongodb.ObjectID.isValid(req.params.id)) {
     User.deleteOne({ _id: req.params.id }, (err, user) => {
       if (err) throw err;
@@ -71,7 +71,7 @@ router.delete('/:id',authorizePrivilege("DELETE_USER"), (req, res) => {
 
 
 // UPDATE A USER
-router.put('/:id',authorizePrivilege("UPDATE_USER"), (req, res) => {
+router.put('/:id', authorizePrivilege("UPDATE_USER"), (req, res) => {
   if (mongodb.ObjectID.isValid(req.params.id)) {
     // let user = (({ full_name, email, role }) => ({ full_name, email, role }))(req.body);
     const result = userCtrl.verifyUpdate(req.body);
@@ -93,9 +93,9 @@ router.put('/:id',authorizePrivilege("UPDATE_USER"), (req, res) => {
             res.status(200).json({ status: 200, errors: false, data: d, message: "Updated User" });
           }
         }
-        ).catch(e=>{
+        ).catch(e => {
           console.log(e);
-          return res.status(500).json({status:500,errors:true,data:null, message: "Error while updating user details" });
+          return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating user details" });
         });
       }
     })
@@ -106,14 +106,14 @@ router.put('/:id',authorizePrivilege("UPDATE_USER"), (req, res) => {
 })
 
 // ADD NEW USER
-router.post("/",authorizePrivilege("ADD_NEW_USER"), (req, res) => {
+router.post("/", authorizePrivilege("ADD_NEW_USER"), (req, res) => {
   // let result = userCtrl.insert(req.body);
   // let user = (({ full_name, email, password, role }) => ({ full_name, email, password, role }))(req.body);
   let result = userCtrl.verifyCreate(req.body)
   if (isEmpty(result.errors)) {
     User.findOne({ email: result.data.email }, (err, doc) => {
       if (err)
-        return res.status(500).json({status: 500, errors: true, data: null, message: "Error while verifying the email" })
+        return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while verifying the email" })
     })
     result.data.user_id = "USR" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     // console.log(user);
@@ -124,7 +124,7 @@ router.post("/",authorizePrivilege("ADD_NEW_USER"), (req, res) => {
         newuser.save().then(data => {
           data = data.toObject();
           delete data.password;
-          res.status(200).json({status: 200, errors: false, data, message:"User Added successfully"});
+          res.status(200).json({ status: 200, errors: false, data, message: "User Added successfully" });
         }).catch(err => {
           res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating new user" });
         })

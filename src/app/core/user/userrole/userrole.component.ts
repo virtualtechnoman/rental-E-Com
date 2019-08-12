@@ -72,7 +72,7 @@ export class UserroleComponent implements OnInit {
     this.data.addUserRole(userrole).subscribe((data: ResponseModel) => {
       console.log(data);
       jQuery('#userRoleModal').modal('hide');
-      this.allUserRoles.push(data);
+      this.allUserRoles.push(data.data);
       this.toastr.success('User role Added!', 'Added!');
     });
   }
