@@ -1,0 +1,94 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="float-left">Customer Management</h2>
+      <a class="btn btn-secondary float-right text-white" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal3">Add New
+        Customer</a>
+      <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal2">Upload CSV</a>
+    </div>
+    <div class="card-body">
+      <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
+        [dtTrigger]="dtTrigger">
+        <thead>
+          <tr>
+            <th scope="col">S.No</th>
+            <th scope="col">ID</th>
+            <th scope="col">Customer Name</th>
+            <th scope="col">City</th>
+            <th scope="col">District</th>
+            <th scope="col">Region</th>
+            <!-- <th scope="col">Sector</th> -->
+            <th scope="col">Type</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let customer of allcustomers; let i = index">
+            <td>{{i+1}}</td>
+            <td>{{customer.customer_id}}</td>
+            <td>{{customer.customer_name}}</td>
+            <td>{{customer.district.district_name}}</td>
+            <td>{{customer.city.city_name}}</td>
+            <td>{{customer.region.region_name}}</td>
+            <!-- <td>{{customer.sector}}</td> -->
+            <td>{{customer.customer_type.customer_type}}</td>
+            <td>
+              <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editCustomer(i)"><i
+                  class="fas fa-edit mx-2"></i> </a>
+              <a style="cursor: pointer" (click)="deleteCustomer(i)"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel3">Add New Customer</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="customerForm" (ngSubmit)="submit()">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="divider-text">Fill Customer Details</div>
+              <div class="form-row">
+                <div class="form-group col-md-4">
+                  <label for="inputEmail4">Customer Name*</label>
+                  <input type="text" class="form-control" placeholder="Customer Name" name="customer_name"
+                    formControlName="customer_name" [ngClass]="{ 'is-invalid': submitted && f.customer_name.errors }"
+                    required>
+                  <div *ngIf="submitted && f.customer_name.errors" class="invalid-feedback">
+                    <div *ngIf="f.customer_name.errors.required">Customer Name is required</div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="inputEmail4">Notes*</label>
+                  <input type="text" class="form-control" placeholder="Notes" formControlName="notes">
+                </div>
+                <div class="form-group col-md-2">
+                  <label for="inputPassword4">Active</label>
+                  <p-inputSwitch class="form-control" formControlName="is_active" required></p-inputSwitch>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row text-center">
+            <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+            <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

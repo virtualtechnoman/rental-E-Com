@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { UserService } from './shared/user-service.service';
 import { UserModel, UserRoleModel } from './shared/user.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import * as $ from "jquery";
+import * as $ from 'jquery';
 import { Subject } from 'rxjs';
 import { UserRoleService } from './shared/userrole.service';
 import { ToastrService } from 'ngx-toastr';
@@ -16,11 +16,12 @@ import { ResponseModel } from '../../shared/shared.model';
   styleUrls: ['./user.component.scss']
 })
 export class UserComponent implements OnInit {
-  id = "EMP" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second()
+  // id = 'EMP' + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second()
 
   allTherapies: any[] = [];
   allTherayId: any[] = [];
   allUsers: any[] = [];
+  allUserRole: any[] = [];
   CSV: File = null;
   confirmPassword: any = '';
   currentUser: UserModel;
@@ -28,45 +29,47 @@ export class UserComponent implements OnInit {
   currentIndex: number;
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
-  editing: boolean = false;
+  editing: Boolean = false;
   jQuery: any;
   maxDate = new Date().toISOString().substring(0, 10);
   parsedCSV;
-  passwordMatched: boolean = false;
-  showPassword: boolean = false;
-  submitted: boolean = false;
+  passwordMatched: Boolean = false;
+  showPassword: Boolean = false;
+  submitted: Boolean = false;
   selectedUserRole: UserRoleModel;
   userForm: FormGroup;
   allUserRoles: any[] = [];
   userRole;
-  uploading: boolean = false;
+  uploading: Boolean = false;
 
   constructor(private userService: UserService, private formBuilder: FormBuilder,
     private UserroleService: UserRoleService, private toastr: ToastrService, private activatedRoute: ActivatedRoute) {
     this.initForm();
-    this.userService.getAllUsers().subscribe((res: ResponseModel) => {
+    this.getUserRoles();
+    this.userService.getAllUsers().subscribe((res: any) => {
+      console.log('userResposne', res);
       if (res.error) {
-        this.toastr.warning('No Data Available', res.error)
+        this.toastr.warning('No Data Available', res.error);
       } else {
-        console.log(res)
+        console.log(res);
         this.allUsers = res.data;
       }
-    })
+    });
   }
 
   ngOnInit() {
     this.dtOptions = {
-      pagingType: "full_numbers",
+      pagingType: 'full_numbers',
       lengthMenu: [
         [10, 15, 25, -1],
         [10, 15, 25, 'All']
       ],
       destroy: true,
       retrive: true,
-      // dom: '<"html5buttons"B>lTfgitp',
+      // dom: '<'html5buttons'B>lTfgitp',
       language: {
-        search: "_INPUT_",
-        searchPlaceholder: "Search records",
+        search: '_INPUT_',
+        searchPlaceholder: 'Search records',
       },
       dom: 'Bfrtip',
       buttons: [
@@ -81,14 +84,14 @@ export class UserComponent implements OnInit {
   get f() { return this.userForm.controls; }
 
   submit() {
-    console.log("USER FORM VALUES ====>>>", this.userForm.value)
+    console.log('USER FORM VALUES ====>>>', this.userForm.value);
     this.submitted = true;
     if (this.userForm.invalid && !this.passwordMatched) {
       return;
     }
     this.currentUser = this.userForm.value;
     if (this.editing) {
-      this.updateUser(this.currentUser)
+      this.updateUser(this.currentUser);
     } else {
       this.addUser(this.currentUser);
     }
@@ -98,13 +101,13 @@ export class UserComponent implements OnInit {
     try {
       this.userService.addUser(user).subscribe((res) => {
         console.log(res);
-        jQuery("#modal3").modal("hide");
+        jQuery('#modal3').modal('hide');
         this.toastr.success('User Added!', 'Success!');
         this.allUsers.push(res);
         this.resetForm();
-      })
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
 
   }
@@ -117,19 +120,19 @@ export class UserComponent implements OnInit {
   }
 
   deleteUser(i) {
-    if (confirm("You Sure you want to delete this user")) {
+    if (confirm('You Sure you want to delete this user')) {
       this.userService.deleteUser(this.allUsers[i]._id).toPromise().then(() => {
         this.toastr.warning('User Deleted!', 'Deleted!');
-        this.allUsers.splice(i, 1)
-      }).catch((err) => console.log(err))
+        this.allUsers.splice(i, 1);
+      }).catch((err) => console.log(err));
     }
   }
 
   updateUser(user) {
     this.userService.updateUser(this.allUsers[this.currentIndex]._id, user).subscribe(res => {
-      jQuery("#modal3").modal("hide");
-      console.log("UPDATED USER VALUE")
-      console.log(res)
+      jQuery('#modal3').modal('hide');
+      console.log('UPDATED USER VALUE');
+      console.log(res);
       this.allUsers.splice(this.currentIndex, 1, res);
       this.toastr.info('Therapy Updated Successfully!', 'Updated!!');
       this.resetForm();
@@ -144,7 +147,7 @@ export class UserComponent implements OnInit {
       password: ['', Validators.required],
       role: ['', Validators.required],
       mobile_number: ['', Validators.required],
-    })
+    });
   }
 
   resetForm() {
@@ -152,6 +155,12 @@ export class UserComponent implements OnInit {
     this.editing = false;
     this.userForm.reset();
     this.initForm();
+  }
+
+  getUserRoles() {
+    this.UserroleService.getAllUserRoles().subscribe((res: ResponseModel) => {
+      this.allUserRoles = res.data;
+    });
   }
 
   setFormValue(user) {
@@ -167,14 +176,14 @@ export class UserComponent implements OnInit {
     console.log(this.selectedUserRole)
     this.userService.getUserByRole(this.selectedUserRole._id).subscribe((res: ResponseModel) => {
       if (res.error) {
-        this.toastr.warning('No Data Available', res.error)
+        this.toastr.warning('No Data Available', res.error);
       } else {
         this.allUsers = res.data;
         console.log(res)
-        console.log("Data from client to server", this.allUsers);
+        console.log('Data from client to server', this.allUsers);
         this.dtTrigger.next();
       }
-    })
+    });
   }
 
   public uploadCSV(files: FileList) {
@@ -194,17 +203,17 @@ export class UserComponent implements OnInit {
     this.uploading = true;
     var lines = this.parsedCSV.split(/\r\n|\n/);
     var result = [];
-    var headers: any[] = lines[0].split(",");
-    if (headers[0] == "first_name" && headers[1] == "last_name" && headers[2] == "email" && headers[3] == "password"
-      && headers[4] == "joining_date" && headers[5] == "job_title" && headers[6] == "is_active" && headers[7] == "therapy_line_id"
-      && headers[8] == "manager_id" && headers[9] == "position" && headers[10] == "title" && headers[11] == "mobile_phone"
-      && headers[12] == "home_phone" && headers[13] == "business_phone" && headers[14] == "business_extension" && headers[15] == "region"
-      && headers[16] == "city" && headers[17] == "district" && headers[18] == "address" && headers[19] == "postal_code"
-      && headers[20] == "notes"
+    var headers: any[] = lines[0].split(',');
+    if (headers[0] == 'first_name' && headers[1] == 'last_name' && headers[2] == 'email' && headers[3] == 'password'
+      && headers[4] == 'joining_date' && headers[5] == 'job_title' && headers[6] == 'is_active' && headers[7] == 'therapy_line_id'
+      && headers[8] == 'manager_id' && headers[9] == 'position' && headers[10] == 'title' && headers[11] == 'mobile_phone'
+      && headers[12] == 'home_phone' && headers[13] == 'business_phone' && headers[14] == 'business_extension' && headers[15] == 'region'
+      && headers[16] == 'city' && headers[17] == 'district' && headers[18] == 'address' && headers[19] == 'postal_code'
+      && headers[20] == 'notes'
     ) {
       for (var i = 1; i < lines.length - 1; i++) {
         var obj = {};
-        var currentline = lines[i].split(",");
+        var currentline = lines[i].split(',');
         currentline[0] = String(currentline[0]);
         currentline[1] = String(currentline[1]);
         currentline[2] = String(currentline[2]);
@@ -235,14 +244,13 @@ export class UserComponent implements OnInit {
         setTimeout(() => {
           this.uploading = false;
           this.toastr.success('User added successfully', 'Upload Success');
-          jQuery("#modal2").modal("hide");
+          jQuery('#modal2').modal('hide');
           this.uploading = false;
           // this.all_bu.push(res);
         }, 1000);
       });
       // this.newproduct = result;
-    }
-    else {
+    } else {
       this.toastr.error('Try Again ', 'Upload Failed')
       setTimeout(() => {
         this.uploading = false;
@@ -252,44 +260,44 @@ export class UserComponent implements OnInit {
   }
 
   checkRegion(region) {
-    if (region.region_name == this.userForm.get('region').value) {
+    if (region.region_name === this.userForm.get('region').value) {
       return true;
     }
-    return false
+    return false;
   }
 
   checkDistrict(district) {
-    if (district.district_name == this.userForm.get('district').value) {
+    if (district.district_name === this.userForm.get('district').value) {
       return true;
     }
-    return false
+    return false;
   }
 
   checkCity(city) {
-    if (city.city_name == this.userForm.get('city').value) {
+    if (city.city_name === this.userForm.get('city').value) {
       return true;
     }
-    return false
+    return false;
   }
 
   checkPassword() {
-    console.log(this.confirmPassword)
-    if (this.confirmPassword != this.userForm.get('password').value) {
+    console.log(this.confirmPassword);
+    if (this.confirmPassword !== this.userForm.get('password').value) {
       this.passwordMatched = false;
-      console.log("TRUE")
+      console.log('TRUE');
       return true;
     } else {
       this.passwordMatched = true;
-      return false
-    };
+      return false;
+    }
   }
 
   togglePassword() {
-    var x = <HTMLInputElement>document.getElementById("password");
-    if (x.type === "password") {
-      x.type = "text";
+    const x = <HTMLInputElement>document.getElementById('password');
+    if (x.type === 'password') {
+      x.type = 'text';
     } else {
-      x.type = "password";
+      x.type = 'password';
     }
   }
 

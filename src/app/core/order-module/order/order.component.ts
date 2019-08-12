@@ -24,6 +24,7 @@ export class OrderComponent implements OnInit {
   currentOrderId: number;
   currentIndex: number;
   challanForm: FormGroup;
+  valueForm: FormGroup;
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
   editing: Boolean = false;
@@ -53,7 +54,7 @@ export class OrderComponent implements OnInit {
       ],
       destroy: true,
       retrive: true,
-      dom: "<'html5buttons'B>lTfgitp'",
+      dom: '<\'html5buttons\'B>lTfgitp\'',
       language: {
         search: '_INPUT_',
         searchPlaceholder: 'Search records',
@@ -72,18 +73,19 @@ export class OrderComponent implements OnInit {
 
   submit() {
     this.submitted = true;
-    console.log(this.orderForm.value);
     if (this.orderForm.invalid) {
       return;
     }
+    this.orderForm.get('status').setValue(false);
+    for (let index = 0; index < this.formArr.length; index++) {
+      this.formArr.controls[index].get('accepted').setValue(0);
+
+    }
+    console.log(this.formArr);
     this.currentOrder = this.orderForm.value;
+    console.log(this.orderForm.value);
     console.log(this.currentOrder);
-    // if (this.editing) {
-    //   this.updateOrder(this.currentOrder)
-    // } else {
-    this.orderForm.removeControl('products.accepted');
     this.addOrder(this.orderForm.value);
-    // }
   }
 
   addOrder(order) {
@@ -109,10 +111,15 @@ export class OrderComponent implements OnInit {
   }
 
   viewSummary(i) {
+    while (this.valueArr.length !== 0) {
+      this.valueArr.removeAt(0);
+    }
     this.showSummary = true;
-    console.log(i);
     this.currentOrder = this.allOrders[i];
-    console.log(this.currentOrder);
+    // this.valueArr.push(this.initValueRows());
+    this.valueArr.push(this.initValueRows());
+    // for (let index = 0; index < this.currentOrder.products.length; index++) {
+    // }
   }
 
   deleteOrder(i) {
@@ -161,22 +168,28 @@ export class OrderComponent implements OnInit {
   }
 
   updateOrder() {
-    const order = this.currentOrder;
-    delete order.order_date;
-    delete order.order_id;
-    delete order._id;
-    const placed_by = order.placed_by._id;
-    const placed_to = order.placed_to._id;
-    // order.products.forEach(product => {
-    //   product.product = product.product._id;
-    // });
+    const placed_to = this.currentOrder.placed_to._id;
+    const order2 = <any>new Object();
+    order2.status = true;
+    order2.placed_to = placed_to;
+    delete order2._id; delete order2.placed_by; delete order2.order_date;
+    order2.products = this.currentOrder.products;
+    order2.products.forEach(product => {
+      delete product._id;
+    });
+    console.log('Order 2 ==>', order2);
+    console.log('Current Order ==>', this.currentOrder.products);
+    for (let index = 0; index < order2.products.length; index++) {
+      console.log('Current Index==>', index);
+      order2.products[index].product = this.currentOrder.products[index].product._id;
+      // console.log('Current Accepted Value==>', this.valueArr.controls[index].get('accepted').value);
+      console.log('Order2 Product accepted Value', order2.products[index].accepted);
+      // order2.products[index].accepted = this.valueArr.controls[index].get('accepted').value;
+    }
+    this.orderForm.get('status').setValue(true);
     console.log('Current Order', this.currentOrder);
-    console.log('Placed By', placed_by);
-    console.log('placed_to', placed_to);
-    order.placed_by = placed_by;
-    order.placed_to = placed_to;
-    console.log(order);
-    this.orderService.updateOrder(order, this.currentOrder._id).subscribe(res => {
+    console.log('Sent Order', order2);
+    this.orderService.updateOrder(order2, this.currentOrder._id).subscribe(res => {
       jQuery('#modal3').modal('hide');
       this.toastr.info('Order Updated Successfully!', 'Updated!!');
       this.resetForm();
@@ -188,9 +201,12 @@ export class OrderComponent implements OnInit {
 
   initForm() {
     this.orderForm = this.formBuilder.group({
-      accepted: [false],
+      status: [''],
       placed_to: ['', Validators.required],
       products: this.formBuilder.array([this.initItemRows()])
+    });
+    this.valueForm = this.formBuilder.group({
+      productsArray: this.formBuilder.array([])
     });
   }
 
@@ -204,6 +220,10 @@ export class OrderComponent implements OnInit {
     return this.orderForm.get('products') as FormArray;
   }
 
+  get valueArr() {
+    return this.valueForm.get('productsArray') as FormArray;
+  }
+
   initItemRows() {
     return this.formBuilder.group({
       accepted: [''],
@@ -212,6 +232,14 @@ export class OrderComponent implements OnInit {
       // value: ['']
     });
   }
+
+  initValueRows() {
+    return this.formBuilder.group({
+      accepted: [''],
+      // value: ['']
+    });
+  }
+
 
   addPeriod() {
     this.formArr.push(this.initItemRows());
@@ -285,7 +313,7 @@ export class OrderComponent implements OnInit {
 
   saveAndAcceptOrder() {
     const updatedOrder = this.currentOrder;
-    updatedOrder.accepted = false;
+    updatedOrder.status = false;
   }
   get productsArray() {
     return this.challanForm.get('products') as FormArray;
@@ -305,7 +333,7 @@ export class OrderComponent implements OnInit {
   }
 
   saveChallan() {
-
+    this.orderForm.get('status').setValue(true);
   }
 
 }

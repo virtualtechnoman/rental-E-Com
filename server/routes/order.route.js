@@ -71,9 +71,8 @@ router.put("/:id", (req, res) => {
             if (err)
                 return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating order status" });
             if (doc) {
-                doc
-                    .populate("placed_by products.product placed_to")
-                    .exec()
+                doc.populate("placed_by products.product placed_to")
+                    .execPopulate()
                     .then(d => {
                         return res.status(200).json({ status: 200, errors: false, data: d, message: "Order updated successfully" });
                     })

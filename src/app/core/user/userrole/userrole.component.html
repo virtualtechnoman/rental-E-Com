@@ -11,16 +11,18 @@
         <thead>
           <th>S.No</th>
           <th>User Role </th>
+          <th>Is Admin</th>
           <th>Action</th>
         </thead>
         <tbody>
           <tr *ngFor="let user of allUserRoles; let i= index">
             <td>{{i+1}}</td>
-            <td>{{user.user_role}}</td>
+            <td>{{user.name}}</td>
+            <td>{{user.isAdmin}}</td>
             <td>
               <i class="fas fa-edit mx-1" data-toggle="modal" data-target="#userRoleModal"
                 (click)="editUserRole(i)"></i>
-              <i class="fas fa-trash-alt" (click)="deleteUser(i)"></i>
+              <i class="fas fa-trash-alt" (click)="deleteUserRole(i)"></i>
             </td>
           </tr>
         </tbody>
@@ -48,8 +50,18 @@
                   <label for="inputPrice3" class=" col-form-label">User Role</label>
                 </div>
                 <div class="col-md-8">
-                  <input type="text" class="form-control" formControlName="user_role" placeholder="Enter User Role here"
+                  <input type="text" class="form-control" formControlName="name" placeholder="Enter User Role here"
                     id="user_role" name="user_role" required>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-row">
+                <div class="col-md-4">
+                  <label for="inputPrice3" class=" col-form-label">Is Admin</label>
+                </div>
+                <div class="col-md-8">
+                  <p-inputSwitch class="form-control text-center" formControlName="isAdmin" required></p-inputSwitch>
                 </div>
               </div>
             </div>
@@ -58,31 +70,122 @@
             <div class="card">
               <div class="card-header text-center ">Users</div>
               <div class="card-body">
-
                 <table class="table table-sm">
                   <thead>
                     <tr>
                       <th scope="col">#</th>
-                      <th scope="col">Tables</th>
-                      <th scope="col">Grant Permission</th>
+                      <th scope="col">Get all </th>
+                      <th scope="col">Get </th>
+                      <th scope="col">Add </th>
+                      <th scope="col">Edit </th>
+                      <th scope="col">Delete </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <th scope="row">1</th>
-                      <td>User Management</td>
-                      <td>
-                        <p-inputSwitch class="text-center" formControlName="can_access_users">
+                      <th scope="col">User</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_USERS">
                         </p-inputSwitch>
-                      </td>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_USER">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="UPDATE_USER">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_USER">
+                        </p-inputSwitch>
+                      </th>
                     </tr>
                     <tr>
-                      <th scope="row">2</th>
-                      <td>User Role Management</td>
-                      <td>
-                        <p-inputSwitch class="text-center" formControlName="can_access_user_role">
+                      <th scope="col">Product</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_PRODUCTS">
                         </p-inputSwitch>
-                      </td>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_PRODUCT">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_PRODUCT">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="UPDATE_PRODUCT">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_PRODUCT">
+                        </p-inputSwitch>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th scope="col">Order</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_ORDERS">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ORDER">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_ORDER">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col">
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_ORDER">
+                        </p-inputSwitch>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th scope="col">Return Order</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_RETURN_ORDERS">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_RETURN_ORDER">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_RETURN_ORDER">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col">
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_RETURN_ORDER">
+                        </p-inputSwitch>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th scope="col">Challan</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_CHALLAN">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_CHALLAN">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_CHALLAN">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col">
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_CHALLAN">
+                        </p-inputSwitch>
+                      </th>
                     </tr>
                   </tbody>
                 </table>

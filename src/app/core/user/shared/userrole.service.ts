@@ -12,26 +12,26 @@ export class UserRoleService {
     'Content-Type': 'application/json',
     'token': this.tokenService.getToken()
   });
-  url = "/api/userrole";
+  url = '/api/role';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   addUserRole(userRole) {
-    return this.http.post(this.url + '/', userRole, { headers: this.headers })
+    return this.http.post(this.url + '/', userRole, { headers: this.headers });
   }
 
   getAllUserRoles() {
-    return this.http.get(this.url, { headers: this.headers })
+    return this.http.get(this.url, { headers: this.headers });
   }
 
   deleteUserRole(id) {
-    return this.http.delete(this.url + '/' + id, { headers: this.headers })
+    return this.http.delete(this.url + '/' + id, { headers: this.headers });
   }
 
   updateUserRole(id, user) {
-    return this.http.put(this.url + '/' + id, user, { headers: this.headers })
+    return this.http.put(this.url + '/' + id, user, { headers: this.headers });
   }
 
   importCustomer(csv) {
-    return this.http.post(this.url + '/import', csv, { headers: this.headers })
+    return this.http.post(this.url + '/import', csv, { headers: this.headers });
   }
 }

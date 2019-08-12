@@ -26,6 +26,7 @@ import { UserModule } from './core/user/user.module';
 import { CoreComponent } from './core/core.component';
 import { ProductsModule } from './core/products/products.module';
 import { OrderModuleModule } from './core/order-module/order-module.module';
+import { CustomersModule } from './core/customers/customers.module';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { OrderModuleModule } from './core/order-module/order-module.module';
     AppRoutingModule,
     SharedModule,
 
+    CustomersModule,
     ProductsModule,
     OrderModuleModule,
     // core Modules

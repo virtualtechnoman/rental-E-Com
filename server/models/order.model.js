@@ -8,7 +8,7 @@ module.exports = mongoose.model("order", new mongoose.Schema({
         quantity: { type: Number, required: true },
         accepted: { type: Number, required: true, default: 0 }
     }],
-    accepted: { type: Boolean, default: false },
+    status: { type: Boolean, default: false },
     // status:{type:String, required:true},
     order_date: { type: Date, default: Date.now }
 }, {

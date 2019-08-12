@@ -16,7 +16,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     FormsModule,
     ReactiveFormsModule,
     DataTablesModule,
-    InputSwitchModule
+    InputSwitchModule,
   ],
   declarations: [ReturnOrderComponent, ChallanComponent, OrderComponent],
   providers: [OrderService],

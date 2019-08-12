@@ -13,12 +13,15 @@ const privileges = require("../utils/privilege.template");
 
 //GET ALL ROLES
 router.get("/", (req, res) => {
-    userRole.find().exec().then(data => {
-        res.status(200).json({status:200,message:"All Roles", errors:false,data});
-    }).catch(err => {
-        console.log(err);
-        res.status(500).json({ status:500, data:null, errors:true, message: "Error while fetching the user roles" });
-    })
+    userRole
+        .find()
+        .exec()
+        .then(data => {
+            res.status(200).json({ status: 200, message: "All Roles", errors: false, data });
+        }).catch(err => {
+            console.log(err);
+            res.status(500).json({ status: 500, data: null, errors: true, message: "Error while fetching the user roles" });
+        })
 })
 
 
@@ -26,13 +29,13 @@ router.get("/", (req, res) => {
 router.post('/', (req, res) => {
     let result = UserRoleController.verifyCreate(req.body);
     if (!isEmpty(result.errors)) {
-        return res.status(200).json({ status: 200, message:"Fields required", errors: result.errors, data: null })
+        return res.status(200).json({ status: 200, message: "Fields required", errors: result.errors, data: null })
     }
-    result.data.privileges = privileges(result.data.isAdmin);
+    // result.data.privileges = privileges(result.data.isAdmin);
     let role = new userRole(result.data);
-    role.save().then(Role => res.status(200).json({ status: 200, message:"Role added successfully", errors: false, data: Role })).catch(err => {
+    role.save().then(Role => res.status(200).json({ status: 200, message: "Role added successfully", errors: false, data: Role })).catch(err => {
         console.log(err)
-        res.json({ status: 500, message:"Error while adding role", errors: true, data: null })
+        res.json({ status: 500, message: "Error while adding role", errors: true, data: null })
     });
 }
 );
@@ -45,15 +48,15 @@ router.put("/:id", (req, res) => {
         userRole.findByIdAndUpdate(req.body.id, role, { new: true }, (err, doc) => {
             if (err) {
                 console.log(err);
-                res.status(500).json({status:500,errors:true, data:null, message: "Error while updating the role" })
+                res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating the role" })
             }
             if (doc) {
-                res.status(200).json({status:200,errors:false, data:doc, message: "Role updated successfully" })
+                res.status(200).json({ status: 200, errors: false, data: doc, message: "Role updated successfully" })
             }
         })
     }
     else {
-        res.json({status:400, message: "Invalid role id",errors:false, data:null })
+        res.json({ status: 400, message: "Invalid role id", errors: false, data: null })
     }
 })
 
@@ -62,12 +65,12 @@ router.delete("/", (req, res) => {
     if (mongodb.ObjectId.isValid(req.body.id)) {
         userRole.deleteOne({ _id: req.body.id }, (err, doc) => {
             if (err)
-                res.json({ status:500, errors:true, data:null, message: "Error while deleting the role" })
+                res.json({ status: 500, errors: true, data: null, message: "Error while deleting the role" })
             if (doc)
                 res.json(doc);
         })
     } else {
-        res.json({ status:400, errors:false, data:null, message: "Invalid data" });
+        res.json({ status: 400, errors: false, data: null, message: "Invalid data" });
     }
 })
 

@@ -1,4 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { OrderService } from '../shared/order.service';
+import { ResponseModel } from '../../../shared/shared.model';
+import { ToastrService } from 'ngx-toastr';
+import { Subject } from 'rxjs';
+import { ProductModel } from '../../products/shared/product.model';
 
 @Component({
   selector: 'app-challan',
@@ -7,9 +12,58 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ChallanComponent implements OnInit {
 
-  constructor() { }
+  allChallans: any[] = [];
+  allProducts: ProductModel[] = [];
+  currentChallan: any;
+  dtOptions: any = {};
+  dtTrigger: Subject<any> = new Subject();
+  constructor(private orderService: OrderService, private toasterService: ToastrService) { }
 
   ngOnInit() {
+    this.dtOptions = {
+      pagingType: 'full_numbers',
+      lengthMenu: [
+        [10, 15, 25, -1],
+        [10, 15, 25, 'All']
+      ],
+      destroy: true,
+      retrive: true,
+      dom: "<'html5buttons'B>lTfgitp'",
+      language: {
+        search: '_INPUT_',
+        searchPlaceholder: 'Search records',
+      },
+      // dom: 'Bfrtip',
+      buttons: [
+        // 'colvis',
+        'copy',
+        'print',
+        'excel',
+      ]
+    };
+    this.getAllChallan();
   }
 
+  getAllChallan() {
+    this.orderService.getAllChallan().subscribe((res: ResponseModel) => {
+      if (res.error) {
+        this.toasterService.warning('Error', res.error);
+      } else {
+        this.allChallans = res.data;
+        console.log(this.allChallans);
+      }
+    });
+  }
+
+  selectChallan(i) {
+    this.currentChallan = this.allChallans[i];
+    this.allProducts = this.currentChallan.products;
+  }
+
+
+  // resetForm() {
+  //   this.editing = false;
+  //   this.submitted = false;
+  //   this.cha.reset();
+  // }
 }

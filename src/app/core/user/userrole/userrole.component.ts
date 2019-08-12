@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { UserRoleService } from '../shared/userrole.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import * as $ from 'jquery'
+import * as $ from 'jquery';
 import { Subject } from 'rxjs';
+import { ResponseModel } from '../../../shared/shared.model';
 
 @Component({
   selector: 'app-userrole',
@@ -13,40 +14,31 @@ import { Subject } from 'rxjs';
 export class UserroleComponent implements OnInit {
   jQuery: any;
   allUserRoles: any[] = [];
-  can_access_bu: boolean = false;
-  can_access_company: boolean = false;
-  can_access_country: boolean = false;
-  can_access_customer: boolean = false;
-  can_access_district: boolean = false;
-  can_access_region: boolean = false;
-  can_access_therapy: boolean = false;
-  can_access_users: boolean = false;
-  can_access_city: boolean = false;
   currentUserRole: any;
   currentUserroleid: any;
   current_user_index: any;
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
   userRoleForm: FormGroup;
-  editing: boolean = false;
-  submitted: boolean = false;
+  editing: Boolean = false;
+  submitted: Boolean = false;
   constructor(private data: UserRoleService, private formBuilder: FormBuilder, private toastr: ToastrService) {
 
   }
 
   ngOnInit() {
     this.dtOptions = {
-      pagingType: "full_numbers",
+      pagingType: 'full_numbers',
       lengthMenu: [
         [10, 15, 25, -1],
         [10, 15, 25, 'All']
       ],
       destroy: true,
       retrive: true,
-      dom: '<"html5buttons"B>lTfgitp',
+      dom: '<html5buttons"B>lTfgitp',
       language: {
-        search: "_INPUT_",
-        searchPlaceholder: "Search records",
+        search: '_INPUT_',
+        searchPlaceholder: 'Search records',
       },
       // dom: 'Bfrtip',
       buttons: [
@@ -60,40 +52,37 @@ export class UserroleComponent implements OnInit {
     this.getUserRole();
   }
 
-  AddUserRole(userrole) {
-    this.data.addUserRole(userrole).subscribe(data => {
-      console.log("ADDED")
-        jQuery("#userRoleModal").modal("hide");
-        this.allUserRoles.push(data);
-        this.toastr.success('User role Added!', 'Added!');
-      })
-  }
-
-  deleteUser(index) {
-    if (confirm("You Sure You Want to Delete this USer??")) {
-      this.data.deleteUserRole(this.allUserRoles[index]._id).subscribe(() => {
-        this.toastr.warning('User role Deleted!', 'Deleted!');
-        this.allUserRoles.splice(index, 1);
-      })
-    }
-  }
-
   get f() { return this.userRoleForm.controls; }
 
   submit() {
-    console.log("SUBMITED")
+    console.log(this.userRoleForm.value);
     this.submitted = true;
     if (this.userRoleForm.invalid) {
-      debugger
       return;
     }
     this.currentUserRole = this.userRoleForm.value;
     if (this.editing) {
-      debugger
-      this.updateUser(this.currentUserRole)
+      this.updateUser(this.currentUserRole);
     } else {
-      debugger
       this.AddUserRole(this.currentUserRole);
+    }
+  }
+
+  AddUserRole(userrole) {
+    this.data.addUserRole(userrole).subscribe((data: ResponseModel) => {
+      console.log(data);
+      jQuery('#userRoleModal').modal('hide');
+      this.allUserRoles.push(data);
+      this.toastr.success('User role Added!', 'Added!');
+    });
+  }
+
+  deleteUserRole(index) {
+    if (confirm('You Sure You Want to Delete this User Role??')) {
+      this.data.deleteUserRole(this.allUserRoles[index]._id).subscribe(() => {
+        this.toastr.warning('User role Deleted!', 'Deleted!');
+        this.allUserRoles.splice(index, 1);
+      });
     }
   }
 
@@ -107,49 +96,52 @@ export class UserroleComponent implements OnInit {
 
   getUserRole() {
     this.allUserRoles.length = 0;
-    this.data.getAllUserRoles().subscribe((res: any[]) => {
-      this.allUserRoles = res;
+    this.data.getAllUserRoles().subscribe((res: ResponseModel) => {
+      this.allUserRoles = res.data;
       this.dtTrigger.next();
-    })
+    });
   }
 
   initForm() {
     this.userRoleForm = this.formBuilder.group({
-      user_role: ['', Validators.required],
-      can_access_bu: [false],
-      can_access_city: [false],
-      can_access_country: [false],
-      can_access_customer: [false],
-      can_access_customer_type: [false],
-      can_access_distirbutor: [false],
-      can_access_district: [false],
-      can_access_g2n: [false],
-      can_access_inventory: [false],
-      can_access_incentive_period: [false],
-      can_access_incentive_share: [false],
-      can_access_products: [false],
-      can_access_region: [false],
-      can_access_reports: [false],
-      can_access_sales: [false],
-      can_access_target_setting: [false],
-      can_access_target_forecasting: [false],
-      can_access_therapy: [false],
-      can_access_users: [false],
-      can_access_user_role: [false],
-    })
+      name: ['', Validators.required],
+      isAdmin: [false, Validators.required],
+      privileges: this.formBuilder.group({
+        GET_ALL_USERS: [false],
+        GET_USER_BY_ROLE: [false],
+        ADD_NEW_USER: [false],
+        DELETE_USER: [false],
+        UPDATE_USER: [false],
+        GET_ALL_PRODUCTS: [false],
+        GET_PRODUCT: [false],
+        ADD_NEW_PRODUCT: [false],
+        DELETE_PRODUCT: [false],
+        UPDATE_PRODUCT: [false],
+        GET_ALL_ORDERS: [false],
+        GET_ORDER: [false],
+        ADD_NEW_ORDER: [false],
+        DELETE_ORDER: [false],
+        GET_ALL_RETURN_ORDERS: [false],
+        GET_RETURN_ORDER: [false],
+        ADD_NEW_RETURN_ORDER: [false],
+        DELETE_RETURN_ORDER: [false],
+        GET_ALL_CHALLAN: [false],
+        GET_CHALLAN: [false],
+        ADD_NEW_CHALLAN: [false],
+        DELETE_CHALLAN: [false]
+      })
+    });
   }
 
 
   updateUser(user) {
-    debugger
     this.data.updateUserRole(this.allUserRoles[this.current_user_index]._id, user).subscribe(res => {
-      debugger
-      jQuery("#userRoleModal").modal("hide");
-      console.log(res)
-      this.allUserRoles.splice(this.current_user_index, 1, res)
+      jQuery('#userRoleModal').modal('hide');
+      console.log(res);
+      this.allUserRoles.splice(this.current_user_index, 1, res);
       this.toastr.info('User role Updated!', 'Updated!');
       this.resetForm();
-    })
+    });
   }
 
   resetForm() {
@@ -160,30 +152,31 @@ export class UserroleComponent implements OnInit {
   }
 
   setFormValue() {
-    var user = this.allUserRoles[this.current_user_index];
-    this.userRoleForm.get('user_role').setValue(user.user_role);
-    this.userRoleForm.get('can_access_bu').setValue(user.can_access_bu);
-    this.userRoleForm.get('can_access_city').setValue(user.can_access_city);
-    this.userRoleForm.get('can_access_country').setValue(user.can_access_country);
-    this.userRoleForm.get('can_access_customer').setValue(user.can_access_customer);
-    this.userRoleForm.get('can_access_customer_type').setValue(user.can_access_customer_type);
-    // this.userRoleForm.controls['can_access_customer_assignment'].setValue(user.can_access_customer_assignment);
-    this.userRoleForm.get('can_access_distirbutor').setValue(user.can_access_distirbutor);
-    this.userRoleForm.get('can_access_district').setValue(user.can_access_district);
-    this.userRoleForm.get('can_access_g2n').setValue(user.can_access_g2n);
-    this.userRoleForm.get('can_access_inventory').setValue(user.can_access_inventory);
-    this.userRoleForm.get('can_access_incentive_period').setValue(user.can_access_incentive_period);
-    this.userRoleForm.get('can_access_incentive_share').setValue(user.can_access_incentive_share);
-    this.userRoleForm.get('can_access_products').setValue(user.can_access_products);
-    this.userRoleForm.get('can_access_region').setValue(user.can_access_region);
-    this.userRoleForm.get('can_access_reports').setValue(user.can_access_reports);
-    this.userRoleForm.get('can_access_sales').setValue(user.can_access_sales);
-    this.userRoleForm.get('can_access_therapy').setValue(user.can_access_therapy);
-    this.userRoleForm.get('can_access_target_setting').setValue(user.can_access_target_setting);
-    this.userRoleForm.get('can_access_target_forecasting').setValue(user.can_access_target_forecasting);
-    this.userRoleForm.get('can_access_therapy').setValue(user.can_access_therapy);
-    this.userRoleForm.get('can_access_users').setValue(user.can_access_users);
-    this.userRoleForm.get('can_access_user_role').setValue(user.can_access_user_role);
+    const user = this.allUserRoles[this.current_user_index];
+    this.userRoleForm.get('name').setValue(user.name);
+    this.userRoleForm.get('isAdmin').setValue(user.isAdmin);
+    this.userRoleForm.controls['privileges'].get('GET_ALL_USERS').setValue(user.privileges.GET_ALL_USERS);
+    this.userRoleForm.controls['privileges'].get('GET_USER_BY_ROLE').setValue(user.privileges.GET_USER_BY_ROLE);
+    this.userRoleForm.controls['privileges'].get('ADD_NEW_USER').setValue(user.privileges.ADD_NEW_USER);
+    this.userRoleForm.controls['privileges'].get('DELETE_USER').setValue(user.privileges.DELETE_USER);
+    this.userRoleForm.controls['privileges'].get('UPDATE_USER').setValue(user.privileges.UPDATE_USER);
+    this.userRoleForm.controls['privileges'].get('GET_ALL_PRODUCTS').setValue(user.privileges.GET_ALL_PRODUCTS);
+    this.userRoleForm.controls['privileges'].get('GET_PRODUCT').setValue(user.privileges.GET_PRODUCT);
+    this.userRoleForm.controls['privileges'].get('ADD_NEW_PRODUCT').setValue(user.privileges.ADD_NEW_PRODUCT);
+    this.userRoleForm.controls['privileges'].get('DELETE_PRODUCT').setValue(user.privileges.DELETE_PRODUCT);
+    this.userRoleForm.controls['privileges'].get('UPDATE_PRODUCT').setValue(user.privileges.UPDATE_PRODUCT);
+    this.userRoleForm.controls['privileges'].get('GET_ALL_ORDERS').setValue(user.privileges.GET_ALL_ORDERS);
+    this.userRoleForm.controls['privileges'].get('GET_ORDER').setValue(user.privileges.GET_ORDER);
+    this.userRoleForm.controls['privileges'].get('ADD_NEW_ORDER').setValue(user.privileges.ADD_NEW_ORDER);
+    this.userRoleForm.controls['privileges'].get('DELETE_ORDER').setValue(user.privileges.DELETE_ORDER);
+    this.userRoleForm.controls['privileges'].get('GET_ALL_RETURN_ORDERS').setValue(user.privileges.GET_ALL_RETURN_ORDERS);
+    this.userRoleForm.controls['privileges'].get('GET_RETURN_ORDER').setValue(user.privileges.GET_RETURN_ORDER);
+    this.userRoleForm.controls['privileges'].get('ADD_NEW_RETURN_ORDER').setValue(user.privileges.ADD_NEW_RETURN_ORDER);
+    this.userRoleForm.controls['privileges'].get('DELETE_RETURN_ORDER').setValue(user.privileges.DELETE_RETURN_ORDER);
+    this.userRoleForm.controls['privileges'].get('GET_ALL_CHALLAN').setValue(user.privileges.GET_ALL_CHALLAN);
+    this.userRoleForm.controls['privileges'].get('GET_CHALLAN').setValue(user.privileges.GET_CHALLAN);
+    this.userRoleForm.controls['privileges'].get('ADD_NEW_CHALLAN').setValue(user.privileges.ADD_NEW_CHALLAN);
+    this.userRoleForm.controls['privileges'].get('DELETE_CHALLAN').setValue(user.privileges.DELETE_CHALLAN);
   }
 
 }

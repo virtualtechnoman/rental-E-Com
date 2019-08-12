@@ -36,7 +36,27 @@
       </li>
       <li class="nav-item"><a routerLink="orders" class="nav-link"> Order Management</a></li>
       <li class="nav-item"><a routerLink="returnorder"> Return Order</a></li>
-      <li class="nav-item"><a routerLink="returnorder"> Challan Management</a></li>
+      <li class="nav-item"><a routerLink="challan"> Challan Management</a></li>
+      <li class="nav-item with-sub dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false" class="nav-link"><i data-feather="layers"></i> Admin Panel</a>
+        <div class="navbar-menu-sub">
+          <div class="d-lg-flex">
+            <ul>
+              <li class="nav-sub-item">
+                <a class="nav-sub-link" routerLink="customer">
+                  <i data-feather="log-in"></i> Customer Management
+                </a>
+              </li>
+              <li class="nav-sub-item">
+                <a class="nav-sub-link" routerLink="ehicle">
+                  <i data-feather="log-in"></i> Vehicle Management
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </li>
     </ul>
   </div>
   <div class="navbar-right">

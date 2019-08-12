@@ -1,0 +1,124 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="float-left">Sector</h2>
+      <a class="btn btn-secondary float-right text-white" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal3">Add New Sector</a>
+     <!--- <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal2">Upload CSV</a>-->
+    </div>
+    <div class="card-body">
+      <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
+        [dtTrigger]="dtTrigger">
+        <thead>
+          <tr>
+            <!-- <th scope="col">ID</th> -->
+            <th scope="col">S.No</th>
+            <th scope="col">Sector ID</th>
+            <th scope="col">Sector Name</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let customer of allDistirbutors; let i = index">
+            <!-- <td>{{customer.customer_id}}</td> -->
+            <td>{{i+1}}</td>
+            <td>{{customer.sector_id}}</td>
+            <td>{{customer.sector_name}}</td>
+         
+           <!--- <td *ngIf="customer.is_active">Active</td>
+           <td *ngIf="!customer.is_active">Inactive</td>-->
+            <td>
+              <a style="cursor:pointer"> <i class="fas fa-edit" data-toggle="modal" data-target="#modal3"
+                  (click)="editCustomer(i)"></i></a>
+              <a style="cursor:pointer"><i class="fas fa-trash-alt mx-2" (click)="deleteCustomer(i)"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel3">Add New Sector</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex align-items-center justify-content-center pd-y-40 bg-gray-100">
+          <form class="wd-300 bd bd-gray-300 rounded pd-30 bg-white parsleyjs" [formGroup]="sector_form"
+            (ngSubmit)="submit()">
+            <div class="form-group">
+              <div class="form-row">
+                <div class="col-md-4">
+                  <label for="sector_name">Sector Name</label>
+                </div>
+                <div class="col-md-8">
+                  <input type="text" class="form-control" placeholder="Enter Sector Name"
+                    formControlName="sector_name" id="sector_name" name="sector_name"
+                    [ngClass]="{ 'is-invalid': submitted && f.sector_name.errors }" required>
+                  <div *ngIf="submitted && f.sector_name.errors || submitted && f.sector_name.errors"
+                    class="invalid-feedback">
+                    <div *ngIf="f.sector_name.errors.required || f.sector_name.errors.required">Sector
+                      Name
+                      is Required
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <div class="form-row">
+                <div class="col-md-4">
+                  <label for="is_active">Is Active*</label>
+                </div>
+                <div class="col-md-8">
+                  <p-inputSwitch class="form-control" formControlName="is_active"
+                    [ngClass]="{ 'is-invalid': submitted && f.is_active.errors }" required></p-inputSwitch>
+                  <div *ngIf="submitted && f.is_active.errors || submitted && f.is_active.errors"
+                    class="invalid-feedback">
+                    <div *ngIf="f.is_active.errors.required">Is Active is Required
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Submit
+              Form</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel2">Upload CSV</h6>
+        <a target="_blank"  href="https://firebasestorage.googleapis.com/v0/b/dummy-f382e.appspot.com/o/Sample%20Files%2FDistirbutor.csv?alt=media&token=1c65cf80-16fc-4be4-8fc9-982f0580a972" class="float-right ">Download Sample CSV</a>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="file" id="file" class="for mx-1 float-right" (change)="uploadCSV($event.target.files)">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary tx-13" [disabled]="uploading" data-dismiss="modal">Close</button>
+        <button class="btn btn-primary" type="button" disabled *ngIf="uploading">
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Uploading...
+        </button>
+        <button type="button" class="btn btn-primary tx-13" *ngIf="!uploading" (click)="extractData()"> Upload</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -3,8 +3,9 @@ const helper = require('../utils/helper');
 
 const createRoleSchema = Joi.object({
     // user_role: Joi.string().required(),
-    name:Joi.string().required(),
-    isAdmin:Joi.boolean().required()
+    name: Joi.string().required(),
+    isAdmin: Joi.boolean().required(),
+    privileges: Joi.object().required()
 
 
     // bu_id: Joi.string().required(),
@@ -33,12 +34,12 @@ const createRoleSchema = Joi.object({
 })
 
 const updateRoleSchema = Joi.object({
-    name:Joi.string().optional()
+    name: Joi.string().optional()
 })
 
 module.exports = {
-    verifyCreate:verifyCreate,
-    verifyUpdate:verifyUpdate
+    verifyCreate: verifyCreate,
+    verifyUpdate: verifyUpdate
 }
 
 function verifyCreate(userrole) { return helper.validator(userrole, createRoleSchema) }

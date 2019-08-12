@@ -5,6 +5,7 @@ import { ProductModel } from './shared/product.model';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
+import { ResponseModel } from '../../shared/shared.model';
 
 
 @Component({
@@ -15,21 +16,21 @@ import { AuthService } from '../../auth/auth.service';
 export class ProductsComponent implements OnInit {
 
   jQuery: any;
-  allproducts: any[] = [];
+  allproducts: ProductModel[] = [];
   allTherapies: any[] = [];
   all_business_unit: any[] = [];
   currentproduct: ProductModel;
-  currentproductId: number;
+  currentproductId: String;
   currentIndex: number;
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
-  editing: boolean = false;;
+  editing: Boolean = false;;
   productForm: FormGroup;
   CSV: File = null;
   fileReader: FileReader = new FileReader();
   parsedCSV;
-  uploading: boolean = false;
-  submitted: boolean = false;
+  uploading: Boolean = false;
+  submitted: Boolean = false;
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService
   ) {
@@ -65,24 +66,24 @@ export class ProductsComponent implements OnInit {
 
   submit() {
     this.submitted = true;
-    console.log(this.productForm.value)
+    console.log(this.productForm.value);
     if (this.productForm.invalid) {
       return;
     }
     this.currentproduct = this.productForm.value;
-    console.log(this.currentproduct)
+    console.log(this.currentproduct);
     if (this.editing) {
-      this.updateProduct(this.currentproduct)
+      this.updateProduct(this.currentproduct);
     } else {
       this.addProduct(this.productForm.value);
     }
   }
 
   addProduct(product) {
-    this.productService.addProduct(product).subscribe(res => {
-      jQuery("#modal3").modal("hide");
+    this.productService.addProduct(product).subscribe((res: ResponseModel) => {
+      jQuery('#modal3').modal('hide');
       this.toastr.success('Product Added!', 'Success!');
-      this.allproducts.push(res);
+      this.allproducts.push(res.data);
       this.resetForm();
     })
   }
@@ -96,37 +97,37 @@ export class ProductsComponent implements OnInit {
   }
 
   deleteProduct(i) {
-    if (confirm("You Sure you want to delete this Product")) {
+    if (confirm('You Sure you want to delete this Product')) {
       this.productService.deleteProduct(this.allproducts[i]._id).toPromise().then(() => {
         this.toastr.warning('Products Deleted!', 'Deleted!');
-        this.allproducts.splice(i, 1)
-      }).catch((err) => console.log(err))
+        this.allproducts.splice(i, 1);
+      }).catch((err) => console.log(err));
     }
   }
 
   getProducts() {
     this.allproducts.length = 0;
-    this.productService.getAllProduct().subscribe((res: ProductModel[]) => {
+    this.productService.getAllProduct().subscribe((res: ResponseModel) => {
       console.log(res);
-      this.allproducts = res;
-      console.log(this.allproducts)
+      this.allproducts = res.data;
+      console.log(this.allproducts);
       this.dtTrigger.next();
-    })
+    });
   }
 
 
   updateProduct(product) {
-    let id = this.allproducts[this.currentIndex]._id;
+    const id = this.allproducts[this.currentIndex]._id;
     // product._id = id;
     console.log(product);
-    this.productService.updateProduct(product, id).subscribe(res => {
-      jQuery("#modal3").modal("hide");
+    this.productService.updateProduct(product, id).subscribe((res: ResponseModel) => {
+      jQuery('#modal3').modal('hide');
       this.toastr.info('Product Updated Successfully!', 'Updated!!');
       this.resetForm();
-      this.allproducts.splice(this.currentIndex, 1, res)
+      this.allproducts.splice(this.currentIndex, 1, res.data)
       this.currentproductId = null;
       this.editing = false;
-    })
+    });
   }
 
   initForm() {
@@ -136,18 +137,18 @@ export class ProductsComponent implements OnInit {
       category: ['', Validators.required],
       // created_by: ['No Value', Validators.required],
       details: [''],
-      farm_price: ['', [Validators.required, Validators.pattern("^[0-9]*$"), Validators.minLength(1)]],
+      farm_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
       // image: ['No Value', Validators.required],
       is_active: [true],
       name: ['', Validators.required],
       // product_id: ['', Validators.required],
       product_dms: ['', Validators.required],
-      selling_price: ['', [Validators.required, Validators.pattern("^[0-9]*$"), Validators.minLength(1)]],
-    })
+      selling_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
+    });
   }
 
   setFormValue() {
-    var product = this.allproducts[this.currentIndex];
+    const product = this.allproducts[this.currentIndex];
     this.productForm.controls['available_for'].setValue(product.available_for);
     this.productForm.controls['brand'].setValue(product.brand);
     this.productForm.controls['category'].setValue(product.category);
@@ -164,8 +165,8 @@ export class ProductsComponent implements OnInit {
 
   public uploadCSV(files: FileList) {
     if (files && files.length > 0) {
-      let file: File = files.item(0);
-      let reader: FileReader = new FileReader();
+      const file: File = files.item(0);
+      const reader: FileReader = new FileReader();
       reader.readAsText(file);
       reader.onload = (e) => {
         this.parsedCSV = reader.result;
@@ -177,9 +178,9 @@ export class ProductsComponent implements OnInit {
 
   public extractData() {
     this.uploading = true;
-    var lines = this.parsedCSV.split(/\r\n|\n/);
-    var result = [];
-    var headers: any[] = lines[0].split(",");
+    const lines = this.parsedCSV.split(/\r\n|\n/);
+    const result = [];
+    const headers: any[] = lines[0].split(",");
     if (headers[0] == "brand" && headers[1] == "is_active" && headers[2] == "cif_price" && headers[3] == "business_unit"
       && headers[4] == "business_unit_id" && headers[5] == "distirbutor"
       && headers[6] == "form" && headers[7] == "notes" && headers[8] == "pack_size"
@@ -188,24 +189,23 @@ export class ProductsComponent implements OnInit {
       && headers[15] == "whole_price" && headers[16] == "sku_id"
     ) {
       for (var i = 1; i < lines.length - 1; i++) {
-        var obj = {};
-        var currentline = lines[i].split(",");
+        const obj = {};
+        const currentline = lines[i].split(",");
         for (var j = 0; j < headers.length; j++) {
           obj[headers[j]] = currentline[j];
         }
         result.push(obj);
       }
-      this.productService.importCustomer(result).subscribe(res => {
+      this.productService.importCustomer(result).subscribe((res: ResponseModel) => {
         setTimeout(() => {
           this.uploading = false;
           this.toastr.success('Product added successfully', 'Upload Success');
           jQuery("#modal2").modal("hide");
-          this.allproducts.push(res);
+          this.allproducts.push(res.data);
         }, 1000);
       });
       // this.newproduct = result;
-    }
-    else {
+    } else {
       this.toastr.error('Try Again', 'Upload Failed')
       // this.reset();
     }

@@ -12,13 +12,14 @@ export class OrderService {
     'token': this.tokenService.getToken()
   });
 
-  url = "/api/order";
-  url2 = "/api/rorder";
+  url = '/api/order';
+  url2 = '/api/rorder';
+  url3 = '/api/challan';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   // ==========ORDER APIS=================//
   getAllOrders() {
-    return this.http.get(this.url + '/', { headers: this.headers })
+    return this.http.get(this.url + '/', { headers: this.headers });
   }
 
   addOrder(order) {
@@ -35,7 +36,7 @@ export class OrderService {
 
   // =================RETURN ORDER APIS==================//
   getAllReturnOrders() {
-    return this.http.get(this.url2 + '/', { headers: this.headers })
+    return this.http.get(this.url2 + '/', { headers: this.headers });
   }
 
   addReturnOrder(returnOrder) {
@@ -49,4 +50,21 @@ export class OrderService {
   updateReturnOrder(returnOrder) {
     return this.http.put(this.url2, returnOrder, { headers: this.headers });
   }
+
+  // =================CHALLAN APIS==================//
+  getAllChallan() {
+    return this.http.get(this.url3 + '/', { headers: this.headers });
+  }
+
+  // addReturnOrder(returnOrder) {
+  //   return this.http.post(this.url2 + '/', returnOrder, { headers: this.headers });
+  // }
+
+  // deleteReturnOrder(id) {
+  //   return this.http.delete(this.url2 + '/' + id, { headers: this.headers });
+  // }
+
+  // updateReturnOrder(returnOrder) {
+  //   return this.http.put(this.url2, returnOrder, { headers: this.headers });
+  // }
 }
