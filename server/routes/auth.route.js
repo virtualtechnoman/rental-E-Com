@@ -17,6 +17,9 @@ module.exports = router;
 // router.get('/me', passport.authenticate('jwt', { session: false }), login);
 router.post('/register', authMiddleware);
 router.post('/login', authMiddleware);
+router.post('/register2', authMiddleware);
+router.post('/verifyotp', authMiddleware);
+router.post('/login2', authMiddleware);
 router.get('/me', authMiddleware);
 
 

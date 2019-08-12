@@ -16,7 +16,7 @@ const orderUpdateSchema = Joi.object({
         quantity:Joi.number().min(1).required(),
         accepted:Joi.number().min(0).required()
     }),
-    accepted:Joi.boolean().required()
+    status:Joi.boolean().required()
     // status:Joi.string().required()
 })
 

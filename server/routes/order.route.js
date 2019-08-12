@@ -7,8 +7,17 @@ const moment = require('moment');
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 const router = express.Router();
 
+//GET all orders placed by self
+router.get("/",authorizePrivilege("GET_ALL_ORDERS_OWN"), (req, res) => {
+    Order.find({placed_by:req.user._id}).populate("placed_by products.product placed_to").exec().then(doc => {
+        return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
+    }).catch(err => {
+        return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
+    });
+})
+
 //GET all orders
-router.get("/",authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
+router.get("/all",authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
     Order.find().populate("placed_by products.product placed_to").exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
@@ -16,13 +25,6 @@ router.get("/",authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
     });
 })
 
-
-
-//GET orders for pagination
-//filters ====>
-// router.get("/page/:page",(req,res)=>{
-
-// })
 // Create an order
 router.post("/",authorizePrivilege("ADD_NEW_ORDER"), (req, res) => {
     let result = OrderController.verifyCreate(req.body);

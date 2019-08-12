@@ -12,7 +12,7 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 //GET all users
 router.get('/',authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   try {
-    const allUsers = await User.find().populate("role").exec();
+    const allUsers = await User.find({_id:{$ne:req.user._id}}).populate("role").exec();
     // console.log(allUsers);
     res.json({ status: 200, message: "All users", errors: false, data: allUsers });
   }
@@ -21,8 +21,20 @@ router.get('/',authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   }
 })
 
+// //GET all users except self
+// router.get('/u',authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
+//   try {
+//     const allUsers = await User.find({_id:{$ne:req.user._id}}).populate("role").exec();
+//     // console.log(allUsers);
+//     res.json({ status: 200, message: "All users", errors: false, data: allUsers });
+//   }
+//   catch (err) {
+//     res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
+//   }
+// })
+
 // GET all users by role
-router.get('/:role',authorizePrivilege("GET_USER_BY_ROLE"), async (req, res) => {
+router.get('/role/:role',authorizePrivilege("GET_USER_BY_ROLE"), async (req, res) => {
   console.log(req.body.role)
   if (mongodb.ObjectId.isValid(req.params.role)) {
     try {
