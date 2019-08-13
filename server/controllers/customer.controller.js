@@ -2,29 +2,34 @@ const Joi = require('joi');
 const helper = require('../utils/helper');
 
 
-const customerSchema = Joi.object({
-    city_name: Joi.string().required(),
-    customer_id: Joi.string().required(),
-    customer_name: Joi.string().required(),
-    distirbutor_1_name: Joi.string().required(),
-    distirbutor_2_name: Joi.string().optional().allow(''),
-    distirbutor_3_name: Joi.string().optional().allow(''),
-    share_1: Joi.number().required(),
-    share_2: Joi.number().optional().allow(''),
-    share_3: Joi.number().optional().allow(''),
-    district_name: Joi.string().required(),
-    is_active: Joi.boolean().required(),
-    customer_type: Joi.string().required(),
-    sector: Joi.string().required(),
-    region_name: Joi.string().required(),
-    notes: Joi.string().optional().allow('')
+const customerSelfUpdateSchema = Joi.object({
+    full_name: Joi.string().required(),
+    landmark: Joi.string().required(),
+    street_address: Joi.string().required(),
+    city : Joi.string().required(),
+    dob : Joi.date().optional(),
+    anniversary: Joi.date().optional()
+
+})
+const customerUpdateSchema = Joi.object({
+    full_name: Joi.string().required(),
+    landmark: Joi.string().required(),
+    street_address: Joi.string().required(),
+    city : Joi.string().required(),
+    dob : Joi.string().optional(),
+    anniversary: Joi.date().optional(),
+    role:Joi.string().optional()
 })
 
 
 module.exports = {
-    insert
+    verifyProfileUpdateSelf,
+    verifyProfileUpdate
 }
 
-function insert(customer) {
-    return helper.validator(customer, customerSchema)
+function verifyProfileUpdateSelf(customer) {
+    return helper.validator(customer, customerSelfUpdateSchema)
+}
+function verifyProfileUpdate(customer) {
+    return helper.validator(customer, customerUpdateSchema)
 }

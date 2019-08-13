@@ -39,5 +39,7 @@ module.exports = (p=false)=>({
     GET_ALL_DRIVERS:p,
     DELETE_DRIVER:p,
     UPDATE_DRIVER:p,
-    ADD_NEW_DRIVER:p
+    ADD_NEW_DRIVER:p,
+    //Customer Privilege
+    UPDATE_CUSTOMER:p
 })

@@ -76,7 +76,7 @@ router.put('/:id',authorizePrivilege("UPDATE_USER"), (req, res) => {
     // let user = (({ full_name, email, role }) => ({ full_name, email, role }))(req.body);
     const result = userCtrl.verifyUpdate(req.body);
     if (!isEmpty(result.errors)) {
-      return res.json(result.errors)
+      return res.status(400).json({status:400, data:null, errors:result.errors, message:"Fields required"})
     }
     User.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
       if (err) {
