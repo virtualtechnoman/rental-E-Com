@@ -35,11 +35,13 @@ export class OrderComponent implements OnInit {
   parsedCSV;
   showSummary: Boolean = false;
   uploading: Boolean = false;
+  updatedOrder;
   submitted: Boolean = false;
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService, private orderService: OrderService, private userService: UserService
   ) {
     this.initForm();
+    this.initChallanForm();
     this.getOrders();
     this.getUsers();
   }
@@ -77,14 +79,11 @@ export class OrderComponent implements OnInit {
       return;
     }
     this.orderForm.get('status').setValue(false);
-    for (let index = 0; index < this.formArr.length; index++) {
-      this.formArr.controls[index].get('accepted').setValue(0);
+    // for (let index = 0; index < this.formArr.length; index++) {
+    //   this.formArr.controls[index].get('accepted').setValue(0);
 
-    }
-    console.log(this.formArr);
+    // }
     this.currentOrder = this.orderForm.value;
-    console.log(this.orderForm.value);
-    console.log(this.currentOrder);
     this.addOrder(this.orderForm.value);
   }
 
@@ -111,15 +110,15 @@ export class OrderComponent implements OnInit {
   }
 
   viewSummary(i) {
-    while (this.valueArr.length !== 0) {
-      this.valueArr.removeAt(0);
-    }
+    while (this.valueArr.length !== 0) { this.valueArr.removeAt(0); }
     this.showSummary = true;
     this.currentOrder = this.allOrders[i];
-    // this.valueArr.push(this.initValueRows());
-    this.valueArr.push(this.initValueRows());
-    // for (let index = 0; index < this.currentOrder.products.length; index++) {
-    // }
+    for (let index = 0; index < this.currentOrder.products.length; index++) {
+      this.valueArr.push(this.initValueRows());
+    }
+    for (let index = 0; index < this.valueArr.length; index++) {
+      this.valueArr.controls[index].get('accepted').setValue(this.currentOrder.products[index].accepted);
+    }
   }
 
   deleteOrder(i) {
@@ -135,7 +134,6 @@ export class OrderComponent implements OnInit {
     this.allproducts.length = 0;
     this.productService.getAllProduct().subscribe((res: ProductModel[]) => {
       this.allproducts = res;
-      console.log(this.allproducts);
       this.dtTrigger.next();
     });
   }
@@ -148,7 +146,6 @@ export class OrderComponent implements OnInit {
         this.toastr.warning('Error', res.error);
       } else {
         this.allUsers = res.data;
-        console.log(this.allUsers);
       }
     });
   }
@@ -174,27 +171,20 @@ export class OrderComponent implements OnInit {
     order2.placed_to = placed_to;
     delete order2._id; delete order2.placed_by; delete order2.order_date;
     order2.products = this.currentOrder.products;
-    order2.products.forEach(product => {
-      delete product._id;
-    });
-    console.log('Order 2 ==>', order2);
-    console.log('Current Order ==>', this.currentOrder.products);
-    for (let index = 0; index < order2.products.length; index++) {
-      console.log('Current Index==>', index);
-      order2.products[index].product = this.currentOrder.products[index].product._id;
-      // console.log('Current Accepted Value==>', this.valueArr.controls[index].get('accepted').value);
-      console.log('Order2 Product accepted Value', order2.products[index].accepted);
-      // order2.products[index].accepted = this.valueArr.controls[index].get('accepted').value;
+    for (let index = 0; index < this.currentOrder.products.length; index++) {
+      order2.products[index].product = order2.products[index].product._id;
+      delete order2.products[index]._id;
+      order2.products[index].accepted = this.valueArr.value[index].accepted;
     }
     this.orderForm.get('status').setValue(true);
-    console.log('Current Order', this.currentOrder);
     console.log('Sent Order', order2);
-    this.orderService.updateOrder(order2, this.currentOrder._id).subscribe(res => {
-      jQuery('#modal3').modal('hide');
-      this.toastr.info('Order Updated Successfully!', 'Updated!!');
+    this.updatedOrder = order2;
+    this.orderService.updateOrder(order2, this.currentOrder._id).subscribe((res: ResponseModel) => {
+      jQuery('#summaryModel').modal('hide');
+      this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
       this.resetForm();
-      this.allOrders.splice(this.currentIndex, 1, res);
-      this.currentOrderId = null;
+      this.allOrders.splice(this.currentIndex, 1, res.data);
+      // this.currentOrderId = null;
       this.editing = false;
     });
   }
@@ -203,6 +193,7 @@ export class OrderComponent implements OnInit {
     this.orderForm = this.formBuilder.group({
       status: [''],
       placed_to: ['', Validators.required],
+      notes: [''],
       products: this.formBuilder.array([this.initItemRows()])
     });
     this.valueForm = this.formBuilder.group({
@@ -214,6 +205,7 @@ export class OrderComponent implements OnInit {
     const product = this.allproducts[this.currentIndex];
     this.orderForm.controls['placed_to'].setValue(product.placed_to);
     this.orderForm.controls['products'].setValue(product.products);
+    this.orderForm.controls['notes'].setValue(product.notes);
   }
 
   get formArr() {
@@ -233,7 +225,7 @@ export class OrderComponent implements OnInit {
     });
   }
 
-  initValueRows() {
+  initValueRows(): FormGroup {
     return this.formBuilder.group({
       accepted: [''],
       // value: ['']
@@ -304,7 +296,6 @@ export class OrderComponent implements OnInit {
   }
 
   generateChallan() {
-    this.initChallanForm();
     jQuery('#challanModel').modal('show');
     for (let index = 0; index < this.currentOrder.products.length; index++) {
       this.productsArray.push(this.initItemRows());
@@ -322,7 +313,8 @@ export class OrderComponent implements OnInit {
   initChallanForm() {
     this.challanForm = this.formBuilder.group({
       dispatch_processing_unit: ['', Validators.required],
-      products: this.formBuilder.array([this.initItemRows()]),
+      // products: this.formBuilder.array([this.initItemRows()]),
+      products: [''],
       vehicle_no: ['', Validators.required],
       vehicle_type: ['', Validators.required],
       driver_name: ['', Validators.required],
@@ -333,7 +325,33 @@ export class OrderComponent implements OnInit {
   }
 
   saveChallan() {
+    const placed_to = this.currentOrder.placed_to._id;
+    const order2 = <any>new Object();
+    order2.placed_to = placed_to;
+    delete order2._id; delete order2.placed_by; delete order2.order_date;
+    order2.products = this.currentOrder.products;
+    for (let index = 0; index < this.currentOrder.products.length; index++) {
+      order2.products[index].product = order2.products[index].product._id;
+      delete order2.products[index]._id;
+      order2.products[index].accepted = this.currentOrder.products[index].accepted;
+      order2.products[index].requested = this.currentOrder.products[index].quantity;
+      delete order2.products[index].quantity;
+    }
+    order2.vehicle_no = this.challanForm.get('vehicle_no').value;
+    order2.vehicle_type = this.challanForm.get('vehicle_type').value;
+    order2.driver_name = this.challanForm.get('driver_name').value;
+    order2.driver_mobile = this.challanForm.get('driver_mobile').value;
+    order2.dl_no = this.challanForm.get('dl_no').value;
+    order2.departure = this.challanForm.get('departure').value;
+    console.log(order2);
+    this.challanForm.get('dispatch_processing_unit').setValue(this.currentOrder.placed_to._id);
+    this.challanForm.get('products').setValue(this.currentOrder.products);
+    console.log(this.challanForm.value);
     this.orderForm.get('status').setValue(true);
+    this.orderService.addNewChallan(this.challanForm.value).subscribe((res: ResponseModel) => {
+      this.toastr.success('Challan Accepted successfully', 'Accepted');
+      console.log(res.data)
+    });
   }
 
 }

@@ -72,7 +72,7 @@ export class UserroleComponent implements OnInit {
     this.data.addUserRole(userrole).subscribe((data: ResponseModel) => {
       console.log(data);
       jQuery('#userRoleModal').modal('hide');
-      this.allUserRoles.push(data);
+      this.allUserRoles.push(data.data);
       this.toastr.success('User role Added!', 'Added!');
     });
   }
@@ -128,13 +128,22 @@ export class UserroleComponent implements OnInit {
         GET_ALL_CHALLAN: [false],
         GET_CHALLAN: [false],
         ADD_NEW_CHALLAN: [false],
-        DELETE_CHALLAN: [false]
+        DELETE_CHALLAN: [false],
+        GET_ALL_VEHICLES: [false],
+        DELETE_VEHICLE: [false],
+        UPDATE_VEHICLE: [false],
+        ADD_NEW_VEHICLE: [false],
+        GET_ALL_DRIVERS: [false],
+        DELETE_DRIVER: [false],
+        UPDATE_DRIVER: [false],
+        ADD_NEW_DRIVER: [false]
       })
     });
   }
 
 
   updateUser(user) {
+    user.id = this.allUserRoles[this.current_user_index]._id;
     this.data.updateUserRole(this.allUserRoles[this.current_user_index]._id, user).subscribe(res => {
       jQuery('#userRoleModal').modal('hide');
       console.log(res);

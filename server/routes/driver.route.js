@@ -5,8 +5,9 @@ const Driver = require('../models/driver.model');
 var mongodb = require("mongodb");
 const router = express.Router();
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
-//GET all vehicle
-router.get('/',authorizePrivilege("GET_ALL_DRIVERS"), async (req, res) => {
+
+//GET all drivers
+router.get('/', authorizePrivilege("GET_ALL_DRIVERS"), async (req, res) => {
   try {
     const allDrivers = await Driver.find().exec();
     // console.log(allDrivers);
@@ -16,8 +17,9 @@ router.get('/',authorizePrivilege("GET_ALL_DRIVERS"), async (req, res) => {
     res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching drivers" });
   }
 })
+
 //GET all available drivers
-router.get('/available',authorizePrivilege("GET_ALL_DRIVERS"), async (req, res) => {
+router.get('/available', authorizePrivilege("GET_ALL_DRIVERS"), async (req, res) => {
   try {
     const allDrivers = await Driver.find({ isAvailable: true }).exec();
     // console.log(allDrivers);
@@ -48,8 +50,8 @@ router.get('/available',authorizePrivilege("GET_ALL_DRIVERS"), async (req, res) 
 //   }
 // })
 
-// DELETE a vehicle
-router.delete('/:id',authorizePrivilege("DELETE_DRIVER"),(req, res) => {
+// DELETE a Driver
+router.delete('/:id', authorizePrivilege("DELETE_DRIVER"), (req, res) => {
   if (mongodb.ObjectID.isValid(req.params.id)) {
     Driver.deleteOne({ _id: req.params.id }, (err, vehicle) => {
       if (err) throw err;
@@ -66,7 +68,7 @@ router.delete('/:id',authorizePrivilege("DELETE_DRIVER"),(req, res) => {
 
 
 // UPDATE A Driver
-router.put('/:id',authorizePrivilege("UPDATE_DRIVER"),(req, res) => {
+router.put('/:id', authorizePrivilege("UPDATE_DRIVER"), (req, res) => {
   if (mongodb.ObjectID.isValid(req.params.id)) {
     // let user = (({ full_name, email, role }) => ({ full_name, email, role }))(req.body);
     const result = DriverController.verifyUpdate(req.body);
@@ -90,7 +92,7 @@ router.put('/:id',authorizePrivilege("UPDATE_DRIVER"),(req, res) => {
 })
 
 // ADD NEW DRIVER
-router.post("/", authorizePrivilege("ADD_NEW_DRIVER"),(req, res) => {
+router.post("/", authorizePrivilege("ADD_NEW_DRIVER"), (req, res) => {
   let result = DriverController.verifyCreate(req.body)
   if (isEmpty(result.errors)) {
     const newDriver = new Driver(result.data);

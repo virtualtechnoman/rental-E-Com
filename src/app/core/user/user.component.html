@@ -10,7 +10,7 @@
         style="width:20%" name="customer_name">
         <option value="" selected>Select User Role</option>
         <option [ngValue]="userRole" *ngFor="let userRole of allUserRoles">
-          {{userRole.user_role | titlecase}}</option>
+          {{userRole.name | titlecase}}</option>
       </select>
     </div>
     <div class="card-body">
@@ -30,11 +30,11 @@
             <td>{{user.full_name | titlecase}} {{user.last_name | titlecase }}</td>
             <td>{{user.email}}</td>
             <td>{{user.role.name | titlecase }}</td>
-            <td>{{user.mobile_phone  }}</td>
+            <td>{{user.mobile_number  }}</td>
             <td>
               <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editUser(i)"><i
                   class="fas fa-edit mx-2"></i></a>
-              <a *ngIf="!user.role.user_role == 'admin'" style="cursor:pointer" (click)="deleteUser(i)"><i
+              <a *ngIf="!user.role.role == 'admin'" style="cursor:pointer" (click)="deleteUser(i)"><i
                   class="fas fa-trash-alt"></i></a>
             </td>
           </tr>
@@ -106,7 +106,7 @@
           <div class="form-row offset-md-4">
             <div class="form-group col-md-4">
               <label for="inputEmail4">Position</label>
-              <select class="custom-select" name="user_role" formControlName="role"
+              <select class="custom-select" name="role" formControlName="role"
                 [ngClass]="{ 'is-invalid': submitted && f.role.errors }" required>
                 <option value="" selected>Role*</option>
                 <option [ngValue]="userRole._id" *ngFor="let userRole of allUserRoles">{{userRole.name}}

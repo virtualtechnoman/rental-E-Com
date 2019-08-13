@@ -1,11 +1,10 @@
-var current_time = new Date();
 export class UserModel {
     _id: string;
     full_name: string;
     email: string;
     is_active: boolean;
     role: string;
-    mobile_phone: string;
+    mobile_number: string;
 }
 
 export class UserRoleModel {
@@ -31,4 +30,4 @@ export class UserRoleModel {
     can_access_target_forecasting: boolean;
     can_access_users: boolean;
     can_access_user_roles: boolean;
-}
+};

@@ -10,11 +10,11 @@ export class ProductsService {
     'Content-Type': 'application/json',
     'token': this.tokenService.getToken()
   });
-  url = "/api/products"
+  url = '/api/products';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   getAllProduct() {
-    return this.http.get(this.url + '/', { headers: this.headers })
+    return this.http.get(this.url + '/all', { headers: this.headers });
   }
 
   addProduct(product) {
@@ -30,6 +30,6 @@ export class ProductsService {
   }
 
   importCustomer(csv) {
-    return this.http.post(this.url + '/import', csv)
+    return this.http.post(this.url + '/import', csv);
   }
 }
