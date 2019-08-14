@@ -52,6 +52,7 @@ export class DriverComponent implements OnInit {
     this.get_Drivers();
   }
 
+  get f() { return this.DriverForm.controls; }
 
   submit() {
     this.submitted = true;

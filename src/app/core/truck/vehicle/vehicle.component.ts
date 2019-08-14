@@ -53,6 +53,7 @@ export class VehicleComponent implements OnInit {
     this.get_Vehicles();
   }
 
+  get f() { return this.VehicleForm.controls; }
 
   submit() {
     this.submitted = true;
@@ -122,7 +123,7 @@ export class VehicleComponent implements OnInit {
   initForm() {
     this.VehicleForm = this.formBuilder.group({
       number: ['', Validators.required],
-      type: [true, Validators.required],
+      type: ['', Validators.required],
       isAvailable: ['']
     });
   }

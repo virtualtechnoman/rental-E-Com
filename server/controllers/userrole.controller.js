@@ -4,7 +4,7 @@ const helper = require('../utils/helper');
 const createRoleSchema = Joi.object({
     // user_role: Joi.string().required(),
     name: Joi.string().required(),
-    isAdmin: Joi.boolean().required(),
+    isAdmin: Joi.boolean().required()
     // privileges: Joi.object().required()
 
 

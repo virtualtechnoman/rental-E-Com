@@ -17,7 +17,7 @@ module.exports = async (req, res, next) => {
                 jwt.verify(req.headers.token, process.env.JWT_SECRET, (err, payload) => {
                     if (err) {
                         console.log(err);
-                        return res.json({ message: "Invalid token" })
+                        return res.status(400).json({ status:400, data:null, errors:true, message: "Invalid token" })
                     } else {
                         User.findById(payload._id).populate("role").exec().then(d => {
                             // console.log("FUNCTION EXECUTED")
@@ -25,22 +25,23 @@ module.exports = async (req, res, next) => {
                                 let u = d.toObject();
                                 delete u.password;
                                 req.user = u;
+                                // console.log(u);
                                 next();
                             } else {
-                                return res.json({ message: "Your token is not valid anymore" })
+                                res.status(403).json({ status:403, data:null, errors:true, message: "Your token is not valid anymore" });
                             }
                         }).catch(e => {
                             if (e) {
-                                return res.json({ message: "Error while verifying your token details" });
+                                return res.status(500).json({ status:500, data:null, errors:true, message: "Error while retriving user details" })
                             }
                         });
                     }
                 })
             } else {
-                res.json({ message: "invalid token" })
+                res.status(400).json({ status:400, data:null, errors:true, message: "Invalid token" })
             }
         } else {
-            res.status(401).json({ message: "Unauthorized" })
+            res.status(401).json({ status:401, data:null, errors:true, message: "Unauthorized" })
         }
 }
     // if (req.originalUrl === "/api/auth/register") 
