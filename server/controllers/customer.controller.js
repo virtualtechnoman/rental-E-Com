@@ -16,15 +16,24 @@ const customerUpdateSchema = Joi.object({
     landmark: Joi.string().required(),
     street_address: Joi.string().required(),
     city : Joi.string().required(),
-    dob : Joi.string().optional(),
+    dob : Joi.date().optional(),
     anniversary: Joi.date().optional(),
     role:Joi.string().optional()
 })
 
+const customerCreateWeb = Joi.object({
+    full_name:Joi.string().required(),
+    mobile_number: Joi.string().required(),
+    landmark: Joi.string().required(),
+    street_address: Joi.string().required(),
+    city : Joi.string().required(),
+    dob : Joi.date().required()
+})
 
 module.exports = {
     verifyProfileUpdateSelf,
-    verifyProfileUpdate
+    verifyProfileUpdate,
+    verifyCreateWeb
 }
 
 function verifyProfileUpdateSelf(customer) {
@@ -32,4 +41,7 @@ function verifyProfileUpdateSelf(customer) {
 }
 function verifyProfileUpdate(customer) {
     return helper.validator(customer, customerUpdateSchema)
+}
+function verifyCreateWeb(customer) {
+    return helper.validator(customer, customerCreateWeb)
 }

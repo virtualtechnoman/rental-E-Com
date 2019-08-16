@@ -11,6 +11,7 @@ const challanRoutes = require("./challan.route");
 const vehicleRoutes = require("./vehicle.route");
 const driverRoutes = require("./driver.route");
 const customerRoutes = require("./customer.route");
+const customerOrderRoutes = require("./customer.order.route");
 const authMiddleware = require("../middleware/authMiddleware");
 const router = express.Router();
 
@@ -29,6 +30,7 @@ router.use('/challan',authMiddleware, challanRoutes);
 router.use('/role',  userRoleRoutes);
 router.use('/driver', authMiddleware, driverRoutes);
 router.use('/customer', authMiddleware, customerRoutes);
+router.use('/corder', authMiddleware, customerOrderRoutes);
 router.use('/vehicle', authMiddleware, vehicleRoutes);
 
 module.exports = router;

@@ -16,12 +16,14 @@ module.exports = (p=false)=>({
     GET_ALL_ORDERS:p,
     GET_ALL_ORDERS_OWN:p,
     GET_ORDER:p,
+    UPDATE_ORDER:p,
     ADD_NEW_ORDER:p,
     DELETE_ORDER:p,
     //Return Order Privilege
     GET_ALL_RETURN_ORDERS:p,
     GET_ALL_RETURN_ORDERS_OWN:p,
     GET_RETURN_ORDER:p,
+    UPDATE_RETURN_ORDER:p,
     ADD_NEW_RETURN_ORDER:p,
     DELETE_RETURN_ORDER:p,
     //Challan Privilege
@@ -41,5 +43,15 @@ module.exports = (p=false)=>({
     UPDATE_DRIVER:p,
     ADD_NEW_DRIVER:p,
     //Customer Privilege
-    UPDATE_CUSTOMER:p
+    GET_ALL_CUSTOMERS:p,
+    UPDATE_CUSTOMER:p,
+    ADD_NEW_CUSTOMER:p,
+    DELETE_CUSTOMER:p,
+    //Customer Order Privilege
+    UPDATE_CUSTOMER_ORDER:p,
+    GET_CUSTOMER_ORDER:p,
+    DELETE_CUSTOMER_ORDER:p,
+    ADD_NEW_CUSTOMER_ORDER:p,
+    GET_ALL_CUSTOMER_ORDERS:p,
+    GET_ALL_CUSTOMER_ORDERS_OWN:p
 })

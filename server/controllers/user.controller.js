@@ -21,7 +21,7 @@ const userRegisterSchema = Joi.object({
   full_name: Joi.string().required(),
   password: Joi.string().required(),
   email:Joi.string().email().required(),
-  role:Joi.string().required()
+  // role:Joi.string().required()
 })
 const userMobileRegisterSchema = Joi.object({
   // full_name: Joi.string().required(),

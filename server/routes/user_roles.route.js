@@ -32,6 +32,7 @@ router.post('/', (req, res) => {
         return res.status(200).json({ status: 200, message: "Fields required", errors: result.errors, data: null })
     }
     result.data.privileges = privileges(result.data.isAdmin);
+    delete result.data.isAdmin;
     let role = new userRole(result.data);
     role.save().then(Role => res.status(200).json({ status: 200, message: "Role added successfully", errors: false, data: Role })).catch(err => {
         console.log(err)
