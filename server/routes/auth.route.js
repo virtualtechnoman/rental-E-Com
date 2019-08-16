@@ -56,6 +56,7 @@ router.post('/register', async (req, res) => {
               return res.status(500).json({ status: 500, data: null, errors: true, message: "Something went wrong with your password" });
             result.data.password = hash;
             result.data.wallet = 0;
+            result.data.role = process.env.ADMIN_ROLE;
             result.data.user_id = "USR" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
             const newUser = new User(result.data);
             newUser.save().then(doc => {

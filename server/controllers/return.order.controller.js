@@ -16,7 +16,7 @@ const orderUpdateSchema = Joi.object({
     //     product:Joi.string().required(),
     //     quantity:Joi.number().min(1).required()
     // }),
-    // status:Joi.string().required()
+    // status:Joi.string().optional()
 })
 module.exports={
     verifyCreate:verifyCreate,
