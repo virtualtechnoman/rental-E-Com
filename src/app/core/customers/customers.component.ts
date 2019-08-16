@@ -93,7 +93,7 @@ export class CustomersComponent implements OnInit {
     }
   }
   closeModal(){
-    this.resetForm();
+    this.registerForm.reset()
   }
 
   addCustomer(customer) {
