@@ -11,6 +11,7 @@ export class AuthService {
 
   error: any;
   user: UserModel;
+  userData:any=[]
   constructor(private http: HttpClient, private token: TokenStorage) { }
 
   public $userSource = new Subject<any>();
@@ -21,8 +22,10 @@ export class AuthService {
         email,
         password
       }).subscribe((data: any) => {
-        console.log(data)
-        // console.log(data.user)
+        // console.log(data)
+        this.userData=data;
+
+        console.log(this.userData)
         // console.log(data.data.user)
         observer.next({ user: data.data.user });
         this.setUser(data.data.user);

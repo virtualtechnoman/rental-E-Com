@@ -37,16 +37,23 @@ export class AppComponent implements OnInit, OnChanges {
 
   public ngOnInit() {
     this.authService.me().subscribe(data => {
+      console.log(data)
       this.user = data.user;
       // this.get(data.user.id);
     });
     // update this.user after login/register/logout
     this.userSubscription = this.authService.$userSource.subscribe((user) => {
       this.user = user;
+      
       this.loggedin = true;
     });
+    // this.getData();
   }
-
+    getData(){
+      this.authService.userData.subscribe(data=>{
+        console.log(data)
+      })
+    }
   // get(id) {
   //   this.userService.getUser(id).subscribe((res: UserModel) => {
   //     this.me = res;
