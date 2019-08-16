@@ -17,7 +17,7 @@ router.get('/',authorizePrivilege("GET_ALL_CUSTOMERS"), async (req, res) => {
     res.json({ status: 200, message: "All customers", errors: false, data: allUsers });
   }
   catch (err) {
-    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
+    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching customers" });
   }
 })
 
@@ -60,16 +60,16 @@ router.delete('/:id', authorizePrivilege("DELETE_CUSTOMER"), (req, res) => {
             if (u) {
                 User.deleteOne({ _id: req.params.id }, (err, user) => {
                     if (err) throw err;
-                    res.send({ status: 200, errors: false, message: "User deleted successfully", data: user })
+                    res.send({ status: 200, errors: false, message: "Customer deleted successfully", data: user })
                 }).catch(err => {
                     console.log(err);
-                    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while deleting the user" });
+                    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while deleting the customer" });
                 });
             }else{
                 res.json({status:200,errors:true, data:null, message:"No records found or User may not be a customer"});
             }
         }).catch(e=>{
-            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while deleting the user" });
+            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while deleting the customer" });
         })
     } else {
         console.log("ID not Found")
@@ -109,20 +109,14 @@ router.put('/:id', authorizePrivilege("UPDATE_CUSTOMER"), (req, res) => {
                 return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating Customer data" });
             }
             else {
-                doc.populate("role").execPopulate().then(d => {
-                    if (!d)
+                    if (!doc)
                         return res.status(200).json({ status: 200, errors: true, data: doc, message: "No Customer Found" });
                     else {
-                        d = d.toObject();
-                        delete d.password;
-                        console.log("Updated User", d);
+                        doc = doc.toObject();
+                        delete doc.password;
+                        console.log("Updated User", doc);
                         res.status(200).json({ status: 200, errors: false, data: d, message: "Updated Customer" });
                     }
-                }
-                ).catch(e => {
-                    console.log(e);
-                    return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating customer details" });
-                });
             }
         })
     } else {
@@ -152,10 +146,10 @@ router.post("/", authorizePrivilege("ADD_NEW_CUSTOMER"), (req, res) => {
                 const newuser = new User(result.data);
                 newuser.save().then(data => {
                     data = data.toObject();
-                    res.status(200).json({ status: 200, errors: false, data, message: "User Added successfully" });
+                    res.status(200).json({ status: 200, errors: false, data, message: "Customer Added successfully" });
                 }).catch(err => {
                     console.log(err);
-                    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating new user" });
+                    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating new customer" });
                 })
         //     });
         // });
