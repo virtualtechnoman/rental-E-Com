@@ -57,8 +57,8 @@
               <div class="divider-text">Fill Vehicle Details</div>
               <div class="form-row">
                 <div class="form-group col-md-4">
-                  <label for="inputEmail4">Vehicle Number*</label>
-                  <input type="text" class="form-control" placeholder="Vehicle Number" name="number" (change)="editVehicleNumber($event)"
+                  <label for="inputEmail4">Vehicle Number</label>
+                  <input type="text" class="form-control" placeholder="Vehicle Number" name="number"
                     formControlName="number" [ngClass]="{ 'is-invalid': submitted && f.number.errors }" required >
                   <div *ngIf="submitted && f.number.errors" class="invalid-feedback">
                     <div *ngIf="f.number.errors.required">Vehicle Number is required</div>
