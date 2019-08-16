@@ -23,6 +23,7 @@ const challanCreateSchema = Joi.object({
     driver_name: Joi.string().required(),
     driver_mobile: Joi.string().required(),
     dl_no: Joi.string().required(),
+    status: Joi.boolean().required().default(false),
     departure: Joi.date().required()
     // }).required()
 })

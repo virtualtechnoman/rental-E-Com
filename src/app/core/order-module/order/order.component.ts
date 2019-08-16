@@ -183,6 +183,7 @@ export class OrderComponent implements OnInit {
       jQuery('#summaryModel').modal('hide');
       this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
       this.resetForm();
+      console.log(res.data);
       this.allOrders.splice(this.currentIndex, 1, res.data);
       // this.currentOrderId = null;
       this.editing = false;
@@ -343,6 +344,7 @@ export class OrderComponent implements OnInit {
     order2.driver_mobile = this.challanForm.get('driver_mobile').value;
     order2.dl_no = this.challanForm.get('dl_no').value;
     order2.departure = this.challanForm.get('departure').value;
+    order2.status = true;
     console.log(order2);
     this.challanForm.get('dispatch_processing_unit').setValue(this.currentOrder.placed_to._id);
     this.challanForm.get('products').setValue(this.currentOrder.products);
@@ -350,7 +352,8 @@ export class OrderComponent implements OnInit {
     this.orderForm.get('status').setValue(true);
     this.orderService.addNewChallan(this.challanForm.value).subscribe((res: ResponseModel) => {
       this.toastr.success('Challan Accepted successfully', 'Accepted');
-      console.log(res.data)
+      console.log(res.data);
+      jQuery('#challanModel').modal('hide');
     });
   }
 
