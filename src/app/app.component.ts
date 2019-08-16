@@ -17,14 +17,18 @@ export class AppComponent implements OnInit, OnChanges {
   private userSubscription: Subscription;
   public user: any;
   public loggedin: boolean;
-
+  array:any=[]
   constructor(
-    public authService: AuthService,
+    private authService: AuthService,
     private router: Router,
     private domSanitizer: DomSanitizer,
     private matIconRegistry: MatIconRegistry,
   ) {
+    // console.log
+    this.array=this.authService.userData
+    console.log("hiii",this.array)
     this.registerSvgIcons()
+    this.getData();
   }
 
   ngOnChanges() {
@@ -38,11 +42,12 @@ export class AppComponent implements OnInit, OnChanges {
   public ngOnInit() {
     this.authService.me().subscribe(data => {
       console.log(data)
-      this.user = data.user;
+      this.user = data;
       // this.get(data.user.id);
     });
     // update this.user after login/register/logout
     this.userSubscription = this.authService.$userSource.subscribe((user) => {
+      console.log(user)
       this.user = user;
       
       this.loggedin = true;
@@ -50,8 +55,8 @@ export class AppComponent implements OnInit, OnChanges {
     // this.getData();
   }
     getData(){
-      this.authService.userData.subscribe(data=>{
-        console.log(data)
+      this.authService.me().subscribe(res=>{
+        console.log(res)
       })
     }
   // get(id) {

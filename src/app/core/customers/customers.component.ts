@@ -27,12 +27,22 @@ export class CustomersComponent implements OnInit {
   uploading: Boolean = false;
   editing: Boolean = false;
   submitted = false;
+  registerForm: FormGroup;
   constructor(private customerService: CustomersService, private formBuilder: FormBuilder, private toastr: ToastrService) {
     this.currentcustomer = new CustomerModel();
     this.initForm();
   }
 
   ngOnInit() {
+    this.registerForm = this.formBuilder.group({
+      full_name: ['', Validators.required],
+      mobile_number: ['', Validators.required],
+      landmark: ['', Validators.required],
+      street_address: ['', Validators.required ],
+      city:['', Validators.required],
+      dob:['', Validators.required]
+  });
+    
     this.dtOptions = {
       pagingType: 'full_numbers',
       lengthMenu: [
@@ -56,7 +66,16 @@ export class CustomersComponent implements OnInit {
     };
     this.get_customers();
   }
-  get f() { return this.customerForm.controls; }
+  get f() { return this.registerForm.controls; }
+  onSubmit() {
+    this.submitted = true;
+    console.log(this.registerForm)
+    // stop here if form is invalid
+    if (this.registerForm.invalid) {
+        return;
+    }
+}
+  // get f() { return this.customerForm.controls; }
 
   submit() {
     this.submitted = true;
@@ -72,6 +91,9 @@ export class CustomersComponent implements OnInit {
     } else {
       this.addCustomer(this.currentcustomer);
     }
+  }
+  closeModal(){
+    this.resetForm();
   }
 
   addCustomer(customer) {

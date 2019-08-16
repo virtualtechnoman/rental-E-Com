@@ -59,7 +59,9 @@ export class AuthService {
   }
 
   getUser(): Observable<any> {
+    // console.log(this.$userSource)
     return this.$userSource.asObservable();
+    
   }
 
   me(): Observable<any> {
