@@ -314,6 +314,7 @@ router.get('/me', async (req, res) => {
               d = d.toObject();
               delete d.password;
               req.user = d;
+              
               res.json({ status:200, data:{user: d}, errors:false, message:"User Details" });
             }
             else {

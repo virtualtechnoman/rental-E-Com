@@ -11,6 +11,7 @@ export class AuthService {
 
   error: any;
   user: UserModel;
+  userData:any=[]
   constructor(private http: HttpClient, private token: TokenStorage) { }
 
   public $userSource = new Subject<any>();
@@ -21,10 +22,14 @@ export class AuthService {
         email,
         password
       }).subscribe((data: any) => {
-        console.log(data)
-        observer.next({ user: data.user });
-        this.setUser(data.user);
-        this.token.saveToken(data.token);
+        // console.log(data)
+        this.userData=data;
+
+        console.log(this.userData)
+        // console.log(data.data.user)
+        observer.next({ user: data.data.user });
+        this.setUser(data.data.user);
+        this.token.saveToken(data.data.token);
         observer.complete();
       }, (error: HttpErrorResponse) => {
         observer.next({ error: error });
