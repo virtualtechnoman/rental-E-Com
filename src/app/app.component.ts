@@ -19,7 +19,7 @@ export class AppComponent implements OnInit, OnChanges {
   public loggedin: boolean;
   array:any=[]
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private router: Router,
     private domSanitizer: DomSanitizer,
     private matIconRegistry: MatIconRegistry,
