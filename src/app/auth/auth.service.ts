@@ -22,9 +22,11 @@ export class AuthService {
         password
       }).subscribe((data: any) => {
         console.log(data)
-        observer.next({ user: data.user });
-        this.setUser(data.user);
-        this.token.saveToken(data.token);
+        console.log(data.user)
+        console.log(data.data.user)
+        observer.next({ user: data.data.user });
+        this.setUser(data.data.user);
+        this.token.saveToken(data.data.token);
         observer.complete();
       }, (error: HttpErrorResponse) => {
         observer.next({ error: error });

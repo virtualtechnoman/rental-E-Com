@@ -13,21 +13,14 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String, // required: true
   },
+  landmark: {type:String},
+  street_address: {type:String},
+  city: { type: String },
+  dob: { type: Date },
+  anniversary: { type: Date },
   role: { type: mongoose.Schema.Types.ObjectId, ref: "user_role" }
 }, {
     versionKey: false
   });
-
-UserSchema.methods.getPublicFields = function () {
-  var returnObject = {
-    id: this._id,
-    full_name: this.full_name,
-    user_id: this.user_id,
-    email: this.email,
-    role: this.role,
-    is_active: this.is_active
-  };
-  return returnObject;
-};
 
 module.exports = mongoose.model('user', UserSchema);

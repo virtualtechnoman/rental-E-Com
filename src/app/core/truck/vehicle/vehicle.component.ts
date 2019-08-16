@@ -123,7 +123,7 @@ export class VehicleComponent implements OnInit {
   initForm() {
     this.VehicleForm = this.formBuilder.group({
       number: ['', Validators.required],
-      type: [true, Validators.required],
+      type: ['', Validators.required],
       isAvailable: ['']
     });
   }
