@@ -46,7 +46,7 @@ router.post('/', authorizePrivilege("ADD_NEW_PRODUCT"), async (req, res) => {
         .save()
         .then(product => {
             product
-                .populate("created_by")
+                .populate("created_by","-password")
                 .execPopulate()
                 .then(p => res.json({ status: 200, data: p, errors: false, message: "Product added successfully" }))
                 .catch(e => {

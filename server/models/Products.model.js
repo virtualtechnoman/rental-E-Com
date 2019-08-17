@@ -11,7 +11,7 @@ const ProductSchema = new Schema({
     selling_price: { type: Number, required: true },
     product_dms: { type: String, required: true },
     brand: { type: String, required: true },
-    details: { type: String, required: true },
+    details: { type: String, default:"", required: true },
     created_by: { type: mongoose.Schema.Types.ObjectId,ref:'user', required: true },
     available_for: { type: String, required: true },
     created_date: { type: Date, default: Date.now }
