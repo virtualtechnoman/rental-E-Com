@@ -6,16 +6,18 @@ const customerSelfUpdateSchema = Joi.object({
     full_name: Joi.string().required(),
     landmark: Joi.string().required(),
     street_address: Joi.string().required(),
+    mobile_number:Joi.string().optional(),
     city : Joi.string().required(),
     dob : Joi.date().optional(),
     anniversary: Joi.date().optional()
 
 })
 const customerUpdateSchema = Joi.object({
-    full_name: Joi.string().required(),
-    landmark: Joi.string().required(),
-    street_address: Joi.string().required(),
-    city : Joi.string().required(),
+    full_name: Joi.string().optional(),
+    landmark: Joi.string().optional(),
+    mobile_number:Joi.string().optional(),
+    street_address: Joi.string().optional(),
+    city : Joi.string().optional(),
     dob : Joi.date().optional(),
     anniversary: Joi.date().optional(),
     role:Joi.string().optional()

@@ -17,7 +17,7 @@ router.get("/",authorizePrivilege("GET_ALL_CUSTOMER_ORDERS_OWN"), (req, res) => 
 })
 
 //GET all orders
-router.get("/", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req, res) => {
+router.get("/all", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req, res) => {
     CustomerOrder.find().populate("placed_by products.product placed_to").exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
@@ -26,23 +26,23 @@ router.get("/", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req, res) => {
 })
 
 // Create an order
-router.post("/", authorizePrivilege("ADD_NEW_CUSTOMER_ORDER"), (req, res) => {
-    let result = CustomerOrderController.verifyCreate(req.body);
-    if (!isEmpty(result.errors))
-        return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
-    result.data.placed_by = req.user._id;
-    result.data.order_id = "C_ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
-    result.data.status = "Placed";
-    let newOrder = new CustomerOrder(result.data);
-    newOrder.save().then(order => {
-        CustomerOrder.findById(order._id).populate("placed_by products.product placed_to").exec().then(doc => {
-            res.json({ status: 200, data: doc, errors: false, message: "Order created successfully" });
-        })
-    }).catch(e => {
-        console.log(e);
-        res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating the order" });
-    })
-})
+// router.post("/", authorizePrivilege("ADD_NEW_CUSTOMER_ORDER"), (req, res) => {
+//     let result = CustomerOrderController.verifyCreate(req.body);
+//     if (!isEmpty(result.errors))
+//         return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
+//     result.data.placed_by = req.user._id;
+//     result.data.order_id = "C_ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
+//     result.data.status = "Placed";
+//     let newOrder = new CustomerOrder(result.data);
+//     newOrder.save().then(order => {
+//         CustomerOrder.findById(order._id).populate("placed_by products.product placed_to").exec().then(doc => {
+//             res.json({ status: 200, data: doc, errors: false, message: "Order created successfully" });
+//         })
+//     }).catch(e => {
+//         console.log(e);
+//         res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating the order" });
+//     })
+// })
 
 // Delete a order
 router.delete("/:id", authorizePrivilege("DELETE_CUSTOMER_ORDER"), (req, res) => {
@@ -56,6 +56,22 @@ router.delete("/:id", authorizePrivilege("DELETE_CUSTOMER_ORDER"), (req, res) =>
             }
             if (doc) {
                 res.json({ status: 200, data: doc, errors: false, message: "Order deleted successfully!" });
+            }
+        })
+    }
+})
+// Canel a order
+router.post("/cancel/:id", authorizePrivilege("CANCEL_CUSTOMER_ORDER"), (req, res) => {
+    if (!mongodb.ObjectId.isValid(req.params.id)) {
+        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid Order id" });
+    }
+    else {
+        CustomerOrder.findByIdAndUpdate(req.params.id,{$set:{status:"Cancelled"}},{new:true}, (err, doc) => {
+            if (err) {
+                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while cancelling the order" })
+            }
+            if (doc) {
+                res.json({ status: 200, data: doc, errors: false, message: "Order cancelled successfully!" });
             }
         })
     }

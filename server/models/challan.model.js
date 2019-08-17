@@ -19,12 +19,8 @@ module.exports = mongoose.model("challan", new mongoose.Schema({
         //     type: Boolean, required: true
         // }
     }],
-    vehicle_no: { type: String, required: true },
-    vehicle_type: { type: String, required: true },
-    driver_name: { type: String, required: true },
-    driver_mobile: { type: String, required: true },
-    dl_no: { type: String, required: true },
-    departure: { type: Date, required: true },
+    vehicle: { type: mongoose.Schema.Types.ObjectId, ref:"vehicle", required: true },
+    driver: { type: mongoose.Schema.Types.ObjectId, ref:"driver", required: true },
     notes: {
         type: String
     },

@@ -1,14 +1,5 @@
 const Joi = require('joi');
 const helper = require('../utils/helper');
-const truckShcema = Joi.object().keys({
-    vehicle_no: Joi.string().required(),
-    vehicle_type: Joi.string().required(),
-    driver_name: Joi.string().required(),
-    driver_mobile: Joi.string().required(),
-    dl_no: Joi.string().required(),
-    departure: Joi.date().required()
-})
-
 const challanCreateSchema = Joi.object({
     dispatch_processing_unit: Joi.string().required(),
     products: Joi.array().items({
@@ -18,11 +9,8 @@ const challanCreateSchema = Joi.object({
         // dispatch: Joi.boolean().required()
     }).required(),
     // truck: Joi.object({
-    vehicle_no: Joi.string().required(),
-    vehicle_type: Joi.string().required(),
-    driver_name: Joi.string().required(),
-    driver_mobile: Joi.string().required(),
-    dl_no: Joi.string().required(),
+    vehicle:Joi.string().required(),
+    driver:Joi.string().required(),
     status: Joi.boolean().required().default(false),
     departure: Joi.date().required()
     // }).required()
