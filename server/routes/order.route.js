@@ -43,6 +43,8 @@ router.post("/", authorizePrivilege("ADD_NEW_ORDER"), (req, res) => {
     })
 })
 
+
+
 // Delete a order
 router.delete("/:id", authorizePrivilege("DELETE_ORDER"), (req, res) => {
     if (!mongodb.ObjectId.isValid(req.params.id)) {
