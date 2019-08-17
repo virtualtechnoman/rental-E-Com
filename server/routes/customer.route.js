@@ -115,7 +115,7 @@ router.put('/:id', authorizePrivilege("UPDATE_CUSTOMER"), (req, res) => {
                         doc = doc.toObject();
                         delete doc.password;
                         console.log("Updated User", doc);
-                        res.status(200).json({ status: 200, errors: false, data: d, message: "Updated Customer" });
+                        res.status(200).json({ status: 200, errors: false, data: doc, message: "Updated Customer" });
                     }
             }
         })
