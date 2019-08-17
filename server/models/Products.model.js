@@ -5,13 +5,13 @@ const Schema = mongoose.Schema;
 const ProductSchema = new Schema({
     name: { type: String, required: true },
     product_id: { type: String, required: true , unique:true},
-    category: { type: String, required: true },
+    category: { type: mongoose.Schema.Types.ObjectId, ref:"product_category", required: true },
     is_active: { type: Boolean, default:true, required: true },
     farm_price: { type: Number, required: false },
     selling_price: { type: Number, required: true },
     product_dms: { type: String, required: true },
     brand: { type: String, required: true },
-    details: { type: String, default:"", required: true },
+    details: { type: String, default:""},
     created_by: { type: mongoose.Schema.Types.ObjectId,ref:'user', required: true },
     available_for: { type: String, required: true },
     created_date: { type: Date, default: Date.now }

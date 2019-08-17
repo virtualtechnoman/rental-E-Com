@@ -8,8 +8,8 @@ const moment = require('moment');
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 //GET ALL PRODUCTS CREATED BY SELF
-router.get("/",authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
-    Product.find({created_by:req.user._id}).populate("created_by","-password").exec().then(docs => {
+router.get("/", authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
+    Product.find({ created_by: req.user._id }).populate("created_by", "-password").populate("category").exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All products" });
         else
@@ -20,8 +20,8 @@ router.get("/",authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
 })
 
 // GET ALL PRODUCTS
-router.get("/all",authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
-    Product.find().populate("created_by","-password").exec().then(docs => {
+router.get("/all", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
+    Product.find().populate("created_by", "-password").populate("category").exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All products" });
         else
@@ -46,7 +46,8 @@ router.post('/', authorizePrivilege("ADD_NEW_PRODUCT"), async (req, res) => {
         .save()
         .then(product => {
             product
-                .populate("created_by","-password")
+                .populate("created_by", "-password")
+                .populate("category")
                 .execPopulate()
                 .then(p => res.json({ status: 200, data: p, errors: false, message: "Product added successfully" }))
                 .catch(e => {
@@ -67,16 +68,16 @@ router.put("/:id", authorizePrivilege("UPDATE_PRODUCT"), (req, res) => {
         if (!isEmpty(result.errors)) {
             return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
         }
-        Product.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
-            if (err)
-                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating product" });
-            else {
-                return res.status(200).json({ status: 200, data: doc, errors: false, message: "Product Updated Successfully" });
-            }
-        })
+        Product.findByIdAndUpdate(req.params.id, result.data, { new: true }).populate("created_by", "-password").populate("category")
+            .exec()
+            .then(doc => res.status(200).json({ status: 200, data: doc, errors: false, message: "Product Updated Successfully" }))
+            .catch(err => {
+                console.log(err);
+                res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating product" })
+            })
     }
     else {
-        res.json({ status: 200, data: null, errors: true, message: "Invalid data" });
+        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid product id" });
     }
 })
 
@@ -90,7 +91,7 @@ router.get("/page/:page?", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) =>
     let order = req.query.order || 'asc';
     let srt = {};
     srt[orderby] = order;
-    Product.find().limit(limit).skip(limit * page).sort(srt)
+    Product.find().populate("category").limit(limit).skip(limit * page).sort(srt)
         .exec(function (err, products) {
             if (err) {
                 console.log(err);
@@ -101,7 +102,7 @@ router.get("/page/:page?", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) =>
 })
 
 //DELETE A PRODUCT
-router.delete("/:id",authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
+router.delete("/:id", authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
     if (!mongodb.ObjectId.isValid(req.params.id)) {
         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid product id" });
     }
@@ -118,11 +119,10 @@ router.delete("/:id",authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
 })
 
 // GET SPECIFIC PRODUCT
-router.get("/id/:id",authorizePrivilege("GET_PRODUCT"), (req, res) => {
+router.get("/id/:id", authorizePrivilege("GET_PRODUCT"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
-        // console.log(req.params.id);
-        Product.findById(req.params.id).populate("created_by").exec().then(doc => {
-            res.json({ status: 200, data: doc, errors: false, message: "All products" });
+        Product.findById(req.params.id).populate("created_by","-password").populate("category").exec().then(doc => {
+            res.json({ status: 200, data: doc, errors: false, message: "Product" });
         }).catch(e => {
             console.log(e);
             res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting the product" })
