@@ -80,6 +80,7 @@ router.put('/:id', authorizePrivilege("UPDATE_USER"), (req, res) => {
     }
     User.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
       if (err) {
+        console.log(err);
         return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating user data" });
       }
       else {
