@@ -10,15 +10,42 @@ const router = express.Router();
 
 //GET own cart
 router.get("/", authorizePrivilege("GET_CART"), (req, res) => {
-    Cart.findOne({ user: req.user._id }).populate("products.product").exec().then(doc => {
-        console.log("DOC IS : ", doc)
-        if (doc)
-            return res.json({ status: 200, data: doc.products, errors: false, message: "Your Cart" });
-        else
-            return res.json({ status: 200, data: [], errors: false, message: "Your Cart" });
-    }).catch(err => {
-        return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
-    });
+    Cart.aggregate([
+        { $match: { user: req.user._id } },
+        { $unwind: "$products" },
+        { $lookup: { "from": 'products', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
+        {
+            $project: {
+                _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.selling_price", 0] }
+            }
+        },
+        { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
+        { $project: { _id: 0, c_id: 1, products: 1, total: 1 } }
+    ], (err, doc) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
+        }
+        if (doc) {
+            Cart.populate(doc, { path: "products.product", populate: { path: "category" } }, (err, doc) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
+                } else {
+                    return res.json({ status: 200, data: doc[0], errors: false, message: "Your Cart" });
+                }
+            })
+            // .then(doc => {
+            //     console.log("DOC IS : ", doc)
+            //     if (doc)
+            //         return res.json({ status: 200, data: doc.products, errors: false, message: "Your Cart" });
+            //     else
+            //         return res.json({ status: 200, data: [], errors: false, message: "Your Cart" });
+            // }).catch(err => {
+            //     return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
+            // });
+        }
+    })
 })
 
 // //GET all orders
@@ -36,7 +63,33 @@ router.post("/", authorizePrivilege("ADD_PRODUCT_TO_CART"), (req, res) => {
     if (!isEmpty(result.errors))
         return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
     Cart.findOneAndUpdate({ user: req.user._id }, { $push: { products: result.data } }, { upsert: true, new: true }).exec().then(d => {
-        return res.json({ status: 200, data: d.products, errors: false, message: "Item added to cart" });
+        Cart.aggregate([
+            { $match: { user: req.user._id } },
+            { $unwind: "$products" },
+            { $lookup: { "from": 'products', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
+            {
+                $project: {
+                    _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.selling_price", 0] }
+                }
+            },
+            { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
+            { $project: { _id: 0, c_id: 1, products: 1, total: 1 } }
+        ], (err, doc) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
+            }
+            if (doc) {
+                Cart.populate(doc, { path: "products.product", populate: { path: "category" } }, (err, doc) => {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
+                    } else {
+                        return res.json({ status: 200, data: doc[0], errors: false, message: "Item added to cart" });
+                    }
+                })
+            }
+        })
     }).catch(e => {
         return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while adding item to cart" });
     })
@@ -50,15 +103,41 @@ router.delete("/:id", authorizePrivilege("DELETE_PRODUCT_FROM_CART"), (req, res)
     else {
         Cart.findOneAndUpdate({ user: req.user._id }, { $pull: { products: { product: req.params.id } } }, { new: true }, (err, doc) => {
             if (err) {
-                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while deleting the order" })
+                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while deleting the product" })
             }
             if (doc) {
-                console.log("doc: ",doc);
+                console.log("doc: ", doc);
                 if (doc.products.length == 0) {
-                    res.json({ status: 200, data: [], errors: false, message: "Item deleted successfully!" });
+                    res.json({ status: 200, data: { products: [], total: 0 }, errors: false, message: "Item deleted successfully!" });
                     return doc.delete();
                 }
-                return res.json({ status: 200, data: doc.products, errors: false, message: "Item deleted successfully!" });
+                Cart.aggregate([
+                    { $match: { user: req.user._id } },
+                    { $unwind: "$products" },
+                    { $lookup: { "from": 'products', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
+                    {
+                        $project: {
+                            _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.selling_price", 0] }
+                        }
+                    },
+                    { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
+                    { $project: { _id: 0, c_id: 1, products: 1, total: 1 } }
+                ], (err, doc) => {
+                    if (err) {
+                        console.log(err);
+                        return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
+                    }
+                    if (doc) {
+                        Cart.populate(doc, { path: "products.product", populate: { path: "category" } }, (err, doc) => {
+                            if (err) {
+                                console.log(err);
+                                res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
+                            } else {
+                                return res.json({ status: 200, data: doc[0], errors: false, message: "Item deleted successfully!" });
+                            }
+                        })
+                    }
+                })
             }
         });
     }
@@ -75,11 +154,33 @@ router.put("/:id", authorizePrivilege("UPDATE_QUANTITY_IN_CART"), (req, res) => 
         }
         Cart.findOneAndUpdate({ user: req.user._id, 'products.product': req.params.id }, { $set: { 'products.$.quantity': req.body.quantity } }, { new: true }).populate('products.product').exec()
             .then(doc => {
-                if (doc) {
-                    return res.status(200).json({ status: 200, errors: false, data: doc.products, message: "Cart updated successfully" });
-                } else {
-                    return res.status(200).json({ status: 200, errors: false, data: null, message: "No records updated" });
-                }
+                Cart.aggregate([
+                    { $match: { user: req.user._id } },
+                    { $unwind: "$products" },
+                    { $lookup: { "from": 'products', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
+                    {
+                        $project: {
+                            _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.selling_price", 0] }
+                        }
+                    },
+                    { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
+                    { $project: { _id: 0, c_id: 1, products: 1, total: 1 } }
+                ], (err, doc) => {
+                    if (err) {
+                        console.log(err);
+                        return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
+                    }
+                    if (doc) {
+                        Cart.populate(doc, { path: "products.product", populate: { path: "category" } }, (err, doc) => {
+                            if (err) {
+                                console.log(err);
+                                res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
+                            } else {
+                                return res.status(200).json({ status: 200, errors: false, data: doc[0], message: "Cart updated successfully" });
+                            }
+                        })
+                    }
+                })
             }).catch(e => {
                 console.log(e);
                 return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating cart" });
@@ -90,10 +191,10 @@ router.put("/:id", authorizePrivilege("UPDATE_QUANTITY_IN_CART"), (req, res) => 
 })
 
 //Place Order
-router.post("/placeorder",authorizePrivilege("PLACE_ORDER"),(req,res)=>{
-    Cart.findOne({user:req.user._id}).exec().then(doc=>{
-        if(doc){
-            if(doc.products.length){
+router.post("/placeorder", authorizePrivilege("PLACE_ORDER"), (req, res) => {
+    Cart.findOne({ user: req.user._id }).exec().then(doc => {
+        if (doc) {
+            if (doc.products.length) {
                 let order = {};
                 order.products = doc.products;
                 order.placed_by = req.user._id;
@@ -103,16 +204,16 @@ router.post("/placeorder",authorizePrivilege("PLACE_ORDER"),(req,res)=>{
                 newOrder.save().then(order => {
                     CustomerOrder.findById(order._id).populate("placed_by products.product placed_to").exec().then(d => {
                         doc.delete();
-                       return res.json({ status: 200, data: d, errors: false, message: "Order placed successfully" });
+                        return res.json({ status: 200, data: d, errors: false, message: "Order placed successfully" });
                     })
                 }).catch(e => {
                     console.log(e);
-                   return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while placing the order" });
+                    return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while placing the order" });
                 })
             }
             else
-           return res.status(400).json({ status: 400, errors: true, data: null, message: "Your cart is empty" });
-        }else{
+                return res.status(400).json({ status: 400, errors: true, data: null, message: "Your cart is empty" });
+        } else {
             return res.status(400).json({ status: 400, errors: true, data: null, message: "Your cart is empty" });
         }
     })
