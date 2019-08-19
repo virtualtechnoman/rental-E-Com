@@ -8,7 +8,7 @@ const router = express.Router();
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 //GET all challans created by self
-router.get("/", authorizePrivilege("GET_ALL_CHALLAN"), (req, res) => {
+router.get("/", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) => {
     // console.log(req.user);
     Challan.find({ processing_unit_incharge: req.user._id }).populate("processing_unit_incharge products.product").exec().then(doc => {
         if (doc.length > 0)
@@ -21,10 +21,10 @@ router.get("/", authorizePrivilege("GET_ALL_CHALLAN"), (req, res) => {
 })
 
 //GET all challans
-router.get("/all", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) => {
+router.get("/all", authorizePrivilege("GET_ALL_CHALLAN"), (req, res) => {
     // console.log(req.user);
     Challan.find()
-        .populate("processing_unit_incharge products.product dispatch_processing_unit")
+        .populate("processing_unit_incharge products.product dispatch_processing_unit vehicle driver")
         .exec()
         .then(doc => {
             if (doc.length > 0)
@@ -52,7 +52,7 @@ router.post("/", authorizePrivilege("ADD_NEW_CHALLAN"), async (req, res) => {
     newChallan.save()
         .then(challan => {
             Challan.findById(challan._id)
-                .populate("processing_unit_incharge products.product")
+                .populate("processing_unit_incharge products.product vehicle driver")
                 .exec()
                 .then(doc => {
                     res.json({ status: 200, data: doc, errors: false, message: "Challan created successfully" });
@@ -102,7 +102,7 @@ router.delete("/:id", authorizePrivilege("DELETE_CHALLAN"), (req, res) => {
 //GET specific challan
 router.get("/id/:id", authorizePrivilege("GET_CHALLAN"), (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.id)) {
-        Challan.findById(req.params.id).populate("processing_unit_incharge products.product").exec().then(doc => {
+        Challan.findById(req.params.id).populate("processing_unit_incharge products.product vehicle driver").exec().then(doc => {
             if (doc)
                 res.json({ status: 200, data: doc, errors: false, message: "Challan" });
             else

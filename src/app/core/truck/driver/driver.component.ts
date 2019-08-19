@@ -25,6 +25,7 @@ export class DriverComponent implements OnInit {
   uploading: Boolean = false;
   editing: Boolean = false;
   submitted = false;
+  viewArray:any=[]
   constructor(private formBuilder: FormBuilder, private toastr: ToastrService, private DriverService: TruckService) { }
 
   ngOnInit() {
@@ -38,7 +39,7 @@ export class DriverComponent implements OnInit {
       retrive: true,
       dom: '<"html5buttons"B>lTfgitp',
       language: {
-        search: '_INPUT',
+        search: '_INPUT_',
         searchPlaceholder: 'Search records',
       },
       // dom: 'Bfrtip',
@@ -50,6 +51,12 @@ export class DriverComponent implements OnInit {
       ]
     };
     this.get_Drivers();
+    this.DriverForm = this.formBuilder.group({
+      name: ['', Validators.required],
+      mobile: ['', Validators.required],
+      dl_number: ['', Validators.required],
+      isAvailable: ['', Validators.required]
+    });
   }
 
   get f() { return this.DriverForm.controls; }
@@ -74,6 +81,7 @@ export class DriverComponent implements OnInit {
       this.toastr.success('Driver Added', 'Success!');
       this.allDrivers.push(res.data);
       this.resetForm();
+      // window.location.reload();
     });
   }
 
@@ -97,13 +105,14 @@ export class DriverComponent implements OnInit {
   get_Drivers() {
     this.allDrivers.length = 0;
     this.DriverService.getAllDrivers().subscribe((res: ResponseModel) => {
-      console.log(res);
+      console.log(res.data);
       this.allDrivers = res.data;
       this.dtTrigger.next();
     });
   }
 
   updateDriver(Driver) {
+    console.log(Driver,".....",this.allDrivers[this.current_Driver_index]._id)
     this.DriverService.updateDriver(this.allDrivers[this.current_Driver_index]._id, Driver)
       .subscribe((res: ResponseModel) => {
         this.toastr.info('Driver Updated Successfully!', 'Updated!');
@@ -111,6 +120,10 @@ export class DriverComponent implements OnInit {
         this.allDrivers.splice(this.current_Driver_index, 1, res.data);
         this.resetForm();
       });
+  }
+
+  viewDriver(i){
+    this.viewArray=this.allDrivers[i]
   }
 
   resetForm() {
@@ -122,18 +135,18 @@ export class DriverComponent implements OnInit {
   initForm() {
     this.DriverForm = this.formBuilder.group({
       name: ['', Validators.required],
-      mobile: [true, Validators.required],
-      dl_number: [true, Validators.required],
-      isAvailable: ['']
+      mobile: ['', Validators.required],
+      dl_number: ['', Validators.required],
+      isAvailable: ['', Validators.required]
     });
   }
 
   setFormValue() {
-    const customer = this.allDrivers[this.current_Driver_index];
-    this.DriverForm.controls['name'].setValue(customer.name);
-    this.DriverForm.controls['isAvailable'].setValue(customer.isAvailable);
-    this.DriverForm.controls['mobile'].setValue(customer.mobile);
-    this.DriverForm.controls['dl_number'].setValue(customer.dl_number);
+    const driver = this.allDrivers[this.current_Driver_index];
+    this.DriverForm.controls['name'].setValue(driver.name);
+    this.DriverForm.controls['isAvailable'].setValue(driver.isAvailable);
+    this.DriverForm.controls['mobile'].setValue(driver.mobile);
+    this.DriverForm.controls['dl_number'].setValue(driver.dl_number);
   }
 
 }

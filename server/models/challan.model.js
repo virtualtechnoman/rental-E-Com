@@ -28,7 +28,7 @@ module.exports = mongoose.model("challan", new mongoose.Schema({
     challan_date: {
         type: Date, default: Date.now
     },
-    staus: { type: Boolean, required: true }
+    status: { type: Boolean, required: true }
 }, {
         versionKey: false
     }))

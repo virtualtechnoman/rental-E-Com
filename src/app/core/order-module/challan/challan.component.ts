@@ -57,7 +57,9 @@ export class ChallanComponent implements OnInit {
 
   selectChallan(i) {
     this.currentChallan = this.allChallans[i];
+    console.log(this.currentChallan)
     this.allProducts = this.currentChallan.products;
+    console.log(this.allProducts)
   }
 
 

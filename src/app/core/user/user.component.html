@@ -15,7 +15,7 @@
     </div>
     <div class="card-body">
       <table id="example1" class="table table-hover table-striped " datatable [dtOptions]="dtOptions"
-        [dtTrigger]="dtTrigger">
+        [dtTrigger]="dtTrigger" *ngIf="fullTable">
         <thead>
           <tr>
             <th class="wd-25p">Name</th>
@@ -32,14 +32,18 @@
             <td>{{user.role.name | titlecase }}</td>
             <td>{{user.mobile_number  }}</td>
             <td>
-              <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editUser(i)"><i
+                <a style="cursor: pointer" (click)="viewUser(i)" data-toggle="modal" data-target="#exampleModalCenter" ><i class="fas fa-eye"></i></a>
+              <a  style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editUser(i)" *ngIf="user.role.name=='Admin'"><i
                   class="fas fa-edit mx-2"></i></a>
-              <a *ngIf="!user.role.role == 'admin'" style="cursor:pointer" (click)="deleteUser(i)"><i
+                  <a  style="cursor:pointer" data-toggle="modal" data-target="#exampleModalCenter" (click)="editUser(i)" *ngIf="user.role.name=='Customer'"><i
+                    class="fas fa-edit mx-2"></i></a>
+              <a  style="cursor:pointer" (click)="deleteUser(i)"><i
                   class="fas fa-trash-alt"></i></a>
             </td>
           </tr>
         </tbody>
       </table>
+      
     </div>
   </div>
 </div>
@@ -54,7 +58,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="userForm" (ngSubmit)="submit()">
+        <form [formGroup]="userForm" (ngSubmit)="submit()" >
           <div class="form-row offset-md-4">
             <div class="form-group col-md-4">
               <label for="inputPassword4">First Name</label>
@@ -108,7 +112,7 @@
               <label for="inputEmail4">Position</label>
               <select class="custom-select" name="role" formControlName="role"
                 [ngClass]="{ 'is-invalid': submitted && f.role.errors }" required>
-                <option value="" selected>Role*</option>
+                <option value="" selected disabled>Role*</option>
                 <option [ngValue]="userRole._id" *ngFor="let userRole of allUserRoles">{{userRole.name}}
                 </option>
               </select>
@@ -141,6 +145,14 @@
               Form</button>
           </div>
         </form>
+
+
+
+
+
+
+
+
       </div>
     </div>
   </div>
@@ -170,6 +182,73 @@
           Uploading...
         </button>
         <button type="button" class="btn btn-primary tx-13" *ngIf="!uploading" (click)="extractData()"> Upload</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">User Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+              <label>Enter Name</label>
+              <input type="text" formControlName="full_name" class="form-control" [ngClass]="{ 'is-invalid': submitted && f2.full_name.errors }" />
+              <div *ngIf="submitted && f2.full_name.errors" class="invalid-feedback">
+                  <div *ngIf="f2.full_name.errors.required">Name is required</div>
+              </div>
+          </div>
+          <div class="form-group">
+              <label>Enter Mobile Number</label>
+              <input type="text" formControlName="mobile_number" class="form-control" [ngClass]="{ 'is-invalid': submitted && f2.mobile_number.errors }" />
+              <div *ngIf="submitted && f2.mobile_number.errors" class="invalid-feedback">
+                  <div *ngIf="f2.mobile_number.errors.required">Mobile Number is required</div>
+              </div>
+          </div>
+          <div class="form-group">
+              <label>Landmark</label>
+              <input type="text" formControlName="landmark" class="form-control" [ngClass]="{ 'is-invalid': submitted && f2.landmark.errors }" />
+              <div *ngIf="submitted && f2.landmark.errors" class="invalid-feedback">
+                  <div *ngIf="f2.landmark.errors.required">Landmark is required</div>
+              </div>
+          </div>
+          <div class="form-group">
+              <label>Enter Street Address</label>
+              <input type="text" formControlName="street_address" class="form-control" [ngClass]="{ 'is-invalid': submitted && f2.street_address.errors }" />
+              <div *ngIf="submitted && f2.street_address.errors" class="invalid-feedback">
+                  <div *ngIf="f2.street_address.errors.required">Street Address is required</div>
+              </div>
+          </div>
+          <div class="form-group">
+              <label>Enter City </label>
+              <input type="text" formControlName="city" class="form-control" [ngClass]="{ 'is-invalid': submitted && f2.city.errors }" />
+              <div *ngIf="submitted && f2.city.errors" class="invalid-feedback">
+                  <div *ngIf="f2.city.errors.required">City is required</div>
+              </div>
+          </div>
+          <div class="form-group">
+              <label>Enter DOB</label>
+              <input type="date" formControlName="dob" class="form-control" [ngClass]="{ 'is-invalid': submitted && f2.dob.errors }" />
+              <div *ngIf="submitted && f2.dob.errors" class="invalid-feedback">
+                  <div *ngIf="f2.dob.errors.required">DOB is required</div>
+              </div>
+          </div>
+          <div class="form-group">
+              <button class="btn btn-primary">Save</button>
+              <!-- <button class="btn btn-primary" data-dismiss="modal" (click)="closeModal()">Close</button> -->
+          </div>
+      </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div>
   </div>

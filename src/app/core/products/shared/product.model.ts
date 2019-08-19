@@ -13,3 +13,15 @@ export class ProductModel {
     created_by: String;
     available_for: String;
 }
+export class CategoryModel{
+    _id:string;
+    name:string;
+    is_active:boolean;
+}
+export class category{
+    
+    is_active:boolean;
+    name:string;
+    _id:string
+    
+}

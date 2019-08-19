@@ -32,7 +32,7 @@ export class TruckService {
     return this.http.delete(this.url + '/' + id, { headers: this.headers });
   }
 
-  updateDriver(product, id) {
+  updateDriver(id, product) {
     return this.http.put(this.url + '/' + id, product, { headers: this.headers });
   }
 

@@ -25,7 +25,7 @@ module.exports = async (req, res, next) => {
                                 let u = d.toObject();
                                 delete u.password;
                                 req.user = u;
-                                // console.log(u);
+                                console.log(u);
                                 next();
                             } else {
                                 res.status(403).json({ status:403, data:null, errors:true, message: "Your token is not valid anymore" });

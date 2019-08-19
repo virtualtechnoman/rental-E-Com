@@ -6,6 +6,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ProductsService } from './shared/products.service';
 import { DataTablesModule } from 'angular-datatables';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { CategoryComponent } from './category/category.component';
 
 @NgModule({
   imports: [
@@ -16,7 +17,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     ProductsRoutingModule,
     InputSwitchModule
   ],
-  declarations: [ProductsComponent],
+  declarations: [ProductsComponent, CategoryComponent],
   exports:[
     ProductsRoutingModule
   ],

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductsService } from './shared/products.service';
 import { FormBuilder, FormGroup, FormControlName, Validators } from '@angular/forms';
-import { ProductModel } from './shared/product.model';
+import { ProductModel, CategoryModel, category } from './shared/product.model';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
@@ -17,6 +17,7 @@ export class ProductsComponent implements OnInit {
 
   jQuery: any;
   allproducts: ProductModel[] = [];
+  allCategories:CategoryModel[]=[];
   allTherapies: any[] = [];
   all_business_unit: any[] = [];
   currentproduct: ProductModel;
@@ -31,6 +32,7 @@ export class ProductsComponent implements OnInit {
   parsedCSV;
   uploading: Boolean = false;
   submitted: Boolean = false;
+  viewArray:any=[];
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService
   ) {
@@ -39,6 +41,7 @@ export class ProductsComponent implements OnInit {
 
   ngOnInit() {
     this.getProducts();
+    this.getAllCategory();
     this.dtOptions = {
       pagingType: "full_numbers",
       lengthMenu: [
@@ -60,6 +63,18 @@ export class ProductsComponent implements OnInit {
         'excel',
       ]
     };
+    this.productForm = this.formBuilder.group({
+      available_for: ['', Validators.required],
+      brand: ['', Validators.required],
+      category: ['', Validators.required],
+      details: [''],
+      farm_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
+      // image: ['No Value', Validators.required],
+      is_active: ['', Validators.required],
+      name: ['', Validators.required],
+      product_dms: ['', Validators.required],
+      selling_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
+    });
   }
 
   get f() { return this.productForm.controls; }
@@ -80,6 +95,7 @@ export class ProductsComponent implements OnInit {
   }
 
   addProduct(product) {
+    console.log(product)
     this.productService.addProduct(product).subscribe((res: ResponseModel) => {
       jQuery('#modal3').modal('hide');
       this.toastr.success('Product Added!', 'Success!');
@@ -94,6 +110,21 @@ export class ProductsComponent implements OnInit {
     this.currentproductId = this.allproducts[i]._id;
     this.currentIndex = i;
     this.setFormValue();
+  }
+
+  viewProduct(i){
+    this.viewArray=this.allproducts[i];
+    console.log(this.viewArray);
+    
+    
+  }
+
+  getAllCategory(){
+    this.productService.getAllCategory().subscribe((res:ResponseModel)=>{
+      this.allCategories=res.data
+      console.log(res.data)
+      this.dtTrigger.next();
+    })
   }
 
   deleteProduct(i) {
@@ -135,24 +166,25 @@ export class ProductsComponent implements OnInit {
       available_for: ['', Validators.required],
       brand: ['', Validators.required],
       category: ['', Validators.required],
-      // created_by: ['No Value', Validators.required],
       details: [''],
       farm_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
       // image: ['No Value', Validators.required],
       is_active: [true],
       name: ['', Validators.required],
-      // product_id: ['', Validators.required],
       product_dms: ['', Validators.required],
       selling_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
     });
   }
 
   setFormValue() {
-    const product = this.allproducts[this.currentIndex];
+    
+    const product:any = this.allproducts[this.currentIndex];
+    console.log(product)
+    
     this.productForm.controls['available_for'].setValue(product.available_for);
     this.productForm.controls['brand'].setValue(product.brand);
-    this.productForm.controls['category'].setValue(product.category);
-    // this.productForm.controls['created_by'].setValue(product.created_by);
+
+    this.productForm.controls['category'].setValue(product.category._id);
     this.productForm.controls['details'].setValue(product.details);
     this.productForm.controls['farm_price'].setValue(product.farm_price);
     // this.productForm.controls['image'].setValue(product.image);

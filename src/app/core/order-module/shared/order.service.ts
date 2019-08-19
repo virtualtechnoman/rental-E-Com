@@ -15,6 +15,7 @@ export class OrderService {
   url = '/api/order';
   url2 = '/api/rorder';
   url3 = '/api/challan';
+  url4='/api/user'
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   // ==========ORDER APIS=================//
@@ -70,5 +71,9 @@ export class OrderService {
 
   addNewChallan(challan) {
     return this.http.post(this.url3, challan, { headers: this.headers });
+  }
+
+  getUsers(){
+    return this.http.get(this.url4 + '/', { headers: this.headers });
   }
 }

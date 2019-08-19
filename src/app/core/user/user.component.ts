@@ -17,7 +17,7 @@ import { ResponseModel } from '../../shared/shared.model';
 })
 export class UserComponent implements OnInit {
   // id = 'EMP' + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second()
-
+  admin:boolean=false
   allTherapies: any[] = [];
   allTherayId: any[] = [];
   allUsers: any[] = [];
@@ -41,7 +41,9 @@ export class UserComponent implements OnInit {
   allUserRoles: any[] = [];
   userRole;
   uploading: Boolean = false;
-
+  viewArray:any=[];
+  fullTable:boolean=true;
+  registerForm: FormGroup;
   constructor(private userService: UserService, private formBuilder: FormBuilder,
     private UserroleService: UserRoleService, private toastr: ToastrService, private activatedRoute: ActivatedRoute) {
     this.initForm();
@@ -51,7 +53,7 @@ export class UserComponent implements OnInit {
       if (res.error) {
         this.toastr.warning('No Data Available', res.error);
       } else {
-        console.log(res);
+        console.log(res.data);
         this.allUsers = res.data;
       }
     });
@@ -79,10 +81,28 @@ export class UserComponent implements OnInit {
         'excel',
       ]
     };
+    this.registerForm = this.formBuilder.group({
+      full_name: ['', Validators.required],
+      mobile_number: ['', Validators.required],
+      landmark: ['', Validators.required],
+      street_address: ['', Validators.required ],
+      city:['', Validators.required],
+      dob:['', Validators.required]
+  });
   }
 
   get f() { return this.userForm.controls; }
+  get f2() { return this.registerForm.controls; }
+  onSubmit() {
+    this.submitted = true;
 
+    // stop here if form is invalid
+    if (this.registerForm.invalid) {
+        return;
+    }
+
+    alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registerForm.value))
+}
   submit() {
     console.log('USER FORM VALUES ====>>>', this.userForm.value);
     this.submitted = true;
@@ -98,6 +118,7 @@ export class UserComponent implements OnInit {
   }
 
   addUser(user) {
+    console.log(user)
     try {
       this.userService.addUser(user).subscribe((res:ResponseModel) => {
         console.log(res);
@@ -128,15 +149,24 @@ export class UserComponent implements OnInit {
     }
   }
 
+  viewUser(i){
+    this.viewArray=this.allUsers[i]
+    console.log(this.allUsers[i])
+  }
+
   updateUser(user) {
-    this.userService.updateUser(this.allUsers[this.currentIndex]._id, user).subscribe(res => {
-      jQuery('#modal3').modal('hide');
-      console.log('UPDATED USER VALUE');
-      console.log(res);
-      this.allUsers.splice(this.currentIndex, 1, res);
-      this.toastr.info('Therapy Updated Successfully!', 'Updated!!');
-      this.resetForm();
-    })
+    console.log(user,this.allUsers[this.currentIndex]._id)
+    // this.userService.updateUser(this.allUsers[this.currentIndex]._id, user).subscribe(res => {
+    //   jQuery('#modal3').modal('hide');
+    //   console.log('UPDATED USER VALUE');
+    //   console.log(res);
+    //   this.allUsers.splice(this.currentIndex, 1, res);
+    //   this.toastr.info('Therapy Updated Successfully!', 'Updated!!');
+      
+    //   this.resetForm();
+    //   window.location.reload();
+    // })
+
   }
 
   initForm() {
@@ -160,19 +190,34 @@ export class UserComponent implements OnInit {
   getUserRoles() {
     this.UserroleService.getAllUserRoles().subscribe((res: ResponseModel) => {
       this.allUserRoles = res.data;
+      console.log(this.allUserRoles)
     });
   }
 
   setFormValue(user) {
+    console.log(user)
+    if(user.role._id=='5d5692a8d542231cd89861cc'){
     this.userForm.controls['email'].setValue(user.email);
     this.userForm.controls['full_name'].setValue(user.full_name);
     this.userForm.controls['password'].setValue(user.password);
-    this.userForm.controls['role'].setValue(user.role);
+    this.userForm.controls['role'].setValue(user.role._id);
     this.userForm.controls['is_active'].setValue(user.is_active);
     this.userForm.controls['mobile_number'].setValue(user.mobile_number);
+    }
+    if(user.role._id=='5d5692a8d542231cd89861cd'){
+      var dob= user.dob.substring(0, 10)
+    this.registerForm.controls['city'].setValue(user.city);
+    this.registerForm.controls['mobile_number'].setValue(user.mobile_number);
+    this.registerForm.controls['full_name'].setValue(user.full_name);
+    this.registerForm.controls['dob'].setValue(dob);
+    this.registerForm.controls['landmark'].setValue(user.landmark);
+    this.registerForm.controls['street_address'].setValue(user.street_address);
+      }
   }
 
   getUserbyRole() {
+    this.allUsers.length=0
+    console.log(this.allUsers)
     console.log(this.selectedUserRole);
     this.userService.getUserByRole(this.selectedUserRole._id).subscribe((res: ResponseModel) => {
       if (res.error) {
@@ -294,13 +339,18 @@ export class UserComponent implements OnInit {
 
   togglePassword() {
     const x = <HTMLInputElement>document.getElementById('password');
+    console.log(x)
     if (x.type === 'password') {
       x.type = 'text';
     } else {
       x.type = 'password';
     }
   }
-
+  selectRole(event:any){
+    console.log(event)
+    this.userForm.controls['role'].setValue(this.allUserRoles[event.target.selectedIndex-1]._id)
+    console.log(this.userForm)
+  }
   ngOnDestroy(): void {
     // Do not forget to unsubscribe the event
     this.dtTrigger.unsubscribe();
