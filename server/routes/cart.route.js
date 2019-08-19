@@ -27,7 +27,7 @@ router.get("/", authorizePrivilege("GET_CART"), (req, res) => {
             return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
         }
         if (doc) {
-            Cart.populate(doc, { path: "products.product", populate: { path: "category" } }, (err, doc) => {
+            Cart.populate(doc, { path: "products.product", populate: { path: "category created_by", select:"-password" } }, (err, doc) => {
                 if (err) {
                     console.log(err);
                     res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
@@ -85,7 +85,7 @@ router.post("/", authorizePrivilege("ADD_PRODUCT_TO_CART"), (req, res) => {
                 return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
             }
             if (doc) {
-                Cart.populate(doc, { path: "products.product", populate: { path: "category" } }, (err, doc) => {
+                Cart.populate(doc, { path: "products.product", populate: { path: "category created_by", select:"-password" } }, (err, doc) => {
                     if (err) {
                         console.log(err);
                         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
@@ -133,7 +133,7 @@ router.delete("/:id", authorizePrivilege("DELETE_PRODUCT_FROM_CART"), (req, res)
                         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
                     }
                     if (doc) {
-                        Cart.populate(doc, { path: "products.product", populate: { path: "category" } }, (err, doc) => {
+                        Cart.populate(doc, { path: "products.product", populate: { path: "category created_by", select:"-password" } }, (err, doc) => {
                             if (err) {
                                 console.log(err);
                                 res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
@@ -176,7 +176,7 @@ router.put("/:id", authorizePrivilege("UPDATE_QUANTITY_IN_CART"), (req, res) => 
                         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
                     }
                     if (doc) {
-                        Cart.populate(doc, { path: "products.product", populate: { path: "category" } }, (err, doc) => {
+                        Cart.populate(doc, { path: "products.product", populate: { path: "category created_by",select:"-password" } }, (err, doc) => {
                             if (err) {
                                 console.log(err);
                                 res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
