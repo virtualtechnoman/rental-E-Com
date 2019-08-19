@@ -32,7 +32,12 @@ router.get("/", authorizePrivilege("GET_CART"), (req, res) => {
                     console.log(err);
                     res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
                 } else {
+                    // console.log("DOC : ",doc);
+                    if(doc.length)
                     return res.json({ status: 200, data: doc[0], errors: false, message: "Your Cart" });
+                    else
+                    return res.json({ status: 200, data: { products: [], total: 0 }, errors: false, message: "Your Cart" });
+
                 }
             })
             // .then(doc => {
