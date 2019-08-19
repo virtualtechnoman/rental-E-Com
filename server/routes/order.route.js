@@ -17,7 +17,7 @@ router.get("/",authorizePrivilege("GET_ALL_ORDERS_OWN"), (req, res) => {
 })
 
 //GET all orders
-router.get("/", authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
+router.get("/all", authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
     Order.find().populate("placed_by products.product placed_to").exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
