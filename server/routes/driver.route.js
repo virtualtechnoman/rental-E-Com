@@ -73,7 +73,7 @@ router.put('/:id', authorizePrivilege("UPDATE_DRIVER"), (req, res) => {
     // let user = (({ full_name, email, role }) => ({ full_name, email, role }))(req.body);
     const result = DriverController.verifyUpdate(req.body);
     if (!isEmpty(result.errors)) {
-      return res.json(result.errors)
+      return res.json(res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields Required" }))
     }
     Driver.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
       if (err) {
@@ -103,7 +103,7 @@ router.post("/", authorizePrivilege("ADD_NEW_DRIVER"), (req, res) => {
     })
   }
   else {
-    res.json({ status: 500, errors: true, data: result.errors, message: "Error while adding driver" });
+    res.json({ status: 500, errors: result.errors, data: null, message: "Error while adding driver" });
   }
 })
 

@@ -4,7 +4,8 @@ const helper = require('../utils/helper');
 const createRoleSchema = Joi.object({
     // user_role: Joi.string().required(),
     name: Joi.string().required(),
-    isAdmin: Joi.boolean().required()
+    isAdmin: Joi.boolean().required(),
+    privileges:Joi.object().optional()
     // privileges: Joi.object().required()
 
 
@@ -34,7 +35,8 @@ const createRoleSchema = Joi.object({
 })
 
 const updateRoleSchema = Joi.object({
-    name: Joi.string().optional()
+    name: Joi.string().optional(),
+    privileges:Joi.object().optional()
 })
 
 module.exports = {

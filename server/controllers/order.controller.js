@@ -7,7 +7,7 @@ const orderCreateSchema = Joi.object({
         accepted: Joi.number().min(0).required(),
         product: Joi.string().required(),
         quantity: Joi.number().min(1).required()
-    }),
+    }).required(),
     notes: Joi.optional().allow(''),
     status: Joi.boolean().default(false),
 })

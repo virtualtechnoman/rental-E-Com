@@ -7,6 +7,7 @@ const CustomerOrder = require("../models/customer.order.model");
 const moment = require('moment');
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 const router = express.Router();
+const Product = require("../models/Products.model");
 
 //GET own cart
 router.get("/", authorizePrivilege("GET_CART"), (req, res) => {
@@ -27,16 +28,16 @@ router.get("/", authorizePrivilege("GET_CART"), (req, res) => {
             return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
         }
         if (doc) {
-            Cart.populate(doc, { path: "products.product", populate: { path: "category created_by", select:"-password" } }, (err, doc) => {
+            Cart.populate(doc, { path: "products.product", populate: { path: "category created_by", select: "-password" } }, (err, doc) => {
                 if (err) {
                     console.log(err);
                     res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
                 } else {
                     // console.log("DOC : ",doc);
-                    if(doc.length)
-                    return res.json({ status: 200, data: doc[0], errors: false, message: "Your Cart" });
+                    if (doc.length)
+                        return res.json({ status: 200, data: doc[0], errors: false, message: "Your Cart" });
                     else
-                    return res.json({ status: 200, data: { products: [], total: 0 }, errors: false, message: "Your Cart" });
+                        return res.json({ status: 200, data: { products: [], total: 0 }, errors: false, message: "Your Cart" });
 
                 }
             })
@@ -85,7 +86,7 @@ router.post("/", authorizePrivilege("ADD_PRODUCT_TO_CART"), (req, res) => {
                 return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
             }
             if (doc) {
-                Cart.populate(doc, { path: "products.product", populate: { path: "category created_by", select:"-password" } }, (err, doc) => {
+                Cart.populate(doc, { path: "products.product", populate: { path: "category created_by", select: "-password" } }, (err, doc) => {
                     if (err) {
                         console.log(err);
                         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
@@ -133,7 +134,7 @@ router.delete("/:id", authorizePrivilege("DELETE_PRODUCT_FROM_CART"), (req, res)
                         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
                     }
                     if (doc) {
-                        Cart.populate(doc, { path: "products.product", populate: { path: "category created_by", select:"-password" } }, (err, doc) => {
+                        Cart.populate(doc, { path: "products.product", populate: { path: "category created_by", select: "-password" } }, (err, doc) => {
                             if (err) {
                                 console.log(err);
                                 res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
@@ -176,7 +177,7 @@ router.put("/:id", authorizePrivilege("UPDATE_QUANTITY_IN_CART"), (req, res) => 
                         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
                     }
                     if (doc) {
-                        Cart.populate(doc, { path: "products.product", populate: { path: "category created_by",select:"-password" } }, (err, doc) => {
+                        Cart.populate(doc, { path: "products.product", populate: { path: "category created_by", select: "-password" } }, (err, doc) => {
                             if (err) {
                                 console.log(err);
                                 res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
@@ -223,6 +224,39 @@ router.post("/placeorder", authorizePrivilege("PLACE_ORDER"), (req, res) => {
         }
     })
 })
+
+router.get("/products", (req, res) => {
+    Product.aggregate([
+    //     { $unwind: "$products" },
+        {
+            $lookup: {
+                from: "carts",
+                // let: { name: "$name" },
+                pipeline: [
+                    // { $match: { _id: { $nin: [] } } }
+                ],
+                as: "prods"
+            }},
+            {$project:{isincart:{prods:{$elemMatch:{product:"$_id"}}}}}
+            // {qty:{$cond:{}}}
+    //         $group:{
+    //             _id:{prods2:{id:"$prods._id"},inCart:{$expr:{"prods":{"$elemMatch":{"_id":"$products.product"}}}}}
+    //         }
+    //     },
+    //     //  {$group:{_id:null,cart_items:{$push:"$products.product"},prods:"$pro"}},
+
+    //     // {$project:{}
+
+
+    ], (err, doc) => {
+        if (err) {
+            console.log(err);
+            res.send("Error");
+        } else {
+            res.json(doc);
+        }
+    })
+});
 
 //GET specific order
 // router.get("/id/:id", authorizePrivilege("GET_CUSTOMER_ORDER"), (req, res) => {
