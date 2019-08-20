@@ -39,14 +39,14 @@ export class OrderComponent implements OnInit {
   uploading: Boolean = false;
   updatedOrder;
   submitted: Boolean = false;
-  showAcceptedButton:boolean=true;
-  allVehicle:VehicleModel[]=[];
-  alldriver:DriverModel[]=[];
-  index:any;
-  driverIndex:any;
-  vehicleIndex:any;
+  showAcceptedButton: boolean = true;
+  allVehicle: VehicleModel[] = [];
+  alldriver: DriverModel[] = [];
+  index: any;
+  driverIndex: any;
+  vehicleIndex: any;
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
-    private authService: AuthService, private orderService: OrderService, private userService: UserService,private vehicleService:TruckService
+    private authService: AuthService, private orderService: OrderService, private userService: UserService, private vehicleService: TruckService
   ) {
     this.initForm();
     this.initChallanForm();
@@ -121,7 +121,7 @@ export class OrderComponent implements OnInit {
   }
 
   viewSummary(i) {
-    this.index=i;
+    this.index = i;
     while (this.valueArr.length !== 0) { this.valueArr.removeAt(0); }
     this.showSummary = true;
     this.currentOrder = this.allOrders[i];
@@ -150,16 +150,16 @@ export class OrderComponent implements OnInit {
     });
   }
 
-  getVehicle(){
-    this.vehicleService.getAllVehicles().subscribe((res:ResponseModel)=>{
-        this.allVehicle=res.data
-        console.log(res.data)
+  getVehicle() {
+    this.vehicleService.getAllVehicles().subscribe((res: ResponseModel) => {
+      this.allVehicle = res.data
+      console.log(res.data)
     })
   }
 
-  getDrivers(){
-    this.vehicleService.getAllDrivers().subscribe((res:ResponseModel)=>{
-      this.alldriver=res.data
+  getDrivers() {
+    this.vehicleService.getAllDrivers().subscribe((res: ResponseModel) => {
+      this.alldriver = res.data
       console.log(res.data)
     })
   }
@@ -353,17 +353,17 @@ export class OrderComponent implements OnInit {
       driver: ['', Validators.required],
       // driver_mobile: ['', Validators.required],
       // dl_no: ['', Validators.required],
-      status:['',  Validators.required],
+      status: ['', Validators.required],
       departure: ['', Validators.required],
     });
   }
 
   saveChallan() {
-    const vehicle=this.allVehicle[this.vehicleIndex]
-    const driver=this.alldriver[this.driverIndex]
-    console.log(driver)
-    console.log(vehicle)
-    console.log(this.index)
+    const vehicle = this.allVehicle[this.vehicleIndex];
+    const driver = this.alldriver[this.driverIndex];
+    console.log(driver);
+    console.log(vehicle);
+    console.log(this.index);
     const placed_to = this.currentOrder.placed_to._id;
     const order2 = <any>new Object();
     order2.placed_to = placed_to;
@@ -400,13 +400,13 @@ export class OrderComponent implements OnInit {
   }
 
 
-  getDriver(event:any){
-    this.driverIndex=event.target.selectedIndex-1
-    console.log(this.driverIndex)
+  getDriver(event: any) {
+    this.driverIndex = event.target.selectedIndex - 1;
+    console.log(this.driverIndex);
   }
-  getVehicle2(event:any){
-    
-    this.vehicleIndex=event.target.selectedIndex-1
-    console.log(this.vehicleIndex)
+  getVehicle2(event: any) {
+
+    this.vehicleIndex = event.target.selectedIndex - 1;
+    console.log(this.vehicleIndex);
   }
-} 
+}

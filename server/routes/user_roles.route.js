@@ -31,6 +31,7 @@ router.post('/', (req, res) => {
     if (!isEmpty(result.errors)) {
         return res.status(200).json({ status: 200, message: "Fields required", errors: result.errors, data: null })
     }
+    if(result.data.isAdmin)
     result.data.privileges = privileges(result.data.isAdmin);
     delete result.data.isAdmin;
     let role = new userRole(result.data);
