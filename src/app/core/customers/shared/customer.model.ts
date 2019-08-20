@@ -25,7 +25,14 @@ export class CustomerTypeModel {
     customer_type: string;
     customer_id: string;
 }
-
+export class CustomerClass{
+    full_name:string;
+    mobile_number:string;
+    landmark:string;
+    street_address:string;
+    city:string;
+    dob:Date;
+}
 
 export class DistirbutorModel {
     is_active: boolean;

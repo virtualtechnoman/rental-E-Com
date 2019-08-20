@@ -8,7 +8,7 @@ export class AuthGuard implements CanActivate {
 
   canActivate() {
     const user = (<any>window).user;
-    if (localStorage.getItem('AuthToken')) {
+    if (localStorage.getItem('token')) {
       console.log("LOGGED IN")
       return true
     }

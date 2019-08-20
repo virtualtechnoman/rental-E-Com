@@ -11,7 +11,7 @@ export class AuthService {
 
   error: any;
   user: UserModel;
-  userData:any=[]
+  userData: any = [];
   constructor(private http: HttpClient, private token: TokenStorage) { }
 
   public $userSource = new Subject<any>();
@@ -23,9 +23,8 @@ export class AuthService {
         password
       }).subscribe((data: any) => {
         // console.log(data)
-        this.userData=data;
-
-        console.log(this.userData)
+        this.userData = data;
+        console.log(this.userData);
         // console.log(data.data.user)
         observer.next({ user: data.data.user });
         this.setUser(data.data.user);
@@ -34,7 +33,7 @@ export class AuthService {
       }, (error: HttpErrorResponse) => {
         observer.next({ error: error });
         observer.complete();
-      })
+      });
     });
   }
 
@@ -47,7 +46,7 @@ export class AuthService {
         this.setUser(data.user);
         this.token.saveToken(data.token);
         observer.complete();
-      })
+      });
     });
   }
 
@@ -61,7 +60,6 @@ export class AuthService {
   getUser(): Observable<any> {
     // console.log(this.$userSource)
     return this.$userSource.asObservable();
-    
   }
 
   me(): Observable<any> {
@@ -72,7 +70,7 @@ export class AuthService {
         observer.next({ user: data.user });
         this.setUser(data.user);
         observer.complete();
-      })
+      });
     });
   }
 
@@ -83,7 +81,7 @@ export class AuthService {
   }
 
   isAuthenticated() {
-    if (localStorage.getItem('AuthToken')) {
+    if (this.token.getToken()) {
       return true;
     } return false;
   }

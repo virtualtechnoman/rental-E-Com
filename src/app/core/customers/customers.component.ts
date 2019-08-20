@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { CustomersService } from './shared/customers.service';
-import { CustomerModel, CustomerTypeModel, DistirbutorModel, SectorModel } from './shared/customer.model';
+import { CustomerModel, CustomerTypeModel, DistirbutorModel, SectorModel, CustomerClass } from './shared/customer.model';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import * as moment from 'moment';
+import { ResponseModel } from '../../shared/shared.model';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-customers',
@@ -12,9 +14,11 @@ import * as moment from 'moment';
   styleUrls: ['./customers.component.scss']
 })
 export class CustomersComponent implements OnInit {
+  registerCustomer:CustomerClass
   jQuery: any;
+  allregisterCustomer:any[]=[]
   allcustomers: any[] = [];
-  currentcustomer: CustomerModel;
+  currentcustomer: CustomerClass;
   currentcustomerId: string;
   current_customer_index: number;
   customerForm: FormGroup;
@@ -28,9 +32,14 @@ export class CustomersComponent implements OnInit {
   editing: Boolean = false;
   submitted = false;
   registerForm: FormGroup;
-  constructor(private customerService: CustomersService, private formBuilder: FormBuilder, private toastr: ToastrService) {
-    this.currentcustomer = new CustomerModel();
+  viewArray:any=[]
+  constructor(private customerService: CustomersService, private formBuilder: FormBuilder, private toastr: ToastrService,private authService:AuthService) {
+    this.currentcustomer = new CustomerClass();
+    this.registerCustomer=new CustomerClass();
     this.initForm();
+    this.authService.me().subscribe((res:any)=>{
+      console.log(res)
+    })
   }
 
   ngOnInit() {
@@ -74,6 +83,13 @@ export class CustomersComponent implements OnInit {
     if (this.registerForm.invalid) {
         return;
     }
+    this.registerCustomer = this.registerForm.value;
+    if (this.editing) {
+      this.updateCustomer(this.registerCustomer);
+    } else {
+      this.addCustomer(this.registerCustomer);
+    }
+    // this.registerForm.reset();
 }
   // get f() { return this.customerForm.controls; }
 
@@ -88,36 +104,44 @@ export class CustomersComponent implements OnInit {
     this.currentcustomer = this.customerForm.value;
     if (this.editing) {
       this.updateCustomer(this.currentcustomer);
+      
     } else {
       this.addCustomer(this.currentcustomer);
     }
   }
   closeModal(){
-    this.resetForm();
+    this.registerForm.reset()
   }
 
   addCustomer(customer) {
     console.log(customer);
-    this.customerService.addCustomer(customer).subscribe(res => {
+    this.customerService.addCustomer(customer).subscribe((res:ResponseModel) => {
+      console.log(res)
       jQuery('#modal3').modal('hide');
       this.toastr.success('Customer Added', 'Success!');
-      this.allcustomers.push(res);
+      this.allcustomers.push(res)
+      console.log(this.allcustomers)
+      this.allregisterCustomer.push(res)
       this.resetForm();
+      window.location.reload();
     });
   }
 
   editCustomer(i) {
+    console.log(i)
+    // console.log(this.allcustomers)
+    console.log(this.allcustomers[0][i])
     this.editing = true;
-    this.currentcustomer = this.allcustomers[i];
-    this.currentcustomerId = this.allcustomers[i]._id;
+    this.currentcustomer = this.allcustomers[0][i];
+    this.currentcustomerId = this.allcustomers[0][i]._id;
     this.current_customer_index = i;
     this.setFormValue();
   }
 
   deleteCustomer(i) {
     if (confirm('You Sure you want to delete this customer')) {
-      this.customerService.deleteCustomer(this.allcustomers[i]._id).toPromise().then(() => {
-        this.allcustomers.splice(i, 1);
+      this.customerService.deleteCustomer(this.allcustomers[0][i]._id).toPromise().then(() => {
+        this.allcustomers[0].splice(i, 1);
         this.toastr.warning('Customer Deleted!', 'Deleted!');
       }).catch((err) => console.log(err));
     }
@@ -125,28 +149,36 @@ export class CustomersComponent implements OnInit {
 
   get_customers() {
     this.allcustomers.length = 0;
-    this.customerService.getAllCustomers().subscribe((res: CustomerModel[]) => {
+    this.customerService.getAllCustomers().subscribe((res:ResponseModel) => {
       console.log(res);
-      this.allcustomers = res;
+      this.allcustomers.push(res.data) ;
       console.log('All Customers', this.allcustomers);
       this.dtTrigger.next();
     });
   }
 
   updateCustomer(customer) {
-    this.customerService.updateCustomer(this.allcustomers[this.current_customer_index]._id, customer).subscribe(res => {
+    console.log(customer)
+    console.log(this.allcustomers[0][this.current_customer_index]._id,customer)
+    this.customerService.updateCustomer(this.allcustomers[0][this.current_customer_index]._id, customer).subscribe(res => {
+      console.log(res)
       this.toastr.info('Customer Updated Successfully!', 'Updated!');
       jQuery('#modal3').modal('hide');
-      this.allcustomers.splice(this.current_customer_index, 1, res);
+      this.allcustomers[0].splice(this.current_customer_index, 1, res);
       this.resetForm();
+      window.location.reload();
     });
   }
 
+  viewCustomer(i){
+    this.viewArray=this.allcustomers[0][i]
+    console.log(this.viewArray)
+  }
   resetForm() {
     this.editing = false;
     this.submitted = false;
-    this.customerForm.reset();
-    this.initForm();
+    this.registerForm.reset();
+    // this.initForm();
   }
 
   resetFrom2() {
@@ -173,9 +205,18 @@ export class CustomersComponent implements OnInit {
   }
 
   setFormValue() {
-    const customer = this.allcustomers[this.current_customer_index];
+  
+    console.log(this.registerForm.controls)
+    const customer = this.allcustomers[0][this.current_customer_index];
     console.log(customer);
-    this.customerForm.controls['city'].setValue(customer.city);
+   var dob= customer.dob.substring(0, 10)
+    this.registerForm.controls['city'].setValue(customer.city);
+    this.registerForm.controls['mobile_number'].setValue(customer.mobile_number);
+    this.registerForm.controls['full_name'].setValue(customer.full_name);
+    this.registerForm.controls['dob'].setValue(dob);
+    this.registerForm.controls['landmark'].setValue(customer.landmark);
+    this.registerForm.controls['street_address'].setValue(customer.street_address);
+    console.log(this.registerForm.controls)
   }
 
   setform2Value(customerType) {

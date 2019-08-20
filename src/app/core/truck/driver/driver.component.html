@@ -2,9 +2,10 @@
   <div class="card">
     <div class="card-header">
       <h2 class="float-left">Driver Management</h2>
-      <a class="btn btn-secondary float-right text-white" (click)="resetForm()" data-toggle="modal"
-        data-target="#modal3">Add New
-        Driver</a>
+      <a class="btn btn-secondary float-right text-white"  data-toggle="modal"
+        data-target="#modal3" *ngIf="!editing">Add New Driver</a>
+        <a class="btn btn-secondary float-right text-white"  data-toggle="modal"
+        data-target="#modal3" *ngIf="editing">Edit Driver</a>
     </div>
     <div class="card-body">
       <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
@@ -16,20 +17,21 @@
             <th scope="col">Driver Name</th>
             <th scope="col">Contact Number</th>
             <th scope="col">DL Number</th>
-            <th scope="col">Is Avialable</th>
+            <th scope="col">Is Available</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let driver of allDrivers; let i = index">
             <td>{{i+1}}</td>
-            <td>{{driver.driver_id}}</td>
+            <td>{{driver._id}}</td>
             <td>{{driver.name}}</td>
             <td>{{driver.mobile}}</td>
-            <td>{{customer.dl_number}}</td>
-            <td *ngIf="customer.isAvialable">Available</td>
-            <td *ngIf="!customer.isAvialable">Unavailable</td>
+            <td>{{driver.dl_number}}</td>
+            <td *ngIf="driver.isAvailable">Available</td>
+            <td *ngIf="!driver.isAvailable">Unavailable</td>
             <td>
+                <a style="cursor: pointer" (click)="viewDriver(i)" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-eye"></i></a>
               <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editDriver(i)"><i
                   class="fas fa-edit mx-2"></i> </a>
               <a style="cursor: pointer" (click)="deleteDriver(i)"><i class="fas fa-trash-alt"></i></a>
@@ -42,7 +44,7 @@
 </div>
 
 <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header">
         <h6 class="modal-title" id="exampleModalLabel3">Add New Driver</h6>
@@ -52,52 +54,77 @@
       </div>
       <div class="modal-body">
         <form [formGroup]="DriverForm" (ngSubmit)="submit()">
-          <div class="form-row">
-            <div class="col-md-8">
-              <div class="divider-text">Fill Driver Details</div>
-              <div class="form-row">
-                <div class="form-group col-md-4">
-                  <label for="inputEmail4">Driver Name</label>
-                  <input type="text" class="form-control" placeholder="Customer Name" name="customer_name"
-                    formControlName="customer_name" [ngClass]="{ 'is-invalid': submitted && f.customer_name.errors }"
-                    required>
-                  <div *ngIf="submitted && f.customer_name.errors" class="invalid-feedback">
-                    <div *ngIf="f.customer_name.errors.required">Customer Name is required</div>
-                  </div>
-                </div>
+          <div class="form-group">
+              <label>Driver Name</label>
+              <input type="text" formControlName="name" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.name.errors }" />
+              <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+                  <div *ngIf="f.name.errors.required"> Name is required</div>
               </div>
-              <div class="form-row">
-                <div class="form-group col-md-4">
-                  <label for="inputEmail4">DL Number</label>
-                  <input type="text" class="form-control" placeholder="dl_number Name" name="dl_number"
-                    formControlName="dl_number" [ngClass]="{ 'is-invalid': submitted && f.dl_number.errors }" required>
-                  <div *ngIf="submitted && f.dl_number.errors" class="invalid-feedback">
-                    <div *ngIf="f.dl_number.errors.required">dl_number is required</div>
-                  </div>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                  <label for="inputEmail4">Mobile</label>
-                  <input type="text" class="form-control" placeholder="mobile" formControlName="mobile" name="mobile"
-                    formControlName="mobile" [ngClass]="{ 'is-invalid': submitted && f.mobile.errors }" required>
-                  <div *ngIf="submitted && f.mobile.errors" class="invalid-feedback">
-                    <div *ngIf="f.mobile.errors.required">mobile is required</div>
-                  </div>
-                </div>
-              </div>
-              <div class="form-row">
-                <label for="inputPassword4">Is Available</label>
-                <p-inputSwitch class="form-control" formControlName="is_active" required></p-inputSwitch>
-              </div>
-            </div>
           </div>
-        </form>
-      </div>
-      <div class="form-row text-center">
-        <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-        <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+          <div class="form-group">
+              <label>DL Number</label>
+              <input type="text" formControlName="dl_number" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.dl_number.errors }" />
+              <div *ngIf="submitted && f.dl_number.errors" class="invalid-feedback">
+                  <div *ngIf="f.dl_number.errors.required">DL Number is required</div>
+              </div>
+          </div>
+          <div class="form-group">
+              <label>Mobile</label>
+              <input type="text" formControlName="mobile" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.mobile.errors }" />
+              <div *ngIf="submitted && f.mobile.errors" class="invalid-feedback">
+                  <div *ngIf="f.mobile.errors.required">Mobile is required</div>
+              </div>
+          </div>
+          <div class="form-group">
+              <label>Status</label>
+              <p-inputSwitch class="form-control" formControlName="isAvailable" required [ngClass]="{ 'is-invalid': submitted && f.isAvailable.errors }"></p-inputSwitch>
+              <!-- <input type="password" formControlName="password" class="form-control"  /> -->
+              <div *ngIf="submitted && f.isAvailable.errors" class="invalid-feedback">
+                  <div *ngIf="f.isAvailable.errors.required">Status is required</div>
+              </div>
+          </div>
+          <div class="form-group">
+              <button class="btn btn-primary">Save</button>
+              <button class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+      </form>
       </div>
     </div>
   </div>
 </div>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Driver Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label> Name</label>
+                <input type="text"  class="form-control" [(ngModel)]="viewArray.name" disabled />
+            </div>
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="text"  class="form-control" [(ngModel)]="viewArray.mobile" disabled />
+            </div>  
+            <div class="form-group">
+                <label>DL Number</label>
+                <input type="text"  class="form-control" [(ngModel)]="viewArray.dl_number" disabled />
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <p-inputSwitch class="form-control" [(ngModel)]="viewArray.isAvailable" disabled></p-inputSwitch>
+                <!-- <input type="text"  class="form-control" [(ngModel)]="viewArray.isAvailable" disabled /> -->
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>

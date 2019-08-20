@@ -17,7 +17,7 @@ import { ResponseModel } from '../../shared/shared.model';
 })
 export class UserComponent implements OnInit {
   // id = 'EMP' + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second()
-
+  admin: Boolean = false;
   allTherapies: any[] = [];
   allTherayId: any[] = [];
   allUsers: any[] = [];
@@ -41,20 +41,14 @@ export class UserComponent implements OnInit {
   allUserRoles: any[] = [];
   userRole;
   uploading: Boolean = false;
-
+  viewArray: any = [];
+  fullTable: Boolean = true;
+  registerForm: FormGroup;
   constructor(private userService: UserService, private formBuilder: FormBuilder,
     private UserroleService: UserRoleService, private toastr: ToastrService, private activatedRoute: ActivatedRoute) {
     this.initForm();
+    this.getAllUsers();
     this.getUserRoles();
-    this.userService.getAllUsers().subscribe((res: any) => {
-      console.log('userResposne', res);
-      if (res.error) {
-        this.toastr.warning('No Data Available', res.error);
-      } else {
-        console.log(res);
-        this.allUsers = res.data;
-      }
-    });
   }
 
   ngOnInit() {
@@ -79,9 +73,27 @@ export class UserComponent implements OnInit {
         'excel',
       ]
     };
+    this.registerForm = this.formBuilder.group({
+      full_name: ['', Validators.required],
+      mobile_number: ['', Validators.required],
+      landmark: ['', Validators.required],
+      street_address: ['', Validators.required],
+      city: ['', Validators.required],
+      dob: ['', Validators.required]
+    });
   }
 
   get f() { return this.userForm.controls; }
+  get f2() { return this.registerForm.controls; }
+
+  onSubmit() {
+    this.submitted = true;
+    // stop here if form is invalid
+    if (this.registerForm.invalid) {
+      return;
+    }
+    alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registerForm.value));
+  }
 
   submit() {
     console.log('USER FORM VALUES ====>>>', this.userForm.value);
@@ -98,8 +110,9 @@ export class UserComponent implements OnInit {
   }
 
   addUser(user) {
+    console.log(user);
     try {
-      this.userService.addUser(user).subscribe((res:ResponseModel) => {
+      this.userService.addUser(user).subscribe((res: ResponseModel) => {
         console.log(res);
         jQuery('#modal3').modal('hide');
         this.toastr.success('User Added!', 'Success!');
@@ -128,15 +141,24 @@ export class UserComponent implements OnInit {
     }
   }
 
+  viewUser(i) {
+    this.viewArray = this.allUsers[i];
+    console.log(this.allUsers[i]);
+  }
+
   updateUser(user) {
-    this.userService.updateUser(this.allUsers[this.currentIndex]._id, user).subscribe(res => {
-      jQuery('#modal3').modal('hide');
-      console.log('UPDATED USER VALUE');
-      console.log(res);
-      this.allUsers.splice(this.currentIndex, 1, res);
-      this.toastr.info('Therapy Updated Successfully!', 'Updated!!');
-      this.resetForm();
-    })
+    console.log(user, this.allUsers[this.currentIndex]._id);
+    // this.userService.updateUser(this.allUsers[this.currentIndex]._id, user).subscribe(res => {
+    //   jQuery('#modal3').modal('hide');
+    //   console.log('UPDATED USER VALUE');
+    //   console.log(res);
+    //   this.allUsers.splice(this.currentIndex, 1, res);
+    //   this.toastr.info('Therapy Updated Successfully!', 'Updated!!');
+
+    //   this.resetForm();
+    //   window.location.reload();
+    // })
+
   }
 
   initForm() {
@@ -160,60 +182,88 @@ export class UserComponent implements OnInit {
   getUserRoles() {
     this.UserroleService.getAllUserRoles().subscribe((res: ResponseModel) => {
       this.allUserRoles = res.data;
+      console.log(this.allUserRoles);
     });
   }
 
   setFormValue(user) {
-    this.userForm.controls['email'].setValue(user.email);
-    this.userForm.controls['full_name'].setValue(user.full_name);
-    this.userForm.controls['password'].setValue(user.password);
-    this.userForm.controls['role'].setValue(user.role);
-    this.userForm.controls['is_active'].setValue(user.is_active);
-    this.userForm.controls['mobile_number'].setValue(user.mobile_number);
+    console.log(user);
+    if (user.role._id === '5d5692a8d542231cd89861cc') {
+      this.userForm.controls['email'].setValue(user.email);
+      this.userForm.controls['full_name'].setValue(user.full_name);
+      this.userForm.controls['password'].setValue(user.password);
+      this.userForm.controls['role'].setValue(user.role._id);
+      this.userForm.controls['is_active'].setValue(user.is_active);
+      this.userForm.controls['mobile_number'].setValue(user.mobile_number);
+    }
+    if (user.role._id === '5d5692a8d542231cd89861cd') {
+      const dob = user.dob.substring(0, 10);
+      this.registerForm.controls['city'].setValue(user.city);
+      this.registerForm.controls['mobile_number'].setValue(user.mobile_number);
+      this.registerForm.controls['full_name'].setValue(user.full_name);
+      this.registerForm.controls['dob'].setValue(dob);
+      this.registerForm.controls['landmark'].setValue(user.landmark);
+      this.registerForm.controls['street_address'].setValue(user.street_address);
+    }
   }
 
-  getUserbyRole() {
-    console.log(this.selectedUserRole);
-    this.userService.getUserByRole(this.selectedUserRole._id).subscribe((res: ResponseModel) => {
+  getAllUsers() {
+    this.allUsers.length = 0;
+    this.userService.getAllUsers().subscribe((res: any) => {
+      console.log('userResposne', res);
       if (res.error) {
         this.toastr.warning('No Data Available', res.error);
       } else {
+        console.log(res.data);
         this.allUsers = res.data;
-        console.log(res)
-        console.log('Data from client to server', this.allUsers);
-        this.dtTrigger.next();
       }
     });
   }
 
+  getUserbyRole() {
+    this.allUsers.length = 0;
+    if (!this.selectedUserRole) {
+      this.getAllUsers();
+    } else {
+      this.userService.getUserByRole(this.selectedUserRole._id).subscribe((res: ResponseModel) => {
+        if (res.error) {
+          this.toastr.warning('No User Available with this role', 'Error');
+        } else {
+          this.allUsers = res.data;
+        }
+      });
+    }
+  }
+
   public uploadCSV(files: FileList) {
     if (files && files.length > 0) {
-      let file: File = files.item(0);
-      let reader: FileReader = new FileReader();
+      const file: File = files.item(0);
+      const reader: FileReader = new FileReader();
       reader.readAsText(file);
       reader.onload = (e) => {
         this.parsedCSV = reader.result;
         // let csv = reader.result;
         // this.extractData(csv)
-      }
+      };
+
     }
   }
 
   public extractData() {
     this.uploading = true;
-    var lines = this.parsedCSV.split(/\r\n|\n/);
-    var result = [];
-    var headers: any[] = lines[0].split(',');
-    if (headers[0] == 'first_name' && headers[1] == 'last_name' && headers[2] == 'email' && headers[3] == 'password'
-      && headers[4] == 'joining_date' && headers[5] == 'job_title' && headers[6] == 'is_active' && headers[7] == 'therapy_line_id'
-      && headers[8] == 'manager_id' && headers[9] == 'position' && headers[10] == 'title' && headers[11] == 'mobile_phone'
-      && headers[12] == 'home_phone' && headers[13] == 'business_phone' && headers[14] == 'business_extension' && headers[15] == 'region'
-      && headers[16] == 'city' && headers[17] == 'district' && headers[18] == 'address' && headers[19] == 'postal_code'
-      && headers[20] == 'notes'
+    const lines = this.parsedCSV.split(/\r\n|\n/);
+    const result = [];
+    const headers: any[] = lines[0].split(',');
+    if (headers[0] === 'first_name' && headers[1] === 'last_name' && headers[2] === 'email' && headers[3] === 'password'
+      && headers[4] === 'joining_date' && headers[5] === 'job_title' && headers[6] === 'is_active' && headers[7] === 'therapy_line_id'
+      && headers[8] === 'manager_id' && headers[9] === 'position' && headers[10] === 'title'
+      && headers[11] === 'mobile_phone' && headers[12] === 'home_phone' && headers[13] === 'business_phone'
+      && headers[14] === 'business_extension' && headers[15] === 'region' && headers[16] === 'city'
+      && headers[17] === 'district' && headers[18] === 'address' && headers[19] === 'postal_code' && headers[20] === 'notes'
     ) {
-      for (var i = 1; i < lines.length - 1; i++) {
-        var obj = {};
-        var currentline = lines[i].split(',');
+      for (let i = 1; i < lines.length - 1; i++) {
+        const obj = {};
+        const currentline = lines[i].split(',');
         currentline[0] = String(currentline[0]);
         currentline[1] = String(currentline[1]);
         currentline[2] = String(currentline[2]);
@@ -235,7 +285,7 @@ export class UserComponent implements OnInit {
         currentline[18] = String(currentline[18]);
         currentline[19] = String(currentline[19]);
         currentline[20] = String(currentline[20]);
-        for (var j = 0; j < headers.length; j++) {
+        for (let j = 0; j < headers.length; j++) {
           obj[headers[j]] = currentline[j];
         }
         result.push(obj);
@@ -251,7 +301,7 @@ export class UserComponent implements OnInit {
       });
       // this.newproduct = result;
     } else {
-      this.toastr.error('Try Again ', 'Upload Failed')
+      this.toastr.error('Try Again ', 'Upload Failed');
       setTimeout(() => {
         this.uploading = false;
       }, 1000);
@@ -294,6 +344,7 @@ export class UserComponent implements OnInit {
 
   togglePassword() {
     const x = <HTMLInputElement>document.getElementById('password');
+    console.log(x);
     if (x.type === 'password') {
       x.type = 'text';
     } else {
@@ -301,6 +352,13 @@ export class UserComponent implements OnInit {
     }
   }
 
+  selectRole(event: any) {
+    console.log(event);
+    this.userForm.controls['role'].setValue(this.allUserRoles[event.target.selectedIndex - 1]._id);
+    console.log(this.userForm);
+  }
+
+  // tslint:disable-next-line: use-life-cycle-interface
   ngOnDestroy(): void {
     // Do not forget to unsubscribe the event
     this.dtTrigger.unsubscribe();

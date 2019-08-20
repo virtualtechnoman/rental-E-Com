@@ -24,6 +24,7 @@ export class VehicleComponent implements OnInit {
   uploading: Boolean = false;
   editing: Boolean = false;
   submitted = false;
+  viewArray:any=[]
   constructor(private formBuilder: FormBuilder, private toastr: ToastrService, private vehicleService: TruckService) {
     this.initForm();
   }
@@ -39,7 +40,7 @@ export class VehicleComponent implements OnInit {
       retrive: true,
       dom: '<"html5buttons"B>lTfgitp',
       language: {
-        search: '_INPUT',
+        search: '_INPUT_',
         searchPlaceholder: 'Search records',
       },
       // dom: 'Bfrtip',
@@ -93,6 +94,10 @@ export class VehicleComponent implements OnInit {
         this.toastr.warning('Vehicle Deleted!', 'Deleted!');
       }).catch((err) => console.log(err));
     }
+  }
+
+  viewVehicle(i){
+    this.viewArray=this.allVehicles[i]
   }
 
   get_Vehicles() {

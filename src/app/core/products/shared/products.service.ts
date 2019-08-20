@@ -11,6 +11,8 @@ export class ProductsService {
     'token': this.tokenService.getToken()
   });
   url = '/api/products';
+  url2='/api/pcategory';
+
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   getAllProduct() {
@@ -31,5 +33,21 @@ export class ProductsService {
 
   importCustomer(csv) {
     return this.http.post(this.url + '/import', csv);
+  }
+
+  getAllCategory(){
+    return this.http.get(this.url2 + '/all', { headers: this.headers })
+  }
+
+  addCategory(category){
+    return this.http.post(this.url2 + '/', category, { headers: this.headers })
+  }
+
+  deleteCategory(id){
+    return this.http.delete(this.url2 + '/' + id, { headers: this.headers })
+  }
+
+  updateCategory(category,id) {
+    return this.http.put(this.url2 + '/' + id, category, { headers: this.headers });
   }
 }

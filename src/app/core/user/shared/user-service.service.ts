@@ -28,7 +28,7 @@ export class UserService {
   }
 
   getUserByRole(id) {
-    return this.http.post(this.url + '/role' + id, { headers: this.headers });
+    return this.http.get(this.url + '/role/' + id, { headers: this.headers });
   }
 
   deleteUser(id) {

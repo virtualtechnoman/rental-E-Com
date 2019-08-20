@@ -1,31 +1,36 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { TokenStorage } from '../../../auth/token.storage';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CustomersService {
+  headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'token': this.tokenService.getToken()
+  });
   url = "/api/customer"
   url2 = "/api/customertype"
   url3 = "/api/distirbutors"
   url4 = "/api/customerassign"
   url5 = "/api/sectors"
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,private tokenService:TokenStorage) { }
 
   getAllCustomers() {
-    return this.http.get(this.url + '/')
+    return this.http.get(this.url + '/', { headers: this.headers })
   }
 
   addCustomer(customer) {
-    return this.http.post(this.url + '/', customer);
+    return this.http.post(this.url + '/', customer,{ headers: this.headers });
   }
 
   deleteCustomer(id) {
-    return this.http.delete(this.url + '/' + id)
+    return this.http.delete(this.url + '/' + id, { headers: this.headers })
   }
 
   updateCustomer(id, customer) {
-    return this.http.put(this.url + '/' + id, customer);
+    return this.http.put(this.url + '/' + id, customer, { headers: this.headers });
   }
 
   importCustomer(csv) {

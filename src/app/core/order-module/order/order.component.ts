@@ -9,6 +9,8 @@ import { OrderService } from '../shared/order.service';
 import { OrderModel } from '../shared/order.model';
 import { ResponseModel } from '../../../shared/shared.model';
 import { UserService } from '../../user/shared/user-service.service';
+import { TruckService } from '../../truck/shared/truck.service';
+import { VehicleModel, DriverModel } from '../../truck/shared/truck.model';
 
 @Component({
   selector: 'app-order',
@@ -37,13 +39,21 @@ export class OrderComponent implements OnInit {
   uploading: Boolean = false;
   updatedOrder;
   submitted: Boolean = false;
+  showAcceptedButton: boolean = true;
+  allVehicle: VehicleModel[] = [];
+  alldriver: DriverModel[] = [];
+  index: any;
+  driverIndex: any;
+  vehicleIndex: any;
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
-    private authService: AuthService, private orderService: OrderService, private userService: UserService
+    private authService: AuthService, private orderService: OrderService, private userService: UserService, private vehicleService: TruckService
   ) {
     this.initForm();
     this.initChallanForm();
     this.getOrders();
     this.getUsers();
+    this.getVehicle();
+    this.getDrivers();
   }
 
   ngOnInit() {
@@ -88,6 +98,7 @@ export class OrderComponent implements OnInit {
   }
 
   addOrder(order) {
+    console.log(order)
     this.orderService.addOrder(order).subscribe((res: ResponseModel) => {
       if (res.error) {
         this.toastr.warning('Error', res.error);
@@ -110,6 +121,7 @@ export class OrderComponent implements OnInit {
   }
 
   viewSummary(i) {
+    this.index = i;
     while (this.valueArr.length !== 0) { this.valueArr.removeAt(0); }
     this.showSummary = true;
     this.currentOrder = this.allOrders[i];
@@ -136,6 +148,20 @@ export class OrderComponent implements OnInit {
       this.allproducts = res;
       this.dtTrigger.next();
     });
+  }
+
+  getVehicle() {
+    this.vehicleService.getAllVehicles().subscribe((res: ResponseModel) => {
+      this.allVehicle = res.data
+      console.log(res.data)
+    })
+  }
+
+  getDrivers() {
+    this.vehicleService.getAllDrivers().subscribe((res: ResponseModel) => {
+      this.alldriver = res.data
+      console.log(res.data)
+    })
   }
 
   getUsers() {
@@ -165,17 +191,21 @@ export class OrderComponent implements OnInit {
   }
 
   updateOrder() {
+    console.log(this.currentOrder)
     const placed_to = this.currentOrder.placed_to._id;
     const order2 = <any>new Object();
     order2.status = true;
     order2.placed_to = placed_to;
     delete order2._id; delete order2.placed_by; delete order2.order_date;
+    console.log(order2)
     order2.products = this.currentOrder.products;
+    console.log(this.valueArr)
     for (let index = 0; index < this.currentOrder.products.length; index++) {
       order2.products[index].product = order2.products[index].product._id;
       delete order2.products[index]._id;
       order2.products[index].accepted = this.valueArr.value[index].accepted;
     }
+    console.log(order2)
     this.orderForm.get('status').setValue(true);
     console.log('Sent Order', order2);
     this.updatedOrder = order2;
@@ -197,6 +227,8 @@ export class OrderComponent implements OnInit {
       notes: [''],
       products: this.formBuilder.array([this.initItemRows()])
     });
+
+
     this.valueForm = this.formBuilder.group({
       productsArray: this.formBuilder.array([])
     });
@@ -219,7 +251,7 @@ export class OrderComponent implements OnInit {
 
   initItemRows() {
     return this.formBuilder.group({
-      accepted: [''],
+      // accepted: [''],
       product: [''],
       quantity: [''],
       // value: ['']
@@ -316,16 +348,22 @@ export class OrderComponent implements OnInit {
       dispatch_processing_unit: ['', Validators.required],
       // products: this.formBuilder.array([this.initItemRows()]),
       products: [''],
-      vehicle_no: ['', Validators.required],
-      vehicle_type: ['', Validators.required],
-      driver_name: ['', Validators.required],
-      driver_mobile: ['', Validators.required],
-      dl_no: ['', Validators.required],
+      vehicle: ['', Validators.required],
+      // vehicle_type: ['', Validators.required],
+      driver: ['', Validators.required],
+      // driver_mobile: ['', Validators.required],
+      // dl_no: ['', Validators.required],
+      status: ['', Validators.required],
       departure: ['', Validators.required],
     });
   }
 
   saveChallan() {
+    const vehicle = this.allVehicle[this.vehicleIndex];
+    const driver = this.alldriver[this.driverIndex];
+    console.log(driver);
+    console.log(vehicle);
+    console.log(this.index);
     const placed_to = this.currentOrder.placed_to._id;
     const order2 = <any>new Object();
     order2.placed_to = placed_to;
@@ -338,18 +376,22 @@ export class OrderComponent implements OnInit {
       order2.products[index].requested = this.currentOrder.products[index].quantity;
       delete order2.products[index].quantity;
     }
-    order2.vehicle_no = this.challanForm.get('vehicle_no').value;
-    order2.vehicle_type = this.challanForm.get('vehicle_type').value;
-    order2.driver_name = this.challanForm.get('driver_name').value;
-    order2.driver_mobile = this.challanForm.get('driver_mobile').value;
-    order2.dl_no = this.challanForm.get('dl_no').value;
-    order2.departure = this.challanForm.get('departure').value;
-    order2.status = true;
-    console.log(order2);
+    // order2.vehicle_no = this.challanForm.get('vehicle_no').value;
+    // order2.vehicle_type = vehicle.type;
+    // order2.driver_name = this.challanForm.get('driver_name').value;
+    // order2.driver_mobile = driver.mobile
+    // order2.dl_no = driver.dl_number;
+    // order2.departure = this.challanForm.get('departure').value;
+    // order2.status = true;
+    // console.log(order2);
+    console.log(this.challanForm.value)
     this.challanForm.get('dispatch_processing_unit').setValue(this.currentOrder.placed_to._id);
     this.challanForm.get('products').setValue(this.currentOrder.products);
+    // this.challanForm.get('dl_no').setValue(driver.dl_number)
+    // this.challanForm.get('driver_mobile').setValue(driver.mobile)
+    // this.challanForm.get('vehicle_type').setValue(vehicle.type)
     console.log(this.challanForm.value);
-    this.orderForm.get('status').setValue(true);
+    this.challanForm.get('status').setValue(true);
     this.orderService.addNewChallan(this.challanForm.value).subscribe((res: ResponseModel) => {
       this.toastr.success('Challan Accepted successfully', 'Accepted');
       console.log(res.data);
@@ -357,4 +399,14 @@ export class OrderComponent implements OnInit {
     });
   }
 
+
+  getDriver(event: any) {
+    this.driverIndex = event.target.selectedIndex - 1;
+    console.log(this.driverIndex);
+  }
+  getVehicle2(event: any) {
+
+    this.vehicleIndex = event.target.selectedIndex - 1;
+    console.log(this.vehicleIndex);
+  }
 }

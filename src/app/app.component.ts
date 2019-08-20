@@ -17,7 +17,7 @@ export class AppComponent implements OnInit, OnChanges {
   private userSubscription: Subscription;
   public user: any;
   public loggedin: boolean;
-  array:any=[]
+  array: any = []
   constructor(
     public authService: AuthService,
     private router: Router,
@@ -25,14 +25,14 @@ export class AppComponent implements OnInit, OnChanges {
     private matIconRegistry: MatIconRegistry,
   ) {
     // console.log
-    this.array=this.authService.userData
-    console.log("hiii",this.array)
-    this.registerSvgIcons()
+    this.array = this.authService.userData;
+    console.log('hiii', this.array);
+    this.registerSvgIcons();
     this.getData();
   }
 
   ngOnChanges() {
-    if (localStorage.get('AuthToken') != null) {
+    if (localStorage.get('token') != null) {
       this.loggedin = true;
     } else {
       this.loggedin = false;
@@ -41,24 +41,24 @@ export class AppComponent implements OnInit, OnChanges {
 
   public ngOnInit() {
     this.authService.me().subscribe(data => {
-      console.log(data)
+      console.log(data);
       this.user = data;
       // this.get(data.user.id);
     });
     // update this.user after login/register/logout
     this.userSubscription = this.authService.$userSource.subscribe((user) => {
-      console.log(user)
+      console.log(user);
       this.user = user;
-      
       this.loggedin = true;
     });
     // this.getData();
   }
-    getData(){
-      this.authService.me().subscribe(res=>{
-        console.log(res)
-      })
-    }
+
+  getData() {
+    this.authService.me().subscribe(res => {
+      console.log(res);
+    });
+  }
   // get(id) {
   //   this.userService.getUser(id).subscribe((res: UserModel) => {
   //     this.me = res;

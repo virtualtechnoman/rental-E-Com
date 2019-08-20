@@ -42,26 +42,26 @@ router.get("/all", authorizePrivilege("GET_ALL_CHALLAN"), (req, res) => {
 
 // })
 // Create Challan
-// router.post("/", authorizePrivilege("ADD_NEW_CHALLAN"), async (req, res) => {
-//     let result = ChallanController.verifyCreate(req.body);
-//     if (!isEmpty(result.errors))
-//         return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
-//     result.data.processing_unit_incharge = req.user._id;
-//     result.data.challan_id = "CHLN" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
-//     let newChallan = new Challan(result.data);
-//     newChallan.save()
-//         .then(challan => {
-//             Challan.findById(challan._id)
-//                 .populate("processing_unit_incharge products.product vehicle driver")
-//                 .exec()
-//                 .then(doc => {
-//                     res.json({ status: 200, data: doc, errors: false, message: "Challan created successfully" });
-//                 })
-//         }).catch(e => {
-//             console.log(e);
-//             res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating the order" });
-//         })
-// })
+router.post("/", authorizePrivilege("ADD_NEW_CHALLAN"), async (req, res) => {
+    let result = ChallanController.verifyCreate(req.body);
+    if (!isEmpty(result.errors))
+        return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
+    result.data.processing_unit_incharge = req.user._id;
+    result.data.challan_id = "CHLN" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
+    let newChallan = new Challan(result.data);
+    newChallan.save()
+        .then(challan => {
+            Challan.findById(challan._id)
+                .populate("processing_unit_incharge products.product vehicle driver")
+                .exec()
+                .then(doc => {
+                    res.json({ status: 200, data: doc, errors: false, message: "Challan created successfully" });
+                })
+        }).catch(e => {
+            console.log(e);
+            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating the order" });
+        })
+})
 
 //Update order status
 // router.put("/:id",(req,res)=>{
