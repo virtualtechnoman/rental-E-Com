@@ -48,6 +48,7 @@ router.post("/", authorizePrivilege("ADD_NEW_ORDER"), (req, res) => {
 //Generate Challan for order
 router.post("/gchallan/:oid", authorizePrivilege("ADD_NEW_CHALLAN"), async (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.oid)) {
+        // Challan.findOne({})
         let result = ChallanController.verifyCreate(req.body);
         if (!isEmpty(result.errors))
             return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
