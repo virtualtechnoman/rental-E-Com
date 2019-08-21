@@ -157,7 +157,6 @@ export class ReturnOrderComponent implements OnInit {
     this.productService.getAllProduct().subscribe((res: ProductModel[]) => {
       this.allproducts = res;
       console.log(this.allproducts);
-      this.dtTrigger.next();
     });
   }
 
