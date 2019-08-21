@@ -2,12 +2,11 @@ const Joi = require('joi');
 const helper = require('../utils/helper');
 const challanCreateSchema = Joi.object({
     dispatch_processing_unit: Joi.string().required(),
-    products: Joi.array().items({
-        product: Joi.string().required(),
-        requested: Joi.number().min(1).required(),
-        accepted: Joi.number().min(1).optional(),
-        // dispatch: Joi.boolean().required()
-    }).required(),
+    // products: Joi.array().items({
+    //     product: Joi.string().required(),
+    //     requested: Joi.number().min(1).required(),
+    //     accepted: Joi.number().min(1).optional()
+    // }).required(),
     // truck: Joi.object({
     vehicle:Joi.string().required(),
     driver:Joi.string().required(),
