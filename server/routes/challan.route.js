@@ -63,6 +63,7 @@ router.post("/", authorizePrivilege("ADD_NEW_CHALLAN"), async (req, res) => {
         })
 })
 
+<<<<<<< HEAD
 //Update challan status
 router.put("/:id",(req,res)=>{
     if(mongodb.ObjectID.isValid(req.params.id)){
@@ -81,6 +82,26 @@ router.put("/:id",(req,res)=>{
         }).populate("processing_unit_incharge products.product dispatch_processing_unit vehicle driver")
     }else{
         res.status(400).json({status:400,errors:false,data:null,message:"Invalid order id"});
+=======
+//Update order status
+router.put("/:id", (req, res) => {
+    if (mongodb.ObjectID.isValid(req.params.id)) {
+        let result = ChallanController.verifyUpdate(req.body);
+        if (!isEmpty(result.errors)) {
+            return res.status(400).json({ status: 400, errors: false, data: null, message: "Fields required" });
+        }
+        Challan.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
+            if (err)
+                return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating order status" });
+            if (doc) {
+                return res.status(200).json({ status: 200, errors: false, data: doc, message: "Challan status updated successfully" });
+            } else {
+                return res.status(200).json({ status: 200, errors: false, data: null, message: "No records updated" });
+            }
+        }).populate("processing_unit_incharge products.product dispatch_processing_unit vehicle driver");
+    } else {
+        res.status(400).json({ status: 400, errors: false, data: null, message: "Invalid order id" });
+>>>>>>> 6b69aed73bfb310431135384ba1866af7a411464
     }
 })
 

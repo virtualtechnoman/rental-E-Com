@@ -7,7 +7,7 @@ const mongodb = require('mongoose').Types;
 const moment = require('moment');
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
-//GET ALL PRODUCTS CREATED BY SELF
+//GET ALL PRODUCTS CREATED BY SELFF
 router.get("/", authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
     Product.find({ created_by: req.user._id }).populate("created_by", "-password").populate("category").exec().then(docs => {
         if (docs.length > 0)
@@ -15,6 +15,7 @@ router.get("/", authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
         else
             res.json({ status: 200, data: docs, errors: true, message: "No products found" });
     }).catch(err => {
+        console.log(err);
         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" })
     })
 })
@@ -121,7 +122,7 @@ router.delete("/:id", authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
 // GET SPECIFIC PRODUCT
 router.get("/id/:id", authorizePrivilege("GET_PRODUCT"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
-        Product.findById(req.params.id).populate("created_by","-password").populate("category").exec().then(doc => {
+        Product.findById(req.params.id).populate("created_by", "-password").populate("category").exec().then(doc => {
             res.json({ status: 200, data: doc, errors: false, message: "Product" });
         }).catch(e => {
             console.log(e);

@@ -25,7 +25,7 @@ export class DriverComponent implements OnInit {
   uploading: Boolean = false;
   editing: Boolean = false;
   submitted = false;
-  viewArray:any=[]
+  viewArray: any = [];
   constructor(private formBuilder: FormBuilder, private toastr: ToastrService, private DriverService: TruckService) { }
 
   ngOnInit() {
@@ -55,7 +55,7 @@ export class DriverComponent implements OnInit {
       name: ['', Validators.required],
       mobile: ['', Validators.required],
       dl_number: ['', Validators.required],
-      isAvailable: ['', Validators.required]
+      isAvailable: [false]
     });
   }
 
@@ -112,7 +112,6 @@ export class DriverComponent implements OnInit {
   }
 
   updateDriver(Driver) {
-    console.log(Driver,".....",this.allDrivers[this.current_Driver_index]._id)
     this.DriverService.updateDriver(this.allDrivers[this.current_Driver_index]._id, Driver)
       .subscribe((res: ResponseModel) => {
         this.toastr.info('Driver Updated Successfully!', 'Updated!');
@@ -122,8 +121,8 @@ export class DriverComponent implements OnInit {
       });
   }
 
-  viewDriver(i){
-    this.viewArray=this.allDrivers[i]
+  viewDriver(i) {
+    this.viewArray = this.allDrivers[i];
   }
 
   resetForm() {

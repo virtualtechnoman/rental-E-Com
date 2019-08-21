@@ -11,6 +11,7 @@ import { ResponseModel } from '../../../shared/shared.model';
 import { UserService } from '../../user/shared/user-service.service';
 import { TruckService } from '../../truck/shared/truck.service';
 import { VehicleModel, DriverModel } from '../../truck/shared/truck.model';
+import { UserModel } from '../../user/shared/user.model';
 
 @Component({
   selector: 'app-order',
@@ -39,14 +40,15 @@ export class OrderComponent implements OnInit {
   uploading: Boolean = false;
   updatedOrder;
   submitted: Boolean = false;
-  showAcceptedButton: boolean = true;
+  showAcceptedButton: Boolean = true;
   allVehicle: VehicleModel[] = [];
   alldriver: DriverModel[] = [];
   index: any;
   driverIndex: any;
   vehicleIndex: any;
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
-    private authService: AuthService, private orderService: OrderService, private userService: UserService, private vehicleService: TruckService
+    private authService: AuthService, private orderService: OrderService, private userService: UserService,
+    private vehicleService: TruckService
   ) {
     this.initForm();
     this.initChallanForm();
@@ -98,7 +100,7 @@ export class OrderComponent implements OnInit {
   }
 
   addOrder(order) {
-    console.log(order)
+    console.log(order);
     this.orderService.addOrder(order).subscribe((res: ResponseModel) => {
       if (res.error) {
         this.toastr.warning('Error', res.error);
@@ -116,6 +118,7 @@ export class OrderComponent implements OnInit {
     this.editing = true;
     this.currentOrder = this.allOrders[i];
     this.currentOrderId = this.allOrders[i]._id;
+    console.log(this.currentOrder);
     this.currentIndex = i;
     this.setFormValue();
   }
@@ -152,27 +155,34 @@ export class OrderComponent implements OnInit {
 
   getVehicle() {
     this.vehicleService.getAllVehicles().subscribe((res: ResponseModel) => {
-      this.allVehicle = res.data
-      console.log(res.data)
-    })
+      this.allVehicle = res.data;
+      console.log(res.data);
+    });
   }
 
   getDrivers() {
     this.vehicleService.getAllDrivers().subscribe((res: ResponseModel) => {
-      this.alldriver = res.data
-      console.log(res.data)
-    })
+      this.alldriver = res.data;
+      console.log(res.data);
+    });
   }
 
   getUsers() {
     this.allUsers.length = 0;
     this.userService.getAllUsers().subscribe((res: ResponseModel) => {
       console.log(res);
-      if (res.error) {
-        this.toastr.warning('Error', res.error);
-      } else {
-        this.allUsers = res.data;
-      }
+      res.data.forEach((element: any) => {
+        if (element.role.name === 'Hub') {
+          this.allUsers.push(element);
+        } else {
+          // this.toastr.warning('Error', res.error);
+        }
+      });
+      // if (res.error) {
+      //   this.toastr.warning('Error', res.error);
+      // } else {
+      //   this.allUsers = res.data;
+      // }
     });
   }
 
@@ -191,21 +201,21 @@ export class OrderComponent implements OnInit {
   }
 
   updateOrder() {
-    console.log(this.currentOrder)
+    console.log(this.currentOrder);
     const placed_to = this.currentOrder.placed_to._id;
     const order2 = <any>new Object();
     order2.status = true;
     order2.placed_to = placed_to;
     delete order2._id; delete order2.placed_by; delete order2.order_date;
-    console.log(order2)
+    console.log(order2);
     order2.products = this.currentOrder.products;
-    console.log(this.valueArr)
+    console.log(this.valueArr);
     for (let index = 0; index < this.currentOrder.products.length; index++) {
       order2.products[index].product = order2.products[index].product._id;
       delete order2.products[index]._id;
       order2.products[index].accepted = this.valueArr.value[index].accepted;
     }
-    console.log(order2)
+    console.log(order2);
     this.orderForm.get('status').setValue(true);
     console.log('Sent Order', order2);
     this.updatedOrder = order2;
@@ -227,8 +237,6 @@ export class OrderComponent implements OnInit {
       notes: [''],
       products: this.formBuilder.array([this.initItemRows()])
     });
-
-
     this.valueForm = this.formBuilder.group({
       productsArray: this.formBuilder.array([])
     });
@@ -384,18 +392,20 @@ export class OrderComponent implements OnInit {
     // order2.departure = this.challanForm.get('departure').value;
     // order2.status = true;
     // console.log(order2);
-    console.log(this.challanForm.value)
+    console.log(this.challanForm.value);
     this.challanForm.get('dispatch_processing_unit').setValue(this.currentOrder.placed_to._id);
     this.challanForm.get('products').setValue(this.currentOrder.products);
+    this.challanForm.get('departure').setValue(new Date());
     // this.challanForm.get('dl_no').setValue(driver.dl_number)
     // this.challanForm.get('driver_mobile').setValue(driver.mobile)
     // this.challanForm.get('vehicle_type').setValue(vehicle.type)
     console.log(this.challanForm.value);
-    this.challanForm.get('status').setValue(true);
+    this.challanForm.get('status').setValue(false);
     this.orderService.addNewChallan(this.challanForm.value).subscribe((res: ResponseModel) => {
       this.toastr.success('Challan Accepted successfully', 'Accepted');
       console.log(res.data);
       jQuery('#challanModel').modal('hide');
+      jQuery('#summaryModel').modal('hide');
     });
   }
 

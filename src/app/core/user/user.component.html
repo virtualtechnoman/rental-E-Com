@@ -8,7 +8,7 @@
         data-target="#modal2">Upload CSV</a>
       <select class="form-control float-right" [(ngModel)]="selectedUserRole" (change)="getUserbyRole()"
         style="width:20%" name="customer_name">
-        <option value="" selected>Select User Role</option>
+        <option value="" selected >Select User Role</option>
         <option [ngValue]="userRole" *ngFor="let userRole of allUserRoles">
           {{userRole.name | titlecase}}</option>
       </select>
