@@ -8,17 +8,30 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 const router = express.Router();
 
 //GET all orders placed by self
-router.get("/",authorizePrivilege("GET_ALL_CUSTOMER_ORDERS_OWN"), (req, res) => {
-    CustomerOrder.find({placed_by:req.user._id}).populate("placed_by products.product placed_to").exec().then(doc => {
-        return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
-    }).catch(err => {
-        return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
-    });
+router.get("/", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS_OWN"), (req, res) => {
+    CustomerOrder.find({ placed_by: req.user._id }).populate("placed_by placed_to")
+        .populate({
+            path: "products.product ",
+            populate:{
+                path:"created_by category"
+            }
+        })
+        .exec().then(doc => {
+            return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
+        }).catch(err => {
+            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
+        });
 })
 
 //GET all orders
 router.get("/all", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req, res) => {
-    CustomerOrder.find().populate("placed_by products.product placed_to").exec().then(doc => {
+    CustomerOrder.find().populate("placed_by placed_to")
+    .populate({
+        path: "products.product ",
+        populate:{
+            path:"created_by category"
+        }
+    }).exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
@@ -66,7 +79,7 @@ router.post("/cancel/:id", authorizePrivilege("CANCEL_CUSTOMER_ORDER"), (req, re
         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid Order id" });
     }
     else {
-        CustomerOrder.findByIdAndUpdate(req.params.id,{$set:{status:"Cancelled"}},{new:true}, (err, doc) => {
+        CustomerOrder.findByIdAndUpdate(req.params.id, { $set: { status: "Cancelled" } }, { new: true }, (err, doc) => {
             if (err) {
                 return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while cancelling the order" })
             }
@@ -79,7 +92,7 @@ router.post("/cancel/:id", authorizePrivilege("CANCEL_CUSTOMER_ORDER"), (req, re
 
 
 // Update order
-router.put("/:id",authorizePrivilege("UPDATE_CUSTOMER_ORDER"), (req, res) => {
+router.put("/:id", authorizePrivilege("UPDATE_CUSTOMER_ORDER"), (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.id)) {
         console.log(req.body);
         let result = CustomerOrderController.verifyUpdate(req.body);
@@ -90,8 +103,12 @@ router.put("/:id",authorizePrivilege("UPDATE_CUSTOMER_ORDER"), (req, res) => {
             if (err)
                 return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating order status" });
             if (doc) {
-                doc.populate("placed_by products.product placed_to")
-                    .execPopulate()
+                doc.populate("placed_by placed_to").populate({
+                    path: "products.product",
+                    populate:{
+                        path:"created_by category"
+                    }
+                }).execPopulate()
                     .then(d => {
                         return res.status(200).json({ status: 200, errors: false, data: d, message: "Order updated successfully" });
                     })
@@ -111,7 +128,13 @@ router.put("/:id",authorizePrivilege("UPDATE_CUSTOMER_ORDER"), (req, res) => {
 router.get("/id/:id", authorizePrivilege("GET_CUSTOMER_ORDER"), (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.id)) {
         CustomerOrder.findById(req.params.id)
-            .populate("placed_by products.product placed_to")
+            .populate("placed_by placed_to")
+            .populate({
+                path: "products.product",
+                populate:{
+                    path:"created_by category"
+                }
+            })
             .exec()
             .then(doc => {
                 if (doc)

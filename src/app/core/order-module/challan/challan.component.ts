@@ -15,6 +15,7 @@ export class ChallanComponent implements OnInit {
   allChallans: any[] = [];
   allProducts: ProductModel[] = [];
   currentChallan: any;
+  currentIndex: any;
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
   constructor(private orderService: OrderService, private toasterService: ToastrService) { }
@@ -64,10 +65,32 @@ export class ChallanComponent implements OnInit {
     }
   }
   selectChallan(i) {
+    this.currentIndex = i;
     this.currentChallan = this.allChallans[i];
-    console.log(this.currentChallan)
+    console.log(this.currentChallan);
     this.allProducts = this.currentChallan.products;
-    console.log(this.allProducts)
+    console.log(this.allProducts);
+  }
+
+  // deleteChallan(i) {
+  //   if (confirm('You Sure you want to delete this Challan')) {
+  //     this.orderService.deleteChallan(this.allChallans[i]._id).toPromise().then(() => {
+  //       this.toasterService.warning('Challan Deleted!', 'Deleted!');
+  //       this.allChallans.splice(i, 1);
+  //     }).catch((err) => console.log(err));
+  //   }
+  // }
+
+  changeChallanStatus() {
+    const id = this.currentChallan._id;
+    // const status = new Object({
+    //   status: true
+    // });
+    this.orderService.updateChallanStatus(id, { status: true }).subscribe((res: ResponseModel) => {
+      jQuery('#challanModel').modal('hide');
+      this.toasterService.success('Challan Accepted!', 'Success!');
+      this.allChallans.splice(this.currentIndex, 1, res.data);
+    });
   }
 
 

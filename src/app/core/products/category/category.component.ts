@@ -13,48 +13,50 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class CategoryComponent implements OnInit {
   categoryForm: FormGroup;
-    submitted = false;
-    editing:boolean=false;
-    currentcategory:CategoryModel;
-    dtOptions: any = {};
+  submitted = false;
+  editing: Boolean = false;
+  currentcategory: CategoryModel;
+  dtOptions: any = {};
   currentcategoryId: String;
   currentIndex: number;
   dtTrigger: Subject<any> = new Subject();
-  allCategory:CategoryModel[]=[];
-  viewArray:any=[]
-  constructor(private formBuilder:FormBuilder,private productService:ProductsService, private toastr:ToastrService) { 
+  allCategory: CategoryModel[] = [];
+  viewArray: any = [];
+  constructor(private formBuilder: FormBuilder, private productService: ProductsService, private toastr: ToastrService) {
     this.initForm();
   }
 
   ngOnInit() {
     this.getCategory();
-  this.dtOptions = {
-    pagingType: "full_numbers",
-    lengthMenu: [
-      [10, 15, 25, -1],
-      [10, 15, 25, 'All']
-    ],
-    destroy: true,
-    retrive: true,
-    dom: '<"html5buttons"B>lTfgitp',
-    language: {
-      search: "_INPUT_",
-      searchPlaceholder: "Search records",
-    },
-    // dom: 'Bfrtip',
-    buttons: [
-      // 'colvis',
-      'copy',
-      'print',
-      'excel',
-    ]
-  };
+    this.dtOptions = {
+      pagingType: "full_numbers",
+      lengthMenu: [
+        [10, 15, 25, -1],
+        [10, 15, 25, 'All']
+      ],
+      destroy: true,
+      retrive: true,
+      dom: '<"html5buttons"B>lTfgitp',
+      language: {
+        search: "_INPUT_",
+        searchPlaceholder: "Search records",
+      },
+      // dom: 'Bfrtip',
+      buttons: [
+        // 'colvis',
+        'copy',
+        'print',
+        'excel',
+      ]
+    };
     this.categoryForm = this.formBuilder.group({
       name: ['', Validators.required],
       is_active: ['', Validators.required]
-  });
+    });
   }
+
   get f() { return this.categoryForm.controls; }
+
   submit() {
     this.submitted = true;
     console.log(this.categoryForm.value);
@@ -62,7 +64,6 @@ export class CategoryComponent implements OnInit {
       return;
     }
     this.currentcategory = this.categoryForm.value;
-    console.log(this.currentcategory);
     if (this.editing) {
       this.updateCategory(this.currentcategory);
     } else {
@@ -79,8 +80,8 @@ export class CategoryComponent implements OnInit {
     })
   }
 
-  viewCategory(i){
-    this.viewArray=this.allCategory[i];
+  viewCategory(i) {
+    this.viewArray = this.allCategory[i];
   }
 
   editCategory(i) {
@@ -110,7 +111,6 @@ export class CategoryComponent implements OnInit {
     });
   }
 
-
   updateCategory(category) {
     const id = this.allCategory[this.currentIndex]._id;
     // product._id = id;
@@ -119,7 +119,7 @@ export class CategoryComponent implements OnInit {
       jQuery('#modal3').modal('hide');
       this.toastr.info('Product Updated Successfully!', 'Updated!!');
       this.resetForm();
-      this.allCategory.splice(this.currentIndex, 1, res.data)
+      this.allCategory.splice(this.currentIndex, 1, res.data);
       this.currentcategoryId = null;
       this.editing = false;
     });
@@ -128,7 +128,7 @@ export class CategoryComponent implements OnInit {
   initForm() {
     this.categoryForm = this.formBuilder.group({
       name: ['', Validators.required],
-      is_active: ['', Validators.required]
+      is_active: [false]
     });
   }
 
@@ -137,54 +137,6 @@ export class CategoryComponent implements OnInit {
     this.categoryForm.controls['name'].setValue(category.name);
     this.categoryForm.controls['is_active'].setValue(category.is_active);
   }
-
-  // public uploadCSV(files: FileList) {
-  //   if (files && files.length > 0) {
-  //     const file: File = files.item(0);
-  //     const reader: FileReader = new FileReader();
-  //     reader.readAsText(file);
-  //     reader.onload = (e) => {
-  //       this.parsedCSV = reader.result;
-  //       // let csv = reader.result;
-  //       // this.extractData(csv)
-  //     }
-  //   }
-  // }
-
-  // public extractData() {
-  //   this.uploading = true;
-  //   const lines = this.parsedCSV.split(/\r\n|\n/);
-  //   const result = [];
-  //   const headers: any[] = lines[0].split(",");
-  //   if (headers[0] == "brand" && headers[1] == "is_active" && headers[2] == "cif_price" && headers[3] == "business_unit"
-  //     && headers[4] == "business_unit_id" && headers[5] == "distirbutor"
-  //     && headers[6] == "form" && headers[7] == "notes" && headers[8] == "pack_size"
-  //     && headers[9] == "promoted" && headers[10] == "range" && headers[11] == "registered"
-  //     && headers[12] == "strength" && headers[13] == "therapy_line_id" && headers[14] == "therapy_line"
-  //     && headers[15] == "whole_price" && headers[16] == "sku_id"
-  //   ) {
-  //     for (var i = 1; i < lines.length - 1; i++) {
-  //       const obj = {};
-  //       const currentline = lines[i].split(",");
-  //       for (var j = 0; j < headers.length; j++) {
-  //         obj[headers[j]] = currentline[j];
-  //       }
-  //       result.push(obj);
-  //     }
-  //     this.productService.importCustomer(result).subscribe((res: ResponseModel) => {
-  //       setTimeout(() => {
-  //         this.uploading = false;
-  //         this.toastr.success('Product added successfully', 'Upload Success');
-  //         jQuery("#modal2").modal("hide");
-  //         this.allproducts.push(res.data);
-  //       }, 1000);
-  //     });
-  //     // this.newproduct = result;
-  //   } else {
-  //     this.toastr.error('Try Again', 'Upload Failed')
-  //     // this.reset();
-  //   }
-  // }
 
   resetForm() {
     this.editing = false;

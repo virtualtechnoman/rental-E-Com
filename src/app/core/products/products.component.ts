@@ -17,7 +17,7 @@ export class ProductsComponent implements OnInit {
 
   jQuery: any;
   allproducts: ProductModel[] = [];
-  allCategories:CategoryModel[]=[];
+  allCategories: CategoryModel[] = [];
   allTherapies: any[] = [];
   all_business_unit: any[] = [];
   currentproduct: ProductModel;
@@ -32,7 +32,7 @@ export class ProductsComponent implements OnInit {
   parsedCSV;
   uploading: Boolean = false;
   submitted: Boolean = false;
-  viewArray:any=[];
+  viewArray: any = [];
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService
   ) {
@@ -70,7 +70,7 @@ export class ProductsComponent implements OnInit {
       details: [''],
       farm_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
       // image: ['No Value', Validators.required],
-      is_active: ['', Validators.required],
+      is_active: [false],
       name: ['', Validators.required],
       product_dms: ['', Validators.required],
       selling_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
@@ -112,16 +112,16 @@ export class ProductsComponent implements OnInit {
     this.setFormValue();
   }
 
-  viewProduct(i){
-    this.viewArray=this.allproducts[i];
+  viewProduct(i) {
+    this.viewArray = this.allproducts[i];
     console.log(this.viewArray);
-    
-    
+
+
   }
 
-  getAllCategory(){
-    this.productService.getAllCategory().subscribe((res:ResponseModel)=>{
-      this.allCategories=res.data
+  getAllCategory() {
+    this.productService.getAllCategory().subscribe((res: ResponseModel) => {
+      this.allCategories = res.data
       console.log(res.data)
       this.dtTrigger.next();
     })
@@ -177,10 +177,10 @@ export class ProductsComponent implements OnInit {
   }
 
   setFormValue() {
-    
-    const product:any = this.allproducts[this.currentIndex];
+
+    const product: any = this.allproducts[this.currentIndex];
     console.log(product)
-    
+
     this.productForm.controls['available_for'].setValue(product.available_for);
     this.productForm.controls['brand'].setValue(product.brand);
 
