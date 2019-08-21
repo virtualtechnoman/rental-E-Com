@@ -20,6 +20,17 @@ router.get('/', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
     res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
   }
 })
+//Get all hubs
+router.get('/hub', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
+  try {
+    const allUsers = await User.find({ role: process.env.HUB_ROLE }).populate("role").exec();
+    // console.log(allUsers);
+    res.json({ status: 200, message: "All users", errors: false, data: allUsers });
+  }
+  catch (err) {
+    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
+  }
+})
 
 // //GET all users
 router.get('/all',authorizePrivilege("GET_ALL_USERS"), async (req, res) => {

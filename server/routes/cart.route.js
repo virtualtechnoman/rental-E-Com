@@ -198,36 +198,87 @@ router.put("/:id", authorizePrivilege("UPDATE_QUANTITY_IN_CART"), (req, res) => 
 
 //Place Order
 router.post("/placeorder", authorizePrivilege("PLACE_ORDER"), (req, res) => {
-    Cart.findOne({ user: req.user._id }).exec().then(doc => {
-        if (doc) {
-            if (doc.products.length) {
-                let order = {};
-                order.products = doc.products;
-                order.placed_by = req.user._id;
-                order.order_id = "C_ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
-                order.status = "Placed";
-                let newOrder = new CustomerOrder(order);
-                newOrder.save().then(order => {
-                    CustomerOrder.findById(order._id).populate("placed_by products.product placed_to").exec().then(d => {
-                        doc.delete();
-                        return res.json({ status: 200, data: d, errors: false, message: "Order placed successfully" });
-                    })
-                }).catch(e => {
-                    console.log(e);
-                    return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while placing the order" });
-                })
+    Cart.findOne({ user: req.user._id }).exec().then(cart => {
+        Cart.aggregate([
+            { $match: { user: req.user._id } },
+            { $unwind: "$products" },
+            { $lookup: { "from": 'products', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
+            {
+                $project: {
+                    _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.selling_price", 0] }
+                }
+            },
+            { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
+            { $project: { _id: 0, c_id: 1, products: 1, total: 1 } }
+        ], (err, doc) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
             }
-            else
-                return res.status(400).json({ status: 400, errors: true, data: null, message: "Your cart is empty" });
-        } else {
-            return res.status(400).json({ status: 400, errors: true, data: null, message: "Your cart is empty" });
-        }
+            if (doc.length) {
+                doc = doc[0];
+                if (doc.products.length) {
+                    let order = {};
+                    order.products = doc.products;
+                    order.placed_by = req.user._id;
+                    order.order_id = "C_ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
+                    console.log("DOC>TOTAL : ",doc.total);
+                    order.amount = doc.total;
+                    order.status = "Placed";
+                    let newOrder = new CustomerOrder(order);
+                    newOrder.save().then(order => {
+                        CustomerOrder.findById(order._id).populate("placed_by products.product placed_to").exec().then(d => {
+                            cart.delete();
+                            return res.json({ status: 200, data: d, errors: false, message: "Order placed successfully" });
+                        })
+                    }).catch(e => {
+                        console.log(e);
+                        return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while placing the order" });
+                    })
+                }
+                else
+                    return res.status(400).json({ status: 400, errors: true, data: null, message: "Your cart is empty" });
+            } else {
+                return res.status(400).json({ status: 400, errors: true, data: doc, message: "No Orders" });
+            }
+        })
+    }).catch(e=>{
+        console.log(e);
+        res.status(500).json({status:500, data:null, errors:true, message:"Something went wrong"})
     })
+    
+
+    // Cart.findOne({ user: req.user._id }).exec().then(doc => {
+    //     if (doc) {
+    //         if (doc.products.length) {
+    //             let order = {};
+    //             order.products = doc.products;
+    //             order.placed_by = req.user._id;
+    //             order.order_id = "C_ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
+    //             order.amount = doc.total;
+    //             order.status = "Placed";
+    //             let newOrder = new CustomerOrder(order);
+    //             newOrder.save().then(order => {
+    //                 CustomerOrder.findById(order._id).populate("placed_by products.product placed_to").exec().then(d => {
+    //                     doc.delete();
+    //                     return res.json({ status: 200, data: d, errors: false, message: "Order placed successfully" });
+    //                 })
+    //             }).catch(e => {
+    //                 console.log(e);
+    //                 return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while placing the order" });
+    //             })
+    //         }
+    //         else
+    //             return res.status(400).json({ status: 400, errors: true, data: null, message: "Your cart is empty" });
+    //     } else {
+    //         return res.status(400).json({ status: 400, errors: true, data: doc, message: "Your cart is empty" });
+    //     }
+    // })
 })
 
 router.get("/products", (req, res) => {
     Product.aggregate([
-    //     { $unwind: "$products" },
+        //     { $unwind: "$products" },
         {
             $lookup: {
                 from: "carts",
@@ -236,16 +287,17 @@ router.get("/products", (req, res) => {
                     // { $match: { _id: { $nin: [] } } }
                 ],
                 as: "prods"
-            }},
-            {$project:{isincart:{prods:{$elemMatch:{product:"$_id"}}}}}
-            // {qty:{$cond:{}}}
-    //         $group:{
-    //             _id:{prods2:{id:"$prods._id"},inCart:{$expr:{"prods":{"$elemMatch":{"_id":"$products.product"}}}}}
-    //         }
-    //     },
-    //     //  {$group:{_id:null,cart_items:{$push:"$products.product"},prods:"$pro"}},
+            }
+        },
+        { $project: { isincart: { prods: { $elemMatch: { product: "$_id" } } } } }
+        // {qty:{$cond:{}}}
+        //         $group:{
+        //             _id:{prods2:{id:"$prods._id"},inCart:{$expr:{"prods":{"$elemMatch":{"_id":"$products.product"}}}}}
+        //         }
+        //     },
+        //     //  {$group:{_id:null,cart_items:{$push:"$products.product"},prods:"$pro"}},
 
-    //     // {$project:{}
+        //     // {$project:{}
 
 
     ], (err, doc) => {

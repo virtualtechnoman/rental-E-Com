@@ -17,9 +17,8 @@ import { TokenStorage } from '../../../auth/token.storage';
 
       url='/api/state'
       url2='/api/city';
-      url3:'/api/area';
-      url4:'/api/user/hub'
-    
+      url3='/api/area';
+      url4='/api/user/hub';
       // States
       getAllStates(){
           return this.http.get(this.url + '/' , {headers:this.headers})

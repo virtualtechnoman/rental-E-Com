@@ -13,25 +13,30 @@
           <thead>
             <tr>
               <th scope="col">S.No</th>
+              <th scope="col">Area Name</th>
               <th scope="col">City Name</th>
               <th scope="col">State Name</th>
-              <th scope="col">Area Name</th>
+              <th scope="col">Hub Name</th>
+              <th scope="col">Status</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <!-- <tr *ngFor="let customer of allcustomers[0]; let i = index">
+            <tr *ngFor="let area of allAreas; let i = index">
               <td>{{i+1}}</td>
-              <td>{{customer._id}}</td>
-              <td>{{customer.full_name}}</td>
-              <td>{{customer.mobile_number}}</td>
+              <td>{{area?.name}}</td>
+              <td>{{area?.city?.name}}</td>
+              <td>{{area?.city?.state?.name}}</td>
+              <td>{{area?.hub?.full_name}}</td>
+              <td *ngIf="area.is_active">Available</td>
+              <td *ngIf="!area.is_active">Unavailable</td>
               <td>
-                  <a style="cursor: pointer" (click)="viewCustomer(i)" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-eye"></i></a>
-                <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editCustomer(i)"><i
+                  <a style="cursor: pointer" (click)="viewArea(i)" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-eye"></i></a>
+                <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editArea(i)"><i
                     class="fas fa-edit mx-2"></i> </a>
-                <a style="cursor: pointer" (click)="deleteCustomer(i)"><i class="fas fa-trash-alt"></i></a>
+                <a style="cursor: pointer" (click)="deleteArea(i)"><i class="fas fa-trash-alt"></i></a>
               </td>
-            </tr> -->
+            </tr>
           </tbody>
         </table>
       </div>
@@ -65,8 +70,8 @@
                     <select class="form-control" formControlName="city" required
                       [ngClass]="{ 'is-invalid': submitted && f.city.errors }">
                       <option selected disabled>Select City</option>
-                      <!-- <option [ngValue]="category._id" *ngFor="let category of allCategories;let i=index">{{category.name}}
-                      </option> -->
+                      <option [ngValue]="city._id" *ngFor="let city of allCities;let i=index">{{city.name}}
+                      </option>
                     </select>
                     <div *ngIf="submitted && f.city.errors" class="invalid-feedback">
                       <div *ngIf="f.city.errors.required">City Name is required</div>
@@ -79,8 +84,8 @@
                       <select class="form-control" formControlName="hub" required
                         [ngClass]="{ 'is-invalid': submitted && f.hub.errors }">
                         <option selected disabled>Select Hub</option>
-                        <!-- <option [ngValue]="category._id" *ngFor="let category of allCategories;let i=index">{{category.name}}
-                        </option> -->
+                        <option [ngValue]="hub._id" *ngFor="let hub of allHubUsers;let i=index">{{hub.full_name}}
+                        </option>
                       </select>
                       <div *ngIf="submitted && f.hub.errors" class="invalid-feedback">
                         <div *ngIf="f.hub.errors.required">Hub Name is required</div>
@@ -106,46 +111,37 @@
   </div>
   
     
-    <!-- Modal -->
-    <!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Customer Details</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-              
-                  <div class="form-group">
-                      <label> Name</label>
-                      <input type="text"  class="form-control" [(ngModel)]="viewArray.full_name" disabled />
-                  </div>
-                  <div class="form-group">
-                      <label>City</label>
-                      <input type="text"  class="form-control" [(ngModel)]="viewArray.city" disabled />
-                  </div>  
-                  <div class="form-group">
-                      <label>DOB</label>
-                      <input type="text"  class="form-control" [(ngModel)]="viewArray.dob" disabled />
-                  </div>
-                  <div class="form-group">
-                      <label>Mobile Number</label>
-                      <input type="text"  class="form-control" [(ngModel)]="viewArray.mobile_number" disabled />
-                  </div>
-                  <div class="form-group">
-                      <label>Street Address</label>
-                      <input type="text"  class="form-control" [(ngModel)]="viewArray.street_address" disabled />
-                  </div>
-                  <div class="form-group">
-                      <label>Landmark</label>
-                      <input type="text"  class="form-control" [(ngModel)]="viewArray.landmark" disabled />
-                  </div>              
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <!--Example Area Modal -->
+    <div *ngIf="viewArray" class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Area Details</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                    <div class="form-group" *ngIf="viewArray">
+                        <label>Area Name</label>
+                        <input type="text"  class="form-control" [(ngModel)]="viewArray.name" disabled />
+                    </div>
+                    <div class="form-group" *ngIf="viewArray.city">
+                        <label>City Name</label>
+                        <input type="text"  class="form-control" [(ngModel)]="viewArray.city.name" disabled />
+                    </div>
+                    <div class="form-group" *ngIf="viewArray.hub">
+                        <label>Hub Name</label>
+                        <input type="text"  class="form-control" [(ngModel)]="viewArray.hub.full_name" disabled />
+                    </div>  
+                    <div class="form-group" *ngIf="viewArray">
+                        <label>Status</label>
+                        <p-inputSwitch class="form-control" [(ngModel)]="viewArray.is_active" disabled></p-inputSwitch>
+                    </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
           </div>
         </div>
       </div>
-    </div> -->

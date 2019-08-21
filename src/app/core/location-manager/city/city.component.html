@@ -15,22 +15,24 @@
               <th scope="col">S.No</th>
               <th scope="col">City Name</th>
               <th scope="col">State Name</th>
+              <th scope="col">Status</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <!-- <tr *ngFor="let customer of allcustomers[0]; let i = index">
+            <tr *ngFor="let city of allCities; let i = index">
               <td>{{i+1}}</td>
-              <td>{{customer._id}}</td>
-              <td>{{customer.full_name}}</td>
-              <td>{{customer.mobile_number}}</td>
+              <td>{{city?.name}}</td>
+              <td>{{city?.state?.name}}</td>
+              <td *ngIf="city.is_active">Available</td>
+              <td *ngIf="!city.is_active">Unavailable</td>
               <td>
-                  <a style="cursor: pointer" (click)="viewCustomer(i)" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-eye"></i></a>
-                <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editCustomer(i)"><i
+                  <a style="cursor: pointer" (click)="viewCity(i)" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-eye"></i></a>
+                <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editCity(i)"><i
                     class="fas fa-edit mx-2"></i> </a>
-                <a style="cursor: pointer" (click)="deleteCustomer(i)"><i class="fas fa-trash-alt"></i></a>
+                <a style="cursor: pointer" (click)="deleteCity(i)"><i class="fas fa-trash-alt"></i></a>
               </td>
-            </tr> -->
+            </tr>
           </tbody>
         </table>
       </div>
@@ -63,8 +65,8 @@
                     <select class="form-control" formControlName="state" required
                       [ngClass]="{ 'is-invalid': submitted && f.state.errors }">
                       <option selected disabled>Select State</option>
-                      <!-- <option [ngValue]="category._id" *ngFor="let category of allCategories;let i=index">{{category.name}}
-                      </option> -->
+                      <option [ngValue]="state._id" *ngFor="let state of allStates;let i=index">{{state.name}}
+                      </option>
                     </select>
                     <div *ngIf="submitted && f.state.errors" class="invalid-feedback">
                       <div *ngIf="f.state.errors.required">State Name is required</div>
@@ -90,12 +92,12 @@
   </div>
   
     
-    <!-- Modal -->
-    <!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!--Example City Modal -->
+    <div *ngIf="viewArray" class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Customer Details</h5>
+            <h5 class="modal-title" id="exampleModalLabel">City Details</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -103,33 +105,21 @@
           <div class="modal-body">
               
                   <div class="form-group">
-                      <label> Name</label>
-                      <input type="text"  class="form-control" [(ngModel)]="viewArray.full_name" disabled />
+                      <label>City Name</label>
+                      <input type="text"  class="form-control" [(ngModel)]="viewArray.name" disabled />
                   </div>
-                  <div class="form-group">
-                      <label>City</label>
-                      <input type="text"  class="form-control" [(ngModel)]="viewArray.city" disabled />
+                  <div class="form-group" *ngIf="viewArray.state">
+                      <label>State Name</label>
+                      <input type="text"  class="form-control" [(ngModel)]="viewArray.state.name" disabled />
                   </div>  
                   <div class="form-group">
-                      <label>DOB</label>
-                      <input type="text"  class="form-control" [(ngModel)]="viewArray.dob" disabled />
+                      <label>Status</label>
+                      <p-inputSwitch class="form-control" [(ngModel)]="viewArray.is_active" disabled></p-inputSwitch>
                   </div>
-                  <div class="form-group">
-                      <label>Mobile Number</label>
-                      <input type="text"  class="form-control" [(ngModel)]="viewArray.mobile_number" disabled />
-                  </div>
-                  <div class="form-group">
-                      <label>Street Address</label>
-                      <input type="text"  class="form-control" [(ngModel)]="viewArray.street_address" disabled />
-                  </div>
-                  <div class="form-group">
-                      <label>Landmark</label>
-                      <input type="text"  class="form-control" [(ngModel)]="viewArray.landmark" disabled />
-                  </div>              
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
