@@ -65,5 +65,20 @@ module.exports = (p=false)=>({
     GET_PRODUCT_CATEGORY:p,
     ADD_NEW_PRODUCT_CATEGORY:p,
     UPDATE_PRODUCT_CATEGORY:p,
-    DELETE_PRODUCT_CATEGORY:p
+    DELETE_PRODUCT_CATEGORY:p,
+    //State Privilege
+    GET_ALL_STATES:p,
+    ADD_NEW_STATE:p,
+    UPDATE_STATE:p,
+    DELETE_STATE:p,
+    //City Privilege
+    GET_ALL_CITIES:p,
+    ADD_NEW_CITY:p,
+    UPDATE_CITY:p,
+    DELETE_CITY:p,
+    //Area Privilege
+    GET_ALL_AREAS:p,
+    ADD_NEW_AREA:p,
+    UPDATE_AREA:p,
+    DELETE_AREA:p
 })

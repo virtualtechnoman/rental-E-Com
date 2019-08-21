@@ -14,6 +14,9 @@ const customerRoutes = require("./customer.route");
 const productCategoryRoutes = require("./product.category.route");
 const cartRoutes = require("./cart.route");
 const customerOrderRoutes = require("./customer.order.route");
+const stateRoutes = require("./state.route");
+const cityRoutes = require("./city.route");
+const areaRoutes = require("./area.route");
 const authMiddleware = require("../middleware/authMiddleware");
 const router = express.Router();
 
@@ -25,6 +28,9 @@ router.get('/health-check', (req, res) =>
 
 router.use('/auth', authRoutes);
 router.use('/user', authMiddleware, userRoutes);
+router.use('/state', authMiddleware, stateRoutes);
+router.use('/city', authMiddleware, cityRoutes);
+router.use('/area', authMiddleware, areaRoutes);
 router.use('/products', authMiddleware, productRoutes);
 router.use("/order", authMiddleware, orderRoutes);
 router.use("/rorder", authMiddleware, returnOrderRoutes);

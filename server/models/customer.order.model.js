@@ -13,6 +13,7 @@ module.exports = mongoose.model("customer_order", new mongoose.Schema({
     placed_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
     placed_to: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
     products: [Product],
+    amount:Number,
     status: { type: String },
     order_date: { type: Date, default: Date.now }
 }, {
