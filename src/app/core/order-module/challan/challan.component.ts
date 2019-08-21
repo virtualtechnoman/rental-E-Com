@@ -55,6 +55,14 @@ export class ChallanComponent implements OnInit {
     });
   }
 
+  deleteChallan(i){
+    if (confirm('You Sure you want to delete this Order')) {
+      this.orderService.deleteReturnOrder(this.allChallans[i]._id).toPromise().then(() => {
+        this.toasterService.warning('Products Deleted!', 'Deleted!');
+        this.allChallans.splice(i, 1);
+      }).catch((err) => console.log(err));
+    }
+  }
   selectChallan(i) {
     this.currentChallan = this.allChallans[i];
     console.log(this.currentChallan)

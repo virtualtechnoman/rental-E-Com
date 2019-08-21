@@ -34,7 +34,8 @@ const createRoleSchema = Joi.object({
 })
 
 const updateRoleSchema = Joi.object({
-    name: Joi.string().optional()
+    name: Joi.string().optional(),
+    privileges:Joi.object().optional()
 })
 
 module.exports = {

@@ -21,18 +21,19 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let order of allOrders; let i = index">
+          <tr *ngFor="let order of allReturnOrders; let i = index">
             <td>{{i+1}}</td>
             <td>{{order.order_id | uppercase}}</td>
             <td>{{order.order_date | date:'dd/MM/yy'}}</td>
-            <td>{{order.placed_to.full_name | titlecase}}</td>
-            <td>{{order.placed_by.full_name | titlecase}}</td>
+            <td>{{order?.placed_to?.full_name | titlecase}}</td>
+            <td>{{order?.placed_by?.full_name | titlecase}}</td>
             <td>
-              <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editOrder(i)"><i
-                  class="fas fa-edit mx-2"></i></a>
+              <!-- <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editOrder(i)"><i
+                  class="fas fa-edit mx-2"></i></a> -->
+                  <a style="cursor:pointer" data-toggle="modal" data-target="#summaryModel"
+                (click)="viewSummary(i)"><i class="fas fa-eye"></i></a>
               <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteOrder(i)"></i></a>
-              <a style="cursor:pointer" data-toggle="modal" data-target="#summaryModel"
-                (click)="viewSummary(i)">View</a>
+              
             </td>
           </tr>
         </tbody>
@@ -52,7 +53,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="orderForm" (ngSubmit)="submit()">
+        <form [formGroup]="orderReturnForm" (ngSubmit)="submit()">
           <div class="divider-text">Select Organisation to Send Order </div>
           <div class="form-row">
             <div class="form-group col-md-4 offset-md-4">
@@ -70,7 +71,7 @@
           <div class="form-row">
             <div class="col-md-8  offset-md-3">
               <div formArrayName="products">
-                <div *ngFor=" let product of orderForm.get('products')['controls']; let i = index" [formGroupName]="i">
+                <div *ngFor=" let product of orderReturnForm.get('products')['controls']; let i = index" [formGroupName]="i">
                   <div class="form-row">
                     <div class="col-md-4">
                       <div>
@@ -88,12 +89,12 @@
                         <input type="text" name="from" id="from" class="form-control" formControlName="quantity">
                       </div>
                     </div>
-                    <div class="col-md-3">
+                    <!-- <div class="col-md-3">
                       <div>
                         <label for="period">Status</label>
                         <p-inputSwitch formControlName="status"></p-inputSwitch>
                       </div>
-                    </div>
+                    </div> -->
                     <div class="col-md-1">
                       <label for="period">Remove</label>
                       <button class="form-control" (click)="removePeriod(i)">-</button>
@@ -179,8 +180,8 @@
               <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed From</label>
               <h6 class="tx-15 mg-b-10">{{currentOrder?.full_name}}</h6>
               <!-- <p class="mg-b-0">{{currentOrder.placed_by.full_name}}</p> -->
-              <p class="mg-b-0">{{currentOrder?.placed_by.mobile_phone}}</p>
-              <p class="mg-b-0">{{currentOrder?.placed_by.email}}</p>
+              <!-- <p class="mg-b-0">{{currentOrder?.placed_by.mobile_phone}}</p> -->
+              <p class="mg-b-0">{{currentOrder?.placed_by?.email}}</p>
             </div><!-- col -->
             <div class="col-sm-6 tx-right d-none d-md-block">
               <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice Number</label>
@@ -223,7 +224,7 @@
                   <th class="wd-20p">Type</th>
                   <th class="wd-40p d-none d-sm-table-cell">Brand</th>
                   <th class="tx-center">Requested Quantity</th>
-                  <th class="tx-center">Accepted Quantity</th>
+                  <!-- <th class="tx-center">Accepted Quantity</th> -->
                   <!-- <th class="tx-right">Unit Price</th>
                   <th class="tx-right">Amount</th> -->
                 </tr>
@@ -233,8 +234,8 @@
                   <td class="tx-nowrap">{{product?.product.name}}</td>
                   <td class="d-none d-sm-table-cell tx-color-03">{{product?.product.brand}}</td>
                   <td class="tx-center">{{product?.quantity}}</td>
-                  <td class="tx-center"> <input type="text" value="{{product?.accepted}}" class="form-control"
-                      placeholder="Accepted Quantity Here"></td>
+                  <!-- <td class="tx-center"> <input type="text" value="{{product?.accepted}}" class="form-control"
+                      placeholder="Accepted Quantity Here"></td> -->
                   <!-- <td class="tx-right">${{product?.product.farm_price}}</td>
                   <td class="tx-right">${{product?.product.farm_price * product.quantity}}</td> -->
                 </tr>
@@ -242,16 +243,16 @@
             </table>
           </div>
 
-          <div class="row justify-content-between">
+          <!-- <div class="row justify-content-between">
             <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-40 mg-sm-t-0">
               <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Notes</label>
-            </div><!-- col -->
+            </div>col
             <div class="col-sm-6 float-right">
               <button class="btn btn-primary mg-l-5" (click)="updateOrder()"><i data-feather="credit-card"
                   class="mg-r-5"></i> Accept
                 And Save Order</button>
             </div>
-          </div><!-- row -->
+          </div>row -->
         </div><!-- container -->
       </div>
     </div>
@@ -269,16 +270,16 @@
             <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
               <div class="d-sm-flex align-items-center justify-content-between">
                 <div>
-                  <h4 class="mg-b-5">Invoice {{currentOrder?.order_id}}</h4>
-                  <p class="mg-b-0 tx-color-03">Due on {{currentOrder?.order_date | date : 'dd/MM/yy'}}</p>
+                  <h4 class="mg-b-5">Challan </h4>
+                  <!-- <p class="mg-b-0 tx-color-03">Due on {{currentOrder?.order_date | date : 'dd/MM/yy'}}</p> -->
                 </div>
-                <div class="mg-t-20 mg-sm-t-0">
+                <!-- <div class="mg-t-20 mg-sm-t-0">
                   <button class="btn btn-white"><i data-feather="printer" class="mg-r-5"></i> Print</button>
                   <button class="btn btn-white mg-l-5"><i data-feather="mail" class="mg-r-5"></i> Generate
                     Challan</button>
                   <button class="btn btn-primary mg-l-5"><i data-feather="credit-card" class="mg-r-5"></i> Accept
                     Challan</button>
-                </div>
+                </div> -->
               </div>
             </div><!-- container -->
           </div>
@@ -289,8 +290,8 @@
                   <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed From</label>
                   <h6 class="tx-15 mg-b-10">{{currentOrder?.full_name}}</h6>
                   <!-- <p class="mg-b-0">{{currentOrder.placed_by.full_name}}</p> -->
-                  <p class="mg-b-0">{{currentOrder?.placed_by.mobile_phone}}</p>
-                  <p class="mg-b-0">{{currentOrder?.placed_by.email}}</p>
+                  <!-- <p class="mg-b-0">{{currentOrder?.placed_by.mobile_phone}}</p> -->
+                  <p class="mg-b-0">{{currentOrder?.placed_by?.email}}</p>
                 </div><!-- col -->
                 <div class="col-sm-6 tx-right d-none d-md-block">
                   <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice Number</label>
@@ -334,34 +335,77 @@
                       <th class="wd-20p">Type</th>
                       <th class="wd-40p d-none d-sm-table-cell">Brand</th>
                       <th class="tx-center">Requested Quantity</th>
-                      <th class="tx-center">Accepted Quantity</th>
+                      <!-- <th class="tx-center">Accepted Quantity</th>
                       <th class="tx-right">Status</th>
-                      <th class="tx-right">Amount</th>
+                      <th class="tx-right">Amount</th> -->
                     </tr>
                   </thead>
                   <tbody>
                     <tr *ngFor="let product of currentOrder.products; let i = index">
                       <td class="tx-nowrap">{{product?.product.name}}</td>
                       <td class="d-none d-sm-table-cell tx-color-03">{{product?.product.brand}}</td>
-                      <td class="tx-center">{{product?.requested}}</td>
-                      <td class="tx-center">{{product?.accepted}}</td>
-                      <td class="tx-right">${{product?.dispatch}}</td>
+                      <td class="tx-center">{{product?.quantity}}</td>
+                      <!-- <td class="tx-center">{{product?.accepted}}</td>
+                      <td class="tx-right">${{product?.dispatch}}</td> -->
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              <div class="row justify-content-between">
+              <!-- <div class="row justify-content-between">
                 <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-40 mg-sm-t-0">
                   <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Notes</label>
                   <p></p>
-                </div><!-- col -->
-              </div><!-- row -->
+                </div>col
+              </div>row -->
             </div><!-- container -->
           </div>
         </div>
         <div class="col-md-5">
-          <div class="form-row">
+            <div class="form-row">
+                <div class="col-md-5">
+                  <label for="">Vehicle Number</label>
+                <select formControlName="vehicle" class="form-control" (change)="getVehicle2($event)">
+                  <option selected disabled>Select vehicle Number</option>
+                  <option [ngValue]="vehicle._id" *ngFor="let vehicle of allVehicle;let i=index">{{vehicle.number}}</option>
+                </select>
+              </div>
+                <!-- <div class="col-md-6"><input type="text" placeholder="Vehicle Number Here"
+                    formControlName="vehicle_no" class="form-control"></div> -->
+              </div>
+              <!-- <div class="form-row">
+                <div class="col-md-6"><label for="">Vehicle Type</label></div>
+                <div class="col-md-6"><input type="text" placeholder="Vehicle Type Here"
+                    formControlName="vehicle_type" class="form-control"></div>
+              </div> -->
+              <div class="form-row">
+                <div class="col-md-5">
+                  <label for="">Driver Name</label>
+                <select formControlName="driver" class="form-control" (change)="getDriver($event)">
+                  <option selected disabled>Select Driver</option>
+                  <option [ngValue]="driver._id" *ngFor="let driver of alldriver;let i=index">{{driver.name}}</option>
+                </select>
+              </div>
+                <!-- <div class="col-md-6"><input type="text" placeholder="driver_name Here"
+                    formControlName="driver_name" class="form-control"></div> -->
+              </div>
+              <!-- <div class="form-row">
+                <div class="col-md-6"><label for="">Driver Mobile</label></div>
+                <div class="col-md-6"><input type="text" placeholder="Driver Mobile"
+                    formControlName="driver_mobile" class="form-control"></div>
+              </div> -->
+              <!-- <div class="form-row">
+                <div class="col-md-6"><label for="">DL Number</label></div>
+                <div class="col-md-6"><input type="text" placeholder="dl_no" formControlName="dl_no"
+                    class="form-control">
+                </div>
+              </div> -->
+              <div class="form-row">
+                <div class="col-md-6"><label for="">Departure Date</label>
+                <input type="date" formControlName="departure" class="form-control">
+              </div>
+              </div>
+          <!-- <div class="form-row">
             <div class="col-md-6"><label for="">Vehicle Number</label></div>
             <div class="col-md-6"><input type="text" placeholder="Vehicle Number Here" formControlName="vehicle_no"
                 class="form-control"></div>
@@ -389,7 +433,11 @@
           <div class="form-row">
             <div class="col-md-6"><label for="">Departure Date</label></div>
             <div class="col-md-6"><input type="date" formControlName="departure" class="form-control"></div>
-          </div>
+          </div> -->
+        </div>
+        <div class="form-group">
+        <button type="submit" class="btn btn-primary mg-l-5"><i data-feather="credit-card" class="mg-r-5"></i> Accept
+          Challan</button>
         </div>
       </form>
     </div>

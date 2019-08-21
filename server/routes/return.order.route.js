@@ -9,7 +9,7 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 //GET specific return order
 router.get("/id/:id",authorizePrivilege("GET_RETURN_ORDER"),(req,res)=>{
     if(mongodb.ObjectID.isValid(req.params.id)){
-        ReturnOrder.findById(req.params.id).populate("placed_by products.product").exec().then(doc=>{
+        ReturnOrder.findById(req.params.id).populate("placed_by placed_to products.product").exec().then(doc=>{
             if(doc)
             res.json({status:200,data:doc,errors:false,message:"Order created successfully"});
             else
@@ -33,7 +33,7 @@ router.get("/",authorizePrivilege("GET_ALL_RETURN_ORDERS_OWN"),(req,res)=>{
 
 //GET Return orders
 router.get("/all",authorizePrivilege("GET_ALL_RETURN_ORDERS"),(req,res)=>{
-    ReturnOrder.find().populate("placed_by products.product").exec().then(doc=>{
+    ReturnOrder.find().populate("placed_by placed_to products.product").exec().then(doc=>{
         return res.json({status:200,data:doc,errors:false,message:"All Return Orders"});
     }).catch(err=>{
         return res.status(500).json({status:500,data:null,errors:true,message:"Error while getting orders"})
@@ -49,7 +49,7 @@ router.post("/",authorizePrivilege("ADD_NEW_RETURN_ORDER"),(req,res)=>{
     result.data.order_id = "RORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newOrder = new ReturnOrder(result.data);
     newOrder.save().then(order=>{
-        ReturnOrder.findById(order._id).populate("placed_by products.product").exec().then(doc=>{
+        ReturnOrder.findById(order._id).populate("placed_by placed_to products.product").exec().then(doc=>{
             res.json({status:200,data:doc,errors:false,message:"Order created successfully"});
         })
     }).catch(e=>{

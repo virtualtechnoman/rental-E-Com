@@ -13,7 +13,7 @@ module.exports = mongoose.model("challan", new mongoose.Schema({
             type: Number, required: true
         },
         accepted: {
-            type: Number, required: true
+            type: Number
         },
         // dispatch: {
         //     type: Boolean, required: true
