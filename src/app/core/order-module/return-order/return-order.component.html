@@ -1,389 +1,389 @@
 <div class="container-fluid">
     <div class="card">
-      <div class="card-header">
-        <h2 class="float-left">Order Management</h2>
-        <a class="btn btn-secondary text-white float-right" (click)="resetForm()" data-toggle="modal"
-          data-target="#modal3">Add New Order</a>
-        <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
-          data-target="#modal2">Upload CSV</a>
-      </div>
-      <div class="card-body">
-        <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
-          [dtTrigger]="dtTrigger">
-          <thead>
-            <tr>
-              <th scope="col">S.no</th>
-              <th scope="col">Order No.</th>
-              <th scope="col">Order Date</th>
-              <th scope="col">Order To</th>
-              <!-- <th scope="col">Manager</th> -->
-              <th scope="col">Order By</th>
-              <!-- <th scope="col">Order by Manager</th> -->
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let order of allOrders; let i = index">
-              <td>{{i+1}}</td>
-              <td>{{order.order_id | uppercase}}</td>
-              <td>{{order.order_date | date:'dd/MM/yy'}}</td>
-              <td>{{order.placed_to.full_name | titlecase}}</td>
-              <td>{{order.placed_by.full_name | titlecase}}</td>
-              <td>
-                <!-- <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editOrder(i)"><i
-                      class="fas fa-edit mx-2"></i></a> -->
-                <a style="cursor:pointer" data-toggle="modal" data-target="#summaryModel" (click)="viewSummary(i)"><i
-                    class="fas fa-eye"></i></a>
-                <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteOrder(i)"></i></a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="card-header">
+    <h2 class="float-left">Order Management</h2>
+    <a class="btn btn-secondary text-white float-right" (click)="resetForm()" data-toggle="modal"
+    data-target="#modal3">Add New Order</a>
+    <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+    data-target="#modal2">Upload CSV</a>
     </div>
-  </div>
-  
-  <!-- ================ADD ORDER FORM=================== -->
-  <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+    <div class="card-body">
+    <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
+    [dtTrigger]="dtTrigger">
+    <thead>
+    <tr>
+    <th scope="col">S.no</th>
+    <th scope="col">Order No.</th>
+    <th scope="col">Order Date</th>
+    <th scope="col">Order To</th>
+    <!-- <th scope="col">Manager</th> -->
+    <th scope="col">Order By</th>
+    <!-- <th scope="col">Order by Manager</th> -->
+    <th scope="col">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let order of allOrders; let i = index">
+    <td>{{i+1}}</td>
+    <td>{{order.order_id | uppercase}}</td>
+    <td>{{order.order_date | date:'dd/MM/yy'}}</td>
+    <td>{{order.placed_to.full_name | titlecase}}</td>
+    <td>{{order.placed_by.full_name | titlecase}}</td>
+    <td>
+    <!-- <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editOrder(i)"><i
+    class="fas fa-edit mx-2"></i></a> -->
+    <a style="cursor:pointer" data-toggle="modal" data-target="#summaryModel" (click)="viewSummary(i)"><i
+    class="fas fa-eye"></i></a>
+    <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteOrder(i)"></i></a>
+    </td>
+    </tr>
+    </tbody>
+    </table>
+    </div>
+    </div>
+    </div>
+    
+    <!-- ================ADD ORDER FORM=================== -->
+    <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-      <div class="modal-content tx-14">
-        <div class="modal-header text-center">
-          <h6 class="modal-title" *ngIf="editing">Edit Order</h6>
-          <h6 class="modal-title  h4" *ngIf="!editing">Add New Order</h6>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form [formGroup]="orderForm" (ngSubmit)="submit()">
-            <div class="divider-text">Select Organisation to Send Order </div>
-            <div class="form-row">
-              <div class="form-group col-md-4 offset-md-4">
-                <label for="inputEmail4">Order To</label>
-                <select name="user" formControlName="placed_to" class="form-control">
-                  <option value="" [selected]>Select User</option>
-                  <option [ngValue]="user._id" *ngFor="let user of allUsers">{{user.full_name}}</option>
-                </select>
-                <div *ngIf="submitted && f.placed_to.errors" class="invalid-feedback">
-                  <div *ngIf="f.placed_to.errors.required">Placed is required</div>
-                </div>
-              </div>
-            </div>
-            <div class="divider-text">Select And Add Products </div>
-            <div class="form-row">
-              <div class="col-md-8  offset-md-3">
-                <div formArrayName="products">
-                  <div *ngFor=" let product of orderForm.get('products')['controls']; let i = index" [formGroupName]="i">
-                    <div class="form-row">
-                      <div class="col-md-4">
-                        <div>
-                          <label for="period">Product</label>
-                          <select name="product" formControlName="product" class="form-control">
-                            <option value="" [selected]>Select Product</option>
-                            <option [ngValue]="product._id" *ngFor="let product of allproducts.data">{{product.name}}
-                            </option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div>
-                          <label for="period">Quantity</label>
-                          <input type="text" name="from" id="from" class="form-control" formControlName="quantity">
-                        </div>
-                      </div>
-                      <div class="col-md-1">
-                        <label for="period">Remove</label>
-                        <button class="form-control" (click)="removePeriod(i)">-</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4 offset-md-5 mt-2">
-                <button class="btn btn-success" (click)="addPeriod()">Add New Product</button>
-              </div>
-            </div>
-            <div class="divider-text">Add Extra Note</div>
-            <div class="form-row offset-md-4">
-              <input type="text" placeholder="Optinal Notes here" class="form-control" formControlName="notes">
-            </div>
-            <br>
-            <div class=" text-center">
-              <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-              <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
-            </div>
-          </form>
-        </div>
-      </div>
+    <div class="modal-content tx-14">
+    <div class="modal-header text-center">
+    <h6 class="modal-title" *ngIf="editing">Edit Order</h6>
+    <h6 class="modal-title h4" *ngIf="!editing">Add New Order</h6>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
     </div>
-  </div>
-  
-  <!-- ================CSV UPLOAD FORM================== -->
-  <!-- <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+    <div class="modal-body">
+    <form [formGroup]="orderForm" (ngSubmit)="submit()">
+    <div class="divider-text">Select Organisation to Send Order </div>
+    <div class="form-row">
+    <div class="form-group col-md-4 offset-md-4">
+    <label for="inputEmail4">Order To</label>
+    <select name="user" formControlName="placed_to" class="form-control">
+    <option value="" [selected]>Select User</option>
+    <option [ngValue]="user._id" *ngFor="let user of allUsers">{{user.full_name}}</option>
+    </select>
+    <div *ngIf="submitted && f.placed_to.errors" class="invalid-feedback">
+    <div *ngIf="f.placed_to.errors.required">Placed is required</div>
+    </div>
+    </div>
+    </div>
+    <div class="divider-text">Select And Add Products </div>
+    <div class="form-row">
+    <div class="col-md-8 offset-md-3">
+    <div formArrayName="products">
+    <div *ngFor=" let product of orderForm.get('products')['controls']; let i = index" [formGroupName]="i">
+    <div class="form-row">
+    <div class="col-md-4">
+    <div>
+    <label for="period">Product</label>
+    <select name="product" formControlName="product" class="form-control">
+    <option value="" [selected]>Select Product</option>
+    <option [ngValue]="product._id" *ngFor="let product of allproducts.data">{{product.name}}
+    </option>
+    </select>
+    </div>
+    </div>
+    <div class="col-md-4">
+    <div>
+    <label for="period">Quantity</label>
+    <input type="text" name="from" id="from" class="form-control" formControlName="quantity">
+    </div>
+    </div>
+    <div class="col-md-1">
+    <label for="period">Remove</label>
+    <button class="form-control" (click)="removePeriod(i)">-</button>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    <div class="col-md-4 offset-md-5 mt-2">
+    <button class="btn btn-success" (click)="addPeriod()">Add New Product</button>
+    </div>
+    </div>
+    <div class="divider-text">Add Extra Note</div>
+    <div class="form-row offset-md-4">
+    <input type="text" placeholder="Optinal Notes here" class="form-control" formControlName="notes">
+    </div>
+    <br>
+    <div class=" text-center">
+    <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+    </div>
+    </form>
+    </div>
+    </div>
+    </div>
+    </div>
+    
+    <!-- ================CSV UPLOAD FORM================== -->
+    <!-- <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content tx-14">
-        <div class="modal-header">
-          <h6 class="modal-title" id="exampleModalLabel2">Upload CSV</h6>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <input type="file" id="file" class="for mx-1 float-right" (change)="uploadCSV($event.target.files)">
-        </div>
-        <div class="modal-footer">
-          <div class="float-left text-left">
-            <a target="_blank"
-              href="https://firebasestorage.googleapis.com/v0/b/dummy-f382e.appspot.com/o/Sample%20Files%2FProduct.csv?alt=media&token=f9a59723-59ab-4249-bd9e-95f25ecec97a"
-              class="float-left text-left">Download Sample CSV</a>
-          </div>
-          <button type="button" class="btn btn-secondary tx-13" [disabled]="uploading" data-dismiss="modal">Close</button>
-          <button class="btn btn-primary" type="button" disabled *ngIf="uploading">
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            Uploading...
-          </button>
-          <button type="button" class="btn btn-primary tx-13" *ngIf="!uploading" (click)="extractData()"> Upload</button>
-        </div>
-      </div>
+    <div class="modal-content tx-14">
+    <div class="modal-header">
+    <h6 class="modal-title" id="exampleModalLabel2">Upload CSV</h6>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
     </div>
-  </div> -->
-  
-  <!-- =================INVOICE MODAL====================== -->
-  <div *ngIf="currentOrder" class="modal fade" id="summaryModel" tabindex="-1" role="dialog"
+    <div class="modal-body">
+    <input type="file" id="file" class="for mx-1 float-right" (change)="uploadCSV($event.target.files)">
+    </div>
+    <div class="modal-footer">
+    <div class="float-left text-left">
+    <a target="_blank"
+    href="https://firebasestorage.googleapis.com/v0/b/dummy-f382e.appspot.com/o/Sample%20Files%2FProduct.csv?alt=media&token=f9a59723-59ab-4249-bd9e-95f25ecec97a"
+    class="float-left text-left">Download Sample CSV</a>
+    </div>
+    <button type="button" class="btn btn-secondary tx-13" [disabled]="uploading" data-dismiss="modal">Close</button>
+    <button class="btn btn-primary" type="button" disabled *ngIf="uploading">
+    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+    Uploading...
+    </button>
+    <button type="button" class="btn btn-primary tx-13" *ngIf="!uploading" (click)="extractData()"> Upload</button>
+    </div>
+    </div>
+    </div>
+    </div> -->
+    
+    <!-- =================INVOICE MODAL====================== -->
+    <div *ngIf="currentOrder" class="modal fade" id="summaryModel" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalLabel3" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-      <div class="modal-content tx-14">
-        <div class="modal-header">
-          <div class="d-sm-flex align-items-center justify-content-between">
-            <div>
-              <h4 class="mg-b-5">Invoice {{currentOrder?.order_id}}</h4>
-              <p class="mg-b-0 tx-color-03">Due on {{currentOrder?.order_date | date : 'dd/MM/yy'}}</p>
-            </div>
-          </div>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="content tx-13">
-          <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
-            <div class="row">
-              <div class="col-sm-6">
-                <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed From</label>
-                <h6 class="tx-15 mg-b-10">{{currentOrder?.full_name}}</h6>
-                <!-- <p class="mg-b-0">{{currentOrder.placed_by.full_name}}</p> -->
-                <p class="mg-b-0">{{currentOrder?.placed_by?.mobile_number}}</p>
-                <p class="mg-b-0">{{currentOrder?.placed_by?.email}}</p>
-              </div><!-- col -->
-              <div class="col-sm-6 tx-right d-none d-md-block">
-                <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice Number</label>
-                <h5 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{currentOrder?.order_id}}</h5>
-              </div><!-- col -->
-              <div class="col-sm-6 col-lg-8 mg-t-30 mg-sm-t-0 mg-md-t-40">
-                <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
-                <h6 class="tx-15 mg-b-10">{{currentOrder?.full_name}}</h6>
-                <p class="mg-b-0">{{currentOrder?.placed_by?.mobile_number}}</p>
-                <p class="mg-b-0">{{currentOrder?.placed_by?.email}}</p>
-                <!-- <p class="mg-b-0">Email: youremail@companyname.com</p> -->
-              </div><!-- col -->
-              <div class="col-sm-6 col-lg-4 mg-t-30">
-                <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice Information</label>
-                <ul class="list-unstyled lh-7">
-                  <li class="d-flex justify-content-between">
-                    <span>Invoice Number</span>
-                    <span>{{currentOrder?.order_id}}</span>
-                  </li>
-                  <!-- <li class="d-flex justify-content-between">
-                      <span>Product ID</span>
-                      <span>32334300</span>
-                    </li> -->
-                  <li class="d-flex justify-content-between">
-                    <span>Issue Date</span>
-                    <span>{{currentOrder?.order_date | date:'dd/MM/yy'}}</span>
-                  </li>
-                  <!-- <li class="d-flex justify-content-between">
-                      <span>Due Date</span>
-                      <span>April 21, 2019</span>
-                    </li> -->
-                </ul>
-              </div><!-- col -->
-            </div><!-- row -->
-  
-            <div class="table-responsive mg-t-30">
-              <table class="table table-invoice bd-b">
-                <thead>
-                  <tr>
-                    <th class="wd-20p">Type</th>
-                    <th class="wd-40p d-none d-sm-table-cell">Brand</th>
-                    <th class="tx-center">Requested Quantity</th>
-                    <th class="tx-center">Accepted Quantity</th>
-                    <!-- <th class="tx-right">Unit Price</th>
-                      <th class="tx-right">Amount</th> -->
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let product of currentOrder.products; let i = index">
-                    <td class="tx-nowrap">{{product?.product?.name}}</td>
-                    <td class="d-none d-sm-table-cell tx-color-03">{{product?.product?.brand}}</td>
-                    <td class="tx-center">{{product?.quantity}}</td>
-                    <td *ngIf="!currentOrder.status" class="tx-center">
-                      <form [formGroup]="valueForm">
-                        <div formArrayName="productsArray">
-                          <div [formGroupName]="i">
-                            <input type="text" formControlName="accepted" class="form-control"
-                              placeholder="Accepted Quantity Here">
-                          </div>
-                        </div>
-                      </form>
-                    </td>
-                    <td *ngIf="currentOrder.status" class="tx-center">{{product?.accepted}}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <br>
-            <div class="row justify-content-between">
-              <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-30 mg-sm-t-0">
-                <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Notes</label>
-                <p>{{currentOrder?.notes}}</p>
-              </div><!-- col -->
-              <div class="col-sm-6 float-right">
-                <button class="btn btn-primary mg-l-5  float-right" *ngIf="!currentOrder.status"
-                  (click)="updateOrder()"><i data-feather="credit-card" class="mg-r-5"></i> Accept Order</button>
-                <button class="btn btn-primary mg-l-5 float-right" (click)="generateChallan()" data-toggle="modal"
-                  data-target="#challanModel"><i data-feather="credit-card" class="mg-r-5"></i> Generate Challan</button>
-              </div>
-            </div><!-- row -->
-          </div><!-- container -->
-        </div>
-      </div>
+    <div class="modal-content tx-14">
+    <div class="modal-header">
+    <div class="d-sm-flex align-items-center justify-content-between">
+    <div>
+    <h4 class="mg-b-5">Invoice {{currentOrder?.order_id}}</h4>
+    <p class="mg-b-0 tx-color-03">Due on {{currentOrder?.order_date | date : 'dd/MM/yy'}}</p>
     </div>
-  </div>
-  
-  <!-- =================CHALLAN MODAL==================== -->
-  <div class="modal fade" *ngIf="currentOrder" id="challanModel" tabindex="-1" role="dialog"
+    </div>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+    </div>
+    <div class="content tx-13">
+    <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
+    <div class="row">
+    <div class="col-sm-6">
+    <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed From</label>
+    <h6 class="tx-15 mg-b-10">{{currentOrder?.full_name}}</h6>
+    <!-- <p class="mg-b-0">{{currentOrder.placed_by.full_name}}</p> -->
+    <p class="mg-b-0">{{currentOrder?.placed_by?.mobile_number}}</p>
+    <p class="mg-b-0">{{currentOrder?.placed_by?.email}}</p>
+    </div><!-- col -->
+    <div class="col-sm-6 tx-right d-none d-md-block">
+    <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice Number</label>
+    <h5 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{currentOrder?.order_id}}</h5>
+    </div><!-- col -->
+    <div class="col-sm-6 col-lg-8 mg-t-30 mg-sm-t-0 mg-md-t-40">
+    <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
+    <h6 class="tx-15 mg-b-10">{{currentOrder?.full_name}}</h6>
+    <p class="mg-b-0">{{currentOrder?.placed_by?.mobile_number}}</p>
+    <p class="mg-b-0">{{currentOrder?.placed_by?.email}}</p>
+    <!-- <p class="mg-b-0">Email: youremail@companyname.com</p> -->
+    </div><!-- col -->
+    <div class="col-sm-6 col-lg-4 mg-t-30">
+    <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice Information</label>
+    <ul class="list-unstyled lh-7">
+    <li class="d-flex justify-content-between">
+    <span>Invoice Number</span>
+    <span>{{currentOrder?.order_id}}</span>
+    </li>
+    <!-- <li class="d-flex justify-content-between">
+    <span>Product ID</span>
+    <span>32334300</span>
+    </li> -->
+    <li class="d-flex justify-content-between">
+    <span>Issue Date</span>
+    <span>{{currentOrder?.order_date | date:'dd/MM/yy'}}</span>
+    </li>
+    <!-- <li class="d-flex justify-content-between">
+    <span>Due Date</span>
+    <span>April 21, 2019</span>
+    </li> -->
+    </ul>
+    </div><!-- col -->
+    </div><!-- row -->
+    
+    <div class="table-responsive mg-t-30">
+    <table class="table table-invoice bd-b">
+    <thead>
+    <tr>
+    <th class="wd-20p">Type</th>
+    <th class="wd-40p d-none d-sm-table-cell">Brand</th>
+    <th class="tx-center">Requested Quantity</th>
+    <th class="tx-center">Accepted Quantity</th>
+    <!-- <th class="tx-right">Unit Price</th>
+    <th class="tx-right">Amount</th> -->
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let product of currentOrder.products; let i = index">
+    <td class="tx-nowrap">{{product?.product?.name}}</td>
+    <td class="d-none d-sm-table-cell tx-color-03">{{product?.product?.brand}}</td>
+    <td class="tx-center">{{product?.quantity}}</td>
+    <td *ngIf="!currentOrder.status" class="tx-center">
+    <form [formGroup]="valueForm">
+    <div formArrayName="productsArray">
+    <div [formGroupName]="i">
+    <input type="text" formControlName="accepted" class="form-control"
+    placeholder="Accepted Quantity Here">
+    </div>
+    </div>
+    </form>
+    </td>
+    <td *ngIf="currentOrder.status" class="tx-center">{{product?.accepted}}</td>
+    </tr>
+    </tbody>
+    </table>
+    </div>
+    <br>
+    <div class="row justify-content-between">
+    <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-30 mg-sm-t-0">
+    <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Notes</label>
+    <p>{{currentOrder?.notes}}</p>
+    </div><!-- col -->
+    <div class="col-sm-6 float-right">
+    <button class="btn btn-primary mg-l-5 float-right" *ngIf="!currentOrder.status"
+    (click)="updateOrder()"><i data-feather="credit-card" class="mg-r-5"></i> Accept Order</button>
+    <button class="btn btn-primary mg-l-5 float-right" (click)="generateChallan()" data-toggle="modal"
+    data-target="#challanModel"><i data-feather="credit-card" class="mg-r-5"></i> Generate Challan</button>
+    </div>
+    </div><!-- row -->
+    </div><!-- container -->
+    </div>
+    </div>
+    </div>
+    </div>
+    
+    <!-- =================CHALLAN MODAL==================== -->
+    <div class="modal fade" *ngIf="currentOrder" id="challanModel" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalLabel3" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-      <div class="modal-content tx-14">
-        <div class="modal-header">
-          <div class="d-sm-flex align-items-center justify-content-between">
-            <div>
-              <h6 class="mg-b-5">Invoice {{currentOrder?.order_id}}</h6>
-              <p class="mg-b-0 tx-color-03">Due on {{currentOrder?.order_date | date : 'dd/MM/yy'}}</p>
-            </div>
-          </div>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form [formGroup]="challanForm" (ngSubmit)="saveChallan()">
-            <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
-              <div class="row">
-                <div class="col-sm-4">
-                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed From</label>
-                  <h6 class="tx-15 mg-b-10">{{currentOrder?.placed_by?.full_name}}</h6>
-                  <!-- <p class="mg-b-0">{{currentOrder.placed_by.full_name}}</p> -->
-                  <p class="mg-b-0">{{currentOrder?.placed_by?.mobile_number}}</p>
-                  <p class="mg-b-0">{{currentOrder?.placed_by?.email}}</p>
-                </div><!-- col -->
-                <div class="col-sm-6 offset-md-4 col-lg-4 mg-t-30">
-                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice
-                    Information</label>
-                  <ul class="list-unstyled lh-7">
-                    <li class="d-flex justify-content-between">
-                      <span>Invoice Number</span>
-                      <span>{{currentOrder?.order_id}}</span>
-                    </li>
-                    <!-- <li class="d-flex justify-content-between">
-                                <span>Product ID</span>
-                                <span>32334300</span>
-                              </li> -->
-                    <li class="d-flex justify-content-between">
-                      <span>Issue Date</span>
-                      <span>{{currentOrder?.order_date | date:'dd/MM/yy'}}</span>
-                    </li>
-                    <!-- <li class="d-flex justify-content-between">
-                                <span>Due Date</span>
-                                <span>April 21, 2019</span>
-                              </li> -->
-                  </ul>
-                </div><!-- col -->
-                <div class="col-sm-4 col-lg-8 mg-t-30 mg-sm-t-0 mg-md-t-40">
-                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
-                  <h6 class="tx-15 mg-b-10">{{currentOrder?.placed_by?.full_name}}</h6>
-                  <p class="mg-b-0">{{currentOrder?.placed_by?.mobile_number}}</p>
-                  <p class="mg-b-0">{{currentOrder?.placed_by?.email}}</p>
-                  <!-- <p class="mg-b-0">Email: youremail@companyname.com</p> -->
-                </div><!-- col -->
-              </div>
-              <div class="mg-t-30">
-                <div class="row">
-                  <table class="table table-invoice bd-b">
-                    <thead>
-                      <tr>
-                        <th class="wd-20p">Type</th>
-                        <th class="wd-40p d-none d-sm-table-cell">Brand</th>
-                        <th class="tx-center">Requested Quantity</th>
-                        <th class="tx-center">Accepted Quantity</th>
-                        <!-- <th class="tx-right">Status</th> -->
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let product of currentOrder.products; let i = index">
-                        <td class="tx-nowrap">{{product?.product.name}}</td>
-                        <td class="d-none d-sm-table-cell tx-color-03">{{product?.product.brand}}</td>
-                        <td class="tx-center">{{product?.quantity}}</td>
-                        <td class="tx-center">{{product?.accepted}}</td>
-                        <!-- <td class="tx-right">{{product?.dispatch}}</td> -->
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="row">
-                  <div class="col">
-                    <div class="form-row">
-                      <div class="col-md-4"><label for="">Vehicle Number</label></div>
-                      <div class="col-md-8">
-                        <select formControlName="vehicle" class="form-control" (change)="getVehicle2($event)">
-                          <option selected disabled>Select vehicle Number</option>
-                          <option [ngValue]="vehicle._id" *ngFor="let vehicle of allVehicle;let i=index">
-                            {{vehicle.number}}</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class="form-row">
-                      <div class="col-md-4"><label for="">Driver Name</label></div>
-                      <div class="col-md-">
-                        <select formControlName="driver" class="form-control" (change)="getDriver($event)">
-                          <option selected disabled>Select Driver</option>
-                          <option [ngValue]="driver._id" *ngFor="let driver of alldriver;let i=index">{{driver.name}}
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- <div class="form-row">
-                          <div class="col-md-6"><label for="">Departure Date</label></div>
-                          <div class="col-md-6"><input type="date" formControlName="departure" class="form-control">
-                          </div>
-                        </div> -->
-                </div>
-                <!-- </div> -->
-              </div>
-              <div class="row justify-content-between">
-                <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-30 mg-sm-t-0">
-                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Notes</label>
-                  <p></p>
-                </div>
-              </div>
-              <div class="float-right">
-                <button class="btn btn-primary mg-l-5" (click)="saveChallan()"><i data-feather="credit-card"
-                    class="mg-r-5"></i> Accept Challan</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
+    <div class="modal-content tx-14">
+    <div class="modal-header">
+    <div class="d-sm-flex align-items-center justify-content-between">
+    <div>
+    <h6 class="mg-b-5">Invoice {{currentOrder?.order_id}}</h6>
+    <p class="mg-b-0 tx-color-03">Due on {{currentOrder?.order_date | date : 'dd/MM/yy'}}</p>
+    </div>
+    </div>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+    </div>
+    <div class="modal-body">
+    <form [formGroup]="challanForm" (ngSubmit)="saveChallan()">
+    <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
+    <div class="row">
+    <div class="col-sm-4">
+    <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed From</label>
+    <h6 class="tx-15 mg-b-10">{{currentOrder?.placed_by?.full_name}}</h6>
+    <!-- <p class="mg-b-0">{{currentOrder.placed_by.full_name}}</p> -->
+    <p class="mg-b-0">{{currentOrder?.placed_by?.mobile_number}}</p>
+    <p class="mg-b-0">{{currentOrder?.placed_by?.email}}</p>
+    </div><!-- col -->
+    <div class="col-sm-6 offset-md-4 col-lg-4 mg-t-30">
+    <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice
+    Information</label>
+    <ul class="list-unstyled lh-7">
+    <li class="d-flex justify-content-between">
+    <span>Invoice Number</span>
+    <span>{{currentOrder?.order_id}}</span>
+    </li>
+    <!-- <li class="d-flex justify-content-between">
+    <span>Product ID</span>
+    <span>32334300</span>
+    </li> -->
+    <li class="d-flex justify-content-between">
+    <span>Issue Date</span>
+    <span>{{currentOrder?.order_date | date:'dd/MM/yy'}}</span>
+    </li>
+    <!-- <li class="d-flex justify-content-between">
+    <span>Due Date</span>
+    <span>April 21, 2019</span>
+    </li> -->
+    </ul>
+    </div><!-- col -->
+    <div class="col-sm-4 col-lg-8 mg-t-30 mg-sm-t-0 mg-md-t-40">
+    <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
+    <h6 class="tx-15 mg-b-10">{{currentOrder?.placed_by?.full_name}}</h6>
+    <p class="mg-b-0">{{currentOrder?.placed_by?.mobile_number}}</p>
+    <p class="mg-b-0">{{currentOrder?.placed_by?.email}}</p>
+    <!-- <p class="mg-b-0">Email: youremail@companyname.com</p> -->
+    </div><!-- col -->
+    </div>
+    <div class="mg-t-30">
+    <div class="row">
+    <table class="table table-invoice bd-b">
+    <thead>
+    <tr>
+    <th class="wd-20p">Type</th>
+    <th class="wd-40p d-none d-sm-table-cell">Brand</th>
+    <th class="tx-center">Requested Quantity</th>
+    <th class="tx-center">Accepted Quantity</th>
+    <!-- <th class="tx-right">Status</th> -->
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let product of currentOrder.products; let i = index">
+    <td class="tx-nowrap">{{product?.product.name}}</td>
+    <td class="d-none d-sm-table-cell tx-color-03">{{product?.product.brand}}</td>
+    <td class="tx-center">{{product?.quantity}}</td>
+    <td class="tx-center">{{product?.accepted}}</td>
+    <!-- <td class="tx-right">{{product?.dispatch}}</td> -->
+    </tr>
+    </tbody>
+    </table>
+    </div>
+    <div class="row">
+    <div class="col">
+    <div class="form-row">
+    <div class="col-md-4"><label for="">Vehicle Number</label></div>
+    <div class="col-md-8">
+    <select formControlName="vehicle" class="form-control" (change)="getVehicle2($event)">
+    <option selected disabled>Select vehicle Number</option>
+    <option [ngValue]="vehicle._id" *ngFor="let vehicle of allVehicle;let i=index">
+    {{vehicle.number}}</option>
+    </select>
+    </div>
+    </div>
+    </div>
+    <div class="col">
+    <div class="form-row">
+    <div class="col-md-4"><label for="">Driver Name</label></div>
+    <div class="col-md-">
+    <select formControlName="driver" class="form-control" (change)="getDriver($event)">
+    <option selected disabled>Select Driver</option>
+    <option [ngValue]="driver._id" *ngFor="let driver of alldriver;let i=index">{{driver.name}}
+    </option>
+    </select>
+    </div>
+    </div>
+    </div>
+    <!-- <div class="form-row">
+    <div class="col-md-6"><label for="">Departure Date</label></div>
+    <div class="col-md-6"><input type="date" formControlName="departure" class="form-control">
+    </div>
+    </div> -->
+    </div>
+    <!-- </div> -->
+    </div>
+    <div class="row justify-content-between">
+    <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-30 mg-sm-t-0">
+    <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Notes</label>
+    <p></p>
+    </div>
+    </div>
+    <div class="float-right">
+    <button class="btn btn-primary mg-l-5" (click)="saveChallan()"><i data-feather="credit-card"
+    class="mg-r-5"></i> Accept Challan</button>
+    </div>
+    </div>
+    </form>
+    </div>
+    </div>
     </div>

@@ -69,6 +69,39 @@ export class UserroleComponent implements OnInit {
   }
 
   AddUserRole(userrole) {
+    if(userrole.isAdmin==true){
+    userrole.privileges.ADD_NEW_CHALLAN=true
+    userrole.privileges.ADD_NEW_DRIVER=true
+    userrole.privileges.ADD_NEW_ORDER=true
+    userrole.privileges.ADD_NEW_PRODUCT=true
+    userrole.privileges.ADD_NEW_RETURN_ORDER=true
+    userrole.privileges.ADD_NEW_USER=true
+    userrole.privileges.ADD_NEW_VEHICLE=true
+    userrole.privileges.DELETE_CHALLAN=true
+    userrole.privileges.DELETE_DRIVER=true
+    userrole.privileges.DELETE_ORDER=true
+    userrole.privileges.DELETE_PRODUCT=true
+    userrole.privileges.DELETE_RETURN_ORDER=true
+    userrole.privileges.DELETE_USER=true
+    userrole.privileges.DELETE_VEHICLE=true
+    userrole.privileges.GET_ALL_CHALLAN=true
+    userrole.privileges.GET_ALL_DRIVERS=true
+    userrole.privileges.GET_ALL_ORDERS=true
+    userrole.privileges.GET_ALL_PRODUCTS=true
+    userrole.privileges.GET_ALL_RETURN_ORDERS=true
+    userrole.privileges.GET_ALL_USERS=true
+    userrole.privileges.GET_ALL_VEHICLES=true
+    userrole.privileges.GET_CHALLAN=true
+    userrole.privileges.GET_ORDER=true
+    userrole.privileges.GET_PRODUCT=true
+    userrole.privileges.GET_RETURN_ORDER=true
+    userrole.privileges.GET_USER_BY_ROLE=true
+    userrole.privileges.UPDATE_DRIVER=true
+    userrole.privileges.UPDATE_PRODUCT=true
+    userrole.privileges.UPDATE_USER=true
+    userrole.privileges.UPDATE_VEHICLE=true
+    }
+    console.log(userrole)
     this.data.addUserRole(userrole).subscribe((data: ResponseModel) => {
       console.log(data);
       jQuery('#userRoleModal').modal('hide');
@@ -98,6 +131,7 @@ export class UserroleComponent implements OnInit {
     this.allUserRoles.length = 0;
     this.data.getAllUserRoles().subscribe((res: ResponseModel) => {
       this.allUserRoles = res.data;
+      console.log(res.data)
       this.dtTrigger.next();
     });
   }

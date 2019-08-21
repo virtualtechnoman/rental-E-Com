@@ -56,6 +56,14 @@ export class ChallanComponent implements OnInit {
     });
   }
 
+  deleteChallan(i){
+    if (confirm('You Sure you want to delete this Order')) {
+      this.orderService.deleteReturnOrder(this.allChallans[i]._id).toPromise().then(() => {
+        this.toasterService.warning('Products Deleted!', 'Deleted!');
+        this.allChallans.splice(i, 1);
+      }).catch((err) => console.log(err));
+    }
+  }
   selectChallan(i) {
     this.currentIndex = i;
     this.currentChallan = this.allChallans[i];
@@ -64,14 +72,14 @@ export class ChallanComponent implements OnInit {
     console.log(this.allProducts);
   }
 
-  deleteChallan(i) {
-    if (confirm('You Sure you want to delete this Challan')) {
-      this.orderService.deleteChallan(this.allChallans[i]._id).toPromise().then(() => {
-        this.toasterService.warning('Challan Deleted!', 'Deleted!');
-        this.allChallans.splice(i, 1);
-      }).catch((err) => console.log(err));
-    }
-  }
+  // deleteChallan(i) {
+  //   if (confirm('You Sure you want to delete this Challan')) {
+  //     this.orderService.deleteChallan(this.allChallans[i]._id).toPromise().then(() => {
+  //       this.toasterService.warning('Challan Deleted!', 'Deleted!');
+  //       this.allChallans.splice(i, 1);
+  //     }).catch((err) => console.log(err));
+  //   }
+  // }
 
   changeChallanStatus() {
     const id = this.currentChallan._id;

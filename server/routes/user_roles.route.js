@@ -68,13 +68,13 @@ router.put("/:id", (req, res) => {
 })
 
 // Delete a role
-router.delete("/", (req, res) => {
-    if (mongodb.ObjectId.isValid(req.body.id)) {
-        userRole.deleteOne({ _id: req.body.id }, (err, doc) => {
+router.delete("/:id", (req, res) => {
+    if (mongodb.ObjectId.isValid(req.params.id)) {
+        userRole.deleteOne({ _id: req.params.id }, (err, doc) => {
             if (err)
                 res.status(500).json({ status: 500, errors: true, data: null, message: "Error while deleting the role" })
             if (doc)
-                res.json(doc);
+                res.json({ status: 200, errors: false, data: doc, message: "Role deleted successfully" });
         })
     } else {
         res.status(400).json({ status: 400, errors: false, data: null, message: "Invalid data" });

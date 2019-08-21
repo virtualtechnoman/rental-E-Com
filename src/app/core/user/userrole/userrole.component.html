@@ -11,14 +11,14 @@
         <thead>
           <th>S.No</th>
           <th>User Role </th>
-          <th>Is Admin</th>
+          <!-- <th>Is Admin</th> -->
           <th>Action</th>
         </thead>
         <tbody>
           <tr *ngFor="let user of allUserRoles; let i= index">
             <td>{{i+1}}</td>
             <td>{{user.name}}</td>
-            <td>{{user.isAdmin}}</td>
+            <!-- <td>{{user.isAdmin}}</td> -->
             <td>
               <i class="fas fa-edit mx-1" data-toggle="modal" data-target="#userRoleModal"
                 (click)="editUserRole(i)"></i>
@@ -88,6 +88,7 @@
                         <p-inputSwitch class="text-center" formControlName="GET_ALL_USERS">
                         </p-inputSwitch>
                       </th>
+                      <th scope="col"></th>
                       <th scope="col" formGroupName="privileges">
                         <p-inputSwitch class="text-center" formControlName="ADD_NEW_USER">
                         </p-inputSwitch>
@@ -214,9 +215,7 @@
                         <p-inputSwitch class="text-center" formControlName="GET_ALL_VEHICLES">
                         </p-inputSwitch>
                       </th>
-                      <th scope="col" formGroupName="privileges">
-                        <p-inputSwitch class="text-center" formControlName="GET_CHALLAN">
-                        </p-inputSwitch>
+                      <th scope="col">
                       </th>
                       <th scope="col" formGroupName="privileges">
                         <p-inputSwitch class="text-center" formControlName="ADD_NEW_VEHICLE">

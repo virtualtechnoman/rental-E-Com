@@ -28,6 +28,8 @@ import { ProductsModule } from './core/products/products.module';
 import { OrderModuleModule } from './core/order-module/order-module.module';
 import { CustomersModule } from './core/customers/customers.module';
 import { TruckModule } from './core/truck/truck.module';
+import { LocationComponent } from './core/location/location.component';
+import { LocationManagerModule } from './core/location-manager/location-manager.module';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,8 @@ import { TruckModule } from './core/truck/truck.module';
     HeaderComponent,
     HomeComponent,
     MaintainanceComponent,
-    CoreComponent
+    CoreComponent,
+    LocationComponent
   ],
   imports: [
     BrowserModule,
@@ -49,7 +52,6 @@ import { TruckModule } from './core/truck/truck.module';
     AuthModule,
     AppRoutingModule,
     SharedModule,
-
     CustomersModule,
     OrderModuleModule,
     ProductsModule,
@@ -59,6 +61,7 @@ import { TruckModule } from './core/truck/truck.module';
     // ngPrime
     InputSwitchModule,
     ToastrModule.forRoot(),
+    LocationManagerModule
   ],
   providers: [
     LoginAuthGraud,
