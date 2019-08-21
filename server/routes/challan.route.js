@@ -10,7 +10,7 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 //GET all challans created by self
 router.get("/", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) => {
     // console.log(req.user);
-    Challan.find({ processing_unit_incharge: req.user._id }).populate("processing_unit_incharge products.product dispatch_processing_unit vehicle driver").exec().then(doc => {
+    Challan.find({ processing_unit_incharge: req.user._id }).populate("processing_unit_incharge products.product vehicle driver").exec().then(doc => {
         if (doc.length > 0)
             return res.json({ status: 200, data: doc, errors: false, message: "All Challans" });
         else

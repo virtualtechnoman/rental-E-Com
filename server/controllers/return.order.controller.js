@@ -5,7 +5,7 @@ const orderCreateSchema = Joi.object({
     products:Joi.array().items({
         product:Joi.string().required(),
         quantity:Joi.number().min(1).required(),
-        status:Joi.boolean().required()
+        // status:Joi.boolean().required()
     }),
     status:Joi.boolean().required()
 })
