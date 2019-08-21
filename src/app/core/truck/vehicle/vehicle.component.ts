@@ -24,7 +24,7 @@ export class VehicleComponent implements OnInit {
   uploading: Boolean = false;
   editing: Boolean = false;
   submitted = false;
-  viewArray:any=[]
+  viewArray: any = []
   constructor(private formBuilder: FormBuilder, private toastr: ToastrService, private vehicleService: TruckService) {
     this.initForm();
   }
@@ -57,6 +57,7 @@ export class VehicleComponent implements OnInit {
   get f() { return this.VehicleForm.controls; }
 
   submit() {
+    console.log(this.VehicleForm.value);
     this.submitted = true;
     if (this.VehicleForm.invalid) {
       return;
@@ -96,8 +97,8 @@ export class VehicleComponent implements OnInit {
     }
   }
 
-  viewVehicle(i){
-    this.viewArray=this.allVehicles[i]
+  viewVehicle(i) {
+    this.viewArray = this.allVehicles[i]
   }
 
   get_Vehicles() {
@@ -129,7 +130,7 @@ export class VehicleComponent implements OnInit {
     this.VehicleForm = this.formBuilder.group({
       number: ['', Validators.required],
       type: ['', Validators.required],
-      isAvailable: ['']
+      isAvailable: [false]
     });
   }
 
