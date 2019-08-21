@@ -8,8 +8,7 @@ const orderCreateSchema = Joi.object({
         product: Joi.string().required(),
         quantity: Joi.number().min(1).required()
     }).required(),
-    notes: Joi.optional().allow(''),
-    status: Joi.boolean().default(false),
+    notes: Joi.optional().allow('')
 })
 
 const orderUpdateSchema = Joi.object({
@@ -18,10 +17,9 @@ const orderUpdateSchema = Joi.object({
         product: Joi.string().required(),
         quantity: Joi.number().min(1).required(),
         accepted: Joi.number().min(0).required()
-    }),
+    }).required(),
     notes: Joi.optional().allow(''),
     status: Joi.boolean().required()
-    // status:Joi.string().required()
 })
 
 module.exports = {

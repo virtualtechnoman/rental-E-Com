@@ -11,6 +11,7 @@ module.exports = mongoose.model("order", new mongoose.Schema({
     }],
     notes: { type: String, required: false },
     status: { type: Boolean, default: false },
+    challan_generated: { type: Boolean, default: false },
     // status:{type:String, required:true},
     order_date: { type: Date, default: Date.now }
 }, {
