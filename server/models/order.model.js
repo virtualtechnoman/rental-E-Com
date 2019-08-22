@@ -16,7 +16,7 @@ module.exports = mongoose.model("order", new mongoose.Schema({
     notes: { type: String},
     accepted: { type: Boolean, default: false },
     challan_generated: { type: Boolean, default: false },
-    // status:{type:String, required:true},
+    status:{type:mongoose.Schema.Types.ObjectId,ref:"order_status", default:process.env.ORDERSTATUS_PENDING || "5d5e3869efbe40d83dc9b2b9" },
     order_date: { type: Date, default: Date.now }
 }, {
         versionKey: false

@@ -36,7 +36,7 @@ router.post("/", authorizePrivilege("ADD_NEW_ORDER"), (req, res) => {
     result.data.order_id = "ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newOrder = new Order(result.data);
     newOrder.save().then(order => {
-        Order.findById(order._id).populate("placed_by products.product placed_to").exec().then(doc => {
+        Order.findById(order._id).populate("placed_by products.product status placed_to").exec().then(doc => {
             res.json({ status: 200, data: doc, errors: false, message: "Order created successfully" });
         })
     }).catch(e => {
@@ -146,10 +146,10 @@ router.delete("/:id", authorizePrivilege("DELETE_ORDER"), (req, res) => {
 
 
 // Update order
-router.put("/:id", authorizePrivilege("UPDATE_ORDER"), (req, res) => {
+router.put("/setstatus/:id", authorizePrivilege("UPDATE_ORDER"), (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.id)) {
         console.log(req.body);
-        let result = OrderController.verifyUpdate(req.body);
+        let result = OrderController.verifyUpdateStatus(req.body);
         if (!isEmpty(result.errors)) {
             return res.status(400).json({ status: 400, errors: false, data: null, message: result.errors });
         }
@@ -157,7 +157,7 @@ router.put("/:id", authorizePrivilege("UPDATE_ORDER"), (req, res) => {
             if (err)
                 return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating order status" });
             if (doc) {
-                doc.populate("placed_by products.product placed_to")
+                doc.populate("placed_by products.product status placed_to","-password")
                     .execPopulate()
                     .then(d => {
                         return res.status(200).json({ status: 200, errors: false, data: d, message: "Order updated successfully" });
