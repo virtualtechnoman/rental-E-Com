@@ -12,10 +12,11 @@ export class OrderService {
     'token': this.tokenService.getToken()
   });
 
-  url = '/api/order';
+  url =  '/api/order';
   url2 = '/api/rorder';
   url3 = '/api/challan';
   url4 = '/api/user';
+  url5 = '/api/order/gchallan';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   // ==========ORDER APIS=================//
@@ -79,5 +80,11 @@ export class OrderService {
 
   updateChallanStatus(id, status) {
     return this.http.put(this.url3 + '/' + id, status, { headers: this.headers });
+  }
+
+  // Order Challan
+
+  addOrderChallan(order,id) {
+    return this.http.post(this.url5 + '/' + id, order, { headers: this.headers });
   }
 }

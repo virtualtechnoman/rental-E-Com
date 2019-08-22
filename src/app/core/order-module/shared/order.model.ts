@@ -8,4 +8,5 @@ export class OrderModel {
     placed_to: any;
     products: [{ accepted: number, product: ProductModel, quantity: number }];
     _id: String;
+    challan_generated:boolean;
 }

@@ -11,7 +11,7 @@ const router = express.Router();
 
 //GET all orders placed by self
 router.get("/", authorizePrivilege("GET_ALL_ORDERS_OWN"), (req, res) => {
-    Order.find({ placed_by: req.user._id }).populate("placed_by placed_to").exec().then(doc => {
+    Order.find({ placed_by: req.user._id }).populate("placed_by products.product placed_to").exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
