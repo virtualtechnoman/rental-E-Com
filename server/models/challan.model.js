@@ -7,17 +7,6 @@ module.exports = mongoose.model("challan", new mongoose.Schema({
     dispatch_processing_unit: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
     order: { type: String },
     order_type: String,
-    // products: [{
-    //     product: {
-    //         type: mongoose.Schema.Types.ObjectId, ref: "product", required: true
-    //     },
-    //     requested: {
-    //         type: Number
-    //     },
-    //     accepted: {
-    //         type: Number
-    //     },
-    // }],
     vehicle: { type: mongoose.Schema.Types.ObjectId, ref: "vehicle", required: true },
     driver: { type: mongoose.Schema.Types.ObjectId, ref: "driver", required: true },
     notes: {
@@ -27,7 +16,7 @@ module.exports = mongoose.model("challan", new mongoose.Schema({
     challan_date: {
         type: Date, default: Date.now
     },
-    status: { type: Boolean, required: true }
+    accepted: { type: Boolean, default: false }
 }, {
         versionKey: false
     }))

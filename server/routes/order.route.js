@@ -36,7 +36,7 @@ router.post("/", authorizePrivilege("ADD_NEW_ORDER"), (req, res) => {
     result.data.order_id = "ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newOrder = new Order(result.data);
     newOrder.save().then(order => {
-        Order.findById(order._id).populate("placed_by products.product placed_to").exec().then(doc => {
+        Order.findById(order._id).populate("placed_by products.product status placed_to").exec().then(doc => {
             res.json({ status: 200, data: doc, errors: false, message: "Order created successfully" });
         })
     }).catch(e => {
@@ -45,78 +45,83 @@ router.post("/", authorizePrivilege("ADD_NEW_ORDER"), (req, res) => {
     })
 })
 
+router.put("/accept/:id", authorizePrivilege("ACCEPT_ORDER"), (req, res) => {
+    if (mongodb.ObjectID.isValid(req.params.id)) {
+        Order.findById(req.params.id).exec().then(_ord => {
+            if (!_ord.accepted) {
+                let result = OrderController.verifyAccept(req.body);
+                if (!isEmpty(result.errors))
+                    return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
+                let pr = [];
+                result.data.products.forEach(element => {
+                    console.log("Accepted : ", element.accepted, " Id : ", element.product);
+                    pr.push(Order.findOneAndUpdate({ _id: req.params.id, 'products.product': element.product }, {
+                        $set: { 'products.$.accepted': element.accepted, accepted: true }
+                    }, { new: true }))
+                })
+                Promise.all(pr).then(d => {
+                    res.json({ status: 200, data: d[d.length - 1], errors: false, message: "Order accepted successfully" });
+                }).catch(e => {
+                    console.log(e);
+                    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating accepted values" });
+                })
+            } else {
+                return res.status(400).json({ status: 400, errors: true, data: null, message: "Order already accepted" });
+            }
+        })
+    }
+})
+
 //Generate Challan for order
-router.post("/gchallan/:oid", authorizePrivilege("ADD_NEW_CHALLAN"), async (req, res) => {
+router.post("/gchallan/:oid", authorizePrivilege("GENERATE_ORDER_CHALLAN"), async (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.oid)) {
-        let result = ChallanController.verifyCreate(req.body);
+        let result = ChallanController.verifyCreateFromOrder(req.body);
         if (!isEmpty(result.errors))
             return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
-        Order.findById(req.params.oid).exec().then(_ord => {
-            if (_ord.status) {
+        Order.findById(req.params.oid).lean().exec().then(_ord => {
+            if (_ord.accepted) {
                 if (_ord.challan_generated) {
                     return res.status(400).json({ status: 400, errors: true, data: null, message: "Challan already generated for this order" });
                 } else {
-                    // result.data.products = _ord.products;
-                    result.data.processing_unit_incharge = req.user._id;
-                    result.data.order = req.params.oid;
-                    result.data.order_type = "order";
-                    result.data.challan_id = "CHLN" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
-                    let newChallan = new Challan(result.data);
-                    newChallan.save()
-                        .then(challan => {
-                            Challan.findById(challan._id)
-                                .populate("processing_unit_incharge vehicle driver").populate({ path: "order", model: "order",populate:{path:"products.product"} })
-                                .exec()
-                                .then(doc => {
-                                    _ord.challan_generated = true;
-                                    _ord.save();
-                                    // Order.findByIdAndUpdate(req.params.oid, { $set: { challan_generated: true } }, (err, updtd) => {
-                                    //     if (err) {
-                                    //         return res.status(500).json({ status: 500, data: null, errors: true, message: "Challan generated but updating order got error" })
-                                    //     }
-                                        res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });
-                                    // })
-                                })
-                        }).catch(e => {
-                            console.log(e);
-                            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while generating the challan" });
-                        })
+                    let pr = [];
+                    result.data.products.forEach(element => {
+                        pr.push(
+                            Order.findOneAndUpdate({ _id: _ord._id, 'products.product': element.product }, {
+                            $set: { 'products.$.dispatched': element.dispatched }
+                        }, { new: true })
+                        )
+                    })
+                    Promise.all(pr).then(d => {
+                        delete result.data.products;
+                        result.data.processing_unit_incharge = req.user._id;
+                        result.data.order = _ord._id;
+                        result.data.order_type = "order";
+                        result.data.challan_id = "CHLN" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
+                        let newChallan = new Challan(result.data);
+                        newChallan.save()
+                            .then(challan => {
+                                challan.populate([{path:"processing_unit_incharge vehicle driver",select:"-password"},{ path: "order", model: "order", populate: { path: "products.product" } }])
+                                    .execPopulate()
+                                    .then(doc => {
+                                        Order.findByIdAndUpdate(_ord._id, { $set: { challan_generated: true } }, { new: true }).lean()
+                                            .then(_o => {
+                                                doc.order = _o;
+                                                res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });
+                                            })
+                                    })
+                            }).catch(e => {
+                                console.log(e);
+                                res.status(500).json({ status: 500, errors: true, data: null, message: "Error while generating the challan" });
+                            })
+                    }).catch(e => {
+                        console.log(e);
+                        res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating accepted values" });
+                    })
                 }
             } else {
                 return res.status(400).json({ status: 400, errors: true, data: null, message: "Accept the order first" })
             }
         })
-
-        // Challan.findOne({ order: req.params.oid, order_type: "order" }).exec().then(chln => {
-        //     if (chln) {
-        //         return res.status(400).json({ status: 400, errors: true, data: null, message: "Challan already generated for this order" });
-        //     }
-        //     let result = ChallanController.verifyCreate(req.body);
-        //     if (!isEmpty(result.errors))
-        //         return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
-        //     result.data.processing_unit_incharge = req.user._id;
-        //     result.data.order = request.params.oid;
-        //     result.data.order_type = "order";
-        //     result.data.challan_id = "CHLN" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
-        //     let newChallan = new Challan(result.data);
-        //     newChallan.save()
-        //         .then(challan => {
-        //             Challan.findById(challan._id)
-        //                 .populate("processing_unit_incharge products.product vehicle driver").populate({ path: "order", model: "order" })
-        //                 .exec()
-        //                 .then(doc => {
-        //                     Order.findByIdAndUpdate(req.params.oid, { $set: { challan_generated: true } }, (err, updtd) => {
-        //                         if (err) {
-        //                             return res.status(500).json({ status: 500, data: null, errors: true, message: "Challan generated but updating order got error" })
-        //                         }
-        //                         res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });
-        //                     })
-        //                 })
-        //         }).catch(e => {
-        //             console.log(e);
-        //             res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating the order" });
-        //         })
-        // })
     } else {
         res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid order id" });
     }
@@ -141,10 +146,10 @@ router.delete("/:id", authorizePrivilege("DELETE_ORDER"), (req, res) => {
 
 
 // Update order
-router.put("/:id", authorizePrivilege("UPDATE_ORDER"), (req, res) => {
+router.put("/setstatus/:id", authorizePrivilege("UPDATE_ORDER"), (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.id)) {
         console.log(req.body);
-        let result = OrderController.verifyUpdate(req.body);
+        let result = OrderController.verifyUpdateStatus(req.body);
         if (!isEmpty(result.errors)) {
             return res.status(400).json({ status: 400, errors: false, data: null, message: result.errors });
         }
@@ -152,7 +157,7 @@ router.put("/:id", authorizePrivilege("UPDATE_ORDER"), (req, res) => {
             if (err)
                 return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating order status" });
             if (doc) {
-                doc.populate("placed_by products.product placed_to")
+                doc.populate("placed_by products.product status placed_to","-password")
                     .execPopulate()
                     .then(d => {
                         return res.status(200).json({ status: 200, errors: false, data: d, message: "Order updated successfully" });

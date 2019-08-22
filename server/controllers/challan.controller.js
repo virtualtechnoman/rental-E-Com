@@ -1,16 +1,13 @@
 const Joi = require('joi');
 const helper = require('../utils/helper');
-const challanCreateSchema = Joi.object({
+const challanCreateFromOrderSchema = Joi.object({
+    products: Joi.array().items({
+        product: Joi.string().required(),
+        dispatched: Joi.number().required()
+    }).required(),
     dispatch_processing_unit: Joi.string().required(),
-    // products: Joi.array().items({
-    //     product: Joi.string().required(),
-    //     requested: Joi.number().min(1).required(),
-    //     accepted: Joi.number().min(1).optional()
-    // }).required(),
-    // truck: Joi.object({
     vehicle:Joi.string().required(),
     driver:Joi.string().required(),
-    status: Joi.boolean().default(false),
     departure: Joi.date().required()
 })
 
@@ -24,13 +21,12 @@ const challanUpdateSchema = Joi.object({
 })
 
 module.exports = {
-    verifyCreate: verifyCreate,
-    verifyUpdate: verifyUpdate,
-    challanCreateSchema
+    verifyCreateFromOrder,
+    verifyUpdate: verifyUpdate
 }
 
 
-function verifyCreate(order) { return helper.validator(order, challanCreateSchema) }
+function verifyCreateFromOrder(order) { return helper.validator(order, challanCreateFromOrderSchema) }
 function verifyUpdate(order) { return helper.validator(order, challanUpdateSchema) }
 
 

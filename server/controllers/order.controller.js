@@ -3,28 +3,37 @@ const helper = require('../utils/helper');
 const orderCreateSchema = Joi.object({
     placed_to: Joi.string().required(),
     products: Joi.array().items({
-        accepted: Joi.number().default(0).optional(),
+        // accepted: Joi.number().valid(0).default(0).optional(),
         product: Joi.string().required(),
         requested: Joi.number().min(1).required()
     }).required(),
+    status:Joi.string().required(),
     notes: Joi.optional().allow('')
 })
-
-const orderUpdateSchema = Joi.object({
-    placed_to: Joi.string().required(),
+const orderAcceptSchema = Joi.object({
     products: Joi.array().items({
         product: Joi.string().required(),
-        requested: Joi.number().min(1).required(),
-        accepted: Joi.number().min(0).required()
-    }).required(),
-    notes: Joi.optional().allow(''),
-    status: Joi.boolean().required()
+        accepted: Joi.number().required()
+    }).required()
+})
+
+const orderUpdateStatusSchema = Joi.object({
+    // placed_to: Joi.string().required(),
+    // products: Joi.array().items({
+    //     product: Joi.string().required(),
+    //     requested: Joi.number().min(1).required(),
+    //     accepted: Joi.number().min(0).required()
+    // }).required(),
+    // notes: Joi.optional().allow(''),
+    status: Joi.string().required()
 })
 
 module.exports = {
     verifyCreate: verifyCreate,
-    verifyUpdate: verifyUpdate
+    verifyUpdateStatus,
+    verifyAccept
 }
 
 function verifyCreate(order) { return helper.validator(order, orderCreateSchema) }
-function verifyUpdate(order) { return helper.validator(order, orderUpdateSchema) }
+function verifyUpdateStatus(order) { return helper.validator(order, orderUpdateStatusSchema) }
+function verifyAccept(order) { return helper.validator(order, orderAcceptSchema) }
