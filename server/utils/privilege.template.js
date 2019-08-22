@@ -19,6 +19,7 @@ module.exports = (p=false)=>({
     UPDATE_ORDER:p,
     ADD_NEW_ORDER:p,
     DELETE_ORDER:p,
+    ACCEPT_ORDER:p,
     //Return Order Privilege
     GET_ALL_RETURN_ORDERS:p,
     GET_ALL_RETURN_ORDERS_OWN:p,
@@ -30,8 +31,9 @@ module.exports = (p=false)=>({
     GET_ALL_CHALLAN:p,
     GET_ALL_CHALLAN_OWN:p,
     GET_CHALLAN:p,
-    ADD_NEW_CHALLAN:p,
+    GENERATE_ORDER_CHALLAN:p,
     DELETE_CHALLAN:p,
+    ACCEPT_CHALLAN:p,
     //Vehicle Privilege
     GET_ALL_VEHICLES:p,
     DELETE_VEHICLE:p,
@@ -80,5 +82,8 @@ module.exports = (p=false)=>({
     GET_ALL_AREAS:p,
     ADD_NEW_AREA:p,
     UPDATE_AREA:p,
-    DELETE_AREA:p
+    DELETE_AREA:p,
+    //OrderStatus Privilege
+    GET_ALL_ORDERSTATUS:p,
+    GENERATE_ALL_ORDERSTATUS:p
 })

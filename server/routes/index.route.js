@@ -17,7 +17,9 @@ const customerOrderRoutes = require("./customer.order.route");
 const stateRoutes = require("./state.route");
 const cityRoutes = require("./city.route");
 const areaRoutes = require("./area.route");
+const orderStatusRoutes = require("./orderstatus.route");
 const authMiddleware = require("../middleware/authMiddleware");
+const validateEnv = require("../middleware/validateEnv");
 const router = express.Router();
 
 /** GET /health-check - Check service health */
@@ -26,21 +28,22 @@ router.get('/health-check', (req, res) =>
   res.send('OK')
 );
 
-router.use('/auth', authRoutes);
-router.use('/user', authMiddleware, userRoutes);
-router.use('/state', authMiddleware, stateRoutes);
-router.use('/city', authMiddleware, cityRoutes);
-router.use('/area', authMiddleware, areaRoutes);
-router.use('/products', authMiddleware, productRoutes);
-router.use("/order", authMiddleware, orderRoutes);
-router.use("/rorder", authMiddleware, returnOrderRoutes);
-router.use('/challan',authMiddleware, challanRoutes);
-router.use('/role',  userRoleRoutes);
-router.use('/driver', authMiddleware, driverRoutes);
-router.use('/customer', authMiddleware, customerRoutes);
-router.use('/pcategory', authMiddleware, productCategoryRoutes);
-router.use('/cart', authMiddleware, cartRoutes);
-router.use('/corder', authMiddleware, customerOrderRoutes);
-router.use('/vehicle', authMiddleware, vehicleRoutes);
+router.use('/auth', validateEnv, authRoutes);
+router.use('/user', validateEnv, authMiddleware, userRoutes);
+router.use('/state', validateEnv, authMiddleware, stateRoutes);
+router.use('/city', validateEnv, authMiddleware, cityRoutes);
+router.use('/area', validateEnv, authMiddleware, areaRoutes);
+router.use('/products', validateEnv, authMiddleware, productRoutes);
+router.use("/order", validateEnv, authMiddleware, orderRoutes);
+router.use("/orderstatus", authMiddleware, orderStatusRoutes);
+router.use("/rorder", validateEnv, authMiddleware, returnOrderRoutes);
+router.use('/challan', validateEnv, authMiddleware, challanRoutes);
+router.use('/role', userRoleRoutes);
+router.use('/driver', validateEnv, authMiddleware, driverRoutes);
+router.use('/customer', validateEnv, authMiddleware, customerRoutes);
+router.use('/pcategory', validateEnv, authMiddleware, productCategoryRoutes);
+router.use('/cart', validateEnv, authMiddleware, cartRoutes);
+router.use('/corder', validateEnv, authMiddleware, customerOrderRoutes);
+router.use('/vehicle', validateEnv, authMiddleware, vehicleRoutes);
 
 module.exports = router;

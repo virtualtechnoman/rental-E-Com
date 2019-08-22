@@ -1,7 +1,4 @@
 const express = require('express');
-// const asyncHandler = require('express-async-handler')
-// const passport = require('passport');
-// const userCtrl = require('../controllers/user.controller');
 const User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
 const isEmpty = require("../utils/is-empty");

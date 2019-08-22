@@ -31,8 +31,8 @@ router.post('/', (req, res) => {
     if (!isEmpty(result.errors)) {
         return res.status(200).json({ status: 200, message: "Fields required", errors: result.errors, data: null })
     }
-    if(result.data.isAdmin)
-    result.data.privileges = privileges(result.data.isAdmin);
+    if (result.data.isAdmin)
+        result.data.privileges = privileges(result.data.isAdmin);
     delete result.data.isAdmin;
     let role = new userRole(result.data);
     role.save().then(Role => res.status(200).json({ status: 200, message: "Role added successfully", errors: false, data: Role })).catch(err => {
@@ -41,6 +41,21 @@ router.post('/', (req, res) => {
     });
 }
 );
+//Generate all Roles
+router.post('/genall', (req, res) => {
+    let all_roles = ["Super Admin", "Farm", "Hub", "Customer", "Driver", "Sales", "Support", "Delivery Boy"];
+    let priv = privileges(true);
+    let all=[];
+    for (let role of all_roles) {
+        all.push(userRole.findOneAndUpdate({name:role},{privileges:priv},{new:true,upsert:true}))
+    }
+    Promise.all(all).then(data=>{
+        res.json({status:200,data:null,errors:false,message:"All roles generated successfully"})
+    }).catch(e=>{
+        console.log(e);
+        res.status(500).json({status:500,data:null,errors:true,message:"An error occured while generating roles"})
+    })
+});
 
 
 //Update a role
