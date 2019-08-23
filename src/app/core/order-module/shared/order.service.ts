@@ -21,7 +21,8 @@ export class OrderService {
   url7 = '/api/orderstatus/after';
   url8 = '/api/order/setstatus';
   url9 = '/api/challan/accept';
-  url10= '/api/order/recieve'
+  url10= '/api/order/recieve';
+  url11= '/api/order/bill'
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   // ==========ORDER APIS=================//
@@ -121,5 +122,10 @@ export class OrderService {
   // Recieved Challan Quantity
   recievedChallanStatus(id,recieved) {
     return this.http.put(this.url10 + '/' + id, recieved, { headers: this.headers });
+  }
+
+  // Bill Challan Quantity 
+  recievedBillQuantity(id,billed) {
+    return this.http.put(this.url11 + '/' + id, billed , { headers: this.headers });
   }
 }

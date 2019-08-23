@@ -21,6 +21,7 @@ export class ChallanComponent implements OnInit {
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
   recievedValueForm:FormGroup;
+  billedValueForm:FormGroup;
   afterStatus:any;
   constructor(private orderService: OrderService, private toasterService: ToastrService,private fb:FormBuilder,private toastr:ToastrService) { }
 
@@ -49,6 +50,9 @@ export class ChallanComponent implements OnInit {
     this.recievedValueForm=this.fb.group({
       recieved:this.fb.array([])
     })
+    this.billedValueForm=this.fb.group({
+      billed:this.fb.array([])
+    })
     this.getAllChallan();
   }
 
@@ -68,8 +72,6 @@ export class ChallanComponent implements OnInit {
 
   asde(){
     const order=<any> new Object();
-    const recievedStatus=<any> new Object();
-    recievedStatus.status=this.currentChallan.order.status._id
     order.products=this.currentChallan.order.products
     for(var i=0;i<this.currentChallan.order.products.length;i++){
       order.products[i].product=this.currentChallan.order.products[i].product._id
@@ -77,16 +79,13 @@ export class ChallanComponent implements OnInit {
       delete order.products[i].dispatched;
       delete order.products[i].requested;
       delete order.products[i]._id;
+      delete order.products[i].billed;
+      
     }
-    console.log(order,recievedStatus,this.currentChallan.order._id)
+    console.log(order,this.currentChallan.order._id)
     this.orderService.recievedChallanStatus(this.currentChallan.order._id,order).subscribe((res:ResponseModel)=>{
       jQuery('#ChallanModel').modal('hide');
-      this.toasterService.success('Challan Accepted!', 'Success!');
-      console.log(res.data)
-    })
-
-    this.orderService.setOrderStatus(this.currentChallan.order._id,recievedStatus).subscribe((res:ResponseModel)=>{
-      this.toastr.info('Order status has been updated Successfully!', 'Updated!!');
+      this.toasterService.success('Challan Recieved Quantity Entered!', 'Success!');
       console.log(res.data)
     })
   }
@@ -116,10 +115,6 @@ export class ChallanComponent implements OnInit {
     console.log(this.currentChallan);
     this.allProducts = this.currentChallan.order.products;
     console.log(this.allProducts);
-    this.orderService.getAfterStatus(this.currentChallan.order.status._id).subscribe((res:ResponseModel)=>{
-      this.afterStatus=res.data[0];
-      console.log(res.data)
-    })
   }
 
   // deleteChallan(i) {
@@ -138,20 +133,39 @@ export class ChallanComponent implements OnInit {
       this.toasterService.success('Challan Accepted!', 'Success!');
       console.log(res.data)
     });
+  }
 
-    const acceptChallanStatus = <any>new Object();
-    acceptChallanStatus.status = this.currentChallan.order.status._id
-    console.log(acceptChallanStatus)
-    this.orderService.setOrderStatus(this.currentChallan.order._id, acceptChallanStatus).subscribe((res: ResponseModel) => {
-      this.toasterService.success('Order Updated!', 'Updated!');
+  billedQuantityEntered(event:any,i){
+    var arr;
+    arr=event.target.value;
+    this.billedValueForm.value.billed[i]=arr
+    this.billedArray();
+  }
+
+  billedArray(){
+    for(var i=0;i<this.billedValueForm.value.billed.length;i++){
+      this.currentChallan.order.products[i].billed=Number(this.billedValueForm.value.billed[i])
+    }
+  }
+
+  billProductQuantity(){
+    console.log(this.currentChallan.order)
+    const order=<any> new Object();
+    order.products=this.currentChallan.order.products
+    for(var i=0;i<this.currentChallan.order.products.length;i++){
+      order.products[i].product=this.currentChallan.order.products[i].product._id
+      delete order.products[i].accepted;
+      delete order.products[i].dispatched;
+      delete order.products[i].recieved;
+      delete order.products[i]._id;
+      delete order.products[i].requested;
+      
+    }
+    console.log(order,this.currentChallan.order._id)
+    this.orderService.recievedBillQuantity(this.currentChallan.order._id,order).subscribe((res:ResponseModel)=>{
+      jQuery('#ChallanModel').modal('hide');
+      this.toasterService.success('Billed Challan!', 'Success!');
       console.log(res.data)
     })
   }
-
-
-  // resetForm() {
-  //   this.editing = false;
-  //   this.submitted = false;
-  //   this.cha.reset();
-  // }
 }

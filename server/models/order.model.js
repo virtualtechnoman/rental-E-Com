@@ -4,6 +4,7 @@ const prods = mongoose.Schema({
     requested: { type: Number, required: true },
     accepted: { type: Number, default: 0 },
     dispatched:{type:Number, default:0},
+    billed:{type:Number, default:0},
     recieved:{type:Number, default:0}
 },{
     versionKey: false
@@ -15,8 +16,10 @@ module.exports = mongoose.model("order", new mongoose.Schema({
     products: [prods],
     notes: { type: String},
     accepted: { type: Boolean, default: false },
+    recieved: { type: Boolean, default: false },
+    billed: { type: Boolean, default: false },
     challan_generated: { type: Boolean, default: false },
-    status:{type:mongoose.Schema.Types.ObjectId,ref:"order_status", default:process.env.ORDERSTATUS_PENDING || "5d5e3869efbe40d83dc9b2b9" },
+    status:{ type: String, required: true },
     order_date: { type: Date, default: Date.now }
 }, {
         versionKey: false

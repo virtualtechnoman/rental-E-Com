@@ -146,7 +146,6 @@ export class OrderComponent implements OnInit {
   asde(){
     this.orderSelected.status=true;
     const order=<any> new Object;
-    const statusUpdate=<any> new Object;
     order.products=this.orderSelected.products;
     for(var i=0;i<this.orderSelectedProducts.length;i++){
       order.products[i].product=this.orderSelectedProducts[i].product._id
@@ -154,18 +153,12 @@ export class OrderComponent implements OnInit {
       delete order.products[i].requested;
       delete order.products[i].recieved;
       delete order.products[i].dispatched;
+      delete order.products[i].billed;
     }
-    statusUpdate.status=this.afterStatus._id
-    console.log(order,statusUpdate)
+    console.log(order)
     this.orderService.addAcceptedOrder(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
       jQuery('#invoiceModal').modal('hide');
       this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
-      this.allOrders.splice(this.orderIndex, 1, res.data);
-      console.log(res.data)
-    })
-    this.orderService.setOrderStatus(this.orderSelected._id,statusUpdate).subscribe((res:ResponseModel)=>{
-      this.toastr.info('Order status has been updated Successfully!', 'Updated!!');
-      this.allOrders.splice(this.orderIndex, 1, res.data);
       console.log(res.data)
     })
   }
@@ -247,10 +240,6 @@ export class OrderComponent implements OnInit {
     this.orderIndex=i;
     console.log(this.orderSelected)
     console.log(this.orderId)
-    this.orderService.getAfterStatus(this.orderSelected.status._id).subscribe((res:ResponseModel)=>{
-      this.afterStatus=res.data[0];
-      console.log(res.data)
-    })
   }
 
   statusSelected(event:any){
@@ -561,6 +550,7 @@ export class OrderComponent implements OnInit {
       delete productsArray.products[i].accepted;
       delete productsArray.products[i].recieved;
       delete productsArray.products[i].requested;
+      delete productsArray.products[i].billed;
       delete productsArray.products[i]._id;
     }
     this.challanForm.controls['vehicle'].setValue(this.challanVehicle._id)
@@ -570,21 +560,15 @@ export class OrderComponent implements OnInit {
     for(var i=0;i<productsArray.products.length;i++){
       this.challanForm.value.products[i]=productsArray.products[i]
     }
-    const challanStatus=<any> new Object();
-    challanStatus.status=this.afterStatus._id;
 
-    console.log(this.challanForm.value,challanStatus,this.orderSelected._id)
+    console.log(this.challanForm.value,this.orderSelected._id)
 
     this.orderService.addOrderChallan(this.challanForm.value,this.orderSelected._id).subscribe((res: ResponseModel) => {
-      this.toastr.success('Challan Accepted successfully', 'Accepted');
+      this.toastr.success('Challan Generated successfully', 'Accepted');
       console.log(res.data);
       jQuery('#ChallanModal').modal('hide');
     });
 
-    this.orderService.setOrderStatus(this.orderSelected._id,challanStatus).subscribe((res:ResponseModel)=>{
-      this.toastr.info('Order status has been updated Successfully!', 'Updated!!');
-      console.log(res.data)
-    })
     
   }
   updateStatusAndGenerateChallan(){

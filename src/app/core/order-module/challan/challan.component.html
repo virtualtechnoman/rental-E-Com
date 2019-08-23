@@ -95,7 +95,10 @@
                     <th class="wd-20p">Requested Quantity</th>
                     <th class="wd-20p">Accepeted Quantity</th>
                     <th class="wd-20p">Dispatched Quantity</th>
-                    <th class="wd-20p" *ngIf="currentChallan.accepted">Recieved Quantity</th>
+                    <th class="wd-20p" *ngIf="currentChallan.accepted && currentChallan.order.status == 'Challan Accepted' ">Recieved Quantity</th>
+                    <th class="wd-20p" *ngIf="currentChallan.accepted && currentChallan.order.status == 'Recieved' ">Recieved Quantity</th>
+                    <th class="wd-20p" *ngIf="!currentChallan.order.billed && currentChallan.order.status == 'Recieved'">Billed Quantity</th>
+                    <th class="wd-20p" *ngIf="currentChallan.order.billed && currentChallan.order.status != 'Recieved'">Billed Quantity</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -105,13 +108,18 @@
                     <td class="d-none d-sm-table-cell tx-color-03">{{product.requested}}</td>
                     <td class="tx-nowrap">{{product.accepted}}</td>
                     <td class="tx-nowrap">{{product.dispatched}}</td>
-                    <td *ngIf="currentChallan.accepted && currentChallan.order.status.name != 'Recieved'" >
+                    <td *ngIf="!currentChallan.order.recieved && currentChallan.order.status == 'Challan Accepted'" >
                       <input type="text"  (change)="recievedQuantityEntered($event,i)"
                                 class="form-control col-lg-9" 
                                 placeholder="Recieved Quantity">
                     </td>
-                    <td *ngIf="currentChallan.order.status.name == 'Recieved' " >{{product.recieved}}</td>
-                    <!-- <td class="tx-right">{{product.product.is_active}}</td> -->
+                    <td *ngIf="currentChallan.order.recieved && currentChallan.order.status == 'Recieved' " >{{product.recieved}}</td>
+                    <td *ngIf="!currentChallan.order.billed && currentChallan.order.status == 'Recieved'" >
+                      <input type="text"  (change)="billedQuantityEntered($event,i)"
+                                class="form-control col-lg-9" 
+                                placeholder="Bill Quantity">
+                    </td>
+                    <td class="tx-nowrap" *ngIf="currentChallan.order.billed && currentChallan.order.status != 'Recieved'" >{{product.billed}}</td>
                     <!-- <td class="tx-right">$300.00</td> -->
                   </tr>
                 </tbody>
@@ -148,10 +156,12 @@
               <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Notes</label>
               <p>{{currentChallan?.order?.notes}}</p>
             </div>
-            <button *ngIf="!currentChallan.accepted" class="btn btn-primary float-right"
+            <button *ngIf="!currentChallan.accepted && currentChallan.order.status == 'Challan Generated'" class="btn btn-primary float-right"
               (click)="changeChallanStatus()">Accept Challan</button>
-              <button *ngIf="currentChallan.accepted" class="btn btn-primary float-right"
+              <button *ngIf="!currentChallan.order.recieved && currentChallan.order.status == 'Challan Accepted'" class="btn btn-primary float-right"
               (click)="asde()">Recieved Challan Quantity</button>
+              <button *ngIf="!currentChallan.order.billed && currentChallan.order.status == 'Recieved'" class="btn btn-primary float-right"
+              (click)="billProductQuantity()">Bill Product Quantity</button>
           </div>
         </div>
       </div>
@@ -159,134 +169,3 @@
   </div>
   </div>
 
-  <div class="modal fade" *ngIf="currentOrder" id="challanModel" tabindex="-1" role="dialog"
-    aria-labelledby="exampleModalLabel3" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-      <div class="modal-content tx-14">
-        <div class="modal-header">
-          <div class="d-sm-flex align-items-center justify-content-between">
-            <div>
-              <h6 class="mg-b-5">Invoice {{currentOrder?.order_id}}</h6>
-              <p class="mg-b-0 tx-color-03">Due on {{currentOrder?.order_date | date : 'dd/MM/yy'}}</p>
-            </div>
-          </div>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form [formGroup]="challanForm" (ngSubmit)="saveChallan()">
-            <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
-              <div class="row">
-                <div class="col-sm-4">
-                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed From</label>
-                  <h6 class="tx-15 mg-b-10">{{currentOrder?.placed_by?.full_name}}</h6>
-                  <!-- <p class="mg-b-0">{{currentOrder.placed_by.full_name}}</p> -->
-                  <p class="mg-b-0">{{currentOrder?.placed_by?.mobile_number}}</p>
-                  <p class="mg-b-0">{{currentOrder?.placed_by?.email}}</p>
-                </div><!-- col -->
-                <div class="col-sm-6 offset-md-4 col-lg-4 mg-t-30">
-                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice
-                    Information</label>
-                  <ul class="list-unstyled lh-7">
-                    <li class="d-flex justify-content-between">
-                      <span>Invoice Number</span>
-                      <span>{{currentOrder?.order_id}}</span>
-                    </li>
-                    <!-- <li class="d-flex justify-content-between">
-                              <span>Product ID</span>
-                              <span>32334300</span>
-                            </li> -->
-                    <li class="d-flex justify-content-between">
-                      <span>Issue Date</span>
-                      <span>{{currentOrder?.order_date | date:'dd/MM/yy'}}</span>
-                    </li>
-                    <!-- <li class="d-flex justify-content-between">
-                              <span>Due Date</span>
-                              <span>April 21, 2019</span>
-                            </li> -->
-                  </ul>
-                </div><!-- col -->
-                <div class="col-sm-4 col-lg-8 mg-t-30 mg-sm-t-0 mg-md-t-40">
-                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
-                  <h6 class="tx-15 mg-b-10">{{currentOrder?.placed_by?.full_name}}</h6>
-                  <p class="mg-b-0">{{currentOrder?.placed_by?.mobile_number}}</p>
-                  <p class="mg-b-0">{{currentOrder?.placed_by?.email}}</p>
-                  <!-- <p class="mg-b-0">Email: youremail@companyname.com</p> -->
-                </div><!-- col -->
-              </div>
-              <div class="mg-t-30">
-                <div class="row">
-                  <table class="table table-invoice bd-b">
-                    <thead>
-                      <tr>
-                        <th class="wd-20p">Type</th>
-                        <th class="wd-40p d-none d-sm-table-cell">Brand</th>
-                        <th class="tx-center">Requested Quantity</th>
-                        <th class="tx-center">Accepted Quantity</th>
-                        <th class="tx-right">Dispatched Quantity</th>
-                        <th class="tx-right">Status</th>
-
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let product of currentOrder.products; let i = index">
-                        <td class="tx-nowrap">{{product?.product.name}}</td>
-                        <td class="d-none d-sm-table-cell tx-color-03">{{product?.product.brand}}</td>
-                        <td class="tx-nowrap">{{product?.quantity}}</td>
-                        <td class="tx-nowrap">{{product?.accepted}}</td>
-                        <td class="tx-nowrap">{{product?.dispatched}}</td>
-                        <td class="tx-nowrap">{{currentChallan?.order?.status?.name}}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="row">
-                  <div class="col">
-                    <div class="form-row">
-                      <div class="col-md-4"><label for="">Vehicle Number</label></div>
-                      <div class="col-md-8">
-                        <select formControlName="vehicle" class="form-control" (change)="getVehicle2($event)">
-                          <option selected disabled>Select vehicle Number</option>
-                          <option [ngValue]="vehicle._id" *ngFor="let vehicle of allVehicle;let i=index">
-                            {{vehicle.number}}</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class="form-row">
-                      <div class="col-md-4"><label for="">Driver Name</label></div>
-                      <div class="col-md-">
-                        <select formControlName="driver" class="form-control" (change)="getDriver($event)">
-                          <option selected disabled>Select Driver</option>
-                          <option [ngValue]="driver._id" *ngFor="let driver of alldriver;let i=index">{{driver.name}}
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- <div class="form-row">
-                        <div class="col-md-6"><label for="">Departure Date</label></div>
-                        <div class="col-md-6"><input type="date" formControlName="departure" class="form-control">
-                        </div>
-                      </div> -->
-                </div>
-                <!-- </div> -->
-              </div>
-              <div class="row justify-content-between">
-                <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-30 mg-sm-t-0">
-                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Notes</label>
-                  <p>{{currentChallan?.order?.notes}}</p>
-                </div>
-              </div>
-              <div class="float-right">
-                <button class="btn btn-primary mg-l-5" (click)="changeChallanStatus()" *ngIf="currentChallan.order.status.name == 'Dispatch' "><i data-feather="credit-card"
-                    class="mg-r-5"></i> Accept Challan</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    </div>

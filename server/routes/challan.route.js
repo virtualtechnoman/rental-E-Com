@@ -3,13 +3,14 @@ const isEmpty = require("../utils/is-empty");
 const ChallanController = require('../controllers/challan.controller');
 const Challan = require('../models/challan.model');
 var mongodb = require("mongodb");
+const Order = require("../models/order.model");
 const moment = require('moment');
 const router = express.Router();
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 //GET all challans created by self
 router.get("/type/:type", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) => {
-    let p = { path: "order", populate: { path: "status products.product" } }
+    let p = { path: "order", populate: { path: "products.product" } }
     if (req.params.type == "order") {
         p.model = "order";
     } else if (req.params.type == "rorder") {
@@ -31,19 +32,24 @@ router.get("/type/:type", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) 
 router.put("/accept/:id", authorizePrivilege("ACCEPT_CHALLAN"), (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.id)) {
         Challan.findById(req.params.id).then(challan => {
-            if (challan.accepted) {
-                return res.status(400).json({ status: 400, errors: true, data: null, message: "Challan already accepted" });
-            } else {
-                challan.accepted = true;
-                challan.save().then(_c => {
-                    _c.populate([{ path: "processing_unit_incharge vehicle driver", select: "-password" }, { path: "order", model: "order", populate: { path: "products.product" } }])
-                        .execPopulate().then(_chln => {
-                            return res.status(200).json({ status: 200, errors: false, data: _chln, message: "Challan accepted successfully" });
+            if (challan) {
+                if (challan.accepted) {
+                    return res.status(400).json({ status: 400, errors: true, data: null, message: "Challan already accepted" });
+                } else {
+                    challan.accepted = true;
+                    challan.save().then(_c => {
+                        Order.findByIdAndUpdate(challan.order, { $set: { status: "Challan Accepted" } }).exec().then(_ord => {
+                            if (_ord) {
+                                return res.status(200).json({ status: 200, errors: false, data: _c, message: "Challan accepted successfully" });
+                            }
                         }).catch(er => {
                             console.log(er);
-                            return res.status(500).json({ status: 500, errors: true, data: null, message: "Challan accepted but error in populate" });
+                            return res.status(500).json({ status: 500, errors: true, data: null, message: "Challan accepted successfully but failed in setting order status" });
                         })
-                })
+                    })
+                }
+            }else{
+                res.status(400).json({ status: 400, errors: false, data: null, message: "Challan not found" });
             }
         })
     } else {

@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema({
   city: { type: String },
   dob: { type: Date },
   anniversary: { type: Date },
+  dl_number:{type:String},
   role: { type: mongoose.Schema.Types.ObjectId, ref: "user_role" }
 }, {
     versionKey: false
