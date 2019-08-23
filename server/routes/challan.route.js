@@ -43,6 +43,7 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_CHALLAN"), (req, res) => {
                                 return res.status(200).json({ status: 200, errors: false, data: _c, message: "Challan accepted successfully" });
                             }
                         }).catch(er => {
+                            console.log(er);
                             return res.status(500).json({ status: 500, errors: true, data: null, message: "Challan accepted successfully but failed in setting order status" });
                         })
                     })

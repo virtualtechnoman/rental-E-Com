@@ -11,7 +11,7 @@ const router = express.Router();
 
 //GET all orders placed by self
 router.get("/", authorizePrivilege("GET_ALL_ORDERS_OWN"), (req, res) => {
-    Order.find({ placed_by: req.user._id }).populate("placed_by status products.product placed_to").exec().then(doc => {
+    Order.find({ placed_by: req.user._id }).populate("placed_by products.product placed_to").exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
         console.log(err);
@@ -21,7 +21,7 @@ router.get("/", authorizePrivilege("GET_ALL_ORDERS_OWN"), (req, res) => {
 
 //GET all orders
 router.get("/all", authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
-    Order.find().populate("placed_by status products.product placed_to").exec().then(doc => {
+    Order.find().populate("placed_by products.product placed_to").exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
         console.log(err);
@@ -65,6 +65,7 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_ORDER"), (req, res) => {
                         arrfilter.push(x);
                     })
                     upd.accepted = true;
+                    upd.status="Order Accepted";
                     Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
                         .populate("products.product").lean().exec()
                         .then(d => {
@@ -101,6 +102,7 @@ router.put("/recieve/:id", authorizePrivilege("RECIEVE_ORDER"), (req, res) => {
                                 arrfilter.push(x);
                             })
                             upd.recieved = true;
+                            upd.status="Recieved";
                             Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
                                 .populate("products.product").lean().exec().then(d => {
                                     res.json({ status: 200, data: d, errors: false, message: "Order recieved successfully" });
