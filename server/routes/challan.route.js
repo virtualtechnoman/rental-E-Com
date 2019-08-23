@@ -9,39 +9,45 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 //GET all challans created by self
 router.get("/type/:type", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) => {
-    let p = {path:"order",populate:{path:"products.product"}}
-    if(req.params.type == "order"){
+    let p = { path: "order", populate: { path: "status products.product" } }
+    if (req.params.type == "order") {
         p.model = "order";
-    }else if(req.params.type == "rorder"){
+    } else if (req.params.type == "rorder") {
         p.model = "returnorder";
-    }else{
+    } else {
         return res.status(400).json({ status: 400, data: doc, errors: false, message: "Invalid Type" })
     }
-    Challan.find({ processing_unit_incharge: req.user._id , order_type:req.params.type}).populate("processing_unit_incharge dispatch_processing_unit vehicle driver","-password")
-    .populate(p).exec().then(doc => {
-        if (doc.length > 0)
-            return res.json({ status: 200, data: doc, errors: false, message: "Challans" });
-        else
-            return res.json({ status: 200, data: doc, errors: true, message: "No Challan found" });
-    }).catch(err => {
-        return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting Challans" })
-    });
+    Challan.find({ processing_unit_incharge: req.user._id, order_type: req.params.type }).populate("processing_unit_incharge dispatch_processing_unit vehicle driver", "-password")
+        .populate(p).exec().then(doc => {
+            if (doc.length > 0)
+                return res.json({ status: 200, data: doc, errors: false, message: "Challans" });
+            else
+                return res.json({ status: 200, data: doc, errors: true, message: "No Challan found" });
+        }).catch(err => {
+            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting Challans" })
+        });
 })
 //Accept Challan : used by driver
-router.put("/accept/:id", authorizePrivilege("ACCEPT_CHALLAN"),(req,res)=>{
-    if(mongodb.ObjectID.isValid(req.params.id)){
-        Challan.findById(req.params.id).then(challan=>{
-            if(challan.accepted){
-                return res.status(400).json({status:400,errors:true,data:null,message:"Challan already accepted"});
-            }else{
-                challan.accepted =  true;
-                challan.save().then(_c=>{
-                    return res.status(200).json({status:200,errors:false,data:_c,message:"Challan accepted successfully"});
+router.put("/accept/:id", authorizePrivilege("ACCEPT_CHALLAN"), (req, res) => {
+    if (mongodb.ObjectID.isValid(req.params.id)) {
+        Challan.findById(req.params.id).then(challan => {
+            if (challan.accepted) {
+                return res.status(400).json({ status: 400, errors: true, data: null, message: "Challan already accepted" });
+            } else {
+                challan.accepted = true;
+                challan.save().then(_c => {
+                    _c.populate([{ path: "processing_unit_incharge vehicle driver", select: "-password" }, { path: "order", model: "order", populate: { path: "products.product" } }])
+                        .execPopulate().then(_chln => {
+                            return res.status(200).json({ status: 200, errors: false, data: _chln, message: "Challan accepted successfully" });
+                        }).catch(er => {
+                            console.log(er);
+                            return res.status(500).json({ status: 500, errors: true, data: null, message: "Challan accepted but error in populate" });
+                        })
                 })
             }
         })
-    }else{
-        res.status(400).json({status:400,errors:false,data:null,message:"Invalid challan id"});
+    } else {
+        res.status(400).json({ status: 400, errors: false, data: null, message: "Invalid challan id" });
     }
 })
 

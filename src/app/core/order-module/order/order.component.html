@@ -18,7 +18,7 @@
               <th scope="col">Order To</th>
               <!-- <th scope="col">Manager</th> -->
               <th scope="col">Order By</th>
-              <!-- <th scope="col">Order by Manager</th> -->
+              <th scope="col">Status</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
@@ -29,6 +29,7 @@
               <td>{{order.order_date | date:'dd/MM/yy'}}</td>
               <td>{{order.placed_to.full_name | titlecase}}</td>
               <td>{{order.placed_by.full_name | titlecase}}</td>
+              <td>{{order.status.name | titlecase}}</td>
               <td>
                 <a style="cursor:pointer" data-toggle="modal" data-target="#invoiceModal" (click)="viewAcceptOrderButton(i)"><i class="fas fa-eye"></i></a>
                 <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteOrder(i)"></i></a>
@@ -216,6 +217,9 @@
                             <th class="wd-20p">Brand</th>
                             <th class="wd-20p">Requested Quantity</th>
                             <th class="wd-20p">Accepted Quantity</th>
+                            <th class="wd-20p" *ngIf="orderSelected.status.name == 'Pending'">Status</th>
+                            <th class="wd-20p" *ngIf="orderSelected.status.name == 'Dispatch'">Dispatched Quantity</th>
+                            <th class="wd-20p" *ngIf="orderSelected.status.name != 'Pending'">Status</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -223,11 +227,20 @@
                             <td class="tx-nowrap">{{product?.product?.name}}</td>
                             <td class="d-none d-sm-table-cell tx-color-03">{{product?.product?.brand}}</td>
                             <td class="tx-nowrap">{{product.requested}}</td>
-                            <td class="tx-center" *ngIf="!orderSelected.status">
-                                <input type="text" class="form-control col-lg-9" (change)="asd($event,i)"
+                            <td class="tx-center" *ngIf="orderSelected.status.name == 'Pending' ">
+                                <input type="text"  
+                                class="form-control col-lg-9" (change)="asd($event,i)"
                                 placeholder="Accepted Quantity">
                             </td>
-                            <td class="tx-nowrap" *ngIf="orderSelected.status">{{product.accepted}}</td>
+                            <td class="tx-nowrap" *ngIf="orderSelected.status.name != 'Pending' ">{{product.accepted}}</td>
+                            <td *ngIf="orderSelected.status.name == 'Pending'">
+                              <select class="form-control">
+                                <option disabled selected>Select Status</option>
+                                <option >{{afterStatus?.name}}</option>
+                              </select>
+                            </td>
+                            <td class="tx-nowrap" *ngIf="orderSelected.status.name == 'Dispatch' ">{{product.dispatched}}</td>
+                            <td class="tx-nowrap" *ngIf="orderSelected.status.name != 'Pending' ">{{orderSelected?.status?.name}}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -241,9 +254,9 @@
                       <div class="col-sm-6 col-lg-4 order-1 order-sm-0">
                           <button class="btn btn-block btn-primary"  data-toggle="modal"
                           data-target="#ChallanModal"
-                          *ngIf="orderSelected.status && !orderSelected.challan_generated" data-dismiss="modal">
+                          *ngIf="orderSelected.status.name == 'Accepted'" data-dismiss="modal">
                             <i data-feather="credit-card" class="mg-r-5"></i> Generate Challan</button>
-                        <button class="btn btn-block btn-primary" (click)="asde()" *ngIf="!orderSelected.status">Accept Order</button>
+                        <button class="btn btn-block btn-primary" (click)="asde()" *ngIf="orderSelected.status.name=='Pending'">Accept Order</button>
                       </div><!-- col -->
                     </div><!-- row -->
                   </div><!-- container -->
@@ -310,6 +323,8 @@
                               <th class="wd-20p">Brand</th>
                               <th class="wd-20p">Requested Quantity</th>
                               <th class="wd-20p">Accepted Quantity</th>
+                              <th class="wd-20p">Dispatch Quantity</th>
+                              <th class="wd-20p">Status</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -318,6 +333,17 @@
                               <td class="d-none d-sm-table-cell tx-color-03">{{order?.product?.brand}}</td>
                               <td class="tx-nowrap">{{order?.requested}}</td>
                               <td class="tx-nowrap">{{order?.accepted}}</td>
+                              <td class="tx-center" *ngIf="orderSelected.status.name == 'Accepted' ">
+                                  <input type="text"  
+                                  class="form-control col-lg-9" (change)="dispatchQuantityEntered($event,i)"
+                                  placeholder="Accepted Quantity">
+                              </td>
+                              <td *ngIf="orderSelected.status.name == 'Accepted'">
+                                  <select class="form-control col-lg-6">
+                                    <option disabled selected>Select Status</option>
+                                    <option >{{afterStatus?.name}}</option>
+                                  </select>
+                                </td>
                             </tr>
                           </tbody>
                         </table>

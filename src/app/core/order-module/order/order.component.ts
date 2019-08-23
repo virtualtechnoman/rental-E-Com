@@ -22,7 +22,7 @@ export class OrderComponent implements OnInit {
   allproducts: ProductModel[] = [];
   allOrders: any[] = [];
   allUsers: any[] = [];
-  orderSelected:OrderModel;
+  orderSelected:any;
   currentOrder: OrderModel;
   currentOrderProducts:ProductModel;
   currentOrderPlaced_to:any;
@@ -57,6 +57,9 @@ export class OrderComponent implements OnInit {
   challanDriver:any=[];
   challanVehicle:any=[];
   fieldChangedOrder:OrderModel;
+  afterStatus:any;
+  selectedStatus:any;
+  dispatchValueForm:FormGroup
   constructor(private productService: ProductsService, private fb: FormBuilder, private toastr: ToastrService,
     private authService: AuthService, private orderService: OrderService, private userService: UserService,private vehicleService: TruckService
   ) {
@@ -75,12 +78,15 @@ export class OrderComponent implements OnInit {
       notes:[''],
       products: this.fb.array([])
     })
-    console.log(this.orderPlacedForm)
     this.acceptedValueForm=this.fb.group({
       accepted:this.fb.array([])
     })
+    this.dispatchValueForm=this.fb.group({
+      dispatched:this.fb.array([])
+    })
     this.challanForm = this.fb.group({
       dispatch_processing_unit: ['', Validators.required],
+      products:this.fb.array([]),
       vehicle: ['', Validators.required],
       driver: ['', Validators.required],  
       departure: ['', Validators.required],
@@ -119,24 +125,49 @@ export class OrderComponent implements OnInit {
     console.log(i)
     this.qw()
     }
+  }
 
+  dispatchQuantityEntered(event:any,i){
+    if(event.target.value){
+      var arr=event.target.value;
+      this.dispatchValueForm.value.dispatched[i]=arr
+      this.dispatchArray()
+      }
+  }
+
+  dispatchArray(){
+    for(var i=0;i<this.dispatchValueForm.value.dispatched.length;i++){
+      this.orderSelected.products[i].dispatched=Number(this.dispatchValueForm.value.dispatched[i])
+    }
+    console.log(this.orderSelected);
+    
   }
 
   asde(){
     this.orderSelected.status=true;
-    console.log(this.orderSelected);
     const order=<any> new Object;
-    order.placed_to=this.orderSelected.placed_to._id;
+    const statusUpdate=<any> new Object;
     order.products=this.orderSelected.products;
-    order.notes=this.orderSelectedNotes;
-    order.status=true;
     for(var i=0;i<this.orderSelectedProducts.length;i++){
       order.products[i].product=this.orderSelectedProducts[i].product._id
-      delete order.products[i]._id
+      delete order.products[i]._id;
+      delete order.products[i].requested;
+      delete order.products[i].recieved;
+      delete order.products[i].dispatched;
     }
-    console.log(order)
-    this.fieldChangedOrder=order
-    this.updateOrder(order)
+    statusUpdate.status=this.afterStatus._id
+    console.log(order,statusUpdate)
+    this.orderService.addAcceptedOrder(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
+      jQuery('#invoiceModal').modal('hide');
+      this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
+      this.allOrders.splice(this.orderIndex, 1, res.data);
+      console.log(res.data)
+    })
+    this.orderService.setOrderStatus(this.orderSelected._id,statusUpdate).subscribe((res:ResponseModel)=>{
+      this.toastr.info('Order status has been updated Successfully!', 'Updated!!');
+      this.allOrders.splice(this.orderIndex, 1, res.data);
+      console.log(res.data)
+    })
   }
   qw(){
     
@@ -158,7 +189,6 @@ export class OrderComponent implements OnInit {
   addProducts() {
 
     const product = this.fb.group({ 
-      accepted: [],
       product: [],
       requested: []
     })
@@ -204,9 +234,6 @@ export class OrderComponent implements OnInit {
     if (this.orderPlacedForm.invalid) {
       return;
     }
-    for(let i=0;i<this.orderPlacedForm.value.products.length;i++){
-      this.orderPlacedForm.value.products[i].accepted=0
-    }
     this.currentOrder2=this.orderPlacedForm.value;
     console.log(this.orderPlacedForm.value)
       this.addOrder(this.orderPlacedForm.value);
@@ -220,6 +247,15 @@ export class OrderComponent implements OnInit {
     this.orderIndex=i;
     console.log(this.orderSelected)
     console.log(this.orderId)
+    this.orderService.getAfterStatus(this.orderSelected.status._id).subscribe((res:ResponseModel)=>{
+      this.afterStatus=res.data[0];
+      console.log(res.data)
+    })
+  }
+
+  statusSelected(event:any){
+   this.selectedStatus=this.afterStatus[event.target.selectedIndex-1]
+   console.log(this.selectedStatus)
   }
   addOrder(order) {
     console.log(order)
@@ -516,30 +552,43 @@ export class OrderComponent implements OnInit {
   }
 
   challanGenerate(){
-    
-    // dispatch_processing_unit: ['', Validators.required],
-    // vehicle: ['', Validators.required],
-    // driver: ['', Validators.required],  
-    // departure: ['', Validators.required],
-      const date=new Date()
-      console.log(date)
+    console.log(this.orderSelected)
+    const date=new Date()
+    const productsArray=<any> new Object();
+    productsArray.products=this.orderSelected.products;
+    for(var i=0;i<this.orderSelected.products.length;i++){
+      productsArray.products[i].product=this.orderSelected.products[i].product._id;
+      delete productsArray.products[i].accepted;
+      delete productsArray.products[i].recieved;
+      delete productsArray.products[i].requested;
+      delete productsArray.products[i]._id;
+    }
     this.challanForm.controls['vehicle'].setValue(this.challanVehicle._id)
     this.challanForm.controls['driver'].setValue(this.challanDriver._id)
     this.challanForm.controls['departure'].setValue(date)
     this.challanForm.controls['dispatch_processing_unit'].setValue(this.orderSelected.placed_to._id)
-    console.log(this.challanForm.value)
-    this.updateOrderAndGenerateChallan()
+    for(var i=0;i<productsArray.products.length;i++){
+      this.challanForm.value.products[i]=productsArray.products[i]
+    }
+    const challanStatus=<any> new Object();
+    challanStatus.status=this.afterStatus._id;
 
+    console.log(this.challanForm.value,challanStatus,this.orderSelected._id)
+
+    this.orderService.addOrderChallan(this.challanForm.value,this.orderSelected._id).subscribe((res: ResponseModel) => {
+      this.toastr.success('Challan Accepted successfully', 'Accepted');
+      console.log(res.data);
+      jQuery('#ChallanModal').modal('hide');
+    });
+
+    this.orderService.setOrderStatus(this.orderSelected._id,challanStatus).subscribe((res:ResponseModel)=>{
+      this.toastr.info('Order status has been updated Successfully!', 'Updated!!');
+      console.log(res.data)
+    })
+    
   }
-  updateOrderAndGenerateChallan(){
-      this.orderService.addOrderChallan(this.challanForm.value,this.orderSelected._id).subscribe((res: ResponseModel) => {
-        this.toastr.success('Challan Accepted successfully', 'Accepted');
-        console.log(res.data);
-        jQuery('#ChallanModal').modal('hide');
-        setTimeout(()=>{
-          window.location.reload();
-        },1000)
-      });
+  updateStatusAndGenerateChallan(){
+      
   }
 
 }

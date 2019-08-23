@@ -7,8 +7,8 @@ const orderCreateSchema = Joi.object({
         product: Joi.string().required(),
         requested: Joi.number().min(1).required()
     }).required(),
-    status:Joi.string().required(),
-    notes: Joi.optional().allow('')
+    // status:Joi.string().required(),
+    notes: Joi.string().optional().allow('')
 })
 const orderAcceptSchema = Joi.object({
     products: Joi.array().items({

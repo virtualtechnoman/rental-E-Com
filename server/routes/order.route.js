@@ -11,16 +11,17 @@ const router = express.Router();
 
 //GET all orders placed by self
 router.get("/", authorizePrivilege("GET_ALL_ORDERS_OWN"), (req, res) => {
-    Order.find({ placed_by: req.user._id }).populate("placed_by products.product placed_to").exec().then(doc => {
+    Order.find({ placed_by: req.user._id }).populate("placed_by status products.product placed_to").exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
+        console.log(err)
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
     });
 })
 
 //GET all orders
 router.get("/all", authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
-    Order.find().populate("placed_by products.product placed_to").exec().then(doc => {
+    Order.find().populate("placed_by status products.product placed_to").exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
@@ -60,7 +61,13 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_ORDER"), (req, res) => {
                     }, { new: true }))
                 })
                 Promise.all(pr).then(d => {
-                    res.json({ status: 200, data: d[d.length - 1], errors: false, message: "Order accepted successfully" });
+                    console.log("D is :",d);
+                    // res.json({msg:"ok"})
+                    Order.findById(d[d.length - 1]._id).populate("status products.product").exec().then(_or=>{
+                        res.json({ status: 200, data: _or, errors: false, message: "Order accepted successfully" });
+                    }).catch(_e=>{
+                        res.status(500).json({ status: 500, errors: true, data: null, message: "Error while getting order" });
+                    })
                 }).catch(e => {
                     console.log(e);
                     res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating accepted values" });
@@ -100,7 +107,7 @@ router.post("/gchallan/:oid", authorizePrivilege("GENERATE_ORDER_CHALLAN"), asyn
                         let newChallan = new Challan(result.data);
                         newChallan.save()
                             .then(challan => {
-                                challan.populate([{path:"processing_unit_incharge vehicle driver",select:"-password"},{ path: "order", model: "order", populate: { path: "products.product" } }])
+                                challan.populate([{path:"processing_unit_incharge vehicle driver status",select:"-password"},{ path: "order", model: "order", populate: { path: "products.product" } }])
                                     .execPopulate()
                                     .then(doc => {
                                         Order.findByIdAndUpdate(_ord._id, { $set: { challan_generated: true } }, { new: true }).lean()
