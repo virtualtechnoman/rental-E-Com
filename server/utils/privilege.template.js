@@ -16,10 +16,12 @@ module.exports = (p=false)=>({
     GET_ALL_ORDERS:p,
     GET_ALL_ORDERS_OWN:p,
     GET_ORDER:p,
-    UPDATE_ORDER:p,
+    // UPDATE_ORDER:p,
     ADD_NEW_ORDER:p,
     DELETE_ORDER:p,
     ACCEPT_ORDER:p,
+    RECIEVE_ORDER:p,
+    BILL_ORDER:p,
     //Return Order Privilege
     GET_ALL_RETURN_ORDERS:p,
     GET_ALL_RETURN_ORDERS_OWN:p,
@@ -83,7 +85,6 @@ module.exports = (p=false)=>({
     ADD_NEW_AREA:p,
     UPDATE_AREA:p,
     DELETE_AREA:p,
-    //OrderStatus Privilege
-    GET_ALL_ORDERSTATUS:p,
-    GENERATE_ALL_ORDERSTATUS:p
+    //Ticket Privilege
+    GET_TICKETS_OWN:p
 })

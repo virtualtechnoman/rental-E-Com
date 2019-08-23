@@ -8,6 +8,7 @@ const userSchema = Joi.object({
   email: Joi.string().email().required(),
   role: Joi.string().required(),
   mobile_number: Joi.string().required(),
+  dl_number:Joi.string().optional(),
   is_active: Joi.boolean().required()
   // repeatPassword: Joi.string().required().valid(Joi.ref('password')),
 })
