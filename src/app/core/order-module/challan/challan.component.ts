@@ -131,6 +131,7 @@ export class ChallanComponent implements OnInit {
     this.orderService.updateChallanStatus(this.currentChallan._id).subscribe((res: ResponseModel) => {
       jQuery('#ChallanModel').modal('hide');
       this.toasterService.success('Challan Accepted!', 'Success!');
+      this.allChallans.splice(this.currentIndex,1,res.data)
       console.log(res.data)
     });
   }

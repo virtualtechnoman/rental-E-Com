@@ -67,7 +67,7 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_ORDER"), (req, res) => {
                     upd.accepted = true;
                     upd.status = "Order Accepted";
                     Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                        .populate("products.product").lean().exec()
+                        .populate("products.product placed_by placed_to", "-password").lean().exec()
                         .then(d => {
                             res.json({ status: 200, data: d, errors: false, message: "Order accepted successfully" });
                         }).catch(e => {
@@ -104,7 +104,7 @@ router.put("/recieve/:id", authorizePrivilege("RECIEVE_ORDER"), (req, res) => {
                             upd.recieved = true;
                             upd.status = "Recieved";
                             Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                                .populate("products.product").lean().exec().then(d => {
+                                .populate("products.product placed_by placed_to", "-password").lean().exec().then(d => {
                                     res.json({ status: 200, data: d, errors: false, message: "Order recieved successfully" });
                                 }).catch(e => {
                                     console.log(e);
@@ -139,18 +139,23 @@ router.put("/bill/:id", authorizePrivilege("BILL_ORDER"), (req, res) => {
                                 let result = OrderController.verifyBill(req.body);
                                 if (!isEmpty(result.errors))
                                     return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
-                                let pr = [];
-                                result.data.products.forEach(element => {
-                                    pr.push(Order.findOneAndUpdate({ _id: req.params.id, 'products.product': element.product }, {
-                                        $set: { 'products.$.billed': element.billed, billed: true, status: "Billed" }
-                                    }, { new: true }))
+                                let upd = {}, arrfilter = [];
+                                result.data.products.forEach((ele, index) => {
+                                    upd["products.$[e" + index + "].billed"] = ele.billed;
+                                    let x = {};
+                                    x["e" + index + ".product"] = ele.product;
+                                    arrfilter.push(x);
                                 })
-                                Promise.all(pr).then(d => {
-                                    res.json({ status: 200, data: d[d.length - 1], errors: false, message: "Order billed successfully" });
-                                }).catch(e => {
-                                    console.log(e);
-                                    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating recieved values" });
-                                })
+                                upd.billed = true;
+                                upd.status = "Billed";
+                                Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
+                                    .populate("products.product placed_by placed_to", "-password").lean().exec()
+                                    .then(d => {
+                                        res.json({ status: 200, data: d, errors: false, message: "Order billed successfully" });
+                                    }).catch(e => {
+                                        console.log(e);
+                                        res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating recieved values" });
+                                    })
                             } else {
                                 return res.status(400).json({ status: 400, errors: true, data: null, message: "Order already billed" });
                             }
@@ -184,40 +189,38 @@ router.post("/gchallan/:oid", authorizePrivilege("GENERATE_ORDER_CHALLAN"), asyn
                     if (_ord.challan_generated) {
                         return res.status(400).json({ status: 400, errors: true, data: null, message: "Challan already generated for this order" });
                     } else {
-                        let pr = [];
-                        result.data.products.forEach(element => {
-                            pr.push(
-                                Order.findOneAndUpdate({ _id: _ord._id, 'products.product': element.product }, {
-                                    $set: { 'products.$.dispatched': element.dispatched }
-                                }, { new: true })
-                            )
+                        let upd = {}, arrfilter = [];
+                        result.data.products.forEach((ele, index) => {
+                            upd["products.$[e" + index + "].dispatched"] = ele.dispatched;
+                            let x = {};
+                            x["e" + index + ".product"] = ele.product;
+                            arrfilter.push(x);
                         })
-                        Promise.all(pr).then(d => {
-                            delete result.data.products;
-                            result.data.processing_unit_incharge = req.user._id;
-                            result.data.order = _ord._id;
-                            result.data.order_type = "order";
-                            result.data.challan_id = "CHLN" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
-                            let newChallan = new Challan(result.data);
-                            newChallan.save()
-                                .then(challan => {
-                                    challan.populate([{ path: "processing_unit_incharge vehicle driver", select: "-password" }, { path: "order", model: "order", populate: { path: "products.product" } }])
-                                        .execPopulate()
-                                        .then(doc => {
-                                            Order.findByIdAndUpdate(_ord._id, { $set: { challan_generated: true, status: "Challan Generated" } }, { new: true }).populate("products.product").lean()
-                                                .then(_o => {
-                                                    doc.order = _o;
-                                                    res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });
-                                                })
-                                        })
-                                }).catch(e => {
-                                    console.log(e);
-                                    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while generating the challan" });
-                                })
-                        }).catch(e => {
-                            console.log(e);
-                            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating accepted values" });
-                        })
+                        upd.challan_generated = true;
+                        upd.status = "Challan Generated";
+                        Order.findByIdAndUpdate(_ord._id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
+                        .lean().exec().then(d => {
+                                delete result.data.products;
+                                result.data.processing_unit_incharge = req.user._id;
+                                result.data.order = _ord._id;
+                                result.data.order_type = "order";
+                                result.data.challan_id = "CHLN" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
+                                let newChallan = new Challan(result.data);
+                                newChallan.save()
+                                    .then(challan => {
+                                        challan.populate([{ path: "processing_unit_incharge dispatch_processing_unit vehicle driver", select: "-password" }, { path: "order", model: "order", populate: { path: "products.product placed_by placed_to",select:"-password" } }])
+                                            .execPopulate()
+                                            .then(doc => {
+                                                        res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });
+                                            })
+                                    }).catch(e => {
+                                        console.log(e);
+                                        res.status(500).json({ status: 500, errors: true, data: null, message: "Error while generating the challan" });
+                                    })
+                            }).catch(e => {
+                                console.log(e);
+                                res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating accepted values" });
+                            })
                     }
                 } else {
                     return res.status(400).json({ status: 400, errors: true, data: null, message: "Accept the order first" })

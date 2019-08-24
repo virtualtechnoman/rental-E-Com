@@ -31,15 +31,16 @@ router.get("/type/:type", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) 
 //Accept Challan : used by driver
 router.put("/accept/:id", authorizePrivilege("ACCEPT_CHALLAN"), (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.id)) {
-        Challan.findById(req.params.id).then(challan => {
+        Challan.findById(req.params.id).populate("vehicle driver processing_unit_incharge dispatch_processing_unit").then(challan => {
             if (challan) {
                 if (challan.accepted) {
                     return res.status(400).json({ status: 400, errors: true, data: null, message: "Challan already accepted" });
                 } else {
                     challan.accepted = true;
                     challan.save().then(_c => {
-                        Order.findByIdAndUpdate(challan.order, { $set: { status: "Challan Accepted" } }).exec().then(_ord => {
+                        Order.findByIdAndUpdate(challan.order, { $set: { status: "Challan Accepted" } }).populate("products.product placed_by placed_to","-password").exec().then(_ord => {
                             if (_ord) {
+                                _c.order = _ord.toObject();
                                 return res.status(200).json({ status: 200, errors: false, data: _c, message: "Challan accepted successfully" });
                             }
                         }).catch(er => {
