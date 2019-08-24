@@ -24,7 +24,7 @@ router.get("/", authorizePrivilege("GET_TICKETS_OWN"), (req, res) => {
 })
 //GET single Ticket
 router.get("/id/:id", authorizePrivilege("GET_TICKET_OWN"), (req, res) => {
-    Ticket.findOne({ created_by: req.user._id , _id:req.params.id }).populate("messages.executive","full_name").lean().exec().then(_ticket => {
+    Ticket.findOne({ created_by: req.user._id , _id:req.params.id }).populate("created_by messages.executive","full_name").lean().exec().then(_ticket => {
         return res.json({ status: 200, data: _ticket, errors: false, message: "Your Tickets" });
     }).catch(err => {
         console.log(err);
