@@ -30,7 +30,7 @@
                   class="fas fa-edit mx-2"></i></a> -->
               <a style="cursor:pointer" data-toggle="modal" data-target="#ChallanModel" (click)="selectChallan(i)"><i
                   class="fas fa-eye"></i></a>
-              <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteChallan(i)"></i></a>
+              <!-- <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteChallan(i)"></i></a> -->
 
             </td>
           </tr>
@@ -95,10 +95,10 @@
                     <th class="wd-20p">Requested Quantity</th>
                     <th class="wd-20p">Accepeted Quantity</th>
                     <th class="wd-20p">Dispatched Quantity</th>
-                    <th class="wd-20p" *ngIf="currentChallan.accepted && currentChallan.order.status == 'Challan Accepted' ">Recieved Quantity</th>
+                    <!-- <th class="wd-20p" *ngIf="currentChallan.accepted && currentChallan.order.status == 'Challan Accepted' ">Recieved Quantity</th>
                     <th class="wd-20p" *ngIf="currentChallan.accepted && currentChallan.order.status == 'Recieved' ">Recieved Quantity</th>
                     <th class="wd-20p" *ngIf="!currentChallan.order.billed && currentChallan.order.status == 'Recieved'">Billed Quantity</th>
-                    <th class="wd-20p" *ngIf="currentChallan.order.billed && currentChallan.order.status != 'Recieved'">Billed Quantity</th>
+                    <th class="wd-20p" *ngIf="currentChallan.order.billed && currentChallan.order.status != 'Recieved'">Billed Quantity</th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -108,18 +108,18 @@
                     <td class="d-none d-sm-table-cell tx-color-03">{{product.requested}}</td>
                     <td class="tx-nowrap">{{product.accepted}}</td>
                     <td class="tx-nowrap">{{product.dispatched}}</td>
-                    <td *ngIf="!currentChallan.order.recieved && currentChallan.order.status == 'Challan Accepted'" >
+                    <!-- <td *ngIf="!currentChallan.order.recieved && currentChallan.order.status == 'Challan Accepted'" >
                       <input type="text"  (change)="recievedQuantityEntered($event,i)"
                                 class="form-control col-lg-9" 
                                 placeholder="Recieved Quantity">
-                    </td>
-                    <td *ngIf="currentChallan.order.recieved && currentChallan.order.status == 'Recieved' " >{{product.recieved}}</td>
-                    <td *ngIf="!currentChallan.order.billed && currentChallan.order.status == 'Recieved'" >
+                    </td> -->
+                    <!-- <td *ngIf="currentChallan.order.recieved && currentChallan.order.status == 'Recieved' " >{{product.recieved}}</td> -->
+                    <!-- <td *ngIf="!currentChallan.order.billed && currentChallan.order.status == 'Recieved'" >
                       <input type="text"  (change)="billedQuantityEntered($event,i)"
                                 class="form-control col-lg-9" 
                                 placeholder="Bill Quantity">
-                    </td>
-                    <td class="tx-nowrap" *ngIf="currentChallan.order.billed && currentChallan.order.status != 'Recieved'" >{{product.billed}}</td>
+                    </td> -->
+                    <!-- <td class="tx-nowrap" *ngIf="currentChallan.order.billed && currentChallan.order.status != 'Recieved'" >{{product.billed}}</td> -->
                     <!-- <td class="tx-right">$300.00</td> -->
                   </tr>
                 </tbody>
@@ -158,10 +158,6 @@
             </div>
             <button *ngIf="!currentChallan.accepted && currentChallan.order.status == 'Challan Generated'" class="btn btn-primary float-right"
               (click)="changeChallanStatus()">Accept Challan</button>
-              <button *ngIf="!currentChallan.order.recieved && currentChallan.order.status == 'Challan Accepted'" class="btn btn-primary float-right"
-              (click)="asde()">Recieved Challan Quantity</button>
-              <button *ngIf="!currentChallan.order.billed && currentChallan.order.status == 'Recieved'" class="btn btn-primary float-right"
-              (click)="billProductQuantity()">Bill Product Quantity</button>
           </div>
         </div>
       </div>
