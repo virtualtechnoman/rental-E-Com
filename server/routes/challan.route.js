@@ -30,8 +30,8 @@ router.get("/type/:type", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) 
 })
 
 //GET all challans assigned to self
-router.get("assigned/:type", authorizePrivilege("GET_ALL_CHALLAN_ASSIGNED"), (req, res) => {
-    let p = { path: "order", populate: { path: "products.product" } }
+router.get("/assigned/:type", authorizePrivilege("GET_ALL_CHALLAN_ASSIGNED"), (req, res) => {
+    let p = { path: "order", populate: { path: "products.product placed_to placed_by" } }
     if (req.params.type == "order") {
         p.model = "order";
     } else if (req.params.type == "rorder") {
