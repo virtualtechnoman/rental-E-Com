@@ -3,6 +3,7 @@ import { SupportService } from '../Shared/support.service';
 import { ResponseModel } from '../../../shared/shared.model';
 import { Subject } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-tickets',
@@ -17,7 +18,10 @@ export class TicketsComponent implements OnInit {
   ticketsForm: FormGroup;
   submitted:boolean=false;
   editing:boolean=false;
-  constructor(private supportService:SupportService ,private formBuilder:FormBuilder) { }
+  viewIssuesArray:any=[];
+  viewMessagesArray:any=[];
+  ticketID:string;
+  constructor(private supportService:SupportService ,private formBuilder:FormBuilder,private toastr:ToastrService) { }
 
   ngOnInit() {  
     this.ticketsForm = this.formBuilder.group({
@@ -63,7 +67,41 @@ export class TicketsComponent implements OnInit {
     if (this.ticketsForm.invalid) {
         return;
     }
-    console.log(this.ticketsForm)
+    if(this.ticketsForm.value.issues.issue_with_previous_order== null){
+      this.ticketsForm.value.issues.issue_with_previous_order=false
+    }
+    if(this.ticketsForm.value.issues.recharge_or_tech_related_issue== null){
+      this.ticketsForm.value.issues.recharge_or_tech_related_issue=false
+    }
+    if(this.ticketsForm.value.issues.delivery_issue== null){
+      this.ticketsForm.value.issues.delivery_issue=false
+    }
+    if(this.ticketsForm.value.issues.quality_issue== null){
+      this.ticketsForm.value.issues.quality_issue=false
+    }
+    if(this.ticketsForm.value.issues.timing_issue== null){
+      this.ticketsForm.value.issues.timing_issue=false
+    }
+    if(this.ticketsForm.value.issues.other== null){
+      this.ticketsForm.value.issues.other=false
+    }
+    
+    if(this.ticketsForm.value.message== null){
+      this.ticketsForm.value.message=""
+    }
+
+    const ticket =<any> new Object();
+    ticket.issues=this.ticketsForm.value.issues;
+    ticket.message=this.ticketsForm.value.message;
+    console.log(ticket)
+
+    this.supportService.addTicket(ticket).subscribe((res:ResponseModel)=>{
+      this.allTickets.push(res.data);
+      jQuery('#modal3').modal('hide');
+      this.toastr.success('Ticket Added', 'Success!');
+      this.resetForm();
+    })
+
 }
 
   getTickets(){
@@ -71,6 +109,15 @@ export class TicketsComponent implements OnInit {
       this.allTickets=res.data;
       console.log(res.data)
       this.dtTrigger.next();
+    })
+  }
+
+  viewTicket(i){
+    this.ticketID=this.allTickets[i]._id;
+    this.supportService.getTicketInfo(this.ticketID).subscribe((res:ResponseModel)=>{
+      this.viewIssuesArray=res.data.issues
+      this.viewMessagesArray=res.data.messages
+      console.log(this.viewIssuesArray,this.viewMessagesArray)
     })
   }
 

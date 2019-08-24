@@ -8,8 +8,9 @@ import { TokenStorage } from '../../../auth/token.storage';
   
   export class SupportService{
 
-    url= '/api/ticket';
-
+    url= '/api/support/ticket';
+    url2 = '/api/support/ticket';
+    url3 = '/api/support/ticket/id';
     headers = new HttpHeaders({
         'Content-Type': 'application/json',
         'token': this.tokenService.getToken()
@@ -22,5 +23,12 @@ import { TokenStorage } from '../../../auth/token.storage';
         return this.http.get(this.url + '/' , { headers:this.headers} )
       }
 
+      addTicket(ticket){
+        return this.http.post(this.url + '/' , ticket , {headers:this.headers})
+      }
+
+      getTicketInfo(id){
+        return this.http.get(this.url3 + '/' + id , { headers:this.headers} )
+      }
 
   }
