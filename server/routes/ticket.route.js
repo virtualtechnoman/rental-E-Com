@@ -24,7 +24,7 @@ router.get("/", authorizePrivilege("GET_TICKETS_OWN"), (req, res) => {
 })
 //GET single Ticket
 router.get("/id/:id", authorizePrivilege("GET_TICKET_OWN"), (req, res) => {
-    Ticket.findOne({ created_by: req.user._id , _id:req.params.id }).lean().exec().then(_ticket => {
+    Ticket.findOne({ created_by: req.user._id , _id:req.params.id }).populate("messages.executive","full_name").lean().exec().then(_ticket => {
         return res.json({ status: 200, data: _ticket, errors: false, message: "Your Tickets" });
     }).catch(err => {
         console.log(err);
@@ -34,7 +34,7 @@ router.get("/id/:id", authorizePrivilege("GET_TICKET_OWN"), (req, res) => {
 
 //GET all tickets from all users
 router.get("/all", authorizePrivilege("GET_TICKETS_ALL"), (req, res) => {
-    Ticket.find().populate("created_by", "-password").sort({ created_at: 'desc' }).lean().exec().then(doc => {
+    Ticket.find().populate([{path:"created_by", select :"-password"},{path:"messages.executive"}]).sort({ created_at: 'desc' }).lean().exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Tickets" });
     }).catch(err => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
@@ -54,7 +54,7 @@ router.post("/", authorizePrivilege("ADD_NEW_TICKET"), (req, res) => {
         let newTicket = new Ticket(result.data);
         newTicket.messages.push({ customer: message });
         newTicket.save().then(_tkt => {
-            _tkt.populate("created_by", "-password", (err, doc) => {
+            _tkt.populate("created_by", "full_name", (err, doc) => {
                 if (err) {
                     console.log(err);
                     res.status(500).json({ status: 500, data: null, errors: true, message: "Error while populating ticket" })
@@ -68,7 +68,7 @@ router.post("/", authorizePrivilege("ADD_NEW_TICKET"), (req, res) => {
     } else {
         let newTicket = new Ticket(result.data);
         newTicket.save().then(_tkt => {
-            _tkt.populate("created_by", "-password", (err, doc) => {
+            _tkt.populate("created_by", "full_name", (err, doc) => {
                 if (err) {
                     console.log(err);
                     res.status(500).json({ status: 500, data: null, errors: true, message: "Error while populating ticket" })
@@ -88,8 +88,8 @@ router.put("/executive/:id", authorizePrivilege("ADD_NEW_MESSAGE_ON_TICKET_EXECU
         let result = TicketController.verifyExecutiveMsg(req.body);
         if (!isEmpty(result.errors))
             return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
-        Ticket.findByIdAndUpdate(req.params.id, { $set: { status: "Open" }, $push: { messages: { executive: req.body.message, executive_id: req.user._id } } }, { new: true })
-            .populate([{ path: "created_by", select: "-password" }, { path: "messages.executive_id", select: "full_name" }]).lean().exec().then(_tkt => {
+        Ticket.findByIdAndUpdate(req.params.id, { $set: { status: "Open" }, $push: { messages: { message: req.body.message, executive: req.user._id } } }, { new: true })
+            .populate([{ path: "created_by", select: "full_name" }, { path: "messages.executive", select: "full_name" }]).lean().exec().then(_tkt => {
                 return res.json({ status: 200, data: _tkt, errors: false, message: "Message sent successfully" });
             }).catch(_err => {
                 console.log(_err);
@@ -106,7 +106,7 @@ router.put("/customer/:id", authorizePrivilege("ADD_NEW_MESSAGE_ON_TICKET_CUSTOM
         if (!isEmpty(result.errors))
             return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
         Ticket.findByIdAndUpdate(req.params.id, { $set: { status: "Open" }, $push: { messages: { customer: req.body.message } } }, { new: true })
-            .populate({ path: "created_by", select: "-password" }).lean().exec().then(_tkt => {
+            .populate([{ path: "created_by", select: "full_name" }, { path: "messages.executive", select: "full_name" }]).lean().exec().then(_tkt => {
                 return res.json({ status: 200, data: _tkt, errors: false, message: "Message sent successfully" });
             }).catch(_err => {
                 console.log(_err);
@@ -120,7 +120,7 @@ router.put("/customer/:id", authorizePrivilege("ADD_NEW_MESSAGE_ON_TICKET_CUSTOM
 router.put("/close/:id", authorizePrivilege("CLOSE_TICKET"), (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.id)) {
        Ticket.findByIdAndUpdate(req.params.id, { $set: { status: "Close" }}, { new: true })
-            .populate({ path: "created_by", select: "-password" }).lean().exec().then(_tkt => {
+            .populate({ path: "created_by messages.executive", select: "full_name" }).lean().exec().then(_tkt => {
                 return res.json({ status: 200, data: _tkt, errors: false, message: "Ticket Closed Successfully" });
             }).catch(_err => {
                 console.log(_err);
