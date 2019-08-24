@@ -49,7 +49,7 @@ router.post("/", authorizePrivilege("CREATE_NEW_CHAT"), (req, res) => {
 
 //Refresh chat
 router.get("/:id", authorizePrivilege("CREATE_NEW_CHAT"), (req, res) => {
-    Chat.findById(req.params.id).populate("responded_by").exec().then(_cht => {
+    Chat.findById(req.params.id).populate("responded_by","-password").exec().then(_cht => {
         if (_cht.is_open) {
             if (_cht.responded_by) {
                 return res.json({ status: 200, data: _cht, errors: false, message: "Your chat" });
@@ -76,7 +76,7 @@ router.put("/executive/:id", authorizePrivilege("ADD_NEW_MESSAGE_ON_CHAT_EXECUTI
                     }
                     _chat.messages.push({ executive: req.body.message });
                     _chat.save().then(_cht => {
-                        _cht.populate("responded_by").execPopulate().then(_cht => {
+                        _cht.populate("responded_by","-password").execPopulate().then(_cht => {
                             if (_chat.responded_by)
                                 return res.json({ status: 200, data: _cht, errors: false, message: "Message sent successfully" });
                             else {
@@ -107,7 +107,7 @@ router.put("/customer/:id", authorizePrivilege("ADD_NEW_MESSAGE_ON_CHAT_CUSTOMER
                 if (_chat.is_open) {
                     _chat.messages.push({ customer: req.body.message });
                     _chat.save().then(_cht => {
-                        _cht.populate("responded_by").execPopulate().then(_cht => {
+                        _cht.populate("responded_by","-password").execPopulate().then(_cht => {
                             if (_chat.responded_by)
                                 return res.json({ status: 200, data: _cht, errors: false, message: "Message sent successfully" });
                             else {

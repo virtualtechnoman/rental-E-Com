@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const message = mongoose.Schema({
-    customer: String, executive: String, executive_id:{type:mongoose.Schema.Types.ObjectId, ref:"user"}, at: { type: Date , default:Date.now}
+    customer: String, message: String, executive:{type:mongoose.Schema.Types.ObjectId, ref:"user"}, at: { type: Date , default:Date.now}
 }, {
         versionKey: false,
         _id:false
