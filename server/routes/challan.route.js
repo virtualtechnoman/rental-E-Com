@@ -28,6 +28,28 @@ router.get("/type/:type", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) 
             return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting Challans" })
         });
 })
+
+//GET all challans assigned to self
+router.get("assigned/:type", authorizePrivilege("GET_ALL_CHALLAN_ASSIGNED"), (req, res) => {
+    let p = { path: "order", populate: { path: "products.product" } }
+    if (req.params.type == "order") {
+        p.model = "order";
+    } else if (req.params.type == "rorder") {
+        p.model = "returnorder";
+    } else {
+        return res.status(400).json({ status: 400, data: doc, errors: false, message: "Invalid Type" })
+    }
+    Challan.find({ driver: req.user._id, order_type: req.params.type }).populate("processing_unit_incharge dispatch_processing_unit vehicle driver", "-password")
+        .populate(p).exec().then(doc => {
+            if (doc.length > 0)
+                return res.json({ status: 200, data: doc, errors: false, message: "Challans" });
+            else
+                return res.json({ status: 200, data: doc, errors: true, message: "No Challan found" });
+        }).catch(err => {
+            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting Challans" })
+        });
+})
+
 //Accept Challan : used by driver
 router.put("/accept/:id", authorizePrivilege("ACCEPT_CHALLAN"), (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.id)) {

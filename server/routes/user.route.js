@@ -34,7 +34,7 @@ router.get('/hub', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
 //Get all drivers
 router.get('/driver', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   try {
-    const allUsers = await User.find({ role: process.env.DRIVER_ROLE }).populate("role").exec();
+    const allUsers = await User.find({ role: process.env.DRIVER_ROLE },"-password").populate("role").exec();
     // console.log(allUsers);
     res.json({ status: 200, message: "All Drivers", errors: false, data: allUsers });
   }

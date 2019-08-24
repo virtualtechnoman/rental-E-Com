@@ -30,8 +30,9 @@ module.exports = (p=false)=>({
     ADD_NEW_RETURN_ORDER:p,
     DELETE_RETURN_ORDER:p,
     //Challan Privilege
-    GET_ALL_CHALLAN:p,
+    // GET_ALL_CHALLAN:p,
     GET_ALL_CHALLAN_OWN:p,
+    GET_ALL_CHALLAN_ASSIGNED:p,
     GET_CHALLAN:p,
     GENERATE_ORDER_CHALLAN:p,
     DELETE_CHALLAN:p,
@@ -87,10 +88,16 @@ module.exports = (p=false)=>({
     DELETE_AREA:p,
     //Ticket Privilege
     GET_TICKETS_OWN:p,
+    GET_TICKET_OWN:p,
     GET_TICKETS_ALL:p,
     ADD_NEW_TICKET:p,
     DELETE_TICKET:p,
     ADD_NEW_MESSAGE_ON_TICKET_EXECUTIVE:p,
     ADD_NEW_MESSAGE_ON_TICKET_CUSTOMER:p,
-    CLOSE_TICKET:p
+    CLOSE_TICKET:p,
+    //Chat Privilege
+    CREATE_NEW_CHAT:p,
+    ADD_NEW_MESSAGE_ON_CHAT_EXECUTIVE:p,
+    ADD_NEW_MESSAGE_ON_CHAT_CUSTOMER:p,
+    CLOSE_CHAT:p,
 })

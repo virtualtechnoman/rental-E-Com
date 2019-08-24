@@ -11,12 +11,21 @@ const Product = require("../models/Products.model");
 
 //GET own Tickets
 router.get("/", authorizePrivilege("GET_TICKETS_OWN"), (req, res) => {
-    Ticket.find({ created_by: req.user._id }, null, {
+    Ticket.find({ created_by: req.user._id }, "ticket_number created_at status", {
         sort: {
             created_at: 'desc' //Sort by Date DESC
         }
     }).lean().exec().then(_tickets => {
         return res.json({ status: 200, data: _tickets, errors: false, message: "Your Tickets" });
+    }).catch(err => {
+        console.log(err);
+        return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting tickets" })
+    })
+})
+//GET single Ticket
+router.get("/id/:id", authorizePrivilege("GET_TICKET_OWN"), (req, res) => {
+    Ticket.findOne({ created_by: req.user._id , _id:req.params.id }).lean().exec().then(_ticket => {
+        return res.json({ status: 200, data: _ticket, errors: false, message: "Your Tickets" });
     }).catch(err => {
         console.log(err);
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting tickets" })

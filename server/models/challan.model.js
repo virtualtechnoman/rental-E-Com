@@ -8,7 +8,7 @@ module.exports = mongoose.model("challan", new mongoose.Schema({
     order: { type: String },
     order_type: String,
     vehicle: { type: mongoose.Schema.Types.ObjectId, ref: "vehicle", required: true },
-    driver: { type: mongoose.Schema.Types.ObjectId, ref: "driver", required: true },
+    driver: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
     notes: {
         type: String
     },
