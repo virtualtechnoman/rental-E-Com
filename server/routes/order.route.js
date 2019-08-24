@@ -65,7 +65,7 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_ORDER"), (req, res) => {
                         arrfilter.push(x);
                     })
                     upd.accepted = true;
-                    upd.status = "Order Accepted";
+                    upd.status="Order Accepted";
                     Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
                         .populate("products.product placed_by placed_to", "-password").lean().exec()
                         .then(d => {
@@ -102,7 +102,7 @@ router.put("/recieve/:id", authorizePrivilege("RECIEVE_ORDER"), (req, res) => {
                                 arrfilter.push(x);
                             })
                             upd.recieved = true;
-                            upd.status = "Recieved";
+                            upd.status="Recieved";
                             Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
                                 .populate("products.product placed_by placed_to", "-password").lean().exec().then(d => {
                                     res.json({ status: 200, data: d, errors: false, message: "Order recieved successfully" });

@@ -86,5 +86,11 @@ module.exports = (p=false)=>({
     UPDATE_AREA:p,
     DELETE_AREA:p,
     //Ticket Privilege
-    GET_TICKETS_OWN:p
+    GET_TICKETS_OWN:p,
+    GET_TICKETS_ALL:p,
+    ADD_NEW_TICKET:p,
+    DELETE_TICKET:p,
+    ADD_NEW_MESSAGE_ON_TICKET_EXECUTIVE:p,
+    ADD_NEW_MESSAGE_ON_TICKET_CUSTOMER:p,
+    CLOSE_TICKET:p
 })
