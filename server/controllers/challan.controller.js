@@ -11,23 +11,20 @@ const challanCreateFromOrderSchema = Joi.object({
     departure: Joi.date().required()
 })
 
-const challanUpdateSchema = Joi.object({
-    // placed_to:Joi.string().required(),
-    // products:Joi.array().items({
-    //     product:Joi.string().required(),
-    //     quantity:Joi.number().min(1).required()
-    // }),
-    status:Joi.boolean().required()
+const challanCreateFromReturnOrderSchema = Joi.object({
+    dispatch_processing_unit: Joi.string().required(),
+    vehicle:Joi.string().required(),
+    driver:Joi.string().required(),
+    departure: Joi.date().required()
 })
 
 module.exports = {
     verifyCreateFromOrder,
-    verifyUpdate: verifyUpdate
+    verifyCreateFromReturnOrder
 }
 
-
 function verifyCreateFromOrder(order) { return helper.validator(order, challanCreateFromOrderSchema) }
-function verifyUpdate(order) { return helper.validator(order, challanUpdateSchema) }
+function verifyCreateFromReturnOrder(order) { return helper.validator(order, challanCreateFromReturnOrderSchema) }
 
 
 

@@ -5,8 +5,14 @@ const orderCreateSchema = Joi.object({
     products:Joi.array().items({
         product:Joi.string().required(),
         requested:Joi.number().min(1).required()
-    }).required(),
-    status:Joi.boolean().required()
+    }).required()
+})
+
+const returnOrderAcceptSchema = Joi.object({
+    products: Joi.array().items({
+        product: Joi.string().required(),
+        accepted: Joi.number().required()
+    }).required()
 })
 
 const orderUpdateSchema = Joi.object({
@@ -19,8 +25,9 @@ const orderUpdateSchema = Joi.object({
 })
 module.exports={
     verifyCreate:verifyCreate,
-    verifyUpdate:verifyUpdate
+    verifyAccept
 }
 
 function verifyCreate(order) { return helper.validator(order, orderCreateSchema) }
-function verifyUpdate(order) { return helper.validator(order, orderUpdateSchema) }
+function verifyAccept(order) { return helper.validator(order, returnOrderAcceptSchema) }
+// function verifyUpdate(order) { return helper.validator(order, orderUpdateSchema) }

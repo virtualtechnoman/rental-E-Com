@@ -49,7 +49,7 @@ router.post("/", authorizePrivilege("CREATE_NEW_CHAT"), (req, res) => {
 
 //Refresh chat
 router.get("/:id", authorizePrivilege("CREATE_NEW_CHAT"), (req, res) => {
-    Chat.findById(req.params.id).populate("responded_by","-password").exec().then(_cht => {
+    Chat.findById(req.params.id).populate("responded_by", "-password").exec().then(_cht => {
         if (_cht.is_open) {
             if (_cht.responded_by) {
                 return res.json({ status: 200, data: _cht, errors: false, message: "Your chat" });
@@ -74,11 +74,15 @@ router.put("/executive/:id", authorizePrivilege("ADD_NEW_MESSAGE_ON_CHAT_EXECUTI
                     if (!_chat.responded_by) {
                         _chat.responded_by = req.user._id;
                     }
+                    else if(_chat.responded_by != req.user._id){
+                        return res.json({ status: 400, data: null, errors: true, message: "You can't send message to this chat" });
+                    }
                     _chat.messages.push({ executive: req.body.message });
                     _chat.save().then(_cht => {
-                        _cht.populate("responded_by","-password").execPopulate().then(_cht => {
-                            if (_chat.responded_by)
+                        _cht.populate("responded_by", "-password").execPopulate().then(_cht => {
+                            if (_chat.responded_by) {
                                 return res.json({ status: 200, data: _cht, errors: false, message: "Message sent successfully" });
+                            }
                             else {
                                 _chat.responded_by = null;
                                 return res.json({ status: 200, data: _cht, errors: false, message: "Message sent successfully" });
@@ -104,10 +108,13 @@ router.put("/customer/:id", authorizePrivilege("ADD_NEW_MESSAGE_ON_CHAT_CUSTOMER
             return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
         Chat.findById(req.params.id).exec().then(_chat => {
             if (_chat) {
+                if(_chat.created_by != req.user._id){
+                    return res.status(400).json({ status: 400, data: null, errors: true, message: "Can't message to the other person's chat" });
+                }
                 if (_chat.is_open) {
                     _chat.messages.push({ customer: req.body.message });
                     _chat.save().then(_cht => {
-                        _cht.populate("responded_by","-password").execPopulate().then(_cht => {
+                        _cht.populate("responded_by", "-password").execPopulate().then(_cht => {
                             if (_chat.responded_by)
                                 return res.json({ status: 200, data: _cht, errors: false, message: "Message sent successfully" });
                             else {

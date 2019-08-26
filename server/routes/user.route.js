@@ -34,7 +34,19 @@ router.get('/hub', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
 //Get all drivers
 router.get('/driver', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   try {
-    const allUsers = await User.find({ role: process.env.DRIVER_ROLE },"-password").populate("role").exec();
+    const allUsers = await User.find({ role: process.env.DRIVER_ROLE }, "-password").populate("role").exec();
+    // console.log(allUsers);
+    res.json({ status: 200, message: "All Drivers", errors: false, data: allUsers });
+  }
+  catch (err) {
+    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
+  }
+})
+
+//Get all farms
+router.get('/farm', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
+  try {
+    const allUsers = await User.find({ role: process.env.FARM_ROLE }, "-password").populate("role").exec();
     // console.log(allUsers);
     res.json({ status: 200, message: "All Drivers", errors: false, data: allUsers });
   }
@@ -45,7 +57,7 @@ router.get('/driver', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
 
 
 // //GET all users
-router.get('/all',authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
+router.get('/all', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   try {
     const allUsers = await User.find().populate("role").exec();
     // console.log(allUsers);
@@ -99,7 +111,7 @@ router.put('/:id', authorizePrivilege("UPDATE_USER"), (req, res) => {
     // let user = (({ full_name, email, role }) => ({ full_name, email, role }))(req.body);
     const result = userCtrl.verifyUpdate(req.body);
     if (!isEmpty(result.errors)) {
-      return res.status(400).json({status:400, data:null, errors:result.errors, message:"Fields required"})
+      return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
     }
     User.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
       if (err) {
@@ -137,26 +149,28 @@ router.post("/", authorizePrivilege("ADD_NEW_USER"), (req, res) => {
   if (isEmpty(result.errors)) {
     User.findOne({ email: result.data.email }, (err, doc) => {
       if (err)
-        return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while verifying the email" })
-    })
-    result.data.user_id = "USR" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
-    // console.log(user);
-    bcrypt.genSalt(10, function (err, salt) {
-      bcrypt.hash(result.data.password, salt, function (err, hash) {
-        result.data.password = hash;
-        const newuser = new User(result.data);
-        newuser.save().then(data => {
-          data = data.toObject();
-          delete data.password;
-          res.status(200).json({ status: 200, errors: false, data, message: "User Added successfully" });
-        }).catch(err => {
-          res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating new user" });
-        })
+        return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while verifying the email" });
+      if (doc)
+        return res.status(400).json({ status: 400, errors: true, data: null, message: "Email already registered" });
+      result.data.user_id = "USR" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
+      // console.log(user);
+      bcrypt.genSalt(10, function (err, salt) {
+        bcrypt.hash(result.data.password, salt, function (err, hash) {
+          result.data.password = hash;
+          const newuser = new User(result.data);
+          newuser.save().then(data => {
+            data = data.toObject();
+            delete data.password;
+            res.status(200).json({ status: 200, errors: false, data, message: "User Added successfully" });
+          }).catch(err => {
+            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating new user" });
+          })
+        });
       });
-    });
+    })
   }
   else {
-    res.json(result.errors);
+    res.status(500).json({ status: 500, errors: result.errors, data: null, message: "Fields Required" });
   }
 })
 
