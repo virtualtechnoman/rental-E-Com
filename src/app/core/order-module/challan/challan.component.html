@@ -46,8 +46,8 @@
     <div class="modal-content tx-14">
       <div class="modal-header">
         <div>
-          <h6 class="mg-b-5">Challan Invoice #{{currentChallan.challan_id}}</h6>
-          <p class="mg-b-0 tx-color-03">Due on {{currentChallan.challan_date | date : 'dd/MM/yy'}}</p>
+          <h6 class="mg-b-5">Challan Details</h6>
+          <!-- <p class="mg-b-0 tx-color-03">Due on {{currentChallan.challan_date | date : 'dd/MM/yy'}}</p> -->
         </div>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -60,15 +60,19 @@
               <div class="col-sm-4">
                 <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed From</label>
                 <h6 class="tx-15 mg-b-10">{{currentChallan.dispatch_processing_unit.full_name}}</h6>
-                <p class="mg-b-0">{{currentChallan.dispatch_processing_unit.mobile_number}}</p>
+                <p class="mg-b-0">{{currentChallan?.dispatch_processing_unit?.email}}</p>
               </div>
+              <div class="col-sm-6 tx-right d-none d-md-block" style="margin-left: 500px">
+                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{currentChallan.challan_date | date : 'dd/MM/yy'}}</label>
+                  <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{currentChallan.challan_id}}</h1>
+                </div><!-- col -->
               <div class="col-sm-4 col-lg-8 mg-t-40 mg-sm-t-0 mg-md-t-40">
                 <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
                 <h6 class="tx-15 mg-b-10">{{currentChallan.processing_unit_incharge.full_name}}</h6>
                 <p class="mg-b-0">{{currentChallan.processing_unit_incharge.email}}</p>
               </div>
             </div>
-            <div class="col-md-6 ">
+            <!-- <div class="col-md-6 ">
               <div class="offset-md-4 col-sm-6 col-lg-4 mg-t-40">
                 <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Challan Invoice Information</label>
                 <ul class="list-unstyled lh-7">
@@ -82,7 +86,7 @@
                   </li>
                 </ul>
               </div>
-            </div>
+            </div> -->
           </div><!-- row -->
 
           <div class="row">
@@ -142,8 +146,8 @@
                   <tr>
                     <td class="tx-nowrap">{{currentChallan.vehicle.number}}</td>
                     <td class="tx-nowrap">{{currentChallan.vehicle.type}}</td>
-                    <td class="tx-center">{{currentChallan.driver.name}}</td>
-                    <td class="tx-right">{{currentChallan.driver.mobile}}</td>
+                    <td class="tx-center">{{currentChallan.driver.full_name}}</td>
+                    <td class="tx-right">{{currentChallan.driver.mobile_number}}</td>
                     <td class="tx-right">{{currentChallan.driver.dl_number}}</td>
                   </tr>
                 </tbody>

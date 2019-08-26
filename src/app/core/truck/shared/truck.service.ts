@@ -13,7 +13,7 @@ export class TruckService {
 
   url = '/api/driver';
   url2 = '/api/vehicle';
-
+  url3='/api/user/driver';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   getAllDrivers() {
@@ -56,5 +56,9 @@ export class TruckService {
 
   updateVehicle(product, id) {
     return this.http.put(this.url2 + '/' + id, product, { headers: this.headers });
+  }
+
+  alldrivers(){
+    return this.http.get(this.url3 + '/', { headers: this.headers });
   }
 }

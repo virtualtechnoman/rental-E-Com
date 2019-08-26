@@ -62,6 +62,7 @@ export class OrderComponent implements OnInit {
   dispatchValueForm:FormGroup;
   recievedValueForm:FormGroup;
   billedValueForm:FormGroup;
+  allFarms:any[]=[]
   constructor(private productService: ProductsService, private fb: FormBuilder, private toastr: ToastrService,
     private authService: AuthService, private orderService: OrderService, private userService: UserService,private vehicleService: TruckService
   ) {
@@ -71,13 +72,14 @@ export class OrderComponent implements OnInit {
     this.getUsers();
     this.getVehicle();
     this.getDrivers();
+    this.getFarms();
   }
 
   ngOnInit() {
     this.getProducts();
     this.orderPlacedForm = this.fb.group({
       placed_to: ['',Validators.required],
-      notes:[''],
+      notes:"",
       products: this.fb.array([])
     })
     this.acceptedValueForm=this.fb.group({
@@ -123,6 +125,12 @@ export class OrderComponent implements OnInit {
     };
   }
 
+  getFarms(){
+    this.orderService.getAllFarms().subscribe((res:ResponseModel)=>{
+      this.allFarms=res.data;
+      console.log(res.data)
+    })
+  }
   asd(event:any,i){
     if(event.target.value){
     var arr=[];
@@ -230,11 +238,17 @@ export class OrderComponent implements OnInit {
       return;
     }
     this.currentOrder2=this.orderPlacedForm.value;
+    console.log(this.currentOrder2)
+    if(this.orderPlacedForm.value.notes==null){
+      this.orderPlacedForm.value.notes=""
+    }
+    console.log(this.orderPlacedForm.value)
       this.addOrder(this.orderPlacedForm.value);
     
   }
   viewAcceptOrderButton(i){
     this.orderSelected=this.allOrders[i];
+    console.log(this.orderSelected)
     this.orderSelectedProducts=this.allOrders[i].products;
     this.orderSelectedNotes=this.allOrders[i].notes;
     this.orderId=this.allOrders[i]._id
@@ -326,8 +340,9 @@ export class OrderComponent implements OnInit {
   }
 
   getDrivers() {
-    this.vehicleService.getAllDrivers().subscribe((res: ResponseModel) => {
+    this.vehicleService.alldrivers().subscribe((res: ResponseModel) => {
       this.alldriver = res.data;
+      console.log(res.data)
     });
   }
 
@@ -512,6 +527,7 @@ export class OrderComponent implements OnInit {
   getDriver(event: any) {
     this.driverIndex = event.target.selectedIndex - 1;
     this.challanDriver=this.alldriver[this.driverIndex]
+    console.log(this.challanDriver)
   }
   getVehicle2(event: any) {
 

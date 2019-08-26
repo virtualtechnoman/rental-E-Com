@@ -62,7 +62,7 @@ export class CustomersComponent implements OnInit {
       retrive: true,
       dom: '<"html5buttons"B>lTfgitp',
       language: {
-        search: '_INPUT',
+        search: '_INPUT_',
         searchPlaceholder: 'Search records',
       },
       // dom: 'Bfrtip',

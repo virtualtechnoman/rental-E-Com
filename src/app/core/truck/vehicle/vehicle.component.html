@@ -69,14 +69,19 @@
               <div *ngIf="f.type.errors.required">Vehicle Type is required</div>
             </div>
           </div>
-          <div class="form-row text-center">
+          <div class="form-row">
             <label for="inputPassword4">Is Available</label>
             <p-inputSwitch class="form-control" formControlName="isAvailable" required></p-inputSwitch>
           </div>
-          <div class="form-row text-center">
+          <br>
+          <div class=" text-center">
+          <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+          <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+          </div>
+          <!-- <div class="text-center">
             <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
             <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
-          </div>
+          </div> -->
         </form>
       </div>
     </div>

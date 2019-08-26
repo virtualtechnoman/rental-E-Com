@@ -60,7 +60,7 @@
                     <label for="inputEmail4">Order To</label>
                     <select name="user" formControlName="placed_to" class="form-control">
                       <option selected disabled>Select User</option>
-                      <option [ngValue]="user._id" *ngFor="let user of allUsers;let i=index">{{user.full_name}}</option>
+                      <option [ngValue]="user._id" *ngFor="let user of allFarms;let i=index">{{user.full_name}}</option>
                     </select>
                     <div *ngIf="submitted && f.placed_to.errors" class="invalid-feedback">
                       <div *ngIf="f.placed_to.errors.required">User is required</div>
@@ -89,12 +89,6 @@
                                 <input type="number" name="from" id="from" class="form-control" formControlName="requested">
                               </div>
                             </div>
-                            <!-- <div class="col-md-3">
-                                <div>
-                                  <label for="period">Accepted</label>
-                                  <input type="number" name="from" id="from" class="form-control" formControlName="accepted">
-                                </div>
-                              </div> -->
                             <div class="col-md-1">
                               <label for="period">Remove</label>
                               <button class="form-control" (click)="deleteProducts(i)">-</button>
@@ -112,17 +106,11 @@
             <div class="form-row offset-md-4">
                 <input type="text" placeholder="Optinal Notes here" class="form-control" formControlName="notes">
               </div>
-              <!-- <div class="divider-text">Status</div>
-              <div class="form-row">
-                  <div class="form-group col-md-2 text-center">
-                    <label for="inputPassword4">Status</label>
-                    <p-inputSwitch class="form-control" required ></p-inputSwitch>
-                  </div>
-                </div> -->
-            <div class="form-group">
-            <button type="submit" class="btn btn-primary tx-13 ">Save</button>
-            <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
-          </div>
+                <br>
+                <div class=" text-center">
+                <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+                <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+                </div>
           </form>
         </div>
       </div>
@@ -168,8 +156,8 @@
           <div class="modal-header">
               <div class="d-sm-flex align-items-center justify-content-between">
                   <div>
-                    <h4 class="mg-b-5">Invoice {{orderSelected?.order_id}}</h4>
-                    <p class="mg-b-0 tx-color-03">Due on {{orderSelected?.order_date | date : 'dd/MM/yy'}}</p>
+                    <h4 class="mg-b-5">Order Details</h4>
+                    <!-- <p class="mg-b-0 tx-color-03">Due on {{orderSelected?.order_date | date : 'dd/MM/yy'}}</p> -->
                   </div>
                 </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -186,15 +174,15 @@
                         <p class="mg-b-0">{{orderSelected?.placed_by?.email}}</p>
                       </div><!-- col -->
                       <div class="col-sm-6 tx-right d-none d-md-block">
-                        <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice Number</label>
+                        <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{orderSelected?.order_date | date : 'dd/MM/yy'}}</label>
                         <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{orderSelected?.order_id}}</h1>
                       </div><!-- col -->
                       <div class="col-sm-6 col-lg-8 mg-t-40 mg-sm-t-0 mg-md-t-40">
                         <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
                         <h6 class="tx-15 mg-b-10">{{orderSelected?.placed_to?.full_name}}</h6>
-                        <p class="mg-b-0">{{orderSelected?.placed_to?.mobile_number}}</p>
+                        <p class="mg-b-0">{{orderSelected?.placed_to?.email}}</p>
                       </div><!-- col -->
-                      <div class="col-sm-6 col-lg-4 mg-t-40">
+                      <!-- <div class="col-sm-6 col-lg-4 mg-t-40">
                         <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice Information</label>
                         <ul class="list-unstyled lh-7">
                           <li class="d-flex justify-content-between">
@@ -202,11 +190,11 @@
                             <span>#{{orderSelected?.order_id}}</span>
                           </li>
                           <li class="d-flex justify-content-between">
-                            <span>Due Date</span>
+                            <span>Order Date</span>
                             <span>{{orderSelected?.order_date | date : 'dd/MM/yy'}}</span>
                           </li>
                         </ul>
-                      </div><!-- col -->
+                      </div>col -->
                     </div><!-- row -->
             
                     <div class="table-responsive mg-t-40">
@@ -257,22 +245,23 @@
                         <p>{{orderSelected?.notes}}</p>
                       </div><!-- col -->
                       <div class="col-sm-6 col-lg-4 order-1 order-sm-0">
-                          <button class="btn btn-block btn-primary"  data-toggle="modal"
-                          data-target="#ChallanModal"
-                          *ngIf="orderSelected.status == 'Order Accepted' " data-dismiss="modal">
-                            <i data-feather="credit-card" class="mg-r-5"></i> Generate Challan</button>
-                        <button class="btn btn-block btn-primary" (click)="asde()" *ngIf="orderSelected.status == 'Pending' ">Accept Order</button>
-                        <button *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' " class="btn btn-primary btn-block"
-                          (click)="asdef()">Recieved Challan Quantity</button>
-                          <button *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' "  class="btn btn-primary btn-block"
-                          (click)="billProductQuantity()">Bill Product Quantity</button>
+                          
                       </div><!-- col -->
                     </div><!-- row -->
                   </div><!-- container -->
                 </div><!-- content -->
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button class="btn btn-primary tx-13 mx-1"  data-toggle="modal"
+              data-target="#ChallanModal"
+              *ngIf="orderSelected.status == 'Order Accepted' " data-dismiss="modal">
+                <i data-feather="credit-card" class="mg-r-5"></i> Generate Challan</button>
+            <button class="btn btn-primary tx-13 mx-1" (click)="asde()" *ngIf="orderSelected.status == 'Pending' ">Accept Order</button>
+            <button *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' " class="btn btn-primary tx-13 mx-1"
+              (click)="asdef()">Recieved Challan Quantity</button>
+              <button *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' "  class="btn btn-primary tx-13 mx-1"
+              (click)="billProductQuantity()">Bill Product Quantity</button>
+            <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
@@ -288,8 +277,8 @@
             <div class="modal-header">
                 <div class="d-sm-flex align-items-center justify-content-between">
                     <div>
-                      <h4 class="mg-b-5">Challan For Invoice {{orderSelected?.order_id}}</h4>
-                      <p class="mg-b-0 tx-color-03">Due on {{orderSelected?.order_date | date : 'dd/MM/yy'}}</p>
+                      <h4 class="mg-b-5">Challan Details</h4>
+                      <!-- <p class="mg-b-0 tx-color-03">Due on {{orderSelected?.order_date | date : 'dd/MM/yy'}}</p> -->
                     </div>
                   </div>
               <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -303,24 +292,28 @@
                           <h6 class="tx-15 mg-b-10">{{orderSelected?.placed_by?.full_name}}</h6>
                           <p class="mg-b-0">{{orderSelected?.placed_by?.email}}</p>
                         </div><!-- col -->
+                        <div class="col-sm-6 tx-right d-none d-md-block">
+                            <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{orderSelected?.order_date | date : 'dd/MM/yy'}}</label>
+                            <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{orderSelected?.order_id}}</h1>
+                          </div><!-- col -->
                         <div class="col-sm-6 col-lg-8 mg-t-40 mg-sm-t-0 mg-md-t-40">
                           <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
                           <h6 class="tx-15 mg-b-10">{{orderSelected?.placed_to?.full_name}}</h6>
                         <p class="mg-b-0">{{orderSelected?.placed_to?.mobile_number}}</p>
                         </div><!-- col -->
-                        <div class="col-sm-6 col-lg-4 mg-t-40">
-                          <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice Information</label>
+                        <!-- <div class="col-sm-6 col-lg-4 mg-t-40">
+                          <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Challan Information</label>
                           <ul class="list-unstyled lh-7">
                             <li class="d-flex justify-content-between">
                               <span>Invoice Number</span>
                               <span>#{{orderSelected?.order_id}}</span>
                             </li>
                             <li class="d-flex justify-content-between">
-                              <span>Due Date</span>
+                              <span>order Date</span>
                               <span>{{orderSelected?.order_date | date : 'dd/MM/yy'}}</span>
                             </li>
                           </ul>
-                        </div><!-- col -->
+                        </div>col -->
                       </div><!-- row -->
               
                       <div class="mg-t-50">
@@ -383,7 +376,7 @@
                               <div class="col-md-8">
                                 <select class="form-control" (change)="getDriver($event)">
                                   <option selected disabled>Select Driver Name</option>
-                                  <option [ngValue]="driver._id" *ngFor="let driver of alldriver;let i=index">{{driver.name}}
+                                  <option [ngValue]="driver._id" *ngFor="let driver of alldriver;let i=index">{{driver.full_name}}
                                   </option>
                                 </select>
                               </div>
@@ -409,9 +402,10 @@
                     </div><!-- container -->
                   </div><!-- content -->
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" (click)="challanGenerate()">Generate Challan</button>
-              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            <br>
+            <div class=" modal-footer text-center">
+                <button class="btn btn-primary tx-13 mx-1" (click)="challanGenerate()">Generate Challan</button>
+              <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
             </div>
           </div>
           
