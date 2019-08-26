@@ -11,7 +11,7 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 //GET specific return order
 router.get("/id/:id", authorizePrivilege("GET_RETURN_ORDER"), (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.id)) {
-        ReturnOrder.findById(req.params.id).populate("placed_by placed_to products.product").exec().then(doc => {
+        ReturnOrder.findById(req.params.id).populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).exec().then(doc => {
             if (doc)
                 res.json({ status: 200, data: doc, errors: false, message: "Order created successfully" });
             else
@@ -26,7 +26,7 @@ router.get("/id/:id", authorizePrivilege("GET_RETURN_ORDER"), (req, res) => {
 
 //GET Return orders placed by self
 router.get("/", authorizePrivilege("GET_ALL_RETURN_ORDERS_OWN"), (req, res) => {
-    ReturnOrder.find({ placed_by: req.user._id }).populate("placed_by placed_to products.product", "-password").exec().then(doc => {
+    ReturnOrder.find({ placed_by: req.user._id }).populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Return Orders" });
     }).catch(err => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
@@ -35,7 +35,7 @@ router.get("/", authorizePrivilege("GET_ALL_RETURN_ORDERS_OWN"), (req, res) => {
 
 //GET Return orders
 router.get("/all", authorizePrivilege("GET_ALL_RETURN_ORDERS"), (req, res) => {
-    ReturnOrder.find().populate("placed_by placed_to products.product").exec().then(doc => {
+    ReturnOrder.find().populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Return Orders" });
     }).catch(err => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
@@ -52,7 +52,7 @@ router.post("/", authorizePrivilege("ADD_NEW_RETURN_ORDER"), (req, res) => {
     result.data.order_id = "RORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newOrder = new ReturnOrder(result.data);
     newOrder.save().then(order => {
-        order.populate("placed_by placed_to products.product", "-password").execPopulate().then(doc => {
+        order.populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).execPopulate().then(doc => {
             res.json({ status: 200, data: doc, errors: false, message: "Return Order created successfully" });
         })
     }).catch(e => {
@@ -118,7 +118,7 @@ router.put("/recieve/:id", authorizePrivilege("RECIEVE_RETURN_ORDER"), (req, res
                             upd.recieved = true;
                             upd.status = "Recieved";
                             ReturnOrder.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                                .populate("products.product placed_by placed_to", "-password").lean().exec().then(d => {
+                                .populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).lean().exec().then(d => {
                                     res.json({ status: 200, data: d, errors: false, message: "Return Order recieved successfully" });
                                 }).catch(e => {
                                     console.log(e);
@@ -164,7 +164,7 @@ router.put("/bill/:id", authorizePrivilege("BILL_RETURN_ORDER"), (req, res) => {
                                 upd.billed = true;
                                 upd.status = "Billed";
                                 ReturnOrder.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                                    .populate("products.product placed_by placed_to", "-password").lean().exec()
+                                    .populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).lean().exec()
                                     .then(d => {
                                         res.json({ status: 200, data: d, errors: false, message: "Return Order billed successfully" });
                                     }).catch(e => {
@@ -211,7 +211,7 @@ router.post("/gchallan/:oid", authorizePrivilege("GENERATE_RETURN_ORDER_CHALLAN"
                     .then(challan => {
                         challan.populate([{ path: "processing_unit_incharge vehicle driver", select: "-password" }])
                             .execPopulate().then(doc => {
-                                ReturnOrder.findByIdAndUpdate(_rord._id, { $set: { challan_generated: true, status:"Challan Generated" } }, { new: true }).populate({ path: "products.product placed_by placed_to", select: "-password" }).then(_d => {
+                                ReturnOrder.findByIdAndUpdate(_rord._id, { $set: { challan_generated: true, status:"Challan Generated" } }, { new: true }).populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).then(_d => {
                                     doc = doc.toObject();
                                     doc.order = _d.toObject();
                                     res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });
