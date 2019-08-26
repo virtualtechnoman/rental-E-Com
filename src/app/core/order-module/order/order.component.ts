@@ -62,6 +62,7 @@ export class OrderComponent implements OnInit {
   dispatchValueForm:FormGroup;
   recievedValueForm:FormGroup;
   billedValueForm:FormGroup;
+  allFarms:any[]=[]
   constructor(private productService: ProductsService, private fb: FormBuilder, private toastr: ToastrService,
     private authService: AuthService, private orderService: OrderService, private userService: UserService,private vehicleService: TruckService
   ) {
@@ -71,6 +72,7 @@ export class OrderComponent implements OnInit {
     this.getUsers();
     this.getVehicle();
     this.getDrivers();
+    this.getFarms();
   }
 
   ngOnInit() {
@@ -123,6 +125,12 @@ export class OrderComponent implements OnInit {
     };
   }
 
+  getFarms(){
+    this.orderService.getAllFarms().subscribe((res:ResponseModel)=>{
+      this.allFarms=res.data;
+      console.log(res.data)
+    })
+  }
   asd(event:any,i){
     if(event.target.value){
     var arr=[];
@@ -234,6 +242,7 @@ export class OrderComponent implements OnInit {
     if(this.orderPlacedForm.value.notes==null){
       this.orderPlacedForm.value.notes=""
     }
+    console.log(this.orderPlacedForm.value)
       this.addOrder(this.orderPlacedForm.value);
     
   }

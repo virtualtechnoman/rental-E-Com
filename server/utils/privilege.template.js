@@ -16,7 +16,6 @@ module.exports = (p=false)=>({
     GET_ALL_ORDERS:p,
     GET_ALL_ORDERS_OWN:p,
     GET_ORDER:p,
-    // UPDATE_ORDER:p,
     ADD_NEW_ORDER:p,
     DELETE_ORDER:p,
     ACCEPT_ORDER:p,
@@ -26,8 +25,9 @@ module.exports = (p=false)=>({
     GET_ALL_RETURN_ORDERS:p,
     GET_ALL_RETURN_ORDERS_OWN:p,
     GET_RETURN_ORDER:p,
-    UPDATE_RETURN_ORDER:p,
     ADD_NEW_RETURN_ORDER:p,
+    // ACCEPT_RETURN_ORDER:p,
+    RECIEVE_RETURN_ORDER:p,
     DELETE_RETURN_ORDER:p,
     //Challan Privilege
     // GET_ALL_CHALLAN:p,
@@ -35,6 +35,7 @@ module.exports = (p=false)=>({
     GET_ALL_CHALLAN_ASSIGNED:p,
     GET_CHALLAN:p,
     GENERATE_ORDER_CHALLAN:p,
+    GENERATE_RETURN_ORDER_CHALLAN:p,
     DELETE_CHALLAN:p,
     ACCEPT_CHALLAN:p,
     //Vehicle Privilege
@@ -43,10 +44,10 @@ module.exports = (p=false)=>({
     UPDATE_VEHICLE:p,
     ADD_NEW_VEHICLE:p,
     //Driver Privilege
-    GET_ALL_DRIVERS:p,
-    DELETE_DRIVER:p,
-    UPDATE_DRIVER:p,
-    ADD_NEW_DRIVER:p,
+    // GET_ALL_DRIVERS:p,
+    // DELETE_DRIVER:p,
+    // UPDATE_DRIVER:p,
+    // ADD_NEW_DRIVER:p,
     //Customer Privilege
     GET_ALL_CUSTOMERS:p,
     UPDATE_CUSTOMER:p,
@@ -100,4 +101,5 @@ module.exports = (p=false)=>({
     ADD_NEW_MESSAGE_ON_CHAT_EXECUTIVE:p,
     ADD_NEW_MESSAGE_ON_CHAT_CUSTOMER:p,
     CLOSE_CHAT:p,
+    GET_ALL_NON_CLOSED_CHATS:p
 })

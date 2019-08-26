@@ -26,7 +26,7 @@ router.get("/id/:id", authorizePrivilege("GET_RETURN_ORDER"), (req, res) => {
 
 //GET Return orders placed by self
 router.get("/", authorizePrivilege("GET_ALL_RETURN_ORDERS_OWN"), (req, res) => {
-    ReturnOrder.find({ placed_by: req.user._id }).populate("placed_by placed_to products.product").exec().then(doc => {
+    ReturnOrder.find({ placed_by: req.user._id }).populate("placed_by placed_to products.product","-password").exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Return Orders" });
     }).catch(err => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
@@ -48,11 +48,12 @@ router.post("/", authorizePrivilege("ADD_NEW_RETURN_ORDER"), (req, res) => {
     if (!isEmpty(result.errors))
         return res.json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
     result.data.placed_by = req.user._id;
+    result.data.status = "Pending";
     result.data.order_id = "RORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newOrder = new ReturnOrder(result.data);
     newOrder.save().then(order => {
-        ReturnOrder.findById(order._id).populate("placed_by placed_to products.product").exec().then(doc => {
-            res.json({ status: 200, data: doc, errors: false, message: "Order created successfully" });
+        order.populate("placed_by placed_to products.product", "-password").execPopulate().then(doc => {
+            res.json({ status: 200, data: doc, errors: false, message: "Return Order created successfully" });
         })
     }).catch(e => {
         console.log(e);
@@ -60,76 +61,112 @@ router.post("/", authorizePrivilege("ADD_NEW_RETURN_ORDER"), (req, res) => {
     })
 })
 
+//Accept an return order
+// router.put("/accept/:id", authorizePrivilege("ACCEPT_RETURN_ORDER"), (req, res) => {
+//     if (mongodb.ObjectID.isValid(req.params.id)) {
+//         ReturnOrder.findById(req.params.id).exec().then(_ord => {
+//             if (_ord) {
+//                 if (!_ord.accepted) {
+//                     let result = ReturnOrderController.verifyAccept(req.body);
+//                     if (!isEmpty(result.errors))
+//                         return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
+//                     let upd = {}, arrfilter = [];
+//                     result.data.products.forEach((ele, index) => {
+//                         upd["products.$[e" + index + "].accepted"] = ele.accepted;
+//                         let x = {};
+//                         x["e" + index + ".product"] = ele.product;
+//                         arrfilter.push(x);
+//                     })
+//                     upd.accepted = true;
+//                     upd.status="Order Accepted";
+//                     ReturnOrder.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
+//                         .populate("products.product placed_by placed_to", "-password").lean().exec()
+//                         .then(d => {
+//                             res.json({ status: 200, data: d, errors: false, message: "Return Order accepted successfully" });
+//                         }).catch(e => {
+//                             console.log(e);
+//                             res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating accepted values" });
+//                         })
+//                 } else {
+//                     return res.status(400).json({ status: 400, errors: true, data: null, message: "Order already accepted" });
+//                 }
+//             } else {
+//                 return res.status(400).json({ status: 400, errors: true, data: null, message: "No order exist with the given id" });
+//             }
+//         })
+//     }
+// })
+
+//Recieve a return order
+router.put("/recieve/:id", authorizePrivilege("RECIEVE_RETURN_ORDER"), (req, res) => {
+    if (mongodb.ObjectID.isValid(req.params.id)) {
+        ReturnOrder.findById(req.params.id).exec().then(_ord => {
+            if (_ord) {
+                if (_ord.challan_generated) {
+                    if (_ord.challan_accepted) {
+                        if (!_ord.recieved) {
+                            ReturnOrder.findByIdAndUpdate(_ord._id, { $set: { recieved: true, status: "Recieved" } }, { new: true })
+                                .populate("products.product placed_by placed_to", "-password").lean().exec().then(d => {
+                                    res.json({ status: 200, data: d, errors: false, message: "Return Order recieved successfully" });
+                                }).catch(e => {
+                                    console.log(e);
+                                    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating recieved values" });
+                                })
+                        } else {
+                            return res.status(400).json({ status: 400, errors: true, data: null, message: "Return Order already recieved" });
+                        }
+                    } else {
+                        return res.status(400).json({ status: 400, errors: true, data: null, message: "Accept the challan first" });
+                    }
+                } else {
+                    return res.status(400).json({ status: 400, errors: true, data: null, message: "Generate the return order challan first" });
+                }
+            } else {
+                return res.status(400).json({ status: 400, errors: true, data: null, message: "Return Order not found" });
+            }
+        })
+    } else {
+        return res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid return order id" });
+    }
+})
+
 //Generate Challan for order
-router.post("/gchallan/:oid", authorizePrivilege("ADD_NEW_CHALLAN"), async (req, res) => {
+router.post("/gchallan/:oid", authorizePrivilege("GENERATE_RETURN_ORDER_CHALLAN"), async (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.oid)) {
-        let result = ChallanController.verifyCreate(req.body);
+        let result = ChallanController.verifyCreateFromReturnOrder(req.body);
         if (!isEmpty(result.errors))
             return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
         ReturnOrder.findById(req.params.oid).exec().then(_rord => {
-            if (_rord.status) {
-                if (_rord.challan_generated) {
-                    return res.status(400).json({ status: 400, errors: true, data: null, message: "Challan already generated for this return order" });
-                } else {
-                    result.data.processing_unit_incharge = req.user._id;
-                    result.data.order = req.params.oid;
-                    result.data.order_type = "rorder";
-                    result.data.challan_id = "CHLN" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
-                    let newChallan = new Challan(result.data);
-                    newChallan.save()
-                        .then(challan => {
-                            Challan.findById(challan._id)
-                                .populate("processing_unit_incharge vehicle driver").populate({ path: "order", model: "returnorder", populate: { path: "products.product" } })
-                                .exec()
-                                .then(doc => {
-                                    _rord.challan_generated = true;
-                                    _rord.save();
-                                    // ReturnOrder.findByIdAndUpdate(req.params.oid, { $set: { challan_generated: true } }, (err, updtd) => {
-                                    // if (err) {
-                                    //     return res.status(500).json({ status: 500, data: null, errors: true, message: "Challan generated but updating order got error" })
-                                    // }
-                                    res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });
-                                    // })
-                                })
-                        }).catch(e => {
-                            console.log(e);
-                            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while generating the challan" });
-                        })
-                }
+            if (_rord.challan_generated) {
+                return res.status(400).json({ status: 400, errors: true, data: null, message: "Challan already generated for this return order" });
             } else {
-                return res.status(400).json({ status: 400, errors: true, data: null, message: "Accept the return order first" })
+                result.data.processing_unit_incharge = req.user._id;
+                result.data.order = req.params.oid;
+                result.data.order_type = "rorder";
+                result.data.challan_id = "CHLN" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
+                let newChallan = new Challan(result.data);
+                newChallan.save()
+                    .then(challan => {
+                        challan.populate([{ path: "processing_unit_incharge vehicle driver", select: "-password" }])
+                            .execPopulate().then(doc => {
+                                ReturnOrder.findByIdAndUpdate(_rord._id, { $set: { challan_generated: true } },{new:true}).populate({ path: "products.product placed_by placed_to", select: "-password" }).then(_d => {
+                                    doc = doc.toObject();
+                                    doc.order = _d.toObject();
+                                    res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });
+                                }).catch(e => {
+                                    console.log(e);
+                                    return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating the return order" });
+                                })
+                            }).catch(e => {
+                                console.log(e);
+                                return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while populating the challan" });
+                            })
+                    }).catch(e => {
+                        console.log(e);
+                        res.status(500).json({ status: 500, errors: true, data: null, message: "Error while generating the challan" });
+                    })
             }
         })
-        // Challan.findOne({ order: req.params.oid, order_type: "rorder" }).exec().then(chln => {
-        //     if (chln) {
-        //         return res.status(400).json({ status: 400, errors: true, data: null, message: "Challan already generated for this return order" });
-        //     }
-        //     let result = ChallanController.verifyCreate(req.body);
-        //     if (!isEmpty(result.errors))
-        //         return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
-        //     result.data.processing_unit_incharge = req.user._id;
-        //     result.data.order = request.params.oid;
-        //     result.data.order_type = "rorder";
-        //     result.data.challan_id = "CHLN" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
-        //     let newChallan = new Challan(result.data);
-        //     newChallan.save()
-        //         .then(challan => {
-        //             Challan.findById(challan._id)
-        //                 .populate("processing_unit_incharge products.product vehicle driver").populate({ path: "order", model: "rorder" })
-        //                 .exec()
-        //                 .then(doc => {
-        //                     ReturnOrder.findByIdAndUpdate(req.params.oid, { $set: { challan_generated: true } }, (err, updtd) => {
-        //                         if (err) {
-        //                             return res.status(500).json({ status: 500, data: null, errors: true, message: "Challan generated but updating order got error" })
-        //                         }
-        //                         res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });
-        //                     })
-        //                 })
-        //         }).catch(e => {
-        //             console.log(e);
-        //             res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating the order" });
-        //         })
-        // })
     } else {
         res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid order id" });
     }
@@ -153,32 +190,32 @@ router.delete("/:id", authorizePrivilege("DELETE_RETURN_ORDER"), (req, res) => {
 })
 
 // Update order
-router.put("/:id", authorizePrivilege("UPDATE_RETURN_ORDER"), (req, res) => {
-    if (mongodb.ObjectID.isValid(req.params.id)) {
-        console.log(req.body);
-        let result = ReturnOrderController.verifyUpdate(req.body);
-        if (!isEmpty(result.errors)) {
-            return res.status(400).json({ status: 400, errors: false, data: null, message: result.errors });
-        }
-        ReturnOrder.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
-            if (err)
-                return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating order status" });
-            if (doc) {
-                doc.populate("placed_by placed_to").populate({ path: "order", model: "rorder", populate: { path: "products.product" } })
-                    .execPopulate()
-                    .then(d => {
-                        return res.status(200).json({ status: 200, errors: false, data: d, message: "Order updated successfully" });
-                    })
-                    .catch(e => {
-                        return res.status(500).json({ status: 500, errors: true, data: null, message: "Order updated but error occured while populating" });
-                    })
-            } else {
-                return res.status(200).json({ status: 200, errors: false, data: null, message: "No records updated" });
-            }
-        })
-    } else {
-        res.status(400).json({ status: 400, errors: false, data: null, message: "Invalid order id" });
-    }
-})
+// router.put("/:id", authorizePrivilege("UPDATE_RETURN_ORDER"), (req, res) => {
+//     if (mongodb.ObjectID.isValid(req.params.id)) {
+//         console.log(req.body);
+//         let result = ReturnOrderController.verifyUpdate(req.body);
+//         if (!isEmpty(result.errors)) {
+//             return res.status(400).json({ status: 400, errors: false, data: null, message: result.errors });
+//         }
+//         ReturnOrder.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
+//             if (err)
+//                 return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating order status" });
+//             if (doc) {
+//                 doc.populate("placed_by placed_to").populate({ path: "order", model: "rorder", populate: { path: "products.product" } })
+//                     .execPopulate()
+//                     .then(d => {
+//                         return res.status(200).json({ status: 200, errors: false, data: d, message: "Order updated successfully" });
+//                     })
+//                     .catch(e => {
+//                         return res.status(500).json({ status: 500, errors: true, data: null, message: "Order updated but error occured while populating" });
+//                     })
+//             } else {
+//                 return res.status(200).json({ status: 200, errors: false, data: null, message: "No records updated" });
+//             }
+//         })
+//     } else {
+//         res.status(400).json({ status: 400, errors: false, data: null, message: "Invalid order id" });
+//     }
+// })
 
 module.exports = router;

@@ -60,7 +60,7 @@
                     <label for="inputEmail4">Order To</label>
                     <select name="user" formControlName="placed_to" class="form-control">
                       <option selected disabled>Select User</option>
-                      <option [ngValue]="user._id" *ngFor="let user of allUsers;let i=index">{{user.full_name}}</option>
+                      <option [ngValue]="user._id" *ngFor="let user of allFarms;let i=index">{{user.full_name}}</option>
                     </select>
                     <div *ngIf="submitted && f.placed_to.errors" class="invalid-feedback">
                       <div *ngIf="f.placed_to.errors.required">User is required</div>

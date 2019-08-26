@@ -1,10 +1,10 @@
 const express = require('express');
 const isEmpty = require("../utils/is-empty");
-const ChallanController = require('../controllers/challan.controller');
+// const ChallanController = require('../controllers/challan.controller');
 const Challan = require('../models/challan.model');
 var mongodb = require("mongodb");
+const ReturnOrder = require("../models/return.order.model");
 const Order = require("../models/order.model");
-const moment = require('moment');
 const router = express.Router();
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
@@ -46,7 +46,7 @@ router.get("/assigned/:type", authorizePrivilege("GET_ALL_CHALLAN_ASSIGNED"), (r
             else
                 return res.json({ status: 200, data: doc, errors: true, message: "No Challan found" });
         }).catch(err => {
-            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting Challans" })
+            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting Challans" });
         });
 })
 
@@ -60,20 +60,33 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_CHALLAN"), (req, res) => {
                 } else {
                     challan.accepted = true;
                     challan.save().then(_c => {
-                        Order.findByIdAndUpdate(challan.order, { $set: { status: "Challan Accepted" } }).populate("products.product placed_by placed_to","-password").exec().then(_ord => {
-                            if (_ord) {
-                                console.log("Order : ",_ord)
-                                _c = _c.toObject();
-                                _c.order = _ord.toObject();
-                                return res.status(200).json({ status: 200, errors: false, data: _c, message: "Challan accepted successfully" });
-                            }
-                        }).catch(er => {
-                            console.log(er);
-                            return res.status(500).json({ status: 500, errors: true, data: null, message: "Challan accepted successfully but failed in setting order status" });
-                        })
+                        if (_c.order_type == "order") {
+                            Order.findByIdAndUpdate(challan.order, { $set: { challan_accepted: true, status: "Challan Accepted" } }).populate("products.product placed_by placed_to", "-password").exec().then(_ord => {
+                                if (_ord) {
+                                    _c = _c.toObject();
+                                    _c.order = _ord.toObject();
+                                    return res.status(200).json({ status: 200, errors: false, data: _c, message: "Challan accepted successfully" });
+                                }
+                            }).catch(er => {
+                                console.log(er);
+                                return res.status(500).json({ status: 500, errors: true, data: null, message: "Challan accepted successfully but failed in setting order status" });
+                            })
+                        }
+                        else{
+                            ReturnOrder.findByIdAndUpdate(challan.order, { $set: { challan_accepted: true, status: "Challan Accepted" } }).populate("products.product placed_by placed_to", "-password").exec().then(_ord => {
+                                if (_ord) {
+                                    _c = _c.toObject();
+                                    _c.order = _ord.toObject();
+                                    return res.status(200).json({ status: 200, errors: false, data: _c, message: "Challan accepted successfully" });
+                                }
+                            }).catch(er => {
+                                console.log(er);
+                                return res.status(500).json({ status: 500, errors: true, data: null, message: "Challan accepted successfully but failed in setting return order status" });
+                            })
+                        }
                     })
                 }
-            }else{
+            } else {
                 res.status(400).json({ status: 400, errors: false, data: null, message: "Challan not found" });
             }
         })

@@ -7,6 +7,7 @@ const prods = mongoose.Schema({
     billed:{type:Number, default:0},
     recieved:{type:Number, default:0}
 },{
+    _id:false,
     versionKey: false
 })
 module.exports = mongoose.model("order", new mongoose.Schema({
@@ -16,6 +17,7 @@ module.exports = mongoose.model("order", new mongoose.Schema({
     products: [prods],
     notes: { type: String},
     accepted: { type: Boolean, default: false },
+    challan_accepted: { type: Boolean, default: false },
     recieved: { type: Boolean, default: false },
     billed: { type: Boolean, default: false },
     challan_generated: { type: Boolean, default: false },
