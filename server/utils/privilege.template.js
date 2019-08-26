@@ -28,6 +28,7 @@ module.exports = (p=false)=>({
     ADD_NEW_RETURN_ORDER:p,
     // ACCEPT_RETURN_ORDER:p,
     RECIEVE_RETURN_ORDER:p,
+    BILL_RETURN_ORDER:p,
     DELETE_RETURN_ORDER:p,
     //Challan Privilege
     // GET_ALL_CHALLAN:p,
