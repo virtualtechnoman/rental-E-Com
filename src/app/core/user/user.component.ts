@@ -220,19 +220,20 @@ export class UserComponent implements OnInit {
     });
   }
 
-  getUserbyRole() {
+  getUserbyRole(event:any) {
     this.allUsers.length = 0;
-    if (!this.selectedUserRole) {
-      this.getAllUsers();
-    } else {
-      this.userService.getUserByRole(this.selectedUserRole._id).subscribe((res: ResponseModel) => {
-        if (res.error) {
-          this.toastr.warning('No User Available with this role', 'Error');
-        } else {
-          this.allUsers = res.data;
-        }
-      });
-    }
+    console.log(event)
+    // if (!this.selectedUserRole) {
+    //   this.getAllUsers();
+    // } else {
+    //   this.userService.getUserByRole(this.selectedUserRole._id).subscribe((res: ResponseModel) => {
+    //     if (res.error) {
+    //       this.toastr.warning('No User Available with this role', 'Error');
+    //     } else {
+    //       this.allUsers = res.data;
+    //     }
+    //   });
+    // }
   }
 
   public uploadCSV(files: FileList) {

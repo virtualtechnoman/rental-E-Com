@@ -8,6 +8,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { SupportRoutingModule } from './Shared/support.routing';
 import { TicketsComponent } from './tickets/tickets.component';
 import { SupportService } from './Shared/support.service';
+import { ChatComponent } from '../Support/chat/chat.component';
 // import { DistirbutorComponent } from './distirbutor/distirbutor.component';
 // import { SectorComponent } from './sector/sector.component';
 
@@ -19,7 +20,7 @@ import { SupportService } from './Shared/support.service';
     ReactiveFormsModule,
     InputSwitchModule
   ],
-  declarations: [TicketsComponent],
+  declarations: [TicketsComponent, ChatComponent],
   providers: [SupportService],
   exports: [
     SupportRoutingModule

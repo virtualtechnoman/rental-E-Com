@@ -28,7 +28,6 @@ import { ProductsModule } from './core/products/products.module';
 import { OrderModuleModule } from './core/order-module/order-module.module';
 import { CustomersModule } from './core/customers/customers.module';
 import { TruckModule } from './core/truck/truck.module';
-import { LocationComponent } from './core/location/location.component';
 import { LocationManagerModule } from './core/location-manager/location-manager.module';
 import { SupportModule } from './core/Support/support.module';
 
@@ -39,7 +38,6 @@ import { SupportModule } from './core/Support/support.module';
     HomeComponent,
     MaintainanceComponent,
     CoreComponent,
-    LocationComponent,
   ],
   imports: [
     BrowserModule,

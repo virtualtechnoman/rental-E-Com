@@ -73,7 +73,7 @@
                   <div *ngIf="f.mobile.errors.required">Mobile is required</div>
               </div>
           </div>
-          <div class="form-row  text-center">
+          <div class="form-row">
               <label>Status</label>
               <p-inputSwitch class="form-control" formControlName="isAvailable" required [ngClass]="{ 'is-invalid': submitted && f.isAvailable.errors }"></p-inputSwitch>
               <!-- <input type="password" formControlName="password" class="form-control"  /> -->
@@ -81,10 +81,15 @@
                   <div *ngIf="f.isAvailable.errors.required">Status is required</div>
               </div>
           </div>
-          <div class="form-row  text-center">
-              <button class="btn btn-primary">Save</button>
-              <button class="btn btn-primary" data-dismiss="modal">Close</button>
+          <br>
+          <div class=" text-center">
+          <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+          <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
           </div>
+          <!-- <div class="text-center">
+              <button type="submit" class="btn btn-primary">Save</button>
+              <button class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div> -->
       </form>
       </div>
     </div>

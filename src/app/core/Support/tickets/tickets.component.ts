@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { SupportService } from '../Shared/support.service';
 import { ResponseModel } from '../../../shared/shared.model';
 import { Subject } from 'rxjs';
@@ -12,6 +12,8 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class TicketsComponent implements OnInit {
 
+  @ViewChild('searchInput') searchInput: ElementRef;
+
   allTickets:any[]=[]
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
@@ -19,8 +21,11 @@ export class TicketsComponent implements OnInit {
   submitted:boolean=false;
   editing:boolean=false;
   viewIssuesArray:any=[];
-  viewMessagesArray:any=[];
+  viewMessagesArray:any[]=[];
   ticketID:string;
+  textEntered:any;
+  viewTotalData:any=[];
+  ticketIndex:number;
   constructor(private supportService:SupportService ,private formBuilder:FormBuilder,private toastr:ToastrService) { }
 
   ngOnInit() {  
@@ -114,10 +119,29 @@ export class TicketsComponent implements OnInit {
 
   viewTicket(i){
     this.ticketID=this.allTickets[i]._id;
+    this.ticketIndex=i;
     this.supportService.getTicketInfo(this.ticketID).subscribe((res:ResponseModel)=>{
+      this.viewTotalData=res.data;
+      console.log(res.data)
       this.viewIssuesArray=res.data.issues
       this.viewMessagesArray=res.data.messages
       console.log(this.viewIssuesArray,this.viewMessagesArray)
+    })
+  }
+
+  ticketText(event:any){
+    this.textEntered=event.target.value;
+  }
+
+  sendMessage(){
+    console.log(this.textEntered)
+    const message=<any> new Object();
+    message.message=this.textEntered;
+    console.log(message)
+    this.supportService.sendMessage(this.ticketID,message).subscribe((res:ResponseModel)=>{
+      console.log(res.data)
+      this.searchInput.nativeElement.value = '';
+      this.viewMessagesArray.push(res.data.messages[res.data.messages.length-1])
     })
   }
 

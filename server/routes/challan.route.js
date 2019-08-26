@@ -62,6 +62,8 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_CHALLAN"), (req, res) => {
                     challan.save().then(_c => {
                         Order.findByIdAndUpdate(challan.order, { $set: { status: "Challan Accepted" } }).populate("products.product placed_by placed_to","-password").exec().then(_ord => {
                             if (_ord) {
+                                console.log("Order : ",_ord)
+                                _c = _c.toObject();
                                 _c.order = _ord.toObject();
                                 return res.status(200).json({ status: 200, errors: false, data: _c, message: "Challan accepted successfully" });
                             }
