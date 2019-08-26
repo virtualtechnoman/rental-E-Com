@@ -8,6 +8,7 @@ module.exports = (p=false)=>({
     //Product Privilege
     GET_ALL_PRODUCTS:p,
     GET_ALL_PRODUCTS_OWN:p,
+    GET_ALL_CUSTOMER_PRODUCTS:p,
     GET_PRODUCT:p,
     ADD_NEW_PRODUCT:p,
     DELETE_PRODUCT:p,
@@ -102,5 +103,10 @@ module.exports = (p=false)=>({
     ADD_NEW_MESSAGE_ON_CHAT_EXECUTIVE:p,
     ADD_NEW_MESSAGE_ON_CHAT_CUSTOMER:p,
     CLOSE_CHAT:p,
-    GET_ALL_NON_CLOSED_CHATS:p
+    GET_ALL_NON_CLOSED_CHATS:p,
+    //Brand Privilege
+    GET_ALL_BRANDS:p,
+    DELETE_BRAND:p,
+    UPDATE_BRAND:p,
+    ADD_NEW_BRAND:p,
 })

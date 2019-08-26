@@ -9,13 +9,12 @@ const newProductSchema = Joi.object({
     is_active: Joi.boolean().required(),
     selling_price: Joi.number().required(),
     brand: Joi.string().required(),
-    product_dms: Joi.string().required(),
     details: Joi.string().optional().allow(''),
-    available_for: Joi.string().required()
+    available_for: Joi.array().items(Joi.string().required()).required()
 })
 
 const updateProductSchema = Joi.object({
-    available_for: Joi.string().optional(),
+    available_for: Joi.array().items(Joi.string()).optional(),
     brand: Joi.string().optional(),
     category: Joi.string().optional(),
     details: Joi.string().optional(),
@@ -23,7 +22,6 @@ const updateProductSchema = Joi.object({
     is_active: Joi.boolean().optional(),
     image: Joi.string().optional(),
     name: Joi.string().optional(),
-    product_dms: Joi.string().optional(),
     selling_price: Joi.number().optional()
 })
 

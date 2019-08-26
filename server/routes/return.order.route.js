@@ -151,7 +151,7 @@ router.put("/bill/:id", authorizePrivilege("BILL_RETURN_ORDER"), (req, res) => {
                     if (_ord.challan_accepted) {
                         if (_ord.recieved) {
                             if (!_ord.billed) {
-                                let result = ReturnOrder.verifyBill(req.body);
+                                let result = ReturnOrderController.verifyBill(req.body);
                                 if (!isEmpty(result.errors))
                                     return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
                                 let upd = {}, arrfilter = [];
@@ -211,7 +211,7 @@ router.post("/gchallan/:oid", authorizePrivilege("GENERATE_RETURN_ORDER_CHALLAN"
                     .then(challan => {
                         challan.populate([{ path: "processing_unit_incharge vehicle driver", select: "-password" }])
                             .execPopulate().then(doc => {
-                                ReturnOrder.findByIdAndUpdate(_rord._id, { $set: { challan_generated: true } }, { new: true }).populate({ path: "products.product placed_by placed_to", select: "-password" }).then(_d => {
+                                ReturnOrder.findByIdAndUpdate(_rord._id, { $set: { challan_generated: true, status:"Challan Generated" } }, { new: true }).populate({ path: "products.product placed_by placed_to", select: "-password" }).then(_d => {
                                     doc = doc.toObject();
                                     doc.order = _d.toObject();
                                     res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });

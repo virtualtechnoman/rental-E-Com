@@ -145,7 +145,11 @@ router.put('/:id', authorizePrivilege("UPDATE_USER"), (req, res) => {
 router.post("/", authorizePrivilege("ADD_NEW_USER"), (req, res) => {
   // let result = userCtrl.insert(req.body);
   // let user = (({ full_name, email, password, role }) => ({ full_name, email, password, role }))(req.body);
-  let result = userCtrl.verifyCreate(req.body)
+  let result;
+  if(req.body.role == process.env.DRIVER_ROLE)
+  result = userCtrl.verifyAddDriver(req.body);
+  else
+  result = userCtrl.verifyCreate(req.body);
   if (isEmpty(result.errors)) {
     User.findOne({ email: result.data.email }, (err, doc) => {
       if (err)
