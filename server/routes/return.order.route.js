@@ -26,7 +26,7 @@ router.get("/id/:id", authorizePrivilege("GET_RETURN_ORDER"), (req, res) => {
 
 //GET Return orders placed by self
 router.get("/", authorizePrivilege("GET_ALL_RETURN_ORDERS_OWN"), (req, res) => {
-    ReturnOrder.find({ placed_by: req.user._id }).populate("placed_by placed_to products.product","-password").exec().then(doc => {
+    ReturnOrder.find({ placed_by: req.user._id }).populate("placed_by placed_to products.product", "-password").exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Return Orders" });
     }).catch(err => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
@@ -105,7 +105,19 @@ router.put("/recieve/:id", authorizePrivilege("RECIEVE_RETURN_ORDER"), (req, res
                 if (_ord.challan_generated) {
                     if (_ord.challan_accepted) {
                         if (!_ord.recieved) {
-                            ReturnOrder.findByIdAndUpdate(_ord._id, { $set: { recieved: true, status: "Recieved" } }, { new: true })
+                            let result = ReturnOrderController.verifyRecieve(req.body);
+                            if (!isEmpty(result.errors))
+                                return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
+                            let upd = {}, arrfilter = [];
+                            result.data.products.forEach((ele, index) => {
+                                upd["products.$[e" + index + "].recieved"] = ele.recieved;
+                                let x = {};
+                                x["e" + index + ".product"] = ele.product;
+                                arrfilter.push(x);
+                            })
+                            upd.recieved = true;
+                            upd.status = "Recieved";
+                            ReturnOrder.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
                                 .populate("products.product placed_by placed_to", "-password").lean().exec().then(d => {
                                     res.json({ status: 200, data: d, errors: false, message: "Return Order recieved successfully" });
                                 }).catch(e => {
@@ -123,6 +135,56 @@ router.put("/recieve/:id", authorizePrivilege("RECIEVE_RETURN_ORDER"), (req, res
                 }
             } else {
                 return res.status(400).json({ status: 400, errors: true, data: null, message: "Return Order not found" });
+            }
+        })
+    } else {
+        return res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid return order id" });
+    }
+})
+
+//Bill return order
+router.put("/bill/:id", authorizePrivilege("BILL_RETURN_ORDER"), (req, res) => {
+    if (mongodb.ObjectID.isValid(req.params.id)) {
+        ReturnOrder.findById(req.params.id).exec().then(_ord => {
+            if (_ord) {
+                if (_ord.challan_generated) {
+                    if (_ord.challan_accepted) {
+                        if (_ord.recieved) {
+                            if (!_ord.billed) {
+                                let result = ReturnOrder.verifyBill(req.body);
+                                if (!isEmpty(result.errors))
+                                    return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
+                                let upd = {}, arrfilter = [];
+                                result.data.products.forEach((ele, index) => {
+                                    upd["products.$[e" + index + "].billed"] = ele.billed;
+                                    let x = {};
+                                    x["e" + index + ".product"] = ele.product;
+                                    arrfilter.push(x);
+                                })
+                                upd.billed = true;
+                                upd.status = "Billed";
+                                ReturnOrder.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
+                                    .populate("products.product placed_by placed_to", "-password").lean().exec()
+                                    .then(d => {
+                                        res.json({ status: 200, data: d, errors: false, message: "Return Order billed successfully" });
+                                    }).catch(e => {
+                                        console.log(e);
+                                        res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating billed values" });
+                                    })
+                            } else {
+                                return res.status(400).json({ status: 400, errors: true, data: null, message: "Return Order already billed" });
+                            }
+                        } else {
+                            return res.status(400).json({ status: 400, errors: true, data: null, message: "Recieve the order first" });
+                        }
+                    } else {
+                        return res.status(400).json({ status: 400, errors: true, data: null, message: "Accept challan first" });
+                    }
+                } else {
+                    return res.status(400).json({ status: 400, errors: true, data: null, message: "Generate the return order challan first" });
+                }
+            } else {
+                return res.status(400).json({ status: 400, errors: true, data: null, message: "Return order not found" });
             }
         })
     } else {
@@ -149,7 +211,7 @@ router.post("/gchallan/:oid", authorizePrivilege("GENERATE_RETURN_ORDER_CHALLAN"
                     .then(challan => {
                         challan.populate([{ path: "processing_unit_incharge vehicle driver", select: "-password" }])
                             .execPopulate().then(doc => {
-                                ReturnOrder.findByIdAndUpdate(_rord._id, { $set: { challan_generated: true } },{new:true}).populate({ path: "products.product placed_by placed_to", select: "-password" }).then(_d => {
+                                ReturnOrder.findByIdAndUpdate(_rord._id, { $set: { challan_generated: true } }, { new: true }).populate({ path: "products.product placed_by placed_to", select: "-password" }).then(_d => {
                                     doc = doc.toObject();
                                     doc.order = _d.toObject();
                                     res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });

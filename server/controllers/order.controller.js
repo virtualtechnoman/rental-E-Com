@@ -40,13 +40,13 @@ const orderBilledSchema = Joi.object({
 })
 module.exports = {
     verifyCreate: verifyCreate,
-    verifyUpdateStatus,
+    // verifyUpdateStatus,
     verifyAccept,
     verifyRecieve,
     verifyBill
 }
 function verifyCreate(order) { return helper.validator(order, orderCreateSchema) }
-function verifyUpdateStatus(order) { return helper.validator(order, orderUpdateStatusSchema) }
+// function verifyUpdateStatus(order) { return helper.validator(order, orderUpdateStatusSchema) }
 function verifyAccept(order) { return helper.validator(order, orderAcceptSchema) }
 function verifyRecieve(order) { return helper.validator(order, orderRecievedSchema) }
 function verifyBill(order) { return helper.validator(order, orderBilledSchema) }

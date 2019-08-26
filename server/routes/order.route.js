@@ -159,7 +159,7 @@ router.put("/bill/:id", authorizePrivilege("BILL_ORDER"), (req, res) => {
                                             res.json({ status: 200, data: d, errors: false, message: "Order billed successfully" });
                                         }).catch(e => {
                                             console.log(e);
-                                            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating recieved values" });
+                                            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating billed values" });
                                         })
                                 } else {
                                     return res.status(400).json({ status: 400, errors: true, data: null, message: "Order already billed" });
