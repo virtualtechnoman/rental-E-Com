@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// const avlbl = mongoose.Schema({
+//     hub
+// })
 // Create Schema
 const ProductSchema = new Schema({
     name: { type: String, required: true },
@@ -9,11 +12,10 @@ const ProductSchema = new Schema({
     is_active: { type: Boolean, default:true, required: true },
     farm_price: { type: Number, required: false },
     selling_price: { type: Number, required: true },
-    product_dms: { type: String, required: true },
-    brand: { type: String, required: true },
+    brand: { type: mongoose.Schema.Types.ObjectId,ref:'brand', required: true },
     details: { type: String, default:""},
     created_by: { type: mongoose.Schema.Types.ObjectId,ref:'user', required: true },
-    available_for: { type: String, required: true },
+    available_for: [{ type: mongoose.Schema.Types.ObjectId, ref:"user"}],
     created_date: { type: Date, default: Date.now }
     // image: { type: String, required: false },
     // category: { type: mongoose.Schema.Types.ObjectId, ref:'category', required: true },

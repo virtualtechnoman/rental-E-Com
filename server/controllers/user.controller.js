@@ -8,7 +8,6 @@ const userSchema = Joi.object({
   email: Joi.string().email().required(),
   role: Joi.string().required(),
   mobile_number: Joi.string().required(),
-  dl_number:Joi.string().optional(),
   is_active: Joi.boolean().required()
   // repeatPassword: Joi.string().required().valid(Joi.ref('password')),
 })
@@ -50,6 +49,15 @@ const userLoginSchema = Joi.object({
   password: Joi.string().required(),
   email: Joi.string().email().required()
 })
+const driverAddSchema = Joi.object({
+  full_name: Joi.string().required(),
+  password: Joi.string().required(),
+  email: Joi.string().email().required(),
+  role: Joi.string().required(),
+  mobile_number: Joi.string().required(),
+  dl_number:Joi.string().required(),
+  is_active: Joi.boolean().required()
+})
 module.exports = {
   verifyCreate: verifyCreate,
   verifyUpdate: verifyUpdate,
@@ -57,7 +65,8 @@ module.exports = {
   verifyLogin: verifyLogin,
   verifyMobileRegister: verifyMobileRegister,
   verifyMobileLogin: verifyMobileLogin,
-  verifyMobileOtp: verifyMobileOtp
+  verifyMobileOtp: verifyMobileOtp,
+  verifyAddDriver
 }
 
 function verifyCreate(user) { return helper.validator(user, userSchema) }
@@ -67,4 +76,5 @@ function verifyMobileRegister(user) { return helper.validator(user, userMobileRe
 function verifyMobileLogin(user) { return helper.validator(user, userMobileLoginSchema) }
 function verifyLogin(user) { return helper.validator(user, userLoginSchema) }
 function verifyMobileOtp(user) { return helper.validator(user, userMobileOtpSchema) }
+function verifyAddDriver(user) { return helper.validator(user, driverAddSchema) }
 

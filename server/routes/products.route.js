@@ -9,7 +9,7 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 //GET ALL PRODUCTS CREATED BY SELFF
 router.get("/", authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
-    Product.find({ created_by: req.user._id }).populate("created_by", "-password").populate("category").exec().then(docs => {
+    Product.find({ created_by: req.user._id }).populate("created_by available_for", "-password").populate("category").exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All products" });
         else
@@ -20,15 +20,31 @@ router.get("/", authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
     })
 })
 
+
+
 // GET ALL PRODUCTS
 router.get("/all", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
-    Product.find().populate("created_by", "-password").populate("category").exec().then(docs => {
+    Product.find().populate("created_by available_for", "-password").populate("category").exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All products" });
         else
             res.json({ status: 200, data: docs, errors: true, message: "No products found" });
     }).catch(err => {
         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" })
+    })
+})
+
+// GET CUSTOMER PRODUCTS
+router.get("/customer", authorizePrivilege("GET_ALL_CUSTOMER_PRODUCTS"), (req, res) => {
+    if (!req.user.hub)
+        return res.status(400).json({ status: 400, data: null, errors: true, message: "Hub not assigned yet" })
+    Product.find({ available_for: req.user.hub }).populate("created_by", "-password").populate("category brand").exec().then(docs => {
+        if (docs.length > 0)
+            res.json({ status: 200, data: docs, errors: false, message: "All products" });
+        else
+            res.json({ status: 200, data: docs, errors: true, message: "No products found" });
+    }).catch(err => {
+        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" });
     })
 })
 
@@ -48,7 +64,7 @@ router.post('/', authorizePrivilege("ADD_NEW_PRODUCT"), async (req, res) => {
         .then(product => {
             product
                 .populate("created_by", "-password")
-                .populate("category")
+                .populate("category brand")
                 .execPopulate()
                 .then(p => res.json({ status: 200, data: p, errors: false, message: "Product added successfully" }))
                 .catch(e => {
@@ -69,7 +85,7 @@ router.put("/:id", authorizePrivilege("UPDATE_PRODUCT"), (req, res) => {
         if (!isEmpty(result.errors)) {
             return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
         }
-        Product.findByIdAndUpdate(req.params.id, result.data, { new: true }).populate("created_by", "-password").populate("category")
+        Product.findByIdAndUpdate(req.params.id, result.data, { new: true }).populate("created_by", "-password").populate("category brand")
             .exec()
             .then(doc => res.status(200).json({ status: 200, data: doc, errors: false, message: "Product Updated Successfully" }))
             .catch(err => {

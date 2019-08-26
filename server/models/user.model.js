@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
+  //for all =>
   user_id: { type: String, required: true, unique: true, },
   full_name: { type: String },
   email: {
@@ -15,11 +16,15 @@ const UserSchema = new mongoose.Schema({
   },
   landmark: {type:String},
   street_address: {type:String},
-  city: { type: String },
+  city: {type:mongoose.Schema.Types.ObjectId, ref:"city"},
+  state: {type:mongoose.Schema.Types.ObjectId, ref:"state"},
+  role: { type: mongoose.Schema.Types.ObjectId, ref: "user_role" },
+  //for customers =>
   dob: { type: Date },
   anniversary: { type: Date },
-  dl_number:{type:String},
-  role: { type: mongoose.Schema.Types.ObjectId, ref: "user_role" }
+  hub:{type:mongoose.Schema.Types.ObjectId, ref:"user"},
+  //for driver =>
+  dl_number:{type:String}
 }, {
     versionKey: false
   });
