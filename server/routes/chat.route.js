@@ -151,6 +151,16 @@ router.put("/close/:id", authorizePrivilege("CLOSE_CHAT"), (req, res) => {
     }
 })
 
+//Get all non closed chats
+router.get("/", authorizePrivilege("GET_ALL_NON_CLOSED_CHATS"), (req, res) => {
+        Chat.find({is_open:true},null,{sort: {date: -1}}).populate("created_by responded_by","full_name").lean().exec().then(_cht => {
+            return res.json({ status: 200, data: _cht, errors: false, message: "Chat Closed Successfully" });
+        }).catch(_err => {
+            console.log(_err);
+            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while populating ticket" })
+        })
+})
+
 
 // Delete a ticket
 // router.delete("/:id", authorizePrivilege("DELETE_TICKET"), (req, res) => {

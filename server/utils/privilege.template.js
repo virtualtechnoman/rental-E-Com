@@ -101,4 +101,5 @@ module.exports = (p=false)=>({
     ADD_NEW_MESSAGE_ON_CHAT_EXECUTIVE:p,
     ADD_NEW_MESSAGE_ON_CHAT_CUSTOMER:p,
     CLOSE_CHAT:p,
+    GET_ALL_NON_CLOSED_CHATS:p
 })
