@@ -9,7 +9,7 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 //GET ALL PRODUCTS CREATED BY SELFF
 router.get("/", authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
-    Product.find({ created_by: req.user._id }).populate("created_by available_for", "-password").populate("category").exec().then(docs => {
+    Product.find({ created_by: req.user._id }).populate("created_by available_for", "-password").populate("category brand").exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All products" });
         else
@@ -24,7 +24,7 @@ router.get("/", authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
 
 // GET ALL PRODUCTS
 router.get("/all", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
-    Product.find().populate("created_by available_for", "-password").populate("category").exec().then(docs => {
+    Product.find().populate("created_by available_for", "-password").populate("category brand").exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All products" });
         else
@@ -108,7 +108,7 @@ router.get("/page/:page?", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) =>
     let order = req.query.order || 'asc';
     let srt = {};
     srt[orderby] = order;
-    Product.find().populate("category").limit(limit).skip(limit * page).sort(srt)
+    Product.find().populate("category brand").limit(limit).skip(limit * page).sort(srt)
         .exec(function (err, products) {
             if (err) {
                 console.log(err);
@@ -138,7 +138,7 @@ router.delete("/:id", authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
 // GET SPECIFIC PRODUCT
 router.get("/id/:id", authorizePrivilege("GET_PRODUCT"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
-        Product.findById(req.params.id).populate("created_by", "-password").populate("category").exec().then(doc => {
+        Product.findById(req.params.id).populate("created_by", "-password").populate("category brand").exec().then(doc => {
             res.json({ status: 200, data: doc, errors: false, message: "Product" });
         }).catch(e => {
             console.log(e);

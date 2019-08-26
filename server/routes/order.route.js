@@ -11,7 +11,7 @@ const router = express.Router();
 
 //GET all orders placed by self
 router.get("/", authorizePrivilege("GET_ALL_ORDERS_OWN"), (req, res) => {
-    Order.find({ placed_by: req.user._id }).populate("placed_by products.product placed_to").exec().then(doc => {
+    Order.find({ placed_by: req.user._id }).populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
         console.log(err);
@@ -21,7 +21,7 @@ router.get("/", authorizePrivilege("GET_ALL_ORDERS_OWN"), (req, res) => {
 
 //GET all orders
 router.get("/all", authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
-    Order.find().populate("placed_by products.product placed_to").exec().then(doc => {
+    Order.find().populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
         console.log(err);
@@ -39,7 +39,7 @@ router.post("/", authorizePrivilege("ADD_NEW_ORDER"), (req, res) => {
     result.data.order_id = "ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newOrder = new Order(result.data);
     newOrder.save().then(order => {
-        order.populate("placed_by products.product placed_to", "-password").execPopulate().then(doc => {
+        order.populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).execPopulate().then(doc => {
             res.json({ status: 200, data: doc, errors: false, message: "Order created successfully" });
         })
     }).catch(e => {
@@ -67,7 +67,7 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_ORDER"), (req, res) => {
                     upd.accepted = true;
                     upd.status = "Order Accepted";
                     Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                        .populate("products.product placed_by placed_to", "-password").lean().exec()
+                        .populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).lean().exec()
                         .then(d => {
                             res.json({ status: 200, data: d, errors: false, message: "Order accepted successfully" });
                         }).catch(e => {
@@ -105,7 +105,7 @@ router.put("/recieve/:id", authorizePrivilege("RECIEVE_ORDER"), (req, res) => {
                                 upd.recieved = true;
                                 upd.status = "Recieved";
                                 Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                                    .populate("products.product placed_by placed_to", "-password").lean().exec().then(d => {
+                                    .populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).lean().exec().then(d => {
                                         res.json({ status: 200, data: d, errors: false, message: "Order recieved successfully" });
                                     }).catch(e => {
                                         console.log(e);
@@ -154,7 +154,7 @@ router.put("/bill/:id", authorizePrivilege("BILL_ORDER"), (req, res) => {
                                     upd.billed = true;
                                     upd.status = "Billed";
                                     Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                                        .populate("products.product placed_by placed_to", "-password").lean().exec()
+                                        .populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).lean().exec()
                                         .then(d => {
                                             res.json({ status: 200, data: d, errors: false, message: "Order billed successfully" });
                                         }).catch(e => {
@@ -216,7 +216,7 @@ router.post("/gchallan/:oid", authorizePrivilege("GENERATE_ORDER_CHALLAN"), asyn
                                 let newChallan = new Challan(result.data);
                                 newChallan.save()
                                     .then(challan => {
-                                        challan.populate([{ path: "processing_unit_incharge dispatch_processing_unit vehicle driver", select: "-password" }, { path: "order", model: "order", populate: { path: "products.product placed_by placed_to", select: "-password" } }])
+                                        challan.populate([{ path: "processing_unit_incharge dispatch_processing_unit vehicle driver", select: "-password" }, { path: "order", model: "order", populate: { path: "products.product placed_by placed_to", select: "-password", populate:{path:"brand category"} } }])
                                             .execPopulate()
                                             .then(doc => {
                                                 res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });
