@@ -43,6 +43,19 @@ export class ReturnOrderComponent implements OnInit {
   vehicleIndex:any;
   allVehicle:VehicleModel[]=[];
   alldriver:DriverModel[]=[];
+  returnOrderPlacedForm:FormGroup;
+  allFarms:any[]=[];
+  orderSelected:any=[];
+  orderSelectedProducts:any;
+  orderSelectedNotes:any;
+  orderId:any;
+  orderIndex:any;
+  challanDriver:any=[];
+  challanVehicle:any=[]
+  acceptedValueForm:FormGroup;
+  recievedValueForm:FormGroup;
+  billedValueForm:FormGroup;
+  orderTime: any;
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService, private orderService: OrderService, private userService: UserService,private vehicleService:TruckService
   ) {
@@ -51,10 +64,12 @@ export class ReturnOrderComponent implements OnInit {
     this.getUsers();
     this.getVehicle();
     this.getDrivers();
+    this.getProducts();
+    this.getFarms();
   }
 
   ngOnInit() {
-    this.getProducts();
+    
     this.dtOptions = {
       pagingType: 'full_numbers',
       lengthMenu: [
@@ -76,9 +91,48 @@ export class ReturnOrderComponent implements OnInit {
         'excel',
       ]
     };
+    this.returnOrderPlacedForm = this.formBuilder.group({
+      placed_to: ['',Validators.required],
+      notes:"",
+      products: this.formBuilder.array([])
+    })
+    this.acceptedValueForm=this.formBuilder.group({
+      accepted:this.formBuilder.array([])
+    })
+    this.challanForm = this.formBuilder.group({
+      dispatch_processing_unit: ['', Validators.required],
+      
+      vehicle: ['', Validators.required],
+      driver: ['', Validators.required],  
+      departure: ['', Validators.required],
+    });
+    this.recievedValueForm=this.formBuilder.group({
+      recieved:this.formBuilder.array([])
+    })
+    this.billedValueForm=this.formBuilder.group({
+      billed:this.formBuilder.array([])
+    })
   }
 
-  get f() { return this.orderReturnForm.controls; }
+  onSubmit(){
+    // this.submitted = true;
+    if (this.returnOrderPlacedForm.invalid) {
+      return;
+    }
+    if(this.returnOrderPlacedForm.value.notes==null){
+      this.returnOrderPlacedForm.value.notes=""
+    }
+    console.log(this.returnOrderPlacedForm.value)
+    this.orderService.addReturnOrder(this.returnOrderPlacedForm.value).subscribe((res: ResponseModel) => {
+      console.log(res.data);
+      jQuery('#modal3').modal('hide');
+      this.toastr.success('Order Added!', 'Success!');
+      this.allReturnOrders.push(res.data);
+      this.resetForm();
+  });
+    
+  }
+  get f() { return this.returnOrderPlacedForm.controls; }
 
   submit() {
     this.submitted = true;
@@ -91,27 +145,32 @@ export class ReturnOrderComponent implements OnInit {
     // if (this.editing) {
     //   this.updateOrder(this.currentOrder)
     // } else {
-    this.orderReturnForm.removeControl('products.accepted');
-    this.addOrder(this.orderReturnForm.value);
+    // this.addOrder(this.orderReturnForm.value);
     // }
   }
 
-  addOrder(order) {
-    // console.log(order)
-    // this.orderReturnForm.get('status').setValue(true);
-    order.status=true;
-    console.log(order)
-    this.orderService.addReturnOrder(order).subscribe((res: ResponseModel) => {
-      if (res.error) {
-        this.toastr.warning('Error', res.error);
-      } else {
-        console.log(res);
-        jQuery('#modal3').modal('hide');
-        this.toastr.success('Order Added!', 'Success!');
-        this.allReturnOrders.push(res.data);
-        this.resetForm();
-      }
-    });
+  get productsForms() {
+    
+    return this.returnOrderPlacedForm.get('products') as FormArray;
+    
+  }
+
+  // get acceptedForms() {
+  //   return this.acceptedValueForm.get('accepted') as FormArray;
+    
+  // }
+  addProducts() {
+
+    const product = this.formBuilder.group({ 
+      product: [],
+      requested: []
+    })
+  
+    this.productsForms.push(product);
+  }
+
+  deleteProducts(i) {
+    this.productsForms.removeAt(i)
   }
 
   editProduct(i) {
@@ -129,18 +188,17 @@ export class ReturnOrderComponent implements OnInit {
     console.log(this.currentOrder);
   }
 
-  getVehicle(){
-    this.vehicleService.getAllVehicles().subscribe((res:ResponseModel)=>{
-        this.allVehicle=res.data
-        console.log(res.data)
-    })
+  getVehicle() {
+    this.vehicleService.getAllVehicles().subscribe((res: ResponseModel) => {
+      this.allVehicle = res.data;
+    });
   }
 
-  getDrivers(){
-    this.vehicleService.getAllDrivers().subscribe((res:ResponseModel)=>{
-      this.alldriver=res.data
+  getDrivers() {
+    this.vehicleService.alldrivers().subscribe((res: ResponseModel) => {
+      this.alldriver = res.data;
       console.log(res.data)
-    })
+    });
   }
 
   deleteOrder(i) {
@@ -154,8 +212,8 @@ export class ReturnOrderComponent implements OnInit {
 
   getProducts() {
     this.allproducts.length = 0;
-    this.productService.getAllProduct().subscribe((res: ProductModel[]) => {
-      this.allproducts = res;
+    this.productService.getAllProduct().subscribe((res: ResponseModel) => {
+      this.allproducts = res.data;
       console.log(this.allproducts);
     });
   }
@@ -169,17 +227,18 @@ export class ReturnOrderComponent implements OnInit {
     });
   }
 
+  getFarms(){
+    this.orderService.getAllFarms().subscribe((res:ResponseModel)=>{
+      this.allFarms=res.data;
+      console.log(res.data)
+    })
+  }
   getOrders() {
     this.allReturnOrders.length = 0;
     this.orderService.getAllReturnOrders().subscribe((res: ResponseModel) => {
-      console.log(res);
-      if (res.error) {
-        this.toastr.warning('Error', res.error);
-      } else {
         this.allReturnOrders = res.data;
-        console.log(this.allReturnOrders);
+        console.log(res.data);
         this.dtTrigger.next();
-      }
     });
   }
 
@@ -211,8 +270,8 @@ export class ReturnOrderComponent implements OnInit {
 
   initForm() {
     this.orderReturnForm = this.formBuilder.group({
-      status: [false],
       placed_to: ['', Validators.required],
+      notes:"",
       products: this.formBuilder.array([this.initItemRows()])
     });
   }
@@ -231,7 +290,7 @@ export class ReturnOrderComponent implements OnInit {
     return this.formBuilder.group({
       // status: true,
       product: [''],
-      quantity: [''],
+      requested: [''],
       // value: ['']
     });
   }
@@ -295,7 +354,7 @@ export class ReturnOrderComponent implements OnInit {
   resetForm() {
     this.editing = false;
     this.submitted = false;
-    this.orderReturnForm.reset();
+    this.returnOrderPlacedForm.reset();
   }
 
   generateChallan() {
@@ -357,13 +416,160 @@ export class ReturnOrderComponent implements OnInit {
       jQuery('#summaryModel').modal('hide');
     });
   }
-  getDriver(event:any){
-    this.driverIndex=event.target.selectedIndex-1
-    console.log(this.driverIndex)
+
+
+  viewAcceptOrderButton(i){
+    this.orderSelected=this.allReturnOrders[i];
+    console.log(this.orderSelected)
+    this.orderSelectedProducts=this.allReturnOrders[i].products;
+    this.orderSelectedNotes=this.allReturnOrders[i].notes;
+    this.orderId=this.allReturnOrders[i]._id
+    this.orderIndex=i;
+    this.orderTime=this.orderSelected.order_date.substr(11, 8)
   }
-  getVehicle2(event:any){
+
+  asd(event:any,i){
+    if(event.target.value){
+    var arr=[];
+    arr=event.target.value;
+    this.acceptedValueForm.value.accepted[i]=arr
+    this.qw()
+    }
+  }
+
+  qw(){
     
-    this.vehicleIndex=event.target.selectedIndex-1
-    console.log(this.vehicleIndex)
+    for(var i=0;i<this.acceptedValueForm.value.accepted.length;i++){
+      this.orderSelected.products[i].accepted=Number(this.acceptedValueForm.value.accepted[i])
+    }
+  }
+
+  asde(){
+    this.orderSelected.status=true;
+    const order=<any> new Object;
+    order.products=this.orderSelected.products;
+    for(var i=0;i<this.orderSelectedProducts.length;i++){
+      order.products[i].product=this.orderSelectedProducts[i].product._id
+      delete order.products[i]._id;
+      delete order.products[i].requested;
+      delete order.products[i].recieved;
+      delete order.products[i].dispatched;
+      delete order.products[i].billed;
+    }
+    // this.orderService.addAcceptedOrder(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
+    //   jQuery('#invoiceModal').modal('hide');
+    //   this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
+    //   this.allReturnOrders.splice(this.orderIndex,1,res.data)
+    // })
+  }
+
+  challanGenerate(){
+    const date=new Date()
+    this.challanForm.controls['vehicle'].setValue(this.challanVehicle._id)
+    this.challanForm.controls['driver'].setValue(this.challanDriver._id)
+    this.challanForm.controls['departure'].setValue(date)
+    this.challanForm.controls['dispatch_processing_unit'].setValue(this.orderSelected.placed_to._id)
+    console.log(this.challanForm.value)
+
+    this.orderService.addReturnOrderChallan(this.challanForm.value,this.orderSelected._id).subscribe((res: ResponseModel) => {
+      this.toastr.success('Challan Generated successfully', 'Accepted');
+      console.log(res.data)
+      this.allReturnOrders.splice(this.orderIndex,1,res.data.order)
+      jQuery('#invoiceModal').modal('hide');
+    });
+
+    
+  }
+  getDriver(event: any) {
+    this.driverIndex = event.target.selectedIndex - 1;
+    this.challanDriver=this.alldriver[this.driverIndex]
+    console.log(this.challanDriver)
+  }
+  getVehicle2(event: any) {
+
+    this.vehicleIndex = event.target.selectedIndex - 1;
+    this.challanVehicle=this.allVehicle[this.vehicleIndex]
+  }
+
+  recievedQuantityEntered(event:any,i){
+    if((event.target.value==Number(event.target.value)) && (event.target.value<=this.orderSelected.products[i].requested)){
+    var arr;
+    arr=event.target.value;
+    this.recievedValueForm.value.recieved[i]=arr
+    this.qwe();
+    }else{
+      alert("Enter Recieved Quantity Again")
+    }
+  }
+
+  qwe(){
+    for(var i=0;i<this.recievedValueForm.value.recieved.length;i++){
+      this.orderSelected.products[i].recieved=Number(this.recievedValueForm.value.recieved[i])
+    }
+  
+  }
+
+  asdef(){
+    const order=<any> new Object();
+    order.products=this.orderSelected.products
+    for(var i=0;i<this.orderSelected.products.length;i++){
+      order.products[i].product=this.orderSelected.products[i].product._id;
+      if(order.products[i].recieved==0){
+        order.products[i].recieved=order.products[i].requested
+        }
+      delete order.products[i].accepted;
+      delete order.products[i].dispatched;
+      delete order.products[i].requested;
+      delete order.products[i]._id;
+      delete order.products[i].billed;
+      
+    }
+    console.log(order)
+    console.log(order,this.orderSelected._id)
+    this.orderService.recievedQuantityStatus(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
+      jQuery('#invoiceModal').modal('hide');
+      this.toastr.success('Recieved Order Challan!', 'Success!');
+      this.allReturnOrders.splice(this.orderIndex,1,res.data)
+    })
+  }
+
+  billedQuantityEntered(event:any,i){
+    if((event.target.value==Number(event.target.value)) && (event.target.value<=this.orderSelected.products[i].requested)){
+    var arr;
+    arr=event.target.value;
+    this.billedValueForm.value.billed[i]=arr
+    this.billedArray();
+    }else{
+      alert("Enter Billing Quantity Again")
+    }
+  }
+
+  billedArray(){
+    for(var i=0;i<this.billedValueForm.value.billed.length;i++){
+      this.orderSelected.products[i].billed=Number(this.billedValueForm.value.billed[i])
+    }
+  }
+
+  billProductQuantity(){
+    const order=<any> new Object();
+    order.products=this.orderSelected.products
+    for(var i=0;i<this.orderSelected.products.length;i++){
+      order.products[i].product=this.orderSelected.products[i].product._id
+      if(order.products[i].billed==0){
+        order.products[i].billed=order.products[i].recieved
+        }
+      delete order.products[i].accepted;
+      delete order.products[i].dispatched;
+      delete order.products[i].recieved;
+      delete order.products[i]._id;
+      delete order.products[i].requested;
+      
+    }
+    console.log(order)
+    this.orderService.recievedBillStatus(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
+      jQuery('#invoiceModal').modal('hide');
+      this.allReturnOrders.splice(this.orderIndex,1,res.data)
+      this.toastr.success('Billed Challan!', 'Success!');
+    })
   }
 }

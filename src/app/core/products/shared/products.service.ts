@@ -12,7 +12,8 @@ export class ProductsService {
   });
   url = '/api/products';
   url2='/api/pcategory';
-
+  url3 ='/api/brand'
+  url4='/api/user/hub';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   getAllProduct() {
@@ -49,5 +50,29 @@ export class ProductsService {
 
   updateCategory(category,id) {
     return this.http.put(this.url2 + '/' + id, category, { headers: this.headers });
+  }
+
+  // Brand API
+
+  getAllBrand() {
+    return this.http.get(this.url3 + '/', { headers: this.headers });
+  }
+
+  addBrand(brand) {
+    return this.http.post(this.url3 + '/', brand, { headers: this.headers });
+  }
+
+  deleteBrand(id) {
+    return this.http.delete(this.url3 + '/' + id, { headers: this.headers });
+  }
+
+  updateBrand(brand, id) {
+    return this.http.put(this.url3 + '/' + id,brand, { headers: this.headers });
+  }
+
+  // Hub User
+
+  getAllHub(){
+    return this.http.get(this.url4 + '/' , {headers:this.headers})
   }
 }

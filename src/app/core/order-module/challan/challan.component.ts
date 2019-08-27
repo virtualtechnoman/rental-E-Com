@@ -23,6 +23,7 @@ export class ChallanComponent implements OnInit {
   recievedValueForm:FormGroup;
   billedValueForm:FormGroup;
   afterStatus:any;
+  challanTime:any;
   constructor(private orderService: OrderService, private toasterService: ToastrService,private fb:FormBuilder,private toastr:ToastrService) { }
 
   ngOnInit() {
@@ -115,6 +116,7 @@ export class ChallanComponent implements OnInit {
     console.log(this.currentChallan);
     this.allProducts = this.currentChallan.order.products;
     console.log(this.allProducts);
+    this.challanTime=this.currentChallan.challan_date.substr(11, 8)
   }
 
   // deleteChallan(i) {

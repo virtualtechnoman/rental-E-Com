@@ -98,7 +98,7 @@
             </div>
           </div>
           <div class="col-md-4 offset-md-5 mt-2">
-              <button class="btn btn-success" (click)="addProducts()">Add New Product</button>
+              <button type="button" class="btn btn-success" (click)="addProducts()">Add New Product</button>
           </div>
         </div>
           
@@ -174,7 +174,7 @@
                         <p class="mg-b-0">{{orderSelected?.placed_by?.email}}</p>
                       </div><!-- col -->
                       <div class="col-sm-6 tx-right d-none d-md-block">
-                        <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{orderSelected?.order_date | date : 'dd/MM/yy'}}</label>
+                        <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{orderSelected?.order_date | date : 'dd/MM/yy'}},&nbsp;&nbsp;{{orderTime}}</label>
                         <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{orderSelected?.order_id}}</h1>
                       </div><!-- col -->
                       <div class="col-sm-6 col-lg-8 mg-t-40 mg-sm-t-0 mg-md-t-40">
@@ -215,23 +215,23 @@
                         <tbody>
                           <tr *ngFor="let product of orderSelectedProducts;let i=index">
                             <td class="tx-nowrap">{{product?.product?.name}}</td>
-                            <td class="d-none d-sm-table-cell tx-color-03">{{product?.product?.brand}}</td>
+                            <td class="d-none d-sm-table-cell tx-color-03">{{product?.product?.brand?.name}}</td>
                             <td class="tx-nowrap">{{product.requested}}</td>
                             <td class="tx-center" *ngIf="orderSelected.status == 'Pending' ">
                                 <input type="text"  
                                 class="form-control col-lg-9" (change)="asd($event,i)"
-                                placeholder="Accepted Quantity">
+                                placeholder="Accepted Quantity" [ngModel]="orderSelected.products[i].requested">
                             </td>
                             <td class="tx-nowrap" *ngIf="orderSelected.status != 'Pending' ">{{product.accepted}}</td>
                             <td class="tx-nowrap" *ngIf="orderSelected.challan_generated">{{product.dispatched}}</td>
                             <td *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' " >
                               <input type="text"  (change)="recievedQuantityEntered($event,i)"
-                                        class="form-control col-lg-12" >
+                                        class="form-control col-lg-12" [ngModel]="orderSelected.products[i].dispatched">
                             </td>
                             <td class="tx-nowrap" *ngIf="orderSelected.recieved">{{product.recieved}}</td>
                             <td *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' ">
                               <input type="text"  (change)="billedQuantityEntered($event,i)"
-                                        class="form-control col-lg-12">
+                                        class="form-control col-lg-12" [ngModel]="orderSelected.products[i].recieved">
                             </td>
                             <td class="tx-nowrap" *ngIf="orderSelected.billed">{{product.billed}}</td>
                           </tr>
@@ -293,27 +293,14 @@
                           <p class="mg-b-0">{{orderSelected?.placed_by?.email}}</p>
                         </div><!-- col -->
                         <div class="col-sm-6 tx-right d-none d-md-block">
-                            <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{orderSelected?.order_date | date : 'dd/MM/yy'}}</label>
+                            <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{orderSelected?.order_date | date : 'dd/MM/yy'}}&nbsp;&nbsp;{{orderTime}}</label>
                             <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{orderSelected?.order_id}}</h1>
                           </div><!-- col -->
                         <div class="col-sm-6 col-lg-8 mg-t-40 mg-sm-t-0 mg-md-t-40">
                           <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
                           <h6 class="tx-15 mg-b-10">{{orderSelected?.placed_to?.full_name}}</h6>
                         <p class="mg-b-0">{{orderSelected?.placed_to?.mobile_number}}</p>
-                        </div><!-- col -->
-                        <!-- <div class="col-sm-6 col-lg-4 mg-t-40">
-                          <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Challan Information</label>
-                          <ul class="list-unstyled lh-7">
-                            <li class="d-flex justify-content-between">
-                              <span>Invoice Number</span>
-                              <span>#{{orderSelected?.order_id}}</span>
-                            </li>
-                            <li class="d-flex justify-content-between">
-                              <span>order Date</span>
-                              <span>{{orderSelected?.order_date | date : 'dd/MM/yy'}}</span>
-                            </li>
-                          </ul>
-                        </div>col -->
+                        </div>
                       </div><!-- row -->
               
                       <div class="mg-t-50">
@@ -332,13 +319,13 @@
                           <tbody>
                             <tr *ngFor="let order of orderSelected.products;let i=index">
                               <td class="tx-nowrap">{{order?.product?.name}}</td>
-                              <td class="d-none d-sm-table-cell tx-color-03">{{order?.product?.brand}}</td>
+                              <td class="d-none d-sm-table-cell tx-color-03">{{order?.product?.brand?.name}}</td>
                               <td class="tx-nowrap">{{order?.requested}}</td>
                               <td class="tx-nowrap">{{order?.accepted}}</td>
                               <td class="tx-center" *ngIf="orderSelected.status == 'Order Accepted' ">
                                   <input type="text"  
                                   class="form-control col-lg-9" (change)="dispatchQuantityEntered($event,i)"
-                                  placeholder="Dispatched Quantity">
+                                  placeholder="Dispatched Quantity" [ngModel]="orderSelected.products[i].accepted">
                               </td>
                               <td *ngIf="orderSelected.status != 'Order Accepted' ">{{order?.dispatched}}</td>
                               <!-- <td *ngIf="orderSelected.status.name == 'Accepted'">
@@ -382,11 +369,6 @@
                               </div>
                             </div>
                           </div>
-                          <!-- <div class="form-row">
-                                  <div class="col-md-6"><label for="">Departure Date</label></div>
-                                  <div class="col-md-6"><input type="date" formControlName="departure" class="form-control">
-                                  </div>
-                                </div> -->
                         </div>
                       </div>
                       <!-- <div class="row justify-content-between">

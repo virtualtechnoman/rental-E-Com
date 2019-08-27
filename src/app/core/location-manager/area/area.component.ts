@@ -37,7 +37,7 @@ export class AreaComponent implements OnInit {
     this.areaForm = this.formBuilder.group({
       name: ['', Validators.required],
       city: ['', Validators.required],
-      hub: ['', Validators.required],
+      hub: [''],
       is_active: ['', Validators.required]
     });
     console.log(this.areaForm)
@@ -73,6 +73,12 @@ export class AreaComponent implements OnInit {
     if (this.areaForm.invalid) {
       return;
     }
+    
+    if(this.areaForm.value.hub==null){
+      delete this.areaForm.value.hub;
+    }
+
+    console.log(this.areaForm.value)
     if (this.editing) {
       this.updateArea(this.areaForm.value)
     } else {
@@ -108,6 +114,10 @@ export class AreaComponent implements OnInit {
 
   updateArea(area) {
     const id = this.allAreas[this.currentIndex]._id;
+    console.log(area)
+    if(area.hub=="" || area.hub==null){
+      delete area.hub;
+    }
     this.locationManagerService.updateArea(area, id).subscribe((res: ResponseModel) => {
       jQuery('#modal3').modal('hide');
       this.toastr.info('City Updated Successfully!', 'Updated!!');
@@ -123,7 +133,9 @@ export class AreaComponent implements OnInit {
     console.log(area)
     this.areaForm.controls['name'].setValue(area.name);
     this.areaForm.controls['city'].setValue(area.city._id);
-    this.areaForm.controls['hub'].setValue(hub._id);
+    if(area.hub){
+    this.areaForm.controls['hub'].setValue(hub._id)
+  }
     this.areaForm.controls['is_active'].setValue(area.is_active);
     console.log(this.areaForm.value)
   }

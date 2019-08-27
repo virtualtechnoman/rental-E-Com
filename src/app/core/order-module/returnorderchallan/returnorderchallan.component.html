@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <div class="card">
     <div class="card-header">
-      <h2 class="float-left">Challan Management</h2>
+      <h2 class="float-left">Return Order Challan Management</h2>
     </div>
     <div class="card-body">
       <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
@@ -19,19 +19,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let challan of allChallans; let i = index">
+          <tr *ngFor="let challan of allReturnOrders; let i = index">
             <td>{{i+1}}</td>
             <td>{{challan.challan_id | uppercase}}</td>
             <td>{{challan.challan_date | date:'dd/MM/yy'}}</td>
             <td>{{challan.processing_unit_incharge.full_name | titlecase}}</td>
             <td>{{challan.dispatch_processing_unit.full_name | titlecase}}</td>
             <td>
-              <!-- <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editOrder(i)"><i
-                  class="fas fa-edit mx-2"></i></a> -->
               <a style="cursor:pointer" data-toggle="modal" data-target="#ChallanModel" (click)="selectChallan(i)"><i
                   class="fas fa-eye"></i></a>
-              <!-- <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteChallan(i)"></i></a> -->
-
             </td>
           </tr>
         </tbody>
@@ -59,7 +55,7 @@
             <div class="col-md-6">
               <div class="col-sm-4">
                 <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed From</label>
-                <h6 class="tx-15 mg-b-10">{{currentChallan.dispatch_processing_unit.full_name}}</h6>
+                <h6 class="tx-15 mg-b-10">{{currentChallan?.dispatch_processing_unit?.full_name}}</h6>
                 <p class="mg-b-0">{{currentChallan?.dispatch_processing_unit?.email}}</p>
               </div>
               <div class="col-sm-6 tx-right d-none d-md-block" style="margin-left: 500px">
@@ -68,8 +64,8 @@
                 </div><!-- col -->
               <div class="col-sm-4 col-lg-8 mg-t-40 mg-sm-t-0 mg-md-t-40">
                 <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
-                <h6 class="tx-15 mg-b-10">{{currentChallan.processing_unit_incharge.full_name}}</h6>
-                <p class="mg-b-0">{{currentChallan.processing_unit_incharge.email}}</p>
+                <h6 class="tx-15 mg-b-10">{{currentChallan?.processing_unit_incharge?.full_name}}</h6>
+                <p class="mg-b-0">{{currentChallan?.processing_unit_incharge?.email}}</p>
               </div>
             </div>
             <!-- <div class="col-md-6 ">
@@ -97,8 +93,8 @@
                     <th class="wd-20p">Product Name</th>
                     <th class="wd-20p">Brand</th>
                     <th class="wd-20p">Requested Quantity</th>
-                    <th class="wd-20p">Accepeted Quantity</th>
-                    <th class="wd-20p">Dispatched Quantity</th>
+                    <!-- <th class="wd-20p">Accepeted Quantity</th>
+                    <th class="wd-20p">Dispatched Quantity</th> -->
                     <!-- <th class="wd-20p" *ngIf="currentChallan.accepted && currentChallan.order.status == 'Challan Accepted' ">Recieved Quantity</th>
                     <th class="wd-20p" *ngIf="currentChallan.accepted && currentChallan.order.status == 'Recieved' ">Recieved Quantity</th>
                     <th class="wd-20p" *ngIf="!currentChallan.order.billed && currentChallan.order.status == 'Recieved'">Billed Quantity</th>
@@ -107,11 +103,11 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let product of allProducts; let i = index">
-                    <td class="tx-nowrap">{{product.product.name}}</td>
+                    <td class="tx-nowrap">{{product?.product?.name}}</td>
                     <td class="tx-nowrap">{{product?.product?.brand?.name}}</td>
-                    <td class="d-none d-sm-table-cell tx-color-03">{{product.requested}}</td>
-                    <td class="tx-nowrap">{{product.accepted}}</td>
-                    <td class="tx-nowrap">{{product.dispatched}}</td>
+                    <td class="d-none d-sm-table-cell tx-color-03">{{product?.requested}}</td>
+                    <!-- <td class="tx-nowrap">{{product.accepted}}</td>
+                    <td class="tx-nowrap">{{product.dispatched}}</td> -->
                     <!-- <td *ngIf="!currentChallan.order.recieved && currentChallan.order.status == 'Challan Accepted'" >
                       <input type="text"  (change)="recievedQuantityEntered($event,i)"
                                 class="form-control col-lg-9" 
@@ -144,11 +140,11 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td class="tx-nowrap">{{currentChallan.vehicle.number}}</td>
-                    <td class="tx-nowrap">{{currentChallan.vehicle.type}}</td>
-                    <td class="tx-center">{{currentChallan.driver.full_name}}</td>
-                    <td class="tx-right">{{currentChallan.driver.mobile_number}}</td>
-                    <td class="tx-right">{{currentChallan.driver.dl_number}}</td>
+                    <td class="tx-nowrap">{{currentChallan?.vehicle?.number}}</td>
+                    <td class="tx-nowrap">{{currentChallan?.vehicle?.type}}</td>
+                    <td class="tx-center">{{currentChallan?.driver?.full_name}}</td>
+                    <td class="tx-right">{{currentChallan?.driver?.mobile_number}}</td>
+                    <td class="tx-right">{{currentChallan?.driver?.dl_number}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -160,7 +156,7 @@
               <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Notes</label>
               <p>{{currentChallan?.order?.notes}}</p>
             </div>
-            <button *ngIf="!currentChallan.accepted && currentChallan.order.status == 'Challan Generated'" class="btn btn-primary float-right"
+            <button *ngIf="!currentChallan.accepted" class="btn btn-primary float-right"
               (click)="changeChallanStatus()">Accept Challan</button>
           </div>
         </div>

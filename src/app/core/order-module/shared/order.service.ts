@@ -23,7 +23,11 @@ export class OrderService {
   url9 = '/api/challan/accept';
   url10= '/api/order/recieve';
   url11= '/api/order/bill';
-  url12= '/api/user/farm'
+  url12= '/api/user/farm';
+  url13= '/api/rorder/gchallan';
+  url14= '/api/challan/type/rorder';
+  url15= '/api/rorder/recieve';
+  url16= '/api/rorder/bill';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   // ==========ORDER APIS=================//
@@ -44,9 +48,9 @@ export class OrderService {
   }
 
   // =================RETURN ORDER APIS==================//
-  getAllReturnOrders() {
-    return this.http.get(this.url2 + '/', { headers: this.headers });
-  }
+  // getAllReturnOrders() {
+  //   return this.http.get(this.url2 + '/', { headers: this.headers });
+  // }
 
   addReturnOrder(returnOrder) {
     return this.http.post(this.url2 + '/', returnOrder, { headers: this.headers });
@@ -96,6 +100,12 @@ export class OrderService {
     return this.http.post(this.url5 + '/' + id, challan, { headers: this.headers });
   }
 
+  // Return Order Challan
+
+  addReturnOrderChallan(challan, id) {
+    return this.http.post(this.url13 + '/' + id, challan, { headers: this.headers });
+  }
+
   // Accept Order API
   addAcceptedOrder(id, order) {
     return this.http.put(this.url6 + '/' + id, order, { headers: this.headers });
@@ -116,7 +126,7 @@ export class OrderService {
   // Accept Challan
 
   updateChallanStatus(id) {
-    console.log("headers of accept challan", this.headers)
+    // console.log("headers of accept challan", this.headers)
     return this.http.put(this.url9 + '/' + id, { }, { headers: this.headers });
   }
 
@@ -134,5 +144,36 @@ export class OrderService {
 
   getAllFarms() {
     return this.http.get(this.url12 + '/', { headers: this.headers });
+  }
+
+  // Get ALL REturn Orders
+
+  getAllReturnOrders(){
+    return this.http.get(this.url2 + '/', { headers: this.headers });
+
+  }
+
+  // Update Return Order Challan Status
+
+  updateReturnOrderChallanStatus(id) {
+    // console.log("headers of accept challan", this.headers)
+    return this.http.put(this.url9 + '/' + id, { }, { headers: this.headers });
+  }
+
+  getAllReturnOrdersChallans(){
+    return this.http.get(this.url14 + '/', { headers: this.headers });
+
+  }
+
+  // Recieved Order Value
+
+  recievedQuantityStatus(id,recieved) {
+    return this.http.put(this.url15 + '/' + id, recieved, { headers: this.headers });
+  }
+
+  // Bill Quantity Value
+
+  recievedBillStatus(id,bill) {
+    return this.http.put(this.url16 + '/' + id, bill, { headers: this.headers });
   }
 }

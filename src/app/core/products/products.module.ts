@@ -7,6 +7,7 @@ import { ProductsService } from './shared/products.service';
 import { DataTablesModule } from 'angular-datatables';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { CategoryComponent } from './category/category.component';
+import { BrandComponent } from './brand/brand.component';
 
 @NgModule({
   imports: [
@@ -17,7 +18,7 @@ import { CategoryComponent } from './category/category.component';
     ProductsRoutingModule,
     InputSwitchModule
   ],
-  declarations: [ProductsComponent, CategoryComponent],
+  declarations: [ProductsComponent, CategoryComponent, BrandComponent],
   exports:[
     ProductsRoutingModule
   ],
