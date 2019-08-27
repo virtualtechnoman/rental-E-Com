@@ -138,7 +138,7 @@ router.delete("/:id", authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
 // GET SPECIFIC PRODUCT
 router.get("/id/:id", authorizePrivilege("GET_PRODUCT"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
-        Product.findById(req.params.id).populate("created_by", "-password").populate("category brand").exec().then(doc => {
+        Product.findById(req.params.id).populate("created_by", "-password").populate("category brand available_for").exec().then(doc => {
             res.json({ status: 200, data: doc, errors: false, message: "Product" });
         }).catch(e => {
             console.log(e);
