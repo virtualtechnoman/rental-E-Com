@@ -37,7 +37,8 @@ export class ProductsComponent implements OnInit {
   allHub:any[]=[];
   array:any[]=[];
   countArray:any[]=[];
-  array2:any=[]
+  array2:any=[];
+  array3:any[]=[]
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService
   ) {
@@ -145,9 +146,16 @@ export class ProductsComponent implements OnInit {
   }
 
   viewProduct(i) {
+    this.array3.length=0
     this.viewArray = this.allproducts[i];
     console.log(this.viewArray);
-
+      for(let i=0;i<this.viewArray.available_for.length;i++){
+        this.array3.push(this.viewArray.available_for[i])
+      }
+      console.log(this.array3)
+      if(this.array3.length>0){
+      jQuery('#exampleModal').modal('show')
+      }
 
   }
 
