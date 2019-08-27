@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { ProductsService } from './shared/products.service';
 import { FormBuilder, FormGroup, FormControlName, Validators } from '@angular/forms';
 import { ProductModel, CategoryModel, category } from './shared/product.model';
@@ -6,7 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { ResponseModel } from '../../shared/shared.model';
-
+import * as _ from "lodash";
 
 @Component({
   selector: 'app-products',
@@ -14,7 +14,7 @@ import { ResponseModel } from '../../shared/shared.model';
   styleUrls: ['./products.component.scss']
 })
 export class ProductsComponent implements OnInit {
-
+  @ViewChildren("checkboxes") checkboxes: QueryList<ElementRef>;
   jQuery: any;
   allproducts: ProductModel[] = [];
   allCategories: CategoryModel[] = [];
@@ -33,6 +33,11 @@ export class ProductsComponent implements OnInit {
   uploading: Boolean = false;
   submitted: Boolean = false;
   viewArray: any = [];
+  allBrand:any[]=[];
+  allHub:any[]=[];
+  array:any[]=[];
+  countArray:any[]=[];
+  array2:any=[]
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService
   ) {
@@ -42,6 +47,8 @@ export class ProductsComponent implements OnInit {
   ngOnInit() {
     this.getProducts();
     this.getAllCategory();
+    this.getallBrand();
+    this.getAllHub();
     this.dtOptions = {
       pagingType: "full_numbers",
       lengthMenu: [
@@ -64,7 +71,7 @@ export class ProductsComponent implements OnInit {
       ]
     };
     this.productForm = this.formBuilder.group({
-      available_for: ['', Validators.required],
+      available_for: this.formBuilder.array([]),
       brand: ['', Validators.required],
       category: ['', Validators.required],
       details: [''],
@@ -72,15 +79,39 @@ export class ProductsComponent implements OnInit {
       // image: ['No Value', Validators.required],
       is_active: [false],
       name: ['', Validators.required],
-      product_dms: ['', Validators.required],
+      // product_dms: ['', Validators.required],
       selling_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
     });
+  }
+
+  tickHub(event:any,i){
+    // console.log(event,i);
+    // for(let i=0;i<this.productForm.value.available_for.length;i++){
+    //   if(this.productForm.value.available_for[i]==this.allHub[i]._id){
+    //     this.productForm.value.available_for[i].delete(this.allHub[i]._id)
+    //   }
+    //   else{
+    //     this.productForm.value.available_for[i].push(this.allHub[i]._id)
+    //   }
+    // }
+    this.array.push(this.allHub[i]._id)
+    // console.log(this.array)
+    
   }
 
   get f() { return this.productForm.controls; }
 
   submit() {
     this.submitted = true;
+    
+    this.countArray.push(_.countBy(this.array));
+    for(var i=0;i<this.allHub.length;i++){
+      if(this.countArray[0][this.allHub[i]._id]){
+        if((this.countArray[0][this.allHub[i]._id])%2!=0){
+         this.productForm.value.available_for.push(this.allHub[i]._id)
+        }
+      }
+    }
     console.log(this.productForm.value);
     if (this.productForm.invalid) {
       return;
@@ -96,6 +127,7 @@ export class ProductsComponent implements OnInit {
 
   addProduct(product) {
     console.log(product)
+    // console.log(_.countBy(this.array))
     this.productService.addProduct(product).subscribe((res: ResponseModel) => {
       jQuery('#modal3').modal('hide');
       this.toastr.success('Product Added!', 'Success!');
@@ -146,6 +178,23 @@ export class ProductsComponent implements OnInit {
     });
   }
 
+  getallBrand(){
+    this.productService.getAllBrand().subscribe((res: ResponseModel) => {
+      console.log(res);
+      this.allBrand = res.data;
+      console.log(this.allBrand);
+      this.dtTrigger.next();
+    });
+    }
+
+    getAllHub(){
+      this.productService.getAllHub().subscribe((res: ResponseModel) => {
+        console.log(res);
+        this.allHub = res.data;
+        console.log(this.allHub);
+        this.dtTrigger.next();
+      });
+    }
 
   updateProduct(product) {
     const id = this.allproducts[this.currentIndex]._id;
@@ -181,8 +230,8 @@ export class ProductsComponent implements OnInit {
     const product: any = this.allproducts[this.currentIndex];
     console.log(product)
 
-    this.productForm.controls['available_for'].setValue(product.available_for);
-    this.productForm.controls['brand'].setValue(product.brand);
+    // this.productForm.controls['available_for'].setValue(product.available_for);
+    this.productForm.controls['brand'].setValue(product.brand._id);
 
     this.productForm.controls['category'].setValue(product.category._id);
     this.productForm.controls['details'].setValue(product.details);
@@ -191,8 +240,15 @@ export class ProductsComponent implements OnInit {
     this.productForm.controls['is_active'].setValue(product.is_active);
     this.productForm.controls['name'].setValue(product.name);
     // this.productForm.controls['product_id'].setValue(product.product_id);
-    this.productForm.controls['product_dms'].setValue(product.product_dms);
+    // this.productForm.controls['product_dms'].setValue(product.product_dms);
     this.productForm.controls['selling_price'].setValue(product.selling_price);
+    // for(var i=0;i<this.allHub.length;i++){
+    //   if(this.allHub[i]._id==)
+    // }
+    // this.checkboxes.forEach((element) => {
+    //   console.log(element)
+    //   element.nativeElement.checked = false;
+    // });
   }
 
   public uploadCSV(files: FileList) {
@@ -247,5 +303,8 @@ export class ProductsComponent implements OnInit {
     this.editing = false;
     this.submitted = false;
     this.productForm.reset();
+    this.checkboxes.forEach((element) => {
+      element.nativeElement.checked = false;
+    });
   }
 }

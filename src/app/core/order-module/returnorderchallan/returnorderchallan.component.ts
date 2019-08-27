@@ -16,6 +16,7 @@ export class ReturnorderchallanComponent implements OnInit {
   currentIndex:any;
   currentChallan:any=[];
   allProducts:any=[]
+  challanTime: any;
   constructor(private orderService:OrderService,private toastr:ToastrService) { 
     this.getReturnOrders();
   }
@@ -63,6 +64,8 @@ export class ReturnorderchallanComponent implements OnInit {
     console.log(this.currentChallan);
     this.allProducts = this.currentChallan.order.products;
     console.log(this.allProducts);
+    this.challanTime=this.currentChallan.challan_date.substr(11, 8)
+
   }
 
   changeChallanStatus() {

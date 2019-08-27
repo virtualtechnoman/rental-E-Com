@@ -13,6 +13,7 @@ export class ProductsService {
   url = '/api/products';
   url2='/api/pcategory';
   url3 ='/api/brand'
+  url4='/api/user/hub';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   getAllProduct() {
@@ -67,5 +68,11 @@ export class ProductsService {
 
   updateBrand(brand, id) {
     return this.http.put(this.url3 + '/' + id,brand, { headers: this.headers });
+  }
+
+  // Hub User
+
+  getAllHub(){
+    return this.http.get(this.url4 + '/' , {headers:this.headers})
   }
 }

@@ -55,6 +55,7 @@ export class ReturnOrderComponent implements OnInit {
   acceptedValueForm:FormGroup;
   recievedValueForm:FormGroup;
   billedValueForm:FormGroup;
+  orderTime: any;
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService, private orderService: OrderService, private userService: UserService,private vehicleService:TruckService
   ) {
@@ -424,6 +425,7 @@ export class ReturnOrderComponent implements OnInit {
     this.orderSelectedNotes=this.allReturnOrders[i].notes;
     this.orderId=this.allReturnOrders[i]._id
     this.orderIndex=i;
+    this.orderTime=this.orderSelected.order_date.substr(11, 8)
   }
 
   asd(event:any,i){
@@ -490,10 +492,14 @@ export class ReturnOrderComponent implements OnInit {
   }
 
   recievedQuantityEntered(event:any,i){
+    if((event.target.value==Number(event.target.value)) && (event.target.value<=this.orderSelected.products[i].requested)){
     var arr;
     arr=event.target.value;
     this.recievedValueForm.value.recieved[i]=arr
     this.qwe();
+    }else{
+      alert("Enter Recieved Quantity Again")
+    }
   }
 
   qwe(){
@@ -507,7 +513,10 @@ export class ReturnOrderComponent implements OnInit {
     const order=<any> new Object();
     order.products=this.orderSelected.products
     for(var i=0;i<this.orderSelected.products.length;i++){
-      order.products[i].product=this.orderSelected.products[i].product._id
+      order.products[i].product=this.orderSelected.products[i].product._id;
+      if(order.products[i].recieved==0){
+        order.products[i].recieved=order.products[i].requested
+        }
       delete order.products[i].accepted;
       delete order.products[i].dispatched;
       delete order.products[i].requested;
@@ -515,6 +524,7 @@ export class ReturnOrderComponent implements OnInit {
       delete order.products[i].billed;
       
     }
+    console.log(order)
     console.log(order,this.orderSelected._id)
     this.orderService.recievedQuantityStatus(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
       jQuery('#invoiceModal').modal('hide');
@@ -524,10 +534,14 @@ export class ReturnOrderComponent implements OnInit {
   }
 
   billedQuantityEntered(event:any,i){
+    if((event.target.value==Number(event.target.value)) && (event.target.value<=this.orderSelected.products[i].requested)){
     var arr;
     arr=event.target.value;
     this.billedValueForm.value.billed[i]=arr
     this.billedArray();
+    }else{
+      alert("Enter Billing Quantity Again")
+    }
   }
 
   billedArray(){
@@ -541,6 +555,9 @@ export class ReturnOrderComponent implements OnInit {
     order.products=this.orderSelected.products
     for(var i=0;i<this.orderSelected.products.length;i++){
       order.products[i].product=this.orderSelected.products[i].product._id
+      if(order.products[i].billed==0){
+        order.products[i].billed=order.products[i].recieved
+        }
       delete order.products[i].accepted;
       delete order.products[i].dispatched;
       delete order.products[i].recieved;
@@ -548,6 +565,7 @@ export class ReturnOrderComponent implements OnInit {
       delete order.products[i].requested;
       
     }
+    console.log(order)
     this.orderService.recievedBillStatus(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
       jQuery('#invoiceModal').modal('hide');
       this.allReturnOrders.splice(this.orderIndex,1,res.data)

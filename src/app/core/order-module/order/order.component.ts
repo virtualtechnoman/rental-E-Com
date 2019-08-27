@@ -62,7 +62,8 @@ export class OrderComponent implements OnInit {
   dispatchValueForm:FormGroup;
   recievedValueForm:FormGroup;
   billedValueForm:FormGroup;
-  allFarms:any[]=[]
+  allFarms:any[]=[];
+  orderTime:any
   constructor(private productService: ProductsService, private fb: FormBuilder, private toastr: ToastrService,
     private authService: AuthService, private orderService: OrderService, private userService: UserService,private vehicleService: TruckService
   ) {
@@ -132,7 +133,7 @@ export class OrderComponent implements OnInit {
     })
   }
   asd(event:any,i){
-    if(event.target.value){
+    if( (event.target.value==Number(event.target.value)) && (event.target.value<=this.orderSelected.products[i].requested) ){
     var arr=[];
     arr=event.target.value;
     this.acceptedValueForm.value.accepted[i]=arr
@@ -140,13 +141,20 @@ export class OrderComponent implements OnInit {
     this.acceptedForms;
     this.qw()
     }
+    else{
+      alert("Enter Accepted Quantity Again ")
+    }
   }
 
   dispatchQuantityEntered(event:any,i){
-    if(event.target.value){
+    
+    if((event.target.value==Number(event.target.value)) && (event.target.value<=this.orderSelected.products[i].requested)){
       var arr=event.target.value;
       this.dispatchValueForm.value.dispatched[i]=arr
       this.dispatchArray()
+      }
+      else{
+        alert("Enter Dispatch Quantity Again")
       }
   }
 
@@ -162,12 +170,16 @@ export class OrderComponent implements OnInit {
     order.products=this.orderSelected.products;
     for(var i=0;i<this.orderSelectedProducts.length;i++){
       order.products[i].product=this.orderSelectedProducts[i].product._id
+      if(order.products[i].accepted==0){
+        order.products[i].accepted=order.products[i].requested
+        }
       delete order.products[i]._id;
       delete order.products[i].requested;
       delete order.products[i].recieved;
       delete order.products[i].dispatched;
       delete order.products[i].billed;
     }
+    console.log(order)
     this.orderService.addAcceptedOrder(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
       jQuery('#invoiceModal').modal('hide');
       this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
@@ -253,6 +265,9 @@ export class OrderComponent implements OnInit {
     this.orderSelectedNotes=this.allOrders[i].notes;
     this.orderId=this.allOrders[i]._id
     this.orderIndex=i;
+    this.orderTime=this.orderSelected.order_date.substr(11, 8)
+    console.log(this.orderTime)
+
   }
 
   statusSelected(event:any){
@@ -541,6 +556,9 @@ export class OrderComponent implements OnInit {
     productsArray.products=this.orderSelected.products;
     for(var i=0;i<this.orderSelected.products.length;i++){
       productsArray.products[i].product=this.orderSelected.products[i].product._id;
+      if(productsArray.products[i].dispatched==0){
+        productsArray.products[i].dispatched=productsArray.products[i].accepted
+        }
       delete productsArray.products[i].accepted;
       delete productsArray.products[i].recieved;
       delete productsArray.products[i].requested;
@@ -554,7 +572,7 @@ export class OrderComponent implements OnInit {
     for(var i=0;i<productsArray.products.length;i++){
       this.challanForm.value.products[i]=productsArray.products[i]
     }
-
+    console.log(productsArray)
     this.orderService.addOrderChallan(this.challanForm.value,this.orderSelected._id).subscribe((res: ResponseModel) => {
       this.toastr.success('Challan Generated successfully', 'Accepted');
       this.allOrders.splice(this.orderIndex,1,res.data.order)
@@ -565,10 +583,14 @@ export class OrderComponent implements OnInit {
   }
 
   recievedQuantityEntered(event:any,i){
+    if((event.target.value==Number(event.target.value)) && (event.target.value<=this.orderSelected.products[i].requested)){
     var arr;
     arr=event.target.value;
     this.recievedValueForm.value.recieved[i]=arr
     this.qwe();
+    }else{
+      alert("Enter Recieved Quantity Again")
+    }
   }
 
   qwe(){
@@ -584,6 +606,9 @@ export class OrderComponent implements OnInit {
     for(var i=0;i<this.orderSelected.products.length;i++){
       order.products[i].product=this.orderSelected.products[i].product._id
       delete order.products[i].accepted;
+      if(order.products[i].recieved==0){
+        order.products[i].recieved=order.products[i].dispatched
+        }
       delete order.products[i].dispatched;
       delete order.products[i].requested;
       delete order.products[i]._id;
@@ -600,10 +625,14 @@ export class OrderComponent implements OnInit {
 
 
   billedQuantityEntered(event:any,i){
+    if((event.target.value==Number(event.target.value)) && (event.target.value<=this.orderSelected.products[i].requested)){
     var arr;
     arr=event.target.value;
     this.billedValueForm.value.billed[i]=arr
     this.billedArray();
+    }else{
+      alert("Enter Bill Quantity Again")
+    }
   }
 
   billedArray(){
@@ -616,7 +645,10 @@ export class OrderComponent implements OnInit {
     const order=<any> new Object();
     order.products=this.orderSelected.products
     for(var i=0;i<this.orderSelected.products.length;i++){
-      order.products[i].product=this.orderSelected.products[i].product._id
+      order.products[i].product=this.orderSelected.products[i].product._id;
+      if(order.products[i].billed==0){
+      order.products[i].billed=order.products[i].recieved
+      }
       delete order.products[i].accepted;
       delete order.products[i].dispatched;
       delete order.products[i].recieved;
@@ -624,6 +656,7 @@ export class OrderComponent implements OnInit {
       delete order.products[i].requested;
       
     }
+    console.log(order)
     this.orderService.recievedBillQuantity(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
       jQuery('#invoiceModal').modal('hide');
       this.allOrders.splice(this.orderIndex,1,res.data)

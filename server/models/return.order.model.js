@@ -13,6 +13,7 @@ module.exports = mongoose.model("returnorder", new mongoose.Schema({
     placed_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
     placed_to: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
     products: [prods],
+    notes: { type: String},
     challan_accepted: { type: Boolean, default: false },
     recieved: { type: Boolean, default: false },
     billed: { type: Boolean, default: false },
