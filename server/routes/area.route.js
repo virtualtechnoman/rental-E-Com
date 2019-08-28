@@ -28,11 +28,11 @@ router.post('/', authorizePrivilege("ADD_NEW_AREA"), async (req, res) => {
             res.json({ status: 200, data: area, errors: false, message: "Area added successfully" })
         }).catch(e => {
             console.log(e);
-            res.json({ status: 500, data: null, errors: true, message: "Error while populating" })
+            res.status(500).json({ status: 500, data: null, errors: true, message: "Error while populating" })
         });
     }).catch(e => {
         console.log(e);
-        res.json({ status: 500, data: null, errors: true, message: "Error while adding area" })
+        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while adding area" })
     });
 });
 

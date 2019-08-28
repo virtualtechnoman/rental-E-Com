@@ -10,7 +10,7 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 //GET all challans created by self
 router.get("/type/:type", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) => {
-    let p = { path: "order", populate: { path: "products.product", populate: { path: "brand category" } } }
+    let p = { path: "order", populate: { path: "products.product", populate: { path: "brand category available_for", select:"-password" } } }
     if (req.params.type == "order") {
         p.model = "order";
     } else if (req.params.type == "rorder") {
@@ -31,7 +31,7 @@ router.get("/type/:type", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) 
 
 //GET all challans assigned to self
 router.get("/assigned/:type", authorizePrivilege("GET_ALL_CHALLAN_ASSIGNED"), (req, res) => {
-    let p = { path: "order", match: { recieved: false }, populate: { path: "products.product placed_to placed_by",select:"-password", populate: { path: "brand category available_for" } } }
+    let p = { path: "order", match: { recieved: false }, populate: { path: "products.product placed_to placed_by",select:"-password", populate: { path: "brand category available_for", select:"-password" } } }
     if (req.params.type == "order") {
         p.model = "order";
     } else if (req.params.type == "rorder") {
@@ -65,7 +65,7 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_CHALLAN"), (req, res) => {
                     challan.accepted = true;
                     challan.save().then(_c => {
                         if (_c.order_type == "order") {
-                            Order.findByIdAndUpdate(challan.order, { $set: { challan_accepted: true, status: "Challan Accepted" } }).populate("products.product placed_by placed_to", "-password").exec().then(_ord => {
+                            Order.findByIdAndUpdate(challan.order, { $set: { challan_accepted: true, status: "Challan Accepted" } }).populate([{path:"placed_by placed_to", select : "-password"},{path:"products.product", populate:{path:"brand category available_for",select:"-password"}}]).exec().then(_ord => {
                                 if (_ord) {
                                     _c = _c.toObject();
                                     _c.order = _ord.toObject();
@@ -77,7 +77,7 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_CHALLAN"), (req, res) => {
                             })
                         }
                         else {
-                            ReturnOrder.findByIdAndUpdate(challan.order, { $set: { challan_accepted: true, status: "Challan Accepted" } }).populate([{ path: "placed_by placed_to", select: "-password" }, { path: "products.product", populate: { path: "category brand" } }]).exec().then(_ord => {
+                            ReturnOrder.findByIdAndUpdate(challan.order, { $set: { challan_accepted: true, status: "Challan Accepted" } }).populate([{ path: "placed_by placed_to", select: "-password" }, { path: "products.product", populate: { path: "category brand available_for", select:"-password" } }]).exec().then(_ord => {
                                 if (_ord) {
                                     _c = _c.toObject();
                                     _c.order = _ord.toObject();

@@ -46,7 +46,10 @@ export class UserComponent implements OnInit {
   viewArray: any = [];
   fullTable: Boolean = true;
   registerForm: FormGroup;
-  newArray:any[]=[]
+  newArray:any[]=[];
+  fileSelected;
+  keyProfileImage:any;
+  urlProfileImage:any;
   constructor(private userService: UserService, private formBuilder: FormBuilder,
     private UserroleService: UserRoleService, private toastr: ToastrService, private activatedRoute: ActivatedRoute) {
     this.initForm();
@@ -78,16 +81,25 @@ export class UserComponent implements OnInit {
     };
     this.registerForm = this.formBuilder.group({
       full_name: ['', Validators.required],
+      email: ['', Validators.required],
+      is_active: [true, Validators.required],
+      password: ['', Validators.required],
+      role: ['', Validators.required],
       mobile_number: ['', Validators.required],
       landmark: ['', Validators.required],
       street_address: ['', Validators.required],
       city: ['', Validators.required],
-      dob: ['', Validators.required]
+      profile_picture:[""]
     });
   }
 
-  get f() { return this.userForm.controls; }
-  get f2() { return this.registerForm.controls; }
+  get f() { return this.registerForm.controls; }
+
+
+  selectFile(event:any){
+    this.fileSelected=event.target.files[0];
+    console.log(this.fileSelected)
+  }
 
   onSubmit() {
     this.submitted = true;
@@ -95,36 +107,42 @@ export class UserComponent implements OnInit {
     if (this.registerForm.invalid) {
       return;
     }
-    alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registerForm.value));
-  }
+    // if(this.registerForm.value.profile_picture==null || this.registerForm.value.profile_picture==""){
+    //   this.registerForm.value.profile_picture==""
+    // }
+    if(this.fileSelected){
+      this.userService.getUrl().subscribe((res:ResponseModel)=>{
+        this.keyProfileImage=res.data.key;
+        this.urlProfileImage=res.data.url;
+          
+      if(this.urlProfileImage){
+        this.userService.sendUrl(this.urlProfileImage,this.fileSelected).then(resp=>{
+          if(resp.status == 200 ){
+            this.registerForm.value.profile_picture=this.keyProfileImage;
+            this.addUser(this.registerForm.value);
+          }
+        })
+      }
+      })
+    }
+    console.log(this.registerForm.value)
+    }
 
-  submit() {
-    console.log('USER FORM VALUES ====>>>', this.userForm.value);
-    this.submitted = true;
-    if (this.userForm.invalid && !this.passwordMatched) {
-      return;
-    }
-    this.currentUser = this.userForm.value;
-    if (this.editing) {
-      this.updateUser(this.currentUser);
-    } else {
-      this.addUser(this.currentUser);
-    }
-  }
+
+
+
 
   addUser(user) {
     console.log(user);
-    try {
       this.userService.addUser(user).subscribe((res: ResponseModel) => {
         console.log(res);
         jQuery('#modal3').modal('hide');
         this.toastr.success('User Added!', 'Success!');
         this.allUsers.push(res.data);
         this.resetForm();
+        console.log(res.data)
       });
-    } catch (error) {
-      console.log(error);
-    }
+    
 
   }
 
@@ -383,7 +401,7 @@ this.me(this.newArray)
 
   checkPassword() {
     console.log(this.confirmPassword);
-    if (this.confirmPassword !== this.userForm.get('password').value) {
+    if (this.confirmPassword !== this.registerForm.get('password').value) {
       this.passwordMatched = false;
       console.log('TRUE');
       return true;
