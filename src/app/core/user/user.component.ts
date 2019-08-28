@@ -21,6 +21,8 @@ export class UserComponent implements OnInit {
   allTherapies: any[] = [];
   allTherayId: any[] = [];
   allUsers: any[] = [];
+  allUsers2: any[] = [];
+  allUsers3: any[] = [];
   allUserRole: any[] = [];
   CSV: File = null;
   confirmPassword: any = '';
@@ -44,6 +46,7 @@ export class UserComponent implements OnInit {
   viewArray: any = [];
   fullTable: Boolean = true;
   registerForm: FormGroup;
+  newArray:any[]=[]
   constructor(private userService: UserService, private formBuilder: FormBuilder,
     private UserroleService: UserRoleService, private toastr: ToastrService, private activatedRoute: ActivatedRoute) {
     this.initForm();
@@ -216,13 +219,50 @@ export class UserComponent implements OnInit {
       } else {
         console.log(res.data);
         this.allUsers = res.data;
+        this.allUsers2=res.data;
+        this.allUsers2=res.data;
       }
     });
   }
 
   getUserbyRole(event:any) {
-    this.allUsers.length = 0;
     console.log(event)
+    if(event.target.selectedIndex==1){
+
+      this.allUsers.length=0;
+      var arr=[]
+      arr.push(this.allUsers2);
+      this.allUsers=arr[0]
+      console.log(arr,this.allUsers)
+    }else {
+    this.newArray.length=0;
+    console.log(this.newArray)
+    for(var i=0;i<this.allUsers2.length;i++){
+      if(this.allUsers2[i].role){
+      if(this.allUsers2[i].role.name){
+      if(this.allUsers2[i].role.name==event.target.value){
+        this.newArray.push(this.allUsers2[i])
+      }
+    }
+  }
+}
+    }
+    if(event.target.selectedIndex!=1){
+this.me(this.newArray)
+    }
+  // console.log(this.newArray)
+  // this.allUsers.length=0;
+  // if(this.newArray.length>0){
+  //   for(var i=0;i<this.newArray.length;i++){
+  //     this.allUsers[i]=this.newArray[i]
+  //   }
+  // }
+
+  // this.allUsers.length=0;
+  // this.allUsers.push(this.newArray)
+  // console.log(this.allUsers)
+    
+  
     // if (!this.selectedUserRole) {
     //   this.getAllUsers();
     // } else {
@@ -234,6 +274,16 @@ export class UserComponent implements OnInit {
     //     }
     //   });
     // }
+  }
+
+  me(array){
+    console.log(array)
+    var arra2=[];
+    for(var i=0;i<array.length;i++){
+      arra2[i]=array[i]
+    }
+    this.allUsers=arra2
+    console.log(arra2,this.allUsers)
   }
 
   public uploadCSV(files: FileList) {

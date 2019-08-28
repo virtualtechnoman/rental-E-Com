@@ -136,9 +136,13 @@
           <div class="form-row">
             <div class="form-row text-center">
                 <label>&nbsp;Available For:&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <div class="form-check form-group">
+                <input type="checkbox" #selectallcheckboxes (click)="selectAllCheckboxes()" class="form-check-input">
+                <label>Select All Hubs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                </div>
                 <div *ngFor="let hub of allHub;let i=index">
                 <div class="form-check form-group">
-                <input type="checkbox" size="lg" #checkboxes class="form-check-input" (change)="tickHub($event,i)" [ngClass]="{ 'is-invalid': submitted && f.available_for.errors }">
+                <input type="checkbox" size="lg" #checkboxes class="form-check-input" [ngClass]="{ 'is-invalid': submitted && f.available_for.errors }">
                 <label class="form-check-label" for="exampleCheck1" >{{hub.full_name}}&nbsp;&nbsp;&nbsp;</label>
                 
               </div>
@@ -216,7 +220,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" *ngIf="viewArray && array3"
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" *ngIf="viewArray"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -251,7 +255,7 @@
         <div class="form-group">
           <label>Available For</label>
           <div *ngFor="let avail of viewArray.available_for;let i=index">
-          <input type="text" class="form-control" [(ngModel)]="array3[i].full_name" disabled />
+          <input type="text" class="form-control" [(ngModel)]="viewArray.available_for[i].full_name" disabled />
           </div>
         </div>
         <div class="form-group">
