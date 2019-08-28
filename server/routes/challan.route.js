@@ -10,7 +10,7 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 //GET all challans created by self
 router.get("/type/:type", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) => {
-    let p = { path: "order", populate: { path: "products.product", populate:{path:"brand category"} } }
+    let p = { path: "order", populate: { path: "products.product", populate: { path: "brand category" } } }
     if (req.params.type == "order") {
         p.model = "order";
     } else if (req.params.type == "rorder") {
@@ -31,7 +31,7 @@ router.get("/type/:type", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) 
 
 //GET all challans assigned to self
 router.get("/assigned/:type", authorizePrivilege("GET_ALL_CHALLAN_ASSIGNED"), (req, res) => {
-    let p = { path: "order", populate: { path: "products.product placed_to placed_by", populate:{path:"brand category"} } }
+    let p = { path: "order", match: { recieved: false }, populate: { path: "products.product placed_to placed_by",select:"-password", populate: { path: "brand category" } } }
     if (req.params.type == "order") {
         p.model = "order";
     } else if (req.params.type == "rorder") {
@@ -41,8 +41,12 @@ router.get("/assigned/:type", authorizePrivilege("GET_ALL_CHALLAN_ASSIGNED"), (r
     }
     Challan.find({ driver: req.user._id, order_type: req.params.type }).populate("processing_unit_incharge dispatch_processing_unit vehicle driver", "-password")
         .populate(p).exec().then(doc => {
-            if (doc.length > 0)
+            if (doc.length > 0) {
+                doc  = doc.filter(x=>{
+                    return x.order != null;
+                })
                 return res.json({ status: 200, data: doc, errors: false, message: "Challans" });
+            }
             else
                 return res.json({ status: 200, data: doc, errors: true, message: "No Challan found" });
         }).catch(err => {
@@ -72,8 +76,8 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_CHALLAN"), (req, res) => {
                                 return res.status(500).json({ status: 500, errors: true, data: null, message: "Challan accepted successfully but failed in setting order status" });
                             })
                         }
-                        else{
-                            ReturnOrder.findByIdAndUpdate(challan.order, { $set: { challan_accepted: true, status: "Challan Accepted" } }).populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand"}}]).exec().then(_ord => {
+                        else {
+                            ReturnOrder.findByIdAndUpdate(challan.order, { $set: { challan_accepted: true, status: "Challan Accepted" } }).populate([{ path: "placed_by placed_to", select: "-password" }, { path: "products.product", populate: { path: "category brand" } }]).exec().then(_ord => {
                                 if (_ord) {
                                     _c = _c.toObject();
                                     _c.order = _ord.toObject();

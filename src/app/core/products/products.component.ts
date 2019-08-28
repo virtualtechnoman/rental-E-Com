@@ -15,6 +15,9 @@ import * as _ from "lodash";
 })
 export class ProductsComponent implements OnInit {
   @ViewChildren("checkboxes") checkboxes: QueryList<ElementRef>;
+  @ViewChildren("selectallcheckboxes") selectallcheckboxes: QueryList<ElementRef>;
+  @ViewChildren("selectallcheckboxes") selectallcheckboxes2: any;
+  @ViewChildren("checkboxes") checkboxes2:any;;
   jQuery: any;
   allproducts: ProductModel[] = [];
   allCategories: CategoryModel[] = [];
@@ -38,7 +41,8 @@ export class ProductsComponent implements OnInit {
   array:any[]=[];
   countArray:any[]=[];
   array2:any=[];
-  array3:any[]=[]
+  array3:any[]=[];
+  masterArray:any[]=[]
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService
   ) {
@@ -85,50 +89,35 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  tickHub(event:any,i){
-    // console.log(event,i);
-    // for(let i=0;i<this.productForm.value.available_for.length;i++){
-    //   if(this.productForm.value.available_for[i]==this.allHub[i]._id){
-    //     this.productForm.value.available_for[i].delete(this.allHub[i]._id)
-    //   }
-    //   else{
-    //     this.productForm.value.available_for[i].push(this.allHub[i]._id)
-    //   }
-    // }
-    this.array.push(this.allHub[i]._id)
-    // console.log(this.array)
-    
-  }
 
   get f() { return this.productForm.controls; }
 
   submit() {
+  
     this.submitted = true;
-    
-    this.countArray.push(_.countBy(this.array));
-    for(var i=0;i<this.allHub.length;i++){
-      if(this.countArray[0][this.allHub[i]._id]){
-        if((this.countArray[0][this.allHub[i]._id])%2!=0){
-         this.productForm.value.available_for.push(this.allHub[i]._id)
-        }
+  if (this.productForm.invalid) {
+    return;
+  }
+
+  if(this.editing){
+      this.productForm.value.available_for.length=0;
+    for(var i=0;i<this.checkboxes2._results.length;i++){
+      if(this.checkboxes2._results[i].nativeElement.checked==true){
+          this.productForm.value.available_for.push(this.allHub[i]._id)
       }
     }
-    console.log(this.productForm.value);
-    if (this.productForm.invalid) {
-      return;
+    this.updateProduct(this.productForm.value);
+  }else{
+    for(var i=0;i<this.checkboxes2._results.length;i++){
+      if(this.checkboxes2._results[i].nativeElement.checked==true){
+          this.productForm.value.available_for.push(this.allHub[i]._id)
+      }
     }
-    this.currentproduct = this.productForm.value;
-    console.log(this.currentproduct);
-    if (this.editing) {
-      this.updateProduct(this.currentproduct);
-    } else {
-      this.addProduct(this.productForm.value);
-    }
+    this.addProduct(this.productForm.value)
+  }
   }
 
   addProduct(product) {
-    console.log(product)
-    // console.log(_.countBy(this.array))
     this.productService.addProduct(product).subscribe((res: ResponseModel) => {
       jQuery('#modal3').modal('hide');
       this.toastr.success('Product Added!', 'Success!');
@@ -137,11 +126,30 @@ export class ProductsComponent implements OnInit {
     })
   }
 
+  selectAllCheckboxes(){
+    if(this.selectallcheckboxes2._results[0].nativeElement.checked==true){
+    this.checkboxes.forEach((element) => {
+      element.nativeElement.checked = true;
+    });
+  }
+
+  if(this.selectallcheckboxes2._results[0].nativeElement.checked==false){
+    this.checkboxes.forEach((element) => {
+      element.nativeElement.checked = false;
+    });
+  }
+  
+  }
+
   editProduct(i) {
     this.editing = true;
     this.currentproduct = this.allproducts[i];
     this.currentproductId = this.allproducts[i]._id;
     this.currentIndex = i;
+    this.masterArray.length=0
+    this.checkboxes.forEach((element) => {
+      element.nativeElement.checked = false;
+    });
     this.setFormValue();
   }
 
@@ -156,7 +164,7 @@ export class ProductsComponent implements OnInit {
       if(this.array3.length>0){
       jQuery('#exampleModal').modal('show')
       }
-
+      
   }
 
   getAllCategory() {
@@ -212,9 +220,14 @@ export class ProductsComponent implements OnInit {
       jQuery('#modal3').modal('hide');
       this.toastr.info('Product Updated Successfully!', 'Updated!!');
       this.resetForm();
+      console.log(res.data)
       this.allproducts.splice(this.currentIndex, 1, res.data)
       this.currentproductId = null;
       this.editing = false;
+      this.masterArray.length=0;
+      this.checkboxes.forEach((element) => {
+        element.nativeElement.checked = false;
+      });
     });
   }
 
@@ -234,31 +247,33 @@ export class ProductsComponent implements OnInit {
   }
 
   setFormValue() {
-
+    
+    var available:any=this.currentproduct.available_for;
+    console.log(available)
+    for(let i=0;i<available.length;i++){
+      let a=available[i]._id
+      for(var j=0;j<this.allHub.length;j++){
+        if(a==this.allHub[j]._id){
+          console.log(j)
+          this.checkboxes2._results[j].nativeElement.checked=true;
+        }
+      }
+    }
+    for(var i=0;i<this.checkboxes2._results.length;i++){
+      console.log(this.checkboxes2._results[i].nativeElement.checked)
+    }
     const product: any = this.allproducts[this.currentIndex];
     console.log(product)
-
-    // this.productForm.controls['available_for'].setValue(product.available_for);
     this.productForm.controls['brand'].setValue(product.brand._id);
 
     this.productForm.controls['category'].setValue(product.category._id);
     this.productForm.controls['details'].setValue(product.details);
     this.productForm.controls['farm_price'].setValue(product.farm_price);
-    // this.productForm.controls['image'].setValue(product.image);
     this.productForm.controls['is_active'].setValue(product.is_active);
     this.productForm.controls['name'].setValue(product.name);
-    // this.productForm.controls['product_id'].setValue(product.product_id);
-    // this.productForm.controls['product_dms'].setValue(product.product_dms);
     this.productForm.controls['selling_price'].setValue(product.selling_price);
-    // for(var i=0;i<this.allHub.length;i++){
-    //   if(this.allHub[i]._id==)
-    // }
-    // this.checkboxes.forEach((element) => {
-    //   console.log(element)
-    //   element.nativeElement.checked = false;
-    // });
-  }
-
+  
+}
   public uploadCSV(files: FileList) {
     if (files && files.length > 0) {
       const file: File = files.item(0);
@@ -312,6 +327,9 @@ export class ProductsComponent implements OnInit {
     this.submitted = false;
     this.productForm.reset();
     this.checkboxes.forEach((element) => {
+      element.nativeElement.checked = false;
+    });
+    this.selectallcheckboxes.forEach((element) => {
       element.nativeElement.checked = false;
     });
   }

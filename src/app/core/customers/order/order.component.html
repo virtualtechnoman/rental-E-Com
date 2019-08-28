@@ -1,0 +1,98 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="float-left">Customer Order Management</h2>
+      <!-- <a class="btn btn-secondary float-right text-white" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal3">Add New
+        State</a> -->
+      <!-- <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal2">Upload CSV</a> -->
+    </div>
+    <div class="card-body">
+      <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
+        [dtTrigger]="dtTrigger">
+        <thead>
+          <tr>
+            <th scope="col">S.No</th>
+            <th scope="col">Order Number</th>
+            <th scope="col">Order Date</th>
+            <th scope="col">Placed By</th>
+            <th scope="col">Total Amount</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of allCustomersOrders; let i = index">
+            <td>{{i+1}}</td>
+            <td>#{{order?.order_id}}</td>
+            <td>{{order?.order_date | date:'dd/mm/yy'}}</td>
+            <td>{{order?.placed_by?.full_name}}</td>
+            <td>₹{{order?.amount}}</td>
+            <td>{{order?.status}}</td>
+            <td>
+                <a style="cursor: pointer" (click)="viewCustomerOrder(i)" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-eye"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+  
+  <!--View Example Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Order Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+                <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>Order Number</label>
+                    <input type="text"  class="form-control" [(ngModel)]="viewOrderArray.order_id" disabled />
+                </div>
+              </div>
+                <div class="form-row">
+                  <div *ngFor="let product of viewOrderArray.products;let i=index">
+                    <div class="form-group col-md-4">
+                        <label for="inputPassword4">Product Name</label>
+                        <input type="text" class="form-control" id="inputPassword4" disabled
+                         [(ngModel)]="viewOrderArray.products[i].product.name" >
+                      </div>
+                      <div class="form-group col-md-4">
+                          <label for="inputPassword4">Product Quantity</label>
+                          <input type="text" class="form-control" id="inputPassword4" disabled
+                           [(ngModel)]="viewOrderArray.products[i].quantity" >
+                      </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputPassword4">Total Amount</label>
+                        <input type="text" class="form-control" id="inputPassword4" disabled
+                         [(ngModel)]="viewOrderArray.amount" >
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputPassword4">Status</label>
+                        <input type="text" class="form-control" id="inputPassword4" disabled
+                         [(ngModel)]="viewOrderArray.status" >
+                    </div>
+                </div>
+                          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>

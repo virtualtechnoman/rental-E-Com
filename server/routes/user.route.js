@@ -199,9 +199,11 @@ router.post("/", authorizePrivilege("ADD_NEW_USER"), (req, res) => {
           result.data.password = hash;
           const newuser = new User(result.data);
           newuser.save().then(data => {
-            data = data.toObject();
-            delete data.password;
-            res.status(200).json({ status: 200, errors: false, data, message: "User Added successfully" });
+            data.populate("city role").execPopulate().then(data=>{
+              data = data.toObject();
+              delete data.password;
+              res.status(200).json({ status: 200, errors: false, data, message: "User Added successfully" });
+            })
           }).catch(err => {
             res.status(500).json({ status: 500, errors: true, data: null, message: "Error while creating new user" });
           })
