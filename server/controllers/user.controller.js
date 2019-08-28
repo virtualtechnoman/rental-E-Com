@@ -3,15 +3,15 @@ const Joi = require('joi');
 
 
 const userSchema = Joi.object({
-  full_name: Joi.string().required(),
-  password: Joi.string().required(),
+  full_name: Joi.string().required(), 
+  password: Joi.string().required(), 
   email: Joi.string().email().required(),
-  role: Joi.string().required(),
-  mobile_number: Joi.string().required(),
+  role: Joi.string().required(), 
+  mobile_number: Joi.string().required(), 
   profile_picture: Joi.string().optional(),
-  is_active: Joi.boolean().required(),
-  landmark: Joi.string().required(),
-  street_address: Joi.string().required(),
+  is_active: Joi.boolean().required(), 
+  landmark: Joi.string().required(), 
+  street_address: Joi.string().required(), 
   city: Joi.string().required(),
   // repeatPassword: Joi.string().required().valid(Joi.ref('password')),
 })
