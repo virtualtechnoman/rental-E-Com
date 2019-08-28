@@ -106,7 +106,7 @@ router.delete('/:id', authorizePrivilege("DELETE_USER"), (req, res) => {
 
 
 // UPDATE A USER
-router.put('/:id', authorizePrivilege("UPDATE_USER"), (req, res) => {
+router.put('/id/:id', authorizePrivilege("UPDATE_USER"), (req, res) => {
   if (mongodb.ObjectID.isValid(req.params.id)) {
     // let user = (({ full_name, email, role }) => ({ full_name, email, role }))(req.body);
     const result = userCtrl.verifyUpdate(req.body);
@@ -114,6 +114,42 @@ router.put('/:id', authorizePrivilege("UPDATE_USER"), (req, res) => {
       return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
     }
     User.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating user data" });
+      }
+      else {
+        doc.populate("role").execPopulate().then(d => {
+          if (!d)
+            return res.status(200).json({ status: 200, errors: true, data: doc, message: "No User Found" });
+          else {
+            d = d.toObject();
+            delete d.password;
+            console.log("Updated User", d);
+            res.status(200).json({ status: 200, errors: false, data: d, message: "Updated User" });
+          }
+        }
+        ).catch(e => {
+          console.log(e);
+          return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating user details" });
+        });
+      }
+    })
+  } else {
+    return res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid user id" });
+    // return res.status(404).send("ID NOT FOUND");
+  }
+})
+
+// UPDATE USER OWN
+router.put('/me', authorizePrivilege("UPDATE_USER_OWN"), (req, res) => {
+  if (mongodb.ObjectID.isValid(req.params.id)) {
+    // let user = (({ full_name, email, role }) => ({ full_name, email, role }))(req.body);
+    const result = userCtrl.verifyUpdate(req.body);
+    if (!isEmpty(result.errors)) {
+      return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
+    }
+    User.findByIdAndUpdate(req.user._id, result.data, { new: true }, (err, doc) => {
       if (err) {
         console.log(err);
         return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating user data" });

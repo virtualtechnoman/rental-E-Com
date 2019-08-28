@@ -5,6 +5,7 @@ module.exports = (p=false)=>({
     ADD_NEW_USER:p,
     DELETE_USER:p,
     UPDATE_USER:p,
+    UPDATE_USER_OWN:p,
     //Product Privilege
     GET_ALL_PRODUCTS:p,
     GET_ALL_PRODUCTS_OWN:p,
@@ -109,4 +110,9 @@ module.exports = (p=false)=>({
     DELETE_BRAND:p,
     UPDATE_BRAND:p,
     ADD_NEW_BRAND:p,
+    //Farm Visit Privilege
+    GET_FARM_VISITS_OWN:p,
+    GET_ALL_FARM_VISITS:p,
+    ADD_NEW_FARM_VISIT:p,
+    DELETE_FARM_VISIT:p,
 })

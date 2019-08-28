@@ -3,7 +3,7 @@ const helper = require('../utils/helper');
 
 const bookFarmVisit = Joi.object({
     visitors:Joi.number().positive().required(),
-    reason:Joi.string().optional(),
+    reason:Joi.string().required(),
     date:Joi.date().required()
 })
 // const areaUpdateSchema = Joi.object({
