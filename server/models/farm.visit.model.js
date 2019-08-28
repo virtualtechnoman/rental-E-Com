@@ -6,7 +6,7 @@ const visitSchema = new Schema({
     visitors:{type:Number, required:true},
     reason:{type:String, required:true},
     date:{type:Date, required:true},
-    isOpen:{type:Boolean, default:false}
+    isOpen:{type:Boolean, default:true}
 },
 {versionKey:false});
 

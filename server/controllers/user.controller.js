@@ -8,7 +8,11 @@ const userSchema = Joi.object({
   email: Joi.string().email().required(),
   role: Joi.string().required(),
   mobile_number: Joi.string().required(),
-  is_active: Joi.boolean().required()
+  profile_picture: Joi.string().optional(),
+  is_active: Joi.boolean().required(),
+  landmark: Joi.string().required(),
+  street_address: Joi.string().required(),
+  city: Joi.string().required(),
   // repeatPassword: Joi.string().required().valid(Joi.ref('password')),
 })
 const userUpdateSchema = Joi.object({
@@ -17,7 +21,13 @@ const userUpdateSchema = Joi.object({
   email: Joi.string().email().optional(),
   mobile_number: Joi.string().optional(),
   is_active: Joi.boolean().optional(),
-  role: Joi.string().optional()
+  role: Joi.string().optional(),
+  profile_picture: Joi.string().optional(),
+  latitude: Joi.string().optional(),
+  longitutde: Joi.string().optional(),
+  landmark: Joi.string().optional(),
+  street_address: Joi.string().optional(),
+  city: Joi.string().optional()
 })
 const userRegisterSchema = Joi.object({
   full_name: Joi.string().required(),

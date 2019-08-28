@@ -6,7 +6,7 @@ const mongodb = require('mongoose').Types;
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 // Get all visits own
 router.get("/", authorizePrivilege("GET_FARM_VISITS_OWN"), (req, res) => {
-    FVisit.find({user:req.user._id}).exec().then(docs => {
+    FVisit.findOne({user:req.user._id}).exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All visits" });
         else
@@ -18,7 +18,7 @@ router.get("/", authorizePrivilege("GET_FARM_VISITS_OWN"), (req, res) => {
 
 // Get all visits
 router.get("/all", authorizePrivilege("GET_ALL_FARM_VISITS"), (req, res) => {
-    FVisit.find().exec().then(docs => {
+    FVisit.find().populate("user","-password").exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All visits" });
         else
@@ -34,6 +34,7 @@ router.post('/', authorizePrivilege("ADD_NEW_FARM_VISIT"), async (req, res) => {
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
     }
+    result.data.user = req.user._id;
     let newVisit = new FVisit(result.data);
     newVisit.save().then(visit => {
             res.json({ status: 200, data: visit, errors: false, message: "Visit added successfully" })

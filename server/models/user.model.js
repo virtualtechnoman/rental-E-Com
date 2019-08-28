@@ -18,6 +18,8 @@ const UserSchema = new mongoose.Schema({
   street_address: {type:String},
   city: {type:mongoose.Schema.Types.ObjectId, ref:"city"},
   role: { type: mongoose.Schema.Types.ObjectId, ref: "user_role" },
+  latitude:String,
+  longitutde:String,
   //for customers =>
   dob: { type: Date },
   profile_picture:{type:String},
