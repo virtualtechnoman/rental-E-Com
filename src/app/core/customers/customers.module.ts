@@ -7,6 +7,7 @@ import { DataTablesModule } from 'angular-datatables';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { DistirbutorComponent } from './distirbutor/distirbutor.component';
 import { SectorComponent } from './sector/sector.component';
+import { OrderComponent } from './order/order.component';
 
 @NgModule({
   imports: [
@@ -17,7 +18,7 @@ import { SectorComponent } from './sector/sector.component';
 
     InputSwitchModule
   ],
-  declarations: [CustomersComponent, DistirbutorComponent, SectorComponent],
+  declarations: [CustomersComponent, DistirbutorComponent, SectorComponent, OrderComponent],
   exports: [
     CustomerRoutingModule
   ]
