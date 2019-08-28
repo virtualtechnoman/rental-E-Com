@@ -20,6 +20,7 @@ const cityRoutes = require("./city.route");
 const areaRoutes = require("./area.route");
 const ticketRoutes = require("./ticket.route");
 const chatRoutes = require("./chat.route");
+const imageUploadRoutes = require("./upload.image.route");
 const authMiddleware = require("../middleware/authMiddleware");
 const validateEnv = require("../middleware/validateEnv");
 const router = express.Router();
@@ -32,6 +33,7 @@ router.get('/health-check', (req, res) =>
 
 router.use('/auth', validateEnv, authRoutes);
 router.use('/user', validateEnv, authMiddleware, userRoutes);
+router.use('/upload', validateEnv, authMiddleware, imageUploadRoutes);
 router.use('/state', validateEnv, authMiddleware, stateRoutes);
 router.use('/city', validateEnv, authMiddleware, cityRoutes);
 router.use('/area', validateEnv, authMiddleware, areaRoutes);

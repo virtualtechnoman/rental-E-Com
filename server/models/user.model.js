@@ -20,6 +20,7 @@ const UserSchema = new mongoose.Schema({
   role: { type: mongoose.Schema.Types.ObjectId, ref: "user_role" },
   //for customers =>
   dob: { type: Date },
+  profile_picture:{type:String},
   anniversary: { type: Date },
   //for driver =>
   dl_number:{type:String}
