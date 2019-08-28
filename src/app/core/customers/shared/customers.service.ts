@@ -14,7 +14,8 @@ export class CustomersService {
   url2 = "/api/customertype"
   url3 = "/api/distirbutors"
   url4 = "/api/customerassign"
-  url5 = "/api/sectors"
+  url5 = "/api/sectors";
+  url6 = '/api/corder/all';
   constructor(private http: HttpClient,private tokenService:TokenStorage) { }
 
   getAllCustomers() {
@@ -110,4 +111,9 @@ export class CustomersService {
     return this.http.post(this.url5 + '/import', csv)
   }
 
+  // Costomer Orders
+
+  getAllCustomersOrders() {
+    return this.http.get(this.url6 + '/', { headers: this.headers })
+  }
 }

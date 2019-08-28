@@ -13,7 +13,7 @@ router.get("/", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS_OWN"), (req, res) =>
         .populate({
             path: "products.product ",
             populate:{
-                path:"created_by category brand available_for"
+                path:"created_by category brand available_for", select:"-password"
             }
         })
         .exec().then(doc => {
@@ -29,7 +29,7 @@ router.get("/all", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req, res) => 
     .populate({
         path: "products.product",
         populate:{
-            path:"created_by category brand available_for"
+            path:"created_by category brand available_for", select:"-password"
         }
     }).exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
@@ -106,7 +106,7 @@ router.put("/:id", authorizePrivilege("UPDATE_CUSTOMER_ORDER"), (req, res) => {
                 doc.populate("placed_by placed_to").populate({
                     path: "products.product",
                     populate:{
-                        path:"created_by category brand available_for"
+                        path:"created_by category brand available_for", select:"-password"
                     }
                 }).execPopulate()
                     .then(d => {
@@ -132,7 +132,7 @@ router.get("/id/:id", authorizePrivilege("GET_CUSTOMER_ORDER"), (req, res) => {
             .populate({
                 path: "products.product",
                 populate:{
-                    path:"created_by category brand available_for"
+                    path:"created_by category brand available_for", select:"-password"
                 }
             })
             .exec()
