@@ -8,10 +8,10 @@ const subscriptionCreateSchema = Joi.object({
     frequencyDates:Joi.array().items(Joi.date()).required()
 })
 const subscriptionUpdateSchema = Joi.object({
-    product:Joi.string().optional(),
-    startDate:Joi.date().optional(),
-    quantity:Joi.number().positive().optional(),
-    frequencyDates:Joi.array().items(Joi.date()).optional()
+    product:Joi.string().required(),
+    startDate:Joi.date().required(),
+    quantity:Joi.number().positive().required(),
+    frequencyDates:Joi.array().items(Joi.date()).required()
 })
 
 module.exports = {

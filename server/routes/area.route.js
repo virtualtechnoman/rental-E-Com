@@ -6,7 +6,7 @@ const mongodb = require('mongoose').Types;
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 // Get all areas
 router.get("/", authorizePrivilege("GET_ALL_AREAS"), (req, res) => {
-    Area.find().populate("hub").populate({path:"city",populate:{path:"state"}}).exec().then(docs => {
+    Area.find().populate("hub","-password").populate({path:"city",populate:{path:"state"}}).exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All areas" });
         else
@@ -24,7 +24,7 @@ router.post('/', authorizePrivilege("ADD_NEW_AREA"), async (req, res) => {
     }
     let newState = new Area(result.data);
     newState.save().then(area => {
-        area.populate("hub").populate({path:"city",populate:{path:"state"}}).execPopulate().then(area=>{
+        area.populate("hub","-password").populate({path:"city",populate:{path:"state"}}).execPopulate().then(area=>{
             res.json({ status: 200, data: area, errors: false, message: "Area added successfully" })
         }).catch(e => {
             console.log(e);
@@ -43,7 +43,7 @@ router.put("/:id", authorizePrivilege("UPDATE_AREA"), (req, res) => {
         if (!isEmpty(result.errors)) {
             return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
         }
-        Area.findByIdAndUpdate(req.params.id, result.data, { new: true }).populate("hub").populate({path:"city",populate:{path:"state"}}).exec()
+        Area.findByIdAndUpdate(req.params.id, result.data, { new: true }).populate("hub","-password").populate({path:"city",populate:{path:"state"}}).exec()
             .then(area=>{
                     res.status(200).json({ status: 200, data: area, errors: false, message: "Area Updated Successfully" });
             }).catch(err => {

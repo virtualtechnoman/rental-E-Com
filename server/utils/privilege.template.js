@@ -119,5 +119,11 @@ module.exports = (p=false)=>({
     GET_ALL_ROUTES:p,
     ADD_NEW_ROUTE:p,
     UPDATE_ROUTE:p,
-    DELETE_ROUTE:p
+    DELETE_ROUTE:p,
+    //Subscription Privilege
+    GET_ALL_SUBSCRIPTIONS:p,
+    GET_SUBSCRIPTIONS_OWN:p,
+    ADD_NEW_SUBSCRIPTION:p,
+    UPDATE_SUBSCRIPTION:p,
+    DELETE_SUBSCRIPTION:p,
 })
