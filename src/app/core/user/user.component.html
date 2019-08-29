@@ -33,7 +33,7 @@
             <td>{{user?.role?.name | titlecase }}</td>
             <td>{{user.mobile_number}}</td>
             <td>
-              <a style="cursor: pointer" (click)="viewUser(i)" data-toggle="modal" data-target="#exampleModalCenter"><i
+              <a style="cursor: pointer" (click)="viewUser(i)" data-toggle="modal" data-target="#exampleModal"><i
                   class="fas fa-eye"></i></a>
             </td>
           </tr>
@@ -106,7 +106,7 @@
             <div class="form-group col-md-4">
               <label for="inputEmail4">Position</label>
               <select class="custom-select" name="role" formControlName="role"
-                [ngClass]="{ 'is-invalid': submitted && f.role.errors }" required>
+                [ngClass]="{ 'is-invalid': submitted && f.role.errors }" required (change)="driverField($event)">
                 <option value="" selected disabled>Role*</option>
                 <option [ngValue]="userRole._id" *ngFor="let userRole of allUserRoles">{{userRole.name}}
                 </option>
@@ -124,10 +124,11 @@
                 <div *ngIf="f.mobile_number.errors.required">Mobile Phone is required</div>
               </div>
             </div>
+            <div class="form-group col-md-4" *ngIf="showLicenceField">
+              <label for="inputEmail4">License Number</label>
+              <input type="text" class="form-control"  required (change)="licenseNumber($event)">
+            </div>
           </div>
-
-
-          
             <div class="form-row offset-md-6">
               <div class="form-group col-md-4">
                 <label for="inputEmail4">Street Address</label>
@@ -164,11 +165,6 @@
                       <input type="file" formControlName="profile_picture" (change)="selectFile($event)">
                     </div>
                     </div>
-
-
-          
-
-
           <div class="form-row offset-md-6">
             <div class="form-group text-center col-md-4">
               <label for="inputAddress2" class=" ">Activate/Deactivate</label>
@@ -297,3 +293,21 @@
       </div>
     </div>
   </div> -->
+  <div *ngIf="viewArray" class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">User Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+           
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>

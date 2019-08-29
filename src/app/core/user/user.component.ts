@@ -50,6 +50,10 @@ export class UserComponent implements OnInit {
   fileSelected;
   keyProfileImage:any;
   urlProfileImage:any;
+  showLicenceField:boolean=false;
+  licenseInformation:any;
+  showImage:boolean=false;
+  image:any;
   constructor(private userService: UserService, private formBuilder: FormBuilder,
     private UserroleService: UserRoleService, private toastr: ToastrService, private activatedRoute: ActivatedRoute) {
     this.initForm();
@@ -89,13 +93,28 @@ export class UserComponent implements OnInit {
       landmark: ['', Validators.required],
       street_address: ['', Validators.required],
       city: ['', Validators.required],
-      profile_picture:[""]
+      profile_picture:[""],
+      dl_number:[""]
     });
+  }
+
+  driverField(event:any){
+    console.log(event)
+
+    if(event.target.value=="5: 5d5e81a1549ce7c4877f5655"){
+      this.showLicenceField=true;
+    }
+    else{
+      this.showLicenceField=false
+    }
   }
 
   get f() { return this.registerForm.controls; }
 
+  licenseNumber(event:any){
+    this.licenseInformation=event.target.value;
 
+  }
   selectFile(event:any){
     this.fileSelected=event.target.files[0];
     console.log(this.fileSelected)
@@ -107,6 +126,16 @@ export class UserComponent implements OnInit {
     if (this.registerForm.invalid) {
       return;
     }
+    
+    
+    if(this.showLicenceField==true){
+      this.registerForm.value.dl_number=this.licenseInformation;
+    }
+    if(this.showLicenceField==false){
+      delete this.registerForm.value.dl_number;
+    }
+
+    console.log(this.registerForm.value)
     // if(this.registerForm.value.profile_picture==null || this.registerForm.value.profile_picture==""){
     //   this.registerForm.value.profile_picture==""
     // }
@@ -119,13 +148,18 @@ export class UserComponent implements OnInit {
         this.userService.sendUrl(this.urlProfileImage,this.fileSelected).then(resp=>{
           if(resp.status == 200 ){
             this.registerForm.value.profile_picture=this.keyProfileImage;
+            
+    console.log(this.registerForm.value)
             this.addUser(this.registerForm.value);
           }
         })
       }
       })
+    }else{
+      delete this.registerForm.value.profile_picture;
+      this.addUser(this.registerForm.value);
     }
-    console.log(this.registerForm.value)
+
     }
 
 
@@ -164,6 +198,14 @@ export class UserComponent implements OnInit {
 
   viewUser(i) {
     this.viewArray = this.allUsers[i];
+    if(this.viewArray.profile_picture){
+      this.showImage=true;
+      this.image="https://binsar.s3.ap-south-1.amazonaws.com/" + this.viewArray.profile_picture
+      console.log(this.image)
+        }
+    else{
+      this.showImage=false;
+    }
     console.log(this.allUsers[i]);
   }
 

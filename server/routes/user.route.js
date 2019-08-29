@@ -43,6 +43,18 @@ router.get('/driver', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   }
 })
 
+//Get all dboy
+router.get('/dboy', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
+  try {
+    const allUsers = await User.find({ role: process.env.DELIVERY_BOY_ROLE }, "-password").populate("role").exec();
+    // console.log(allUsers);
+    res.json({ status: 200, message: "All Delivery Boys", errors: false, data: allUsers });
+  }
+  catch (err) {
+    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
+  }
+})
+
 //Get all farms
 router.get('/farm', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   try {

@@ -66,7 +66,13 @@ const driverAddSchema = Joi.object({
   role: Joi.string().required(),
   mobile_number: Joi.string().required(),
   dl_number:Joi.string().required(),
-  is_active: Joi.boolean().required()
+  is_active: Joi.boolean().required(),
+  profile_picture: Joi.string().optional(),
+  latitude: Joi.string().optional(),
+  longitutde: Joi.string().optional(),
+  landmark: Joi.string().optional(),
+  street_address: Joi.string().optional(),
+  city: Joi.string().optional()
 })
 module.exports = {
   verifyCreate: verifyCreate,

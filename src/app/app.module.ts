@@ -30,6 +30,7 @@ import { CustomersModule } from './core/customers/customers.module';
 import { TruckModule } from './core/truck/truck.module';
 import { LocationManagerModule } from './core/location-manager/location-manager.module';
 import { SupportModule } from './core/Support/support.module';
+import { RouteModule } from './core/route/route.module';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { SupportModule } from './core/Support/support.module';
     InputSwitchModule,
     ToastrModule.forRoot(),
     LocationManagerModule,
-    SupportModule
+    SupportModule,
+    RouteModule
   ],
   providers: [
     LoginAuthGraud,
