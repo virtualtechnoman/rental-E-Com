@@ -26,6 +26,7 @@ export class DriverComponent implements OnInit {
   editing: Boolean = false;
   submitted = false;
   viewArray: any = [];
+  driverAddress:any;
   constructor(private formBuilder: FormBuilder, private toastr: ToastrService, private DriverService: TruckService) { }
 
   ngOnInit() {
@@ -123,6 +124,7 @@ export class DriverComponent implements OnInit {
 
   viewDriver(i) {
     this.viewArray = this.allDrivers[i];
+    this.driverAddress=this.viewArray.street_address + "," + " " + this.viewArray.city 
   }
 
   resetForm() {

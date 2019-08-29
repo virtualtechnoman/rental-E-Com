@@ -11,7 +11,7 @@ export class TruckService {
     'token': this.tokenService.getToken()
   });
 
-  url = '/api/driver';
+  url = '/api/user/driver';
   url2 = '/api/vehicle';
   url3='/api/user/driver';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }

@@ -15,6 +15,7 @@
               <th scope="col">S.no</th>
               <th scope="col">Order No.</th>
               <th scope="col">Order Date</th>
+              <th scope="col">Order Time</th>
               <th scope="col">Order To</th>
               <!-- <th scope="col">Manager</th> -->
               <th scope="col">Order By</th>
@@ -26,7 +27,8 @@
             <tr *ngFor="let order of allOrders; let i = index">
               <td>{{i+1}}</td>
               <td>{{order.order_id | uppercase}}</td>
-              <td>{{order.order_date | date:'dd/MM/yy'}}</td>
+              <td>{{order.order_date | date:'dd/MM/yy' }}</td>
+              <td>{{order.order_date | date:'h:MM:ss ' }}</td>
               <td>{{order.placed_to.full_name | titlecase}}</td>
               <td>{{order.placed_by.full_name | titlecase}}</td>
               <td>{{order.status}}</td>
@@ -293,7 +295,7 @@
                           <p class="mg-b-0">{{orderSelected?.placed_by?.email}}</p>
                         </div><!-- col -->
                         <div class="col-sm-6 tx-right d-none d-md-block">
-                            <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{orderSelected?.order_date | date : 'dd/MM/yy'}}&nbsp;&nbsp;{{orderTime}}</label>
+                            <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{orderSelected?.order_date | date : 'dd/MM/yy'  }}&nbsp;&nbsp;{{orderTime}}</label>
                             <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{orderSelected?.order_id}}</h1>
                           </div><!-- col -->
                         <div class="col-sm-6 col-lg-8 mg-t-40 mg-sm-t-0 mg-md-t-40">
