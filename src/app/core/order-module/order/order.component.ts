@@ -18,6 +18,7 @@ import { VehicleModel, DriverModel } from '../../truck/shared/truck.model';
   styleUrls: ['./order.component.scss']
 })
 export class OrderComponent implements OnInit {
+  imageUrl="https://binsar.s3.ap-south-1.amazonaws.com/"
   jQuery: any;
   allproducts: ProductModel[] = [];
   allOrders: any[] = [];
@@ -63,7 +64,25 @@ export class OrderComponent implements OnInit {
   recievedValueForm:FormGroup;
   billedValueForm:FormGroup;
   allFarms:any[]=[];
-  orderTime:any
+  orderTime:any;
+  noteAcceptedField:any;
+  imageAcceptedField:any;
+  keyAcceptedField:any;
+  urlAcceptedField:any;
+  noteDispatchedField:any;
+  imageDispatchedField:any;
+  keyDispatchedField:any;
+  urlDispatchedField:any;
+  
+  noteRecievedField:any;
+  imageRecievedField:any;
+  keyRecievedField:any;
+  urlRecievedField:any;
+  
+  noteBilledField:any;
+  imageBilledField:any;
+  keyBilledField:any;
+  urlBilledField:any;
   constructor(private productService: ProductsService, private fb: FormBuilder, private toastr: ToastrService,
     private authService: AuthService, private orderService: OrderService, private userService: UserService,private vehicleService: TruckService
   ) {
@@ -146,6 +165,54 @@ export class OrderComponent implements OnInit {
     }
   }
 
+  notesAccepted(event){
+    if(event.target.value){
+      this.noteAcceptedField=event.target.value
+    }
+    console.log(this.noteAcceptedField)
+  }
+
+  imageAccepted(event){
+    this.imageAcceptedField=event.target.files[0]
+    console.log(this.imageAcceptedField)
+  }
+
+  notesDispatched(event){
+    if(event.target.value){
+      this.noteDispatchedField=event.target.value
+    }
+    console.log(this.noteDispatchedField)
+  }
+
+  imageDispatched(event){
+    this.imageDispatchedField=event.target.files[0]
+    console.log(this.imageDispatchedField)
+  }
+
+  notesRecieved(event){
+    if(event.target.value){
+      this.noteRecievedField=event.target.value
+    }
+    console.log(this.noteRecievedField)
+  }
+
+  imageRecieved(event){
+    this.imageRecievedField=event.target.files[0]
+    console.log(this.imageRecievedField)
+  }
+
+  notesBilled(event){
+    if(event.target.value){
+      this.noteBilledField=event.target.value
+    }
+    console.log(this.noteRecievedField)
+  }
+
+  imageBilled(event){
+    this.imageBilledField=event.target.files[0]
+    console.log(this.imageRecievedField)
+  }
+
   dispatchQuantityEntered(event:any,i){
     
     if((event.target.value==Number(event.target.value)) && (event.target.value<=this.orderSelected.products[i].requested)){
@@ -168,6 +235,43 @@ export class OrderComponent implements OnInit {
     this.orderSelected.status=true;
     const order=<any> new Object;
     order.products=this.orderSelected.products;
+    // if(this.noteAcceptedField){
+    //   order['remarks.acceptOrder']={
+    //     note:this.noteAcceptedField,
+    //   }
+    // }
+    if(this.imageAcceptedField){
+      this.orderService.getUrl().subscribe((res:ResponseModel)=>{
+        console.log(res.data)
+        this.keyAcceptedField=res.data.key;
+        this.urlAcceptedField=res.data.url;
+          
+      if(this.urlAcceptedField){
+        this.orderService.sendUrl(this.urlAcceptedField,this.imageAcceptedField).then(resp=>{
+          if(resp.status == 200 ){
+            // this.addVehicle(this.VehicleForm.value);
+            if(this.noteAcceptedField){
+              order['remarks.acceptOrder']={
+                image:this.keyAcceptedField,
+                note:this.noteAcceptedField
+              }
+            }else{
+            order['remarks.acceptOrder']={
+              image:this.keyAcceptedField,
+            }
+          }
+          }
+        })
+      }
+      })
+    }
+    if(!this.imageAcceptedField){
+      if(this.noteAcceptedField){
+        order['remarks.acceptOrder']={
+          note:this.noteAcceptedField
+        }
+      }
+    }
     for(var i=0;i<this.orderSelectedProducts.length;i++){
       order.products[i].product=this.orderSelectedProducts[i].product._id
       if(order.products[i].accepted==0){
@@ -183,6 +287,7 @@ export class OrderComponent implements OnInit {
     this.orderService.addAcceptedOrder(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
       jQuery('#invoiceModal').modal('hide');
       this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
+      console.log(res.data)
       this.allOrders.splice(this.orderIndex,1,res.data)
     })
   }
@@ -224,26 +329,7 @@ export class OrderComponent implements OnInit {
   }
   get f() { return this.orderPlacedForm.controls; }
   get f2() { return this.challanForm.controls; }
-  submit() {
-    this.submitted = true;
-    if (this.orderForm.invalid) {
-      return;
-    }
-    this.orderForm.get('status').setValue(false);
-    // for (let index = 0; index < this.formArr.length; index++) {
-    //   this.formArr.controls[index].get('accepted').setValue(0);
 
-    // }
-    this.currentOrder = this.orderForm.value;
-    this.addOrder(this.orderForm.value);
-  }
-
-  submitChallan(){
-    if (this.challanForm.invalid) {
-      return;
-    }
-
-  }
   onSubmit(){
     this.submitted = true;
     if (this.orderPlacedForm.invalid) {
@@ -554,6 +640,38 @@ export class OrderComponent implements OnInit {
     const date=new Date()
     const productsArray=<any> new Object();
     productsArray.products=this.orderSelected.products;
+    if(this.imageDispatchedField){
+      this.orderService.getUrl().subscribe((res:ResponseModel)=>{
+        console.log(res.data)
+        this.keyDispatchedField=res.data.key;
+        this.urlDispatchedField=res.data.url;
+          
+      if(this.urlDispatchedField){
+        this.orderService.sendUrl(this.urlDispatchedField,this.imageDispatchedField).then(resp=>{
+          if(resp.status == 200 ){
+            // this.addVehicle(this.VehicleForm.value);
+            if(this.noteDispatchedField){
+              productsArray['remarks.dispatchOrder']={
+                image:this.keyDispatchedField,
+                note:this.noteDispatchedField
+              }
+            }else{
+              productsArray['remarks.dispatchOrder']={
+              image:this.keyDispatchedField,
+            }
+          }
+          }
+        })
+      }
+      })
+    }
+    if(!this.imageDispatchedField){
+      if(this.noteDispatchedField){
+        productsArray['remarks.DispatchOrder']={
+          note:this.noteDispatchedField
+        }
+      }
+    }
     for(var i=0;i<this.orderSelected.products.length;i++){
       productsArray.products[i].product=this.orderSelected.products[i].product._id;
       if(productsArray.products[i].dispatched==0){
@@ -603,6 +721,44 @@ export class OrderComponent implements OnInit {
   asdef(){
     const order=<any> new Object();
     order.products=this.orderSelected.products
+    
+
+
+    if(this.imageRecievedField){
+      this.orderService.getUrl().subscribe((res:ResponseModel)=>{
+        console.log(res.data)
+        this.keyRecievedField=res.data.key;
+        this.urlRecievedField=res.data.url;
+          
+      if(this.urlRecievedField){
+        this.orderService.sendUrl(this.urlRecievedField,this.imageRecievedField).then(resp=>{
+          if(resp.status == 200 ){
+            // this.addVehicle(this.VehicleForm.value);
+            if(this.noteRecievedField){
+              order['remarks.recieveOrder']={
+                image:this.keyRecievedField,
+                note:this.noteRecievedField
+              }
+            }else{
+            order['remarks.recieveOrder']={
+              image:this.keyRecievedField,
+            }
+          }
+          }
+        })
+      }
+      })
+    }
+    if(!this.imageRecievedField){
+      if(this.noteRecievedField){
+        order['remarks.recieveOrder']={
+          note:this.noteRecievedField
+        }
+      }
+    }
+
+
+
     for(var i=0;i<this.orderSelected.products.length;i++){
       order.products[i].product=this.orderSelected.products[i].product._id
       delete order.products[i].accepted;
@@ -644,6 +800,40 @@ export class OrderComponent implements OnInit {
   billProductQuantity(){
     const order=<any> new Object();
     order.products=this.orderSelected.products
+
+    if(this.imageBilledField){
+      this.orderService.getUrl().subscribe((res:ResponseModel)=>{
+        console.log(res.data)
+        this.keyBilledField=res.data.key;
+        this.urlBilledField=res.data.url;
+          
+      if(this.urlBilledField){
+        this.orderService.sendUrl(this.urlBilledField,this.imageBilledField).then(resp=>{
+          if(resp.status == 200 ){
+            // this.addVehicle(this.VehicleForm.value);
+            if(this.noteBilledField){
+              order['remarks.billOrder']={
+                image:this.keyBilledField,
+                note:this.noteBilledField
+              }
+            }else{
+            order['remarks.billOrder']={
+              image:this.keyBilledField,
+            }
+          }
+          }
+        })
+      }
+      })
+    }
+    if(!this.imageBilledField){
+      if(this.noteBilledField){
+        order['remarks.billOrder']={
+          note:this.noteBilledField
+        }
+      }
+    }
+
     for(var i=0;i<this.orderSelected.products.length;i++){
       order.products[i].product=this.orderSelected.products[i].product._id;
       if(order.products[i].billed==0){

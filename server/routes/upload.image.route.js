@@ -106,4 +106,18 @@ router.get("/vehicle", authorizePrivilege("UPDATE_VEHICLE"), (req, res) => {
         res.json({status:200, data: {key: k, url}, errors:false, message:"Upload the image to given url" });
     })
 })
+router.get("/orderremark", authorizePrivilege("UPDATE_VEHICLE"), (req, res) => {
+    let k = `order-remarks/${uuid()}.jpeg`;
+    S3.getSignedUrl('putObject', {
+        Bucket: 'binsar',
+        ContentType: 'jpeg',
+        Key: k
+    }, (err, url) => {
+        if(err){
+            console.log(err);
+           return res.status(500).json({status:500, data:null, errors:true, message:"Error while uploading image"});
+        }
+        res.json({status:200, data: {key: k, url}, errors:false, message:"Upload the image to given url" });
+    })
+})
 module.exports = router;
