@@ -119,5 +119,5 @@ module.exports = (p=false)=>({
     GET_ALL_ROUTES:p,
     ADD_NEW_ROUTE:p,
     UPDATE_ROUTE:p,
-    DELETE_ROUTE:p,
+    DELETE_ROUTE:p
 })
