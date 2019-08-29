@@ -12,6 +12,7 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./category.component.scss']
 })
 export class CategoryComponent implements OnInit {
+  imageUrl="https://binsar.s3.ap-south-1.amazonaws.com/"
   categoryForm: FormGroup;
   submitted = false;
   editing: Boolean = false;
@@ -22,6 +23,14 @@ export class CategoryComponent implements OnInit {
   dtTrigger: Subject<any> = new Subject();
   allCategory: CategoryModel[] = [];
   viewArray: any = [];
+  fileSelected: any;
+  keyCategoryImage:any;
+  urlCategoryImage:any;
+  showImage:boolean=false;
+  image:any;
+  editShowImage:boolean=false
+  editImage: any;
+  mastImage: any;
   constructor(private formBuilder: FormBuilder, private productService: ProductsService, private toastr: ToastrService) {
     this.initForm();
   }
@@ -51,11 +60,17 @@ export class CategoryComponent implements OnInit {
     };
     this.categoryForm = this.formBuilder.group({
       name: ['', Validators.required],
-      is_active: ['', Validators.required]
+      is_active: ['', Validators.required],
+      image:['']
     });
   }
 
   get f() { return this.categoryForm.controls; }
+
+  selectFile(event:any){
+    this.fileSelected=event.target.files[0];
+    console.log(this.fileSelected)
+  }
 
   submit() {
     this.submitted = true;
@@ -64,14 +79,48 @@ export class CategoryComponent implements OnInit {
       return;
     }
     this.currentcategory = this.categoryForm.value;
-    if (this.editing) {
-      this.updateCategory(this.currentcategory);
-    } else {
-      this.addCategory(this.categoryForm.value);
-    }
+    
+    if(this.fileSelected){
+      this.productService.getUrlCategory().subscribe((res:ResponseModel)=>{
+        console.log(res.data)
+        this.keyCategoryImage=res.data.key;
+        this.urlCategoryImage=res.data.url;
+          
+      if(this.urlCategoryImage){
+        this.productService.sendUrlCategory(this.urlCategoryImage,this.fileSelected).then(resp=>{
+          if(resp.status == 200 ){
+            this.categoryForm.value.image=this.keyCategoryImage;
+            
+           console.log(this.categoryForm.value)
+           if (this.editing) {
+            this.updateCategory(this.categoryForm.value);
+          } else {
+            this.addCategory(this.categoryForm.value);
+          }
+            // this.addVehicle(this.VehicleForm.value);
+          }
+        })
+      }
+      })
+    }else{
+      
+      console.log(this.categoryForm.value)
+      if (this.editing) {
+          if(!this.fileSelected){
+        this.categoryForm.value.image=this.mastImage
+          }
+        console.log(this.mastImage)
+        this.updateCategory(this.categoryForm.value);
+          
+      } else {
+        delete this.categoryForm.value.image;
+        this.addCategory(this.categoryForm.value);
+      }
+  }
   }
 
   addCategory(category) {
+    console.log(category)
     this.productService.addCategory(category).subscribe((res: ResponseModel) => {
       jQuery('#modal3').modal('hide');
       this.toastr.success('Product Added!', 'Success!');
@@ -82,6 +131,14 @@ export class CategoryComponent implements OnInit {
 
   viewCategory(i) {
     this.viewArray = this.allCategory[i];
+    if(this.viewArray.image){
+      this.showImage=true;
+    this.image= this.imageUrl + this.viewArray.image
+    console.log(this.image)
+    }
+    else{
+      this.showImage=false
+    }
   }
 
   editCategory(i) {
@@ -117,7 +174,7 @@ export class CategoryComponent implements OnInit {
     console.log(category);
     this.productService.updateCategory(category, id).subscribe((res: ResponseModel) => {
       jQuery('#modal3').modal('hide');
-      this.toastr.info('Product Updated Successfully!', 'Updated!!');
+      this.toastr.info('Category Updated Successfully!', 'Updated!!');
       this.resetForm();
       this.allCategory.splice(this.currentIndex, 1, res.data);
       this.currentcategoryId = null;
@@ -133,14 +190,24 @@ export class CategoryComponent implements OnInit {
   }
 
   setFormValue() {
-    const category = this.allCategory[this.currentIndex];
+    const category:any= this.allCategory[this.currentIndex];
     this.categoryForm.controls['name'].setValue(category.name);
     this.categoryForm.controls['is_active'].setValue(category.is_active);
+    if(category.image){
+      this.editShowImage=true;
+      this.mastImage=category.image
+      this.editImage= this.imageUrl + category.image
+      // this.VehicleForm.controls['image'].setValue(image);
+    console.log(this.editImage)
+    }else{
+      this.editShowImage=false
+    }
   }
 
   resetForm() {
     this.editing = false;
     this.submitted = false;
+    this.editShowImage=false
     this.categoryForm.reset();
   }
 }

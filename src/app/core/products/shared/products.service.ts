@@ -14,6 +14,9 @@ export class ProductsService {
   url2='/api/pcategory';
   url3 ='/api/brand'
   url4='/api/user/hub';
+  url5='api/upload/brand';
+  url6='api/upload/category';
+  url7='api/upload/product';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   getAllProduct() {
@@ -75,4 +78,52 @@ export class ProductsService {
   getAllHub(){
     return this.http.get(this.url4 + '/' , {headers:this.headers})
   }
+
+  // Brand Image
+
+  getUrl() {
+    return this.http.get(this.url5 + '/', { headers: this.headers })
+  }
+
+  sendUrl(url, file) {
+    return fetch(url,{
+      method:"PUT",
+      body:file,
+      headers:{
+        'Content-Type':"jpeg,png"
+      }
+    })
+  }
+
+  // Category Image Uplaod
+  getUrlCategory() {
+    return this.http.get(this.url6 + '/', { headers: this.headers })
+  }
+
+  sendUrlCategory(url, file) {
+    return fetch(url,{
+      method:"PUT",
+      body:file,
+      headers:{
+        'Content-Type':"jpeg,png"
+      }
+    })
+  }
+
+  // Product Image Upload
+
+  getUrlProduct() {
+    return this.http.get(this.url7 + '/', { headers: this.headers })
+  }
+
+  sendUrlProduct(url, file) {
+    return fetch(url,{
+      method:"PUT",
+      body:file,
+      headers:{
+        'Content-Type':"jpeg,png"
+      }
+    })
+  }
+
 }
