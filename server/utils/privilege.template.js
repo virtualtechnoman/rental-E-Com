@@ -115,4 +115,9 @@ module.exports = (p=false)=>({
     GET_ALL_FARM_VISITS:p,
     ADD_NEW_FARM_VISIT:p,
     DELETE_FARM_VISIT:p,
+    //Route Privilege
+    GET_ALL_ROUTES:p,
+    ADD_NEW_ROUTE:p,
+    UPDATE_ROUTE:p,
+    DELETE_ROUTE:p,
 })

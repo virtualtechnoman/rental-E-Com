@@ -43,22 +43,16 @@ router.put("/:id", authorizePrivilege("UPDATE_AREA"), (req, res) => {
         if (!isEmpty(result.errors)) {
             return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
         }
-        Area.findByIdAndUpdate(req.params.id, result.data, { new: true }).exec()
-            .then(doc => {
-                doc.populate("hub").populate({path:"city",populate:{path:"state"}}).execPopulate().then(area=>{
-                    res.status(200).json({ status: 200, data: area, errors: false, message: "Area Updated Successfully" })
-                }).catch(e => {
-                    console.log(e);
-                    res.json({ status: 500, data: null, errors: true, message: "Error while populating" })
-                });
-                
+        Area.findByIdAndUpdate(req.params.id, result.data, { new: true }).populate("hub").populate({path:"city",populate:{path:"state"}}).exec()
+            .then(area=>{
+                    res.status(200).json({ status: 200, data: area, errors: false, message: "Area Updated Successfully" });
             }).catch(err => {
                 console.log(err);
                 res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating area" })
             })
     }
     else {
-        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid city id" });
+        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid area id" });
     }
 })
 

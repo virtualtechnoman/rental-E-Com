@@ -7,6 +7,38 @@ const orderCreateSchema = Joi.object({
         product: Joi.string().required(),
         requested: Joi.number().min(1).required()
     }).required(),
+    // remarks:Joi.object({
+    //     acceptOrder:Joi.object({
+    //         // acceptedBy:Joi.string().required(),
+    //         image:Joi.string().optional(),
+    //         // at:{type:Date},
+    //         note:Joi.string().optional()
+    //     }),
+    //     generateChallan:Joi.object({
+    //         // generatedBy:Joi.string().required(),
+    //         image:Joi.string().optional(),
+    //         // at:{type:Date},
+    //         note:Joi.string().optional()
+    //     }),
+    //     acceptChallan:Joi.object({
+    //         // acceptedBy:Joi.string().required(),
+    //         image:Joi.string().optional(),
+    //         // at:{type:Date},
+    //         note:Joi.string().optional()
+    //     }),
+    //     recieveOrder:Joi.object({
+    //         // recievedBy:Joi.string().required(),
+    //         image:Joi.string().optional(),
+    //         // at:{type:Date},
+    //         note:Joi.string().optional()
+    //     }),
+    //     billOrder:Joi.object({
+    //         // billedBy:Joi.string().required(),
+    //         image:Joi.string().optional(),
+    //         // at:{type:Date},
+    //         note:Joi.string().optional()
+    //     })
+    // }),
     notes: Joi.string().optional().allow('')
 })
 const orderAcceptSchema = Joi.object({
