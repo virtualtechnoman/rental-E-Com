@@ -22,28 +22,28 @@ module.exports = mongoose.model("order", new mongoose.Schema({
         acceptOrder:{
             acceptedBy:{ type: mongoose.Schema.Types.ObjectId, ref: "user"},
             image:{type:String},
-            at:{type:Date, default:Date.now},
+            at:{type:Date},
             note:{type:String}
         },
         generateChallan:{
             generatedBy:{ type: mongoose.Schema.Types.ObjectId, ref: "user"},
             image:{type:String},
-            at:{type:Date, default:Date.now},
+            at:{type:Date},
             note:{type:String}
         },
         acceptChallan:{
-            at:{type:Date, default:Date.now}
+            at:{type:Date}
         },
         recieveOrder:{
             recievedBy:{ type: mongoose.Schema.Types.ObjectId, ref: "user"},
             image:{type:String},
-            at:{type:Date, default:Date.now},
+            at:{type:Date},
             note:{type:String}
         },
         billOrder:{
             billedBy:{ type: mongoose.Schema.Types.ObjectId, ref: "user"},
             image:{type:String},
-            at:{type:Date, default:Date.now},
+            at:{type:Date},
             note:{type:String}
         }
     },

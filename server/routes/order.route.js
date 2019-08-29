@@ -21,7 +21,7 @@ router.get("/", authorizePrivilege("GET_ALL_ORDERS_OWN"), (req, res) => {
 
 //GET all orders
 router.get("/all", authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
-    Order.find().populate([{ path: "placed_by placed_to", select: "-password" }, { path: "products.product", populate: { path: "category brand available_for" } }]).exec().then(doc => {
+    Order.find().populate([{ path: "placed_by placed_to remarks.acceptOrder.acceptedBy remarks.generateChallan.generatedBy remarks.recieveOrder.recievedBy remarks.billOrder.billedBy", select: "-password" }, { path: "products.product", populate: { path: "category brand available_for" } }]).exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
         console.log(err);
@@ -67,12 +67,13 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_ORDER"), (req, res) => {
                     if (result.data["remarks.acceptOrder"]) {
                         upd["remarks.acceptOrder"] = result.data["remarks.acceptOrder"];
                         upd["remarks.acceptOrder"].acceptedBy = req.user._id;
+                        upd["remarks.acceptOrder"].at = Date.now();
                     } else
-                        upd["remarks.acceptOrder"] = { acceptedBy: req.user._id };
+                        upd["remarks.acceptOrder"] = { acceptedBy: req.user._id , at:Date.now()};
                     upd.accepted = true;
                     upd.status = "Order Accepted";
                     Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                        .populate([{ path: "placed_by placed_to", select: "-password" }, { path: "products.product", populate: { path: "category brand available_for" } }]).lean().exec()
+                        .populate([{ path: "placed_by placed_to remarks.acceptOrder.acceptedBy", select: "-password" }, { path: "products.product", populate: { path: "category brand available_for" } }]).lean().exec()
                         .then(d => {
                             res.json({ status: 200, data: d, errors: false, message: "Order accepted successfully" });
                         }).catch(e => {
@@ -110,12 +111,13 @@ router.put("/recieve/:id", authorizePrivilege("RECIEVE_ORDER"), (req, res) => {
                                 if (result.data["remarks.recieveOrder"]) {
                                     upd["remarks.recieveOrder"] = result.data["remarks.recieveOrder"];
                                     upd["remarks.recieveOrder"].recievedBy = req.user._id;
+                                    upd["remarks.recieveOrder"].at = Date.now();
                                 } else
-                                    upd["remarks.recieveOrder"] = { recievedBy: req.user._id };
+                                    upd["remarks.recieveOrder"] = { recievedBy: req.user._id , at:Date.now()};
                                 upd.recieved = true;
                                 upd.status = "Recieved";
                                 Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                                    .populate([{ path: "placed_by placed_to", select: "-password" }, { path: "products.product", populate: { path: "category brand available_for" } }]).lean().exec().then(d => {
+                                    .populate([{ path: "placed_by placed_to remarks.acceptOrder.acceptedBy remarks.generateChallan.generatedBy remarks.recieveOrder.recievedBy", select: "-password" }, { path: "products.product", populate: { path: "category brand available_for" } }]).lean().exec().then(d => {
                                         res.json({ status: 200, data: d, errors: false, message: "Order recieved successfully" });
                                     }).catch(e => {
                                         console.log(e);
@@ -164,12 +166,13 @@ router.put("/bill/:id", authorizePrivilege("BILL_ORDER"), (req, res) => {
                                     if (result.data["remarks.billOrder"]) {
                                         upd["remarks.billOrder"] = result.data["remarks.billOrder"];
                                         upd["remarks.billOrder"].billedBy = req.user._id;
+                                        upd["remarks.billOrder"].at = Date.now();
                                     } else
-                                        upd["remarks.billOrder"] = { billedBy: req.user._id };
+                                        upd["remarks.billOrder"] = { billedBy: req.user._id, at:Date.now() };
                                     upd.billed = true;
                                     upd.status = "Billed";
                                     Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                                        .populate([{ path: "placed_by placed_to", select: "-password" }, { path: "products.product", populate: { path: "category brand available_for" } }]).lean().exec()
+                                        .populate([{ path: "placed_by placed_to remarks.acceptOrder.acceptedBy remarks.generateChallan.generatedBy remarks.recieveOrder.recievedBy remarks.billOrder.billedBy", select: "-password" }, { path: "products.product", populate: { path: "category brand available_for" } }]).lean().exec()
                                         .then(d => {
                                             res.json({ status: 200, data: d, errors: false, message: "Order billed successfully" });
                                         }).catch(e => {
@@ -222,8 +225,9 @@ router.post("/gchallan/:oid", authorizePrivilege("GENERATE_ORDER_CHALLAN"), asyn
                         if (result.data["remarks.generateChallan"]) {
                             upd["remarks.generateChallan"] = result.data["remarks.generateChallan"];
                             upd["remarks.generateChallan"].generatedBy = req.user._id;
+                            upd["remarks.generateChallan"].at = Date.now();
                         } else
-                            upd["remarks.generateChallan"] = { generatedBy: req.user._id };
+                            upd["remarks.generateChallan"] = { generatedBy: req.user._id , at:Date.now()};
                         upd.challan_generated = true;
                         upd.status = "Challan Generated";
                         Order.findByIdAndUpdate(_ord._id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
@@ -236,7 +240,7 @@ router.post("/gchallan/:oid", authorizePrivilege("GENERATE_ORDER_CHALLAN"), asyn
                                 let newChallan = new Challan(result.data);
                                 newChallan.save()
                                     .then(challan => {
-                                        challan.populate([{ path: "processing_unit_incharge dispatch_processing_unit vehicle driver", select: "-password" }, { path: "order", model: "order", populate: { path: "products.product placed_by placed_to", select: "-password", populate: { path: "brand category available_for" } } }])
+                                        challan.populate([{ path: "processing_unit_incharge dispatch_processing_unit vehicle driver", select: "-password" }, { path: "order", model: "order", populate: { path: "products.product placed_by placed_to remarks.acceptOrder.acceptedBy remarks.generateChallan.generatedBy", select: "-password", populate: { path: "brand category available_for" } } }])
                                             .execPopulate()
                                             .then(doc => {
                                                 res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });

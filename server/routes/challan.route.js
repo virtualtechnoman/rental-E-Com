@@ -65,7 +65,7 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_CHALLAN"), (req, res) => {
                     challan.accepted = true;
                     challan.save().then(_c => {
                         if (_c.order_type == "order") {
-                            Order.findByIdAndUpdate(challan.order, { $set: { challan_accepted: true,'remarks.acceptChallan':{at:Date.now()}, status: "Challan Accepted" } }).populate([{path:"placed_by placed_to", select : "-password"},{path:"products.product", populate:{path:"brand category available_for",select:"-password"}}]).exec().then(_ord => {
+                            Order.findByIdAndUpdate(challan.order, { $set: { challan_accepted: true,'remarks.acceptChallan':{at:Date.now()}, status: "Challan Accepted" } }).populate([{path:"placed_by placed_to remarks.acceptOrder.acceptedBy remarks.generateChallan.generatedBy", select : "-password"},{path:"products.product", populate:{path:"brand category available_for",select:"-password"}}]).exec().then(_ord => {
                                 if (_ord) {
                                     _c = _c.toObject();
                                     _c.order = _ord.toObject();
