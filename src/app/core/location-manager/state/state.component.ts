@@ -96,6 +96,7 @@ addState(state){
 
 viewState(i){
   this.viewArray=this.allStates[i];
+  console.log(this.viewArray)
 }
 
 updateState(state) {

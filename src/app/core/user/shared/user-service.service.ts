@@ -65,8 +65,6 @@ export class UserService {
         'Content-Type':"jpeg,png"
       }
     })
-    // console.log("URL IS : ",url, " File is : ",file);
-    // return this.http.put(url, file)
   }
 
 }

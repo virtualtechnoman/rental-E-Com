@@ -45,7 +45,8 @@
   <div class="modal-dialog modal-dialog-centered modal-md" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header">
-        <h6 class="modal-title text-center" id="exampleModalLabel3">Add New Vehicle</h6>
+        <h6 class="modal-title text-center" id="exampleModalLabel3" *ngIf="!editing">Add New Vehicle</h6>
+        <h6 class="modal-title text-center" id="exampleModalLabel3" *ngIf="editing">Edit Vehicle</h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -68,6 +69,24 @@
             <div *ngIf="submitted && f.type.errors" class="invalid-feedback">
               <div *ngIf="f.type.errors.required">Vehicle Type is required</div>
             </div>
+          </div>
+          <div class="form-row" *ngIf="editShowImage">
+              <div class="form-group">
+              <label>Vehicle Image</label>
+              <div class="col-sm-3 col-md-2 col-lg text-center" >
+              <div class="avatar avatar-xxl avatar-online"><img src="{{editImage}}" class="rounded-circle" alt=""></div>
+              </div>
+              </div>
+          </div>
+          <div class="form-row offset-md-6">
+            <div class="form-group col-md-4">
+              <label for="inputEmail4">Select Vehicle Image</label>
+              <input type="file" formControlName="image" (change)="selectFile($event)">
+            </div>
+            </div>
+          <div class="form-row">
+            <label for="inputEmail4">Extra Notes</label>
+            <input type="text" class="form-control"  name="type" formControlName="note">
           </div>
           <div class="form-row">
             <label for="inputPassword4">Is Available</label>
@@ -99,7 +118,12 @@
         </button>
       </div>
       <div class="modal-body">
-
+          <div class="form-group">
+              <label>Vehicle Image</label>
+        <div class="col-sm-3 col-md-2 col-lg text-center" *ngIf="showImage">
+          <div class="avatar avatar-xxl avatar-online"><img src="{{image}}" class="rounded-circle" alt=""></div>
+        </div>
+          </div>
         <div class="form-group">
           <label>Vehicle Number</label>
           <input type="text" class="form-control" [(ngModel)]="viewArray.number" disabled />
@@ -107,6 +131,11 @@
         <div class="form-group">
           <label>Vehicle Type</label>
           <input type="text" class="form-control" [(ngModel)]="viewArray.type" disabled />
+        </div>
+        
+        <div class="form-group" *ngIf="viewArray.note">
+          <label>Notes</label>
+          <input type="text" class="form-control" [(ngModel)]="viewArray.note" disabled />
         </div>
 
         <div class="form-group">
