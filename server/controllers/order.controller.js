@@ -45,7 +45,12 @@ const orderAcceptSchema = Joi.object({
     products: Joi.array().items({
         product: Joi.string().required(),
         accepted: Joi.number().required()
-    }).required()
+    }).required(),
+    'remarks.acceptOrder': Joi.object({
+        // acceptedBy:Joi.string().required(),
+        image: Joi.string().optional(),
+        note: Joi.string().optional()
+    }).optional()
 })
 
 const orderUpdateStatusSchema = Joi.object({
@@ -62,13 +67,23 @@ const orderRecievedSchema = Joi.object({
     products: Joi.array().items({
         product: Joi.string().required(),
         recieved: Joi.number().required()
-    }).required()
+    }).required(),
+    'remarks.recieveOrder': Joi.object({
+        // recievedBy:Joi.string().required(),
+        image: Joi.string().optional(),
+        note: Joi.string().optional()
+    }).optional()
 })
 const orderBilledSchema = Joi.object({
     products: Joi.array().items({
         product: Joi.string().required(),
         billed: Joi.number().required()
-    }).required()
+    }).required(),
+    'remarks.billOrder': Joi.object({
+        // recievedBy:Joi.string().required(),
+        image: Joi.string().optional(),
+        note: Joi.string().optional()
+    }).optional()
 })
 module.exports = {
     verifyCreate: verifyCreate,

@@ -18,38 +18,35 @@ module.exports = mongoose.model("order", new mongoose.Schema({
     placed_to: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
     products: [prods],
     notes: { type: String},
-    // remarks:{
-    //     acceptOrder:{
-    //         acceptedBy:{ type: mongoose.Schema.Types.ObjectId, ref: "user"},
-    //         image:{type:String},
-    //         at:{type:Date},
-    //         note:{type:String}
-    //     },
-    //     generateChallan:{
-    //         generatedBy:{ type: mongoose.Schema.Types.ObjectId, ref: "user"},
-    //         image:{type:String},
-    //         at:{type:Date},
-    //         note:{type:String}
-    //     },
-    //     acceptChallan:{
-    //         acceptedBy:{ type: mongoose.Schema.Types.ObjectId, ref: "user"},
-    //         image:{type:String},
-    //         at:{type:Date},
-    //         note:{type:String}
-    //     },
-    //     recieveOrder:{
-    //         recievedBy:{ type: mongoose.Schema.Types.ObjectId, ref: "user"},
-    //         image:{type:String},
-    //         at:{type:Date},
-    //         note:{type:String}
-    //     },
-    //     billOrder:{
-    //         billedBy:{ type: mongoose.Schema.Types.ObjectId, ref: "user"},
-    //         image:{type:String},
-    //         at:{type:Date},
-    //         note:{type:String}
-    //     }
-    // },
+    remarks:{
+        acceptOrder:{
+            acceptedBy:{ type: mongoose.Schema.Types.ObjectId, ref: "user"},
+            image:{type:String},
+            at:{type:Date, default:Date.now},
+            note:{type:String}
+        },
+        generateChallan:{
+            generatedBy:{ type: mongoose.Schema.Types.ObjectId, ref: "user"},
+            image:{type:String},
+            at:{type:Date, default:Date.now},
+            note:{type:String}
+        },
+        acceptChallan:{
+            at:{type:Date, default:Date.now}
+        },
+        recieveOrder:{
+            recievedBy:{ type: mongoose.Schema.Types.ObjectId, ref: "user"},
+            image:{type:String},
+            at:{type:Date, default:Date.now},
+            note:{type:String}
+        },
+        billOrder:{
+            billedBy:{ type: mongoose.Schema.Types.ObjectId, ref: "user"},
+            image:{type:String},
+            at:{type:Date, default:Date.now},
+            note:{type:String}
+        }
+    },
     accepted: { type: Boolean, default: false },
     challan_accepted: { type: Boolean, default: false },
     recieved: { type: Boolean, default: false },
