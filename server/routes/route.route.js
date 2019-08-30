@@ -42,7 +42,7 @@ router.post('/', authorizePrivilege("ADD_NEW_ROUTE"), async (req, res) => {
 router.put("/customer",(req,res)=>{
     let result = RouteController.verifyUpdateCustomer(req.body);
     if(isEmpty(result.data)){
-        Us
+        User.updateMany({_id:{$in:customers}},{$set:{route:result.data.route}})
     }else{
         res.status(400).json({ status: 400, data: null, errors: true, message: "Fields required" });
     }
