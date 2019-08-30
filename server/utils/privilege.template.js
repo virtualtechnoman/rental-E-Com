@@ -126,4 +126,8 @@ module.exports = (p=false)=>({
     ADD_NEW_SUBSCRIPTION:p,
     UPDATE_SUBSCRIPTION:p,
     DELETE_SUBSCRIPTION:p,
+    //Banner Privilege
+    DELETE_BANNER:p,
+    ADD_NEW_BANNER:p,
+    GET_ALL_BANNERS:p
 })

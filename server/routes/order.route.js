@@ -283,7 +283,6 @@ router.delete("/:id", authorizePrivilege("DELETE_ORDER"), (req, res) => {
     }
 })
 
-
 // Update order status
 // router.put("/setstatus/:id", authorizePrivilege("UPDATE_ORDER"), (req, res) => {
 //     if (mongodb.ObjectID.isValid(req.params.id)) {

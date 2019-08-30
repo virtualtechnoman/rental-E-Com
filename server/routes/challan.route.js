@@ -77,7 +77,7 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_CHALLAN"), (req, res) => {
                             })
                         }
                         else {
-                            ReturnOrder.findByIdAndUpdate(challan.order, { $set: { challan_accepted: true, status: "Challan Accepted" } }).populate([{ path: "placed_by placed_to", select: "-password" }, { path: "products.product", populate: { path: "category brand available_for", select:"-password" } }]).exec().then(_ord => {
+                            ReturnOrder.findByIdAndUpdate(challan.order, { $set: { challan_accepted: true,'remarks.acceptChallan':{at:Date.now()}, status: "Challan Accepted" } }).populate([{ path: "placed_by placed_to", select: "-password" }, { path: "products.product", populate: { path: "category brand available_for", select:"-password" } }]).exec().then(_ord => {
                                 if (_ord) {
                                     _c = _c.toObject();
                                     _c.order = _ord.toObject();
