@@ -15,7 +15,7 @@
               <th scope="col">S.no</th>
               <th scope="col">Order No.</th>
               <th scope="col">Order Date</th>
-              <th scope="col">Order Time</th>
+              <!-- <th scope="col">Order Time</th> -->
               <th scope="col">Order To</th>
               <!-- <th scope="col">Manager</th> -->
               <th scope="col">Order By</th>
@@ -27,8 +27,7 @@
             <tr *ngFor="let order of allOrders; let i = index">
               <td>{{i+1}}</td>
               <td>{{order.order_id | uppercase}}</td>
-              <td>{{order.order_date | date:'dd/MM/yy' }}</td>
-              <td>{{order.order_date | date:'h:MM:ss ' }}</td>
+              <td>{{order.order_date | date:'dd/MM/yy' }},{{order.order_date | date:'h:mm a' }}</td>
               <td>{{order.placed_to.full_name | titlecase}}</td>
               <td>{{order.placed_by.full_name | titlecase}}</td>
               <td>{{order.status}}</td>
@@ -173,15 +172,17 @@
                       <div class="col-sm-6">
                         <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed From</label>
                         <h6 class="tx-15 mg-b-10">{{orderSelected?.placed_by?.full_name}}</h6>
+                        <p class="tx-15 mg-b-10">{{orderSelected?.placed_by?.street_address}},{{orderSelected?.placed_by?.city}}</p>
                         <p class="mg-b-0">{{orderSelected?.placed_by?.email}}</p>
                       </div><!-- col -->
                       <div class="col-sm-6 tx-right d-none d-md-block">
-                        <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{orderSelected?.order_date | date : 'dd/MM/yy'}},&nbsp;&nbsp;{{orderTime}}</label>
+                        <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{orderSelected?.order_date | date : 'dd/MM/yy'}},{{orderSelected?.order_date | date : 'h:mm a'}}</label>
                         <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{orderSelected?.order_id}}</h1>
                       </div><!-- col -->
                       <div class="col-sm-6 col-lg-8 mg-t-40 mg-sm-t-0 mg-md-t-40">
                         <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
                         <h6 class="tx-15 mg-b-10">{{orderSelected?.placed_to?.full_name}}</h6>
+                        <p class="tx-15 mg-b-10">{{orderSelected?.placed_to?.street_address}},{{orderSelected?.placed_to?.city}}</p>
                         <p class="mg-b-0">{{orderSelected?.placed_to?.email}}</p>
                       </div><!-- col -->
                       <!-- <div class="col-sm-6 col-lg-4 mg-t-40">
@@ -203,39 +204,153 @@
                       <table class="table table-invoice bd-b">
                         <thead>
                           <tr>
-                            <th class="wd-20p">Product</th>
-                            <th class="wd-20p">Brand</th>
-                            <th class="wd-20p">Requested Quantity</th>
-                            <th class="wd-20p">Accepted Quantity</th>
-                            <th class="wd-20p" *ngIf="orderSelected.challan_generated">Dispatched Quantity</th>
-                            <th class="wd-20p" *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' ">Recieved Quantity</th>
-                            <th class="wd-20p" *ngIf="orderSelected.recieved && orderSelected.status != 'Challan Accepted' ">Recieved Quantity</th>
-                            <th class="wd-20p" *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' ">Billed Quantity</th>
-                            <th class="wd-20p" *ngIf="orderSelected.billed && orderSelected.status != 'Recieved' ">Billed Quantity</th>
+                            <th >Product</th>
+                            <th >Brand</th>
+                            <th >Requested Quantity</th>
+                            <th >Accepted Quantity</th>
+                            <th  *ngIf="orderSelected.challan_generated">Dispatched Quantity</th>
+                            <th  *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' ">Recieved Quantity</th>
+                            <th  *ngIf="orderSelected.recieved && orderSelected.status != 'Challan Accepted' ">Recieved Quantity</th>
+                            <th  *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' ">Billed Quantity</th>
+                            <th  *ngIf="orderSelected.billed && orderSelected.status != 'Recieved' ">Billed Quantity</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr *ngFor="let product of orderSelectedProducts;let i=index">
-                            <td class="tx-nowrap">{{product?.product?.name}}</td>
-                            <td class="d-none d-sm-table-cell tx-color-03">{{product?.product?.brand?.name}}</td>
-                            <td class="tx-nowrap">{{product.requested}}</td>
-                            <td class="tx-center" *ngIf="orderSelected.status == 'Pending' ">
-                                <input type="text"  
-                                class="form-control col-lg-9" (change)="asd($event,i)"
-                                placeholder="Accepted Quantity" [ngModel]="orderSelected.products[i].requested">
+                            <td >{{product?.product?.name}}</td>
+                            <td >{{product?.product?.brand?.name}}</td>
+                            <td >{{product.requested}}
+                                <div >
+                                    <label>Requested By:-</label>
+                                  "{{orderSelected?.placed_by?.full_name}}"
+                                </div>
+                                <div >
+                                    <label>Requested At:-</label>
+                                  "{{orderSelected?.order_date | date: 'dd/mm/yy'}},{{orderSelected?.order_date | date : 'h:mm a'}}"
+                                </div>
+                                <div *ngIf="showRequestedOrderNotes">
+                                    <label>Requested Notes:-</label>
+                                  "{{requestedOrderNotes}}"
+                                </div>
+
                             </td>
-                            <td class="tx-nowrap" *ngIf="orderSelected.status != 'Pending' ">{{product.accepted}}</td>
-                            <td class="tx-nowrap" *ngIf="orderSelected.challan_generated">{{product.dispatched}}</td>
+                            <td  *ngIf="orderSelected.status == 'Pending' ">
+                                
+                                <input type="text"  
+                                class="form-control col-lg-6" (change)="asd($event,i)"
+                                placeholder="Accepted Quantity" [ngModel]="orderSelected.products[i].requested">
+                                <input type="text"  
+                                class="form-control col-lg-6" (change)="notesAccepted($event)"
+                                placeholder="Notes" >
+                                <input type="file"  
+                                class="col-lg-6" (change)="imageAccepted($event)" >
+                            </td>
+                            <td  *ngIf="orderSelected.status != 'Pending' ">
+                              {{product.accepted}}
+                              <div >
+                                  <label>Accepted By:-</label>
+                                "{{orderSelected?.remarks?.acceptOrder?.acceptedBy?.full_name}}"
+                              </div>
+                              <div >
+                                  <label>Accepted At:-</label>
+                                "{{orderSelected?.remarks?.acceptOrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.acceptOrder?.at | date: 'h:mm a'}}"
+                              </div>
+                              <div *ngIf="showAcceptOrderNotes">
+                                  <label>Accepted Notes</label>
+                                "{{acceptOrderNotes}}"
+                              </div>
+                              
+                              <div class="form-group" *ngIf="showAcceptOrderImage">
+                                  <label>Accepted Image</label>
+                            <div class="col-sm-3 col-md-2 col-lg text-center" >
+                            <div class="avatar avatar-xxl"><img src="{{acceptOrderImage}}" class="rounded-circle" alt=""></div>
+                            </div>
+                              </div>
+                            </td>
+                            <td  *ngIf="orderSelected.challan_generated">{{product.dispatched}}
+                                <div >
+                                    <label>Generated By:-</label>
+                                  "{{orderSelected?.remarks?.generateChallan?.generatedBy?.full_name}}"
+                                </div>
+                                <div >
+                                    <label>Generated At:-</label>
+                                  {{orderSelected?.remarks?.generateChallan?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.generateChallan?.at | date: 'h:mm a'}}"
+                                </div>
+                                <div *ngIf="showChallanNotes">
+                                    <label>Dispatched Notes:-</label>
+                                    "{{ChallanNotes}}"
+                                  </div>
+                                  <div class="form-group" *ngIf="showChallanImage">
+                                      <!-- <label>Category Image</label> -->
+                                <div class="col-sm-3 col-md-2 col-lg text-center" >
+                                <div class="avatar avatar-xxl "><img src="{{challanImage}}" class="rounded-circle" alt=""></div>
+                                </div>
+                                  </div>
+
+                            </td>
                             <td *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' " >
                               <input type="text"  (change)="recievedQuantityEntered($event,i)"
-                                        class="form-control col-lg-12" [ngModel]="orderSelected.products[i].dispatched">
+                                        class="form-control col-lg-8" [ngModel]="orderSelected.products[i].dispatched">
+                                        <input type="text"  
+                                        class="form-control col-lg-8" (change)="notesRecieved($event)"
+                                        placeholder="Notes" >
+                                       <input type="file"  
+                                       class="col-lg-" (change)="imageRecieved($event)" >
                             </td>
-                            <td class="tx-nowrap" *ngIf="orderSelected.recieved">{{product.recieved}}</td>
+                            <td  *ngIf="orderSelected.recieved">{{product.recieved}}
+
+                                <div >
+                                    <label>Recieved By:-</label>
+                                  "{{orderSelected?.remarks?.recieveOrder?.recievedBy?.full_name}}"
+                                </div>
+                                <div >
+                                    <label>Recieved At:-</label>
+                                  "{{orderSelected?.remarks?.recieveOrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.recieveOrder?.at | date: 'h:mm a'}}"
+                                </div>
+
+                                <div *ngIf="showRecieveOrderNotes">
+                                    <label>Recieved Notes:-</label>
+                                    "{{recieveOrderNotes}}"
+                                  </div>
+                                  <div class="form-group" *ngIf="showRecieveOrderImage">
+                                      <!-- <label>Category Image</label> -->
+                                <div class="col-sm-3 col-md-2 col-lg text-center" >
+                                <div class="avatar avatar-xxl "><img src="{{recieveOrderImage}}" class="rounded-circle" alt=""></div>
+                                </div>
+                                  </div>
+                            </td>
                             <td *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' ">
                               <input type="text"  (change)="billedQuantityEntered($event,i)"
-                                        class="form-control col-lg-12" [ngModel]="orderSelected.products[i].recieved">
+                                        class="form-control col-lg-10" [ngModel]="orderSelected.products[i].recieved">
+                                        <input type="text"  
+                                        class="form-control col-lg-10" (change)="notesBilled($event)"
+                                        placeholder="Notes" >
+                                       <input type="file"  
+                                       class="col-lg-10" (change)="imageBilled($event)" >
                             </td>
-                            <td class="tx-nowrap" *ngIf="orderSelected.billed">{{product.billed}}</td>
+                            <td  *ngIf="orderSelected.billed">{{product.billed}}
+
+                                <div >
+                                    <label>Billed By:-</label>
+                                  "{{orderSelected?.remarks?.billOrder?.billedBy?.full_name}}"
+                                </div>
+                                <div >
+                                    <label>Billed At:-</label>
+                                  "{{orderSelected?.remarks?.billOrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.billOrder?.at | date: 'h:mm a'}}"
+                                </div>
+
+                                <div *ngIf="showBillOrderNotes">
+                                    <label>Billed Notes:-</label>
+                                    "{{billOrderNotes}}"
+                                  </div>
+                                  <div class="form-group" *ngIf="showBillOrderImage">
+                                      <!-- <label>Category Image</label> -->
+                                <div class="col-sm-3 col-md-2 col-lg text-center" >
+                                <div class="avatar avatar-xxl "><img src="{{billOrderImage}}" class="rounded-circle" alt=""></div>
+                                </div>
+                                  </div>
+
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -328,6 +443,12 @@
                                   <input type="text"  
                                   class="form-control col-lg-9" (change)="dispatchQuantityEntered($event,i)"
                                   placeholder="Dispatched Quantity" [ngModel]="orderSelected.products[i].accepted">
+
+                                  <input type="text"  
+                                 class="form-control col-lg-9" (change)="notesDispatched($event)"
+                                 placeholder="Notes" >
+                                <input type="file"  
+                                class="col-lg-9" (change)="imageDispatched($event)" >
                               </td>
                               <td *ngIf="orderSelected.status != 'Order Accepted' ">{{order?.dispatched}}</td>
                               <!-- <td *ngIf="orderSelected.status.name == 'Accepted'">

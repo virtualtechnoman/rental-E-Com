@@ -28,11 +28,12 @@ export class OrderService {
   url14= '/api/challan/type/rorder';
   url15= '/api/rorder/recieve';
   url16= '/api/rorder/bill';
+  url17='/api/upload/orderremark';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   // ==========ORDER APIS=================//
   getAllOrders() {
-    return this.http.get(this.url + '/', { headers: this.headers });
+    return this.http.get(this.url + '/all' , { headers: this.headers });
   }
 
   addOrder(order) {
@@ -175,5 +176,19 @@ export class OrderService {
 
   recievedBillStatus(id,bill) {
     return this.http.put(this.url16 + '/' + id, bill, { headers: this.headers });
+  }
+
+  getUrl() {
+    return this.http.get(this.url17 + '/', { headers: this.headers })
+  }
+
+  sendUrl(url, file) {
+    return fetch(url,{
+      method:"PUT",
+      body:file,
+      headers:{
+        'Content-Type':"jpeg,png"
+      }
+    })
   }
 }

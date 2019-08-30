@@ -163,6 +163,20 @@
               </div>
             </div>
           </div>
+          <div class="form-row" *ngIf="editShowImage">
+              <div class="form-group">
+              <label>Product Image</label>
+              <div class="col-sm-3 col-md-2 col-lg text-center" >
+              <div class="avatar avatar-xxl avatar-online"><img src="{{editImage}}" class="rounded-circle" alt=""></div>
+              </div>
+              </div>
+          </div>
+          <div class="form-row offset-md-6">
+              <div class="form-group col-md-4">
+                <label for="inputEmail4">Select Product Image</label>
+                <input type="file" formControlName="image" (change)="selectFile($event)">
+              </div>
+           </div>
           <div class="form-row text-center">
             <div class="form-group col-md-2 text-center">
               <label for="inputPassword4">Status</label>
@@ -231,7 +245,12 @@
         </button>
       </div>
       <div class="modal-body">
-
+          <div class="form-group" *ngIf="showImage">
+              <label>Product Image</label>
+        <div class="col-sm-3 col-md-2 col-lg text-center" >
+          <div class="avatar avatar-xxl avatar-online"><img src="{{image}}" class="rounded-circle" alt=""></div>
+        </div>
+          </div>
         <div class="form-group" *ngIf="viewArray.brand">
           <label> Brand</label>
           <input type="text" class="form-control" [(ngModel)]="viewArray.brand.name" disabled />

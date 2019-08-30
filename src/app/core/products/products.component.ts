@@ -17,7 +17,8 @@ export class ProductsComponent implements OnInit {
   @ViewChildren("checkboxes") checkboxes: QueryList<ElementRef>;
   @ViewChildren("selectallcheckboxes") selectallcheckboxes: QueryList<ElementRef>;
   @ViewChildren("selectallcheckboxes") selectallcheckboxes2: any;
-  @ViewChildren("checkboxes") checkboxes2:any;;
+  @ViewChildren("checkboxes") checkboxes2:any;fileSelected: any;
+  imageUrl="https://binsar.s3.ap-south-1.amazonaws.com/"
   jQuery: any;
   allproducts: ProductModel[] = [];
   allCategories: CategoryModel[] = [];
@@ -42,7 +43,14 @@ export class ProductsComponent implements OnInit {
   countArray:any[]=[];
   array2:any=[];
   array3:any[]=[];
-  masterArray:any[]=[]
+  masterArray:any[]=[];
+  keyProductImage:any;
+  urlProductImage:any;
+  showImage:boolean=false;
+  image:any;
+  editShowImage:boolean=false
+  editImage: any;
+  mastImage: any;
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService
   ) {
@@ -86,11 +94,17 @@ export class ProductsComponent implements OnInit {
       name: ['', Validators.required],
       // product_dms: ['', Validators.required],
       selling_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
+      image:['']
     });
   }
 
 
   get f() { return this.productForm.controls; }
+
+  selectFile(event:any){
+    this.fileSelected=event.target.files[0];
+    console.log(this.fileSelected)
+  }
 
   submit() {
   
@@ -106,18 +120,60 @@ export class ProductsComponent implements OnInit {
           this.productForm.value.available_for.push(this.allHub[i]._id)
       }
     }
-    this.updateProduct(this.productForm.value);
+    // this.updateProduct(this.productForm.value);
   }else{
     for(var i=0;i<this.checkboxes2._results.length;i++){
       if(this.checkboxes2._results[i].nativeElement.checked==true){
           this.productForm.value.available_for.push(this.allHub[i]._id)
       }
     }
-    this.addProduct(this.productForm.value)
+    // this.addProduct(this.productForm.value)
+  }
+
+
+  if(this.fileSelected){
+    this.productService.getUrlProduct().subscribe((res:ResponseModel)=>{
+      console.log(res.data)
+      this.keyProductImage=res.data.key;
+      this.urlProductImage=res.data.url;
+        
+    if(this.urlProductImage){
+      this.productService.sendUrlProduct(this.urlProductImage,this.fileSelected).then(resp=>{
+        if(resp.status == 200 ){
+          this.productForm.value.image=this.keyProductImage;
+          
+         console.log(this.productForm.value)
+         if (this.editing) {
+          this.updateProduct(this.productForm.value);
+        } else {
+          this.addProduct(this.productForm.value);
+        }
+          // this.addVehicle(this.VehicleForm.value);
+        }
+      })
+    }
+    })
+  }else{
+    
+    console.log(this.productForm.value)
+    if (this.editing) {
+        if(!this.fileSelected){
+      this.productForm.value.image=this.mastImage
+        }
+      console.log(this.mastImage)
+      this.updateProduct(this.productForm.value);
+        
+    } else {
+      delete this.productForm.value.image;
+      this.updateProduct(this.productForm.value);
+    }
+    // this.addVehicle(this.VehicleForm.value);
   }
   }
 
   addProduct(product) {
+    console.log(product);
+    
     this.productService.addProduct(product).subscribe((res: ResponseModel) => {
       jQuery('#modal3').modal('hide');
       this.toastr.success('Product Added!', 'Success!');
@@ -156,6 +212,14 @@ export class ProductsComponent implements OnInit {
   viewProduct(i) {
     this.array3.length=0
     this.viewArray = this.allproducts[i];
+    if(this.viewArray.image){
+      this.showImage=true;
+    this.image= this.imageUrl + this.viewArray.image
+    console.log(this.image)
+    }
+    else{
+      this.showImage=false
+    }
     console.log(this.viewArray);
       for(let i=0;i<this.viewArray.available_for.length;i++){
         this.array3.push(this.viewArray.available_for[i])
@@ -272,6 +336,15 @@ export class ProductsComponent implements OnInit {
     this.productForm.controls['is_active'].setValue(product.is_active);
     this.productForm.controls['name'].setValue(product.name);
     this.productForm.controls['selling_price'].setValue(product.selling_price);
+    if(product.image){
+      this.editShowImage=true;
+      this.mastImage=product.image
+      this.editImage= this.imageUrl + product.image
+      // this.VehicleForm.controls['image'].setValue(image);
+    console.log(this.editImage)
+    }else{
+      this.editShowImage=false
+    }
   
 }
   public uploadCSV(files: FileList) {
@@ -326,6 +399,7 @@ export class ProductsComponent implements OnInit {
     this.editing = false;
     this.submitted = false;
     this.productForm.reset();
+    this.editShowImage=false
     this.checkboxes.forEach((element) => {
       element.nativeElement.checked = false;
     });
