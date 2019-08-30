@@ -35,7 +35,7 @@ router.get("/", authorizePrivilege("GET_ALL_RETURN_ORDERS_OWN"), (req, res) => {
 
 //GET Return orders
 router.get("/all", authorizePrivilege("GET_ALL_RETURN_ORDERS"), (req, res) => {
-    ReturnOrder.find().populate([{path:"placed_by placed_to",select:"-password"},{path:"products.product",populate:{path:"category brand available_for"}}]).exec().then(doc => {
+    ReturnOrder.find().populate([{path:"placed_by placed_to",select:"-password"},{path:"remarks.generateChallan.generatedBy remarks.recieveROrder.recievedBy remarks.billROrder.billedBy",populate:{path:"role", select:"name"}},{path:"products.product",populate:{path:"category brand available_for"}}]).exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Return Orders" });
     }).catch(err => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
@@ -124,7 +124,7 @@ router.put("/recieve/:id", authorizePrivilege("RECIEVE_RETURN_ORDER"), (req, res
                             upd.recieved = true;
                             upd.status = "Recieved";
                             ReturnOrder.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                                .populate([{path:"placed_by placed_to remarks.generateChallan.generatedBy remarks.recieveROrder.recievedBy",select:"-password"},{path:"products.product",populate:{path:"category brand available_for"}}]).lean().exec().then(d => {
+                                .populate([{path:"placed_by placed_to",select:"-password"},{path:"remarks.generateChallan.generatedBy remarks.recieveROrder.recievedBy",populate:{path:"role",select:"name"}},{path:"products.product",populate:{path:"category brand available_for"}}]).lean().exec().then(d => {
                                     res.json({ status: 200, data: d, errors: false, message: "Return Order recieved successfully" });
                                 }).catch(e => {
                                     console.log(e);
@@ -176,7 +176,7 @@ router.put("/bill/:id", authorizePrivilege("BILL_RETURN_ORDER"), (req, res) => {
                                 upd.billed = true;
                                 upd.status = "Billed";
                                 ReturnOrder.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                                    .populate([{path:"placed_by placed_to remarks.generateChallan.generatedBy remarks.recieveROrder.recievedBy remarks.billROrder.billedBy",select:"-password"},{path:"products.product",populate:{path:"category brand available_for"}}]).lean().exec()
+                                    .populate([{path:"placed_by placed_to",select:"-password"},{path:"remarks.generateChallan.generatedBy remarks.recieveROrder.recievedBy remarks.billROrder.billedBy",populate:{path:"role",select:"name"}},{path:"products.product",populate:{path:"category brand available_for"}}]).lean().exec()
                                     .then(d => {
                                         res.json({ status: 200, data: d, errors: false, message: "Return Order billed successfully" });
                                     }).catch(e => {
@@ -223,7 +223,7 @@ router.post("/gchallan/:oid", authorizePrivilege("GENERATE_RETURN_ORDER_CHALLAN"
                     .then(challan => {
                         challan.populate([{ path: "processing_unit_incharge vehicle driver", select: "-password" }])
                             .execPopulate().then(doc => {
-                                ReturnOrder.findByIdAndUpdate(_rord._id, { $set: { challan_generated: true, status:"Challan Generated" } }, { new: true }).populate([{path:"placed_by placed_to remarks.generateChallan.generatedBy",select:"-password"},{path:"products.product",populate:{path:"category brand available_for"}}]).then(_d => {
+                                ReturnOrder.findByIdAndUpdate(_rord._id, { $set: { challan_generated: true, status:"Challan Generated" } }, { new: true }).populate([{path:"placed_by placed_to",select:"-password"},{path:"remarks.generateChallan.generatedBy",populate:{path:"role",select:"name"}},{path:"products.product",populate:{path:"category brand available_for"}}]).then(_d => {
                                     doc = doc.toObject();
                                     doc.order = _d.toObject();
                                     res.json({ status: 200, data: doc, errors: false, message: "Challan generated successfully" });
