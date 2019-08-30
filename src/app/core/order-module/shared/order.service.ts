@@ -33,7 +33,7 @@ export class OrderService {
 
   // ==========ORDER APIS=================//
   getAllOrders() {
-    return this.http.get(this.url + '/', { headers: this.headers });
+    return this.http.get(this.url + '/all' , { headers: this.headers });
   }
 
   addOrder(order) {
