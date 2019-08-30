@@ -6,7 +6,7 @@ const mongodb = require('mongoose').Types;
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 // Get own subscriptions
 router.get("/", authorizePrivilege("GET_SUBSCRIPTIONS_OWN"), (req, res) => {
-    Subscription.find({user:req.user._id}).populate("product","-password").exec().then(docs => {
+    Subscription.find({user:req.user._id}).populate({path:"product",populate:{path:"category available_for brand",select:"-password"} }).exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All subscriptions" });
         else
@@ -17,7 +17,7 @@ router.get("/", authorizePrivilege("GET_SUBSCRIPTIONS_OWN"), (req, res) => {
 })
 // Get all subscriptions
 router.get("/all", authorizePrivilege("GET_ALL_SUBSCRIPTIONS"), (req, res) => {
-    Subscription.find().populate("user product","-password").exec().then(docs => {
+    Subscription.find().populate([{path:"product",populate:{path:"category available_for brand",select:"-password"} },{path:"user",select:"-password"}]).exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All subscriptions" });
         else
@@ -36,7 +36,7 @@ router.post('/', authorizePrivilege("ADD_NEW_SUBSCRIPTION"), async (req, res) =>
     result.data.user = req.user._id;
     let newState = new Subscription(result.data);
     newState.save().then(subscription => {
-        subscription.populate("user product","-password").execPopulate().then(subscription=>{
+        subscription.populate({path:"product",populate:{path:"category available_for brand",select:"-password"} }).execPopulate().then(subscription=>{
             res.json({ status: 200, data: subscription, errors: false, message: "Subscription added successfully" })
         }).catch(e => {
             console.log(e);
@@ -55,7 +55,7 @@ router.put("/:id", authorizePrivilege("UPDATE_SUBSCRIPTION"), (req, res) => {
         if (!isEmpty(result.errors)) {
             return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
         }
-        Subscription.findByIdAndUpdate(req.params.id, result.data, { new: true }).populate("user product","-password").exec()
+        Subscription.findByIdAndUpdate(req.params.id, result.data, { new: true }).populate({path:"product",populate:{path:"category available_for brand",select:"-password"} },{path:"user",select:"-password"}).exec()
             .then(subscription=>{
                     res.status(200).json({ status: 200, data: subscription, errors: false, message: "Subscription Updated Successfully" });
             }).catch(err => {
