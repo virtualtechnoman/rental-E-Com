@@ -8,7 +8,7 @@ const customerSelfUpdateSchema = Joi.object({
     street_address: Joi.string().required(),
     mobile_number:Joi.string().optional(),
     // city : Joi.string().required(),
-    area : Joi.string().required(),
+    area : Joi.string().optional(),
     dob : Joi.date().optional(),
     anniversary: Joi.date().optional()
 

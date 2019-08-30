@@ -25,6 +25,7 @@ const UserSchema = new mongoose.Schema({
   dob: { type: Date },
   profile_picture:{type:String},
   anniversary: { type: Date },
+  route:{type: mongoose.Schema.Types.ObjectId, ref: "route"},
   //for driver =>
   dl_number:{type:String}
 }, {

@@ -12,7 +12,7 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 //GET all users
 router.get('/', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   try {
-    const allUsers = await User.find({ _id: { $ne: req.user._id } }).populate("role").exec();
+    const allUsers = await User.find({ _id: { $ne: req.user._id } }).populate("role route area").exec();
     // console.log(allUsers);
     res.json({ status: 200, message: "All users", errors: false, data: allUsers });
   }
@@ -23,7 +23,7 @@ router.get('/', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
 //Get all hubs
 router.get('/hub', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   try {
-    const allUsers = await User.find({ role: process.env.HUB_ROLE }).populate("role").exec();
+    const allUsers = await User.find({ role: process.env.HUB_ROLE }).populate("role route area").exec();
     // console.log(allUsers);
     res.json({ status: 200, message: "All hubs", errors: false, data: allUsers });
   }
@@ -34,7 +34,7 @@ router.get('/hub', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
 //Get all drivers
 router.get('/driver', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   try {
-    const allUsers = await User.find({ role: process.env.DRIVER_ROLE }, "-password").populate("role").exec();
+    const allUsers = await User.find({ role: process.env.DRIVER_ROLE }, "-password").populate("role route area").exec();
     // console.log(allUsers);
     res.json({ status: 200, message: "All Drivers", errors: false, data: allUsers });
   }
@@ -46,7 +46,7 @@ router.get('/driver', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
 //Get all dboy
 router.get('/dboy', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   try {
-    const allUsers = await User.find({ role: process.env.DELIVERY_BOY_ROLE }, "-password").populate("role").exec();
+    const allUsers = await User.find({ role: process.env.DELIVERY_BOY_ROLE }, "-password").populate("role route area").exec();
     // console.log(allUsers);
     res.json({ status: 200, message: "All Delivery Boys", errors: false, data: allUsers });
   }
@@ -58,7 +58,7 @@ router.get('/dboy', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
 //Get all farms
 router.get('/farm', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   try {
-    const allUsers = await User.find({ role: process.env.FARM_ROLE }, "-password").populate("role").exec();
+    const allUsers = await User.find({ role: process.env.FARM_ROLE }, "-password").populate("role route area").exec();
     // console.log(allUsers);
     res.json({ status: 200, message: "All Drivers", errors: false, data: allUsers });
   }
@@ -85,7 +85,7 @@ router.get('/role/:role', authorizePrivilege("GET_USER_BY_ROLE"), async (req, re
   console.log(req.body.role)
   if (mongodb.ObjectId.isValid(req.params.role)) {
     try {
-      const allUsers = await User.find({ role: req.params.role }).populate("role").exec()
+      const allUsers = await User.find({ role: req.params.role }).populate("role route area").exec()
       if (allUsers.length > 0) {
         res.status(200).json({ status: 200, errors: false, data: allUsers, message: "All users" })
       } else {
@@ -131,7 +131,7 @@ router.put('/id/:id', authorizePrivilege("UPDATE_USER"), (req, res) => {
         return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating user data" });
       }
       else {
-        doc.populate("role").execPopulate().then(d => {
+        doc.populate("role route area").execPopulate().then(d => {
           if (!d)
             return res.status(200).json({ status: 200, errors: true, data: doc, message: "No User Found" });
           else {
@@ -167,7 +167,7 @@ router.put('/me', authorizePrivilege("UPDATE_USER_OWN"), (req, res) => {
         return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating user data" });
       }
       else {
-        doc.populate("role").execPopulate().then(d => {
+        doc.populate("role route area").execPopulate().then(d => {
           if (!d)
             return res.status(200).json({ status: 200, errors: true, data: doc, message: "No User Found" });
           else {
@@ -211,7 +211,7 @@ router.post("/", authorizePrivilege("ADD_NEW_USER"), (req, res) => {
           result.data.password = hash;
           const newuser = new User(result.data);
           newuser.save().then(data => {
-            data.populate("role").execPopulate().then(data=>{
+            data.populate("role route area").execPopulate().then(data=>{
               data = data.toObject();
               delete data.password;
               res.status(200).json({ status: 200, errors: false, data, message: "User Added successfully" });
