@@ -16,6 +16,7 @@ module.exports = mongoose.model("order", new mongoose.Schema({
     order_id: { type: String, required: true },
     placed_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
     placed_to: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
+    rorder: { type: mongoose.Schema.Types.ObjectId, ref: "returnorder"},
     products: [prods],
     notes: { type: String},
     remarks:{
@@ -51,6 +52,7 @@ module.exports = mongoose.model("order", new mongoose.Schema({
     challan_accepted: { type: Boolean, default: false },
     recieved: { type: Boolean, default: false },
     billed: { type: Boolean, default: false },
+    rorder_placed: { type: Boolean, default: false },
     challan_generated: { type: Boolean, default: false },
     status:{ type: String, required: true },
     order_date: { type: Date, default: Date.now }

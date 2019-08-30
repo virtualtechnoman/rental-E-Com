@@ -199,8 +199,9 @@
                         </ul>
                       </div>col -->
                     </div><!-- row -->
-            
-                    <div class="table-responsive mg-t-40">
+                    
+                    <div class="table-responsive mg-t-40" *ngIf="!orderSelected.rorder">
+                      Order Table
                       <table class="table table-invoice bd-b">
                         <thead>
                           <tr>
@@ -355,6 +356,361 @@
                         </tbody>
                       </table>
                     </div>
+
+
+
+
+
+
+
+                    <div class="table-responsive mg-t-40" *ngIf="orderSelected.rorder">
+                      Order Table
+                        <table class="table table-invoice bd-b">
+                          <thead>
+                            <tr>
+                              <th >Product</th>
+                              <th >Brand</th>
+                              <th >Requested Quantity</th>
+                              <th >Accepted Quantity</th>
+                              <th  *ngIf="orderSelected.challan_generated">Dispatched Quantity</th>
+                              <th  *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' ">Recieved Quantity</th>
+                              <th  *ngIf="orderSelected.recieved && orderSelected.status != 'Challan Accepted' ">Recieved Quantity</th>
+                              <th  *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' ">Billed Quantity</th>
+                              <th  *ngIf="orderSelected.billed && orderSelected.status != 'Recieved' ">Billed Quantity</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let product of orderSelectedProducts;let i=index">
+                              <td >{{product?.product?.name}}</td>
+                              <td >{{product?.product?.brand?.name}}</td>
+                              <td >{{product.requested}}
+                                  <div >
+                                      <label>Requested By:-</label>
+                                    "{{orderSelected?.placed_by?.full_name}}"
+                                  </div>
+                                  <div >
+                                      <label>Requested At:-</label>
+                                    "{{orderSelected?.order_date | date: 'dd/mm/yy'}},{{orderSelected?.order_date | date : 'h:mm a'}}"
+                                  </div>
+                                  <div *ngIf="showRequestedOrderNotes">
+                                      <label>Requested Notes:-</label>
+                                    "{{requestedOrderNotes}}"
+                                  </div>
+  
+                              </td>
+                              <td  *ngIf="orderSelected.status == 'Pending' ">
+                                  
+                                  <input type="text"  
+                                  class="form-control col-lg-6" (change)="asd($event,i)"
+                                  placeholder="Accepted Quantity" [ngModel]="orderSelected.products[i].requested">
+                                  <input type="text"  
+                                  class="form-control col-lg-6" (change)="notesAccepted($event)"
+                                  placeholder="Notes" >
+                                  <input type="file"  
+                                  class="col-lg-6" (change)="imageAccepted($event)" >
+                              </td>
+                              <td  *ngIf="orderSelected.status != 'Pending' ">
+                                {{product.accepted}}
+                                <div >
+                                    <label>Accepted By:-</label>
+                                  "{{orderSelected?.remarks?.acceptOrder?.acceptedBy?.full_name}}"
+                                </div>
+                                <div >
+                                    <label>Accepted At:-</label>
+                                  "{{orderSelected?.remarks?.acceptOrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.acceptOrder?.at | date: 'h:mm a'}}"
+                                </div>
+                                <div *ngIf="showAcceptOrderNotes">
+                                    <label>Accepted Notes</label>
+                                  "{{acceptOrderNotes}}"
+                                </div>
+                                
+                                <div class="form-group" *ngIf="showAcceptOrderImage">
+                                    <label>Accepted Image</label>
+                              <div class="col-sm-3 col-md-2 col-lg text-center" >
+                              <div class="avatar avatar-xxl"><img src="{{acceptOrderImage}}" class="rounded-circle" alt=""></div>
+                              </div>
+                                </div>
+                              </td>
+                              <td  *ngIf="orderSelected.challan_generated">{{product.dispatched}}
+                                  <div >
+                                      <label>Generated By:-</label>
+                                    "{{orderSelected?.remarks?.generateChallan?.generatedBy?.full_name}}"
+                                  </div>
+                                  <div >
+                                      <label>Generated At:-</label>
+                                    {{orderSelected?.remarks?.generateChallan?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.generateChallan?.at | date: 'h:mm a'}}"
+                                  </div>
+                                  <div *ngIf="showChallanNotes">
+                                      <label>Dispatched Notes:-</label>
+                                      "{{ChallanNotes}}"
+                                    </div>
+                                    <div class="form-group" *ngIf="showChallanImage">
+                                        <!-- <label>Category Image</label> -->
+                                  <div class="col-sm-3 col-md-2 col-lg text-center" >
+                                  <div class="avatar avatar-xxl "><img src="{{challanImage}}" class="rounded-circle" alt=""></div>
+                                  </div>
+                                    </div>
+  
+                              </td>
+                              <td *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' " >
+                                <input type="text"  (change)="recievedQuantityEntered($event,i)"
+                                          class="form-control col-lg-8" [ngModel]="orderSelected.products[i].dispatched">
+                                          <input type="text"  
+                                          class="form-control col-lg-8" (change)="notesRecieved($event)"
+                                          placeholder="Notes" >
+                                         <input type="file"  
+                                         class="col-lg-" (change)="imageRecieved($event)" >
+                              </td>
+                              <td  *ngIf="orderSelected.recieved">{{product.recieved}}
+  
+                                  <div >
+                                      <label>Recieved By:-</label>
+                                    "{{orderSelected?.remarks?.recieveOrder?.recievedBy?.full_name}}"
+                                  </div>
+                                  <div >
+                                      <label>Recieved At:-</label>
+                                    "{{orderSelected?.remarks?.recieveOrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.recieveOrder?.at | date: 'h:mm a'}}"
+                                  </div>
+  
+                                  <div *ngIf="showRecieveOrderNotes">
+                                      <label>Recieved Notes:-</label>
+                                      "{{recieveOrderNotes}}"
+                                    </div>
+                                    <div class="form-group" *ngIf="showRecieveOrderImage">
+                                        <!-- <label>Category Image</label> -->
+                                  <div class="col-sm-3 col-md-2 col-lg text-center" >
+                                  <div class="avatar avatar-xxl "><img src="{{recieveOrderImage}}" class="rounded-circle" alt=""></div>
+                                  </div>
+                                    </div>
+                              </td>
+                              <td *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' ">
+                                <input type="text"  (change)="billedQuantityEntered($event,i)"
+                                          class="form-control col-lg-10" [ngModel]="orderSelected.products[i].recieved">
+                                          <input type="text"  
+                                          class="form-control col-lg-10" (change)="notesBilled($event)"
+                                          placeholder="Notes" >
+                                         <input type="file"  
+                                         class="col-lg-10" (change)="imageBilled($event)" >
+                              </td>
+                              <td  *ngIf="orderSelected.billed">{{product.billed}}
+  
+                                  <div >
+                                      <label>Billed By:-</label>
+                                    "{{orderSelected?.remarks?.billOrder?.billedBy?.full_name}}"
+                                  </div>
+                                  <div >
+                                      <label>Billed At:-</label>
+                                    "{{orderSelected?.remarks?.billOrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.billOrder?.at | date: 'h:mm a'}}"
+                                  </div>
+  
+                                  <div *ngIf="showBillOrderNotes">
+                                      <label>Billed Notes:-</label>
+                                      "{{billOrderNotes}}"
+                                    </div>
+                                    <div class="form-group" *ngIf="showBillOrderImage">
+                                        <!-- <label>Category Image</label> -->
+                                  <div class="col-sm-3 col-md-2 col-lg text-center" >
+                                  <div class="avatar avatar-xxl "><img src="{{billOrderImage}}" class="rounded-circle" alt=""></div>
+                                  </div>
+                                    </div>
+  
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+
+
+
+
+
+                        <!-- Return Order Table -->
+
+                        Return Order
+                        <table class="table table-invoice bd-b">
+                            <thead>
+                              <tr>
+                                <th >Product</th>
+                                <th >Brand</th>
+                                <th >Requested Quantity</th>
+                                <!-- <th >Accepted Quantity</th> -->
+                                <!-- <th  *ngIf="orderSelected.challan_generated">Dispatched Quantity</th> -->
+                                <th  *ngIf="!orderSelected.rorder.recieved && orderSelected.rorder.status == 'Challan Accepted' ">Recieved Quantity</th>
+                                <th  *ngIf="orderSelected.rorder.recieved && orderSelected.rorder.status != 'Challan Accepted' ">Recieved Quantity</th>
+                                <th  *ngIf="!orderSelected.rorder.billed && orderSelected.rorder.status == 'Recieved' ">Billed Quantity</th>
+                                <th  *ngIf="orderSelected.rorder.billed && orderSelected.rorder.status != 'Recieved' ">Billed Quantity</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let product of orderSelected.rorder.products;let i=index">
+                                <td >{{product?.product?.name}}</td>
+                                <td >{{product?.product?.brand?.name}}</td>
+                                <td >{{product.requested}}
+                                    <!-- <div >
+                                        <label>Requested By:-</label>
+                                      "{{orderSelected?.placed_by?.full_name}}"
+                                    </div>
+                                    <div >
+                                        <label>Requested At:-</label>
+                                      "{{orderSelected?.order_date | date: 'dd/mm/yy'}},{{orderSelected?.order_date | date : 'h:mm a'}}"
+                                    </div>
+                                    <div *ngIf="showRequestedOrderNotes">
+                                        <label>Requested Notes:-</label>
+                                      "{{requestedOrderNotes}}"
+                                    </div> -->
+    
+                                </td>
+                                <!-- <td  *ngIf="orderSelected.status == 'Pending' ">
+                                    
+                                    <input type="text"  
+                                    class="form-control col-lg-6" (change)="asd($event,i)"
+                                    placeholder="Accepted Quantity" [ngModel]="orderSelected.products[i].requested">
+                                    <input type="text"  
+                                    class="form-control col-lg-6" (change)="notesAccepted($event)"
+                                    placeholder="Notes" >
+                                    <input type="file"  
+                                    class="col-lg-6" (change)="imageAccepted($event)" >
+                                </td> -->
+                                <!-- <td  *ngIf="orderSelected.status != 'Pending' ">
+                                  {{product.accepted}}
+                                  <div >
+                                      <label>Accepted By:-</label>
+                                    "{{orderSelected?.remarks?.acceptOrder?.acceptedBy?.full_name}}"
+                                  </div>
+                                  <div >
+                                      <label>Accepted At:-</label>
+                                    "{{orderSelected?.remarks?.acceptOrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.acceptOrder?.at | date: 'h:mm a'}}"
+                                  </div>
+                                  <div *ngIf="showAcceptOrderNotes">
+                                      <label>Accepted Notes</label>
+                                    "{{acceptOrderNotes}}"
+                                  </div>
+                                  
+                                  <div class="form-group" *ngIf="showAcceptOrderImage">
+                                      <label>Accepted Image</label>
+                                <div class="col-sm-3 col-md-2 col-lg text-center" >
+                                <div class="avatar avatar-xxl"><img src="{{acceptOrderImage}}" class="rounded-circle" alt=""></div>
+                                </div>
+                                  </div>
+                                </td> -->
+                                <!-- <td  *ngIf="orderSelected.challan_generated">{{product.dispatched}}
+                                    <div >
+                                        <label>Generated By:-</label>
+                                      "{{orderSelected?.remarks?.generateChallan?.generatedBy?.full_name}}"
+                                    </div>
+                                    <div >
+                                        <label>Generated At:-</label>
+                                      {{orderSelected?.remarks?.generateChallan?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.generateChallan?.at | date: 'h:mm a'}}"
+                                    </div>
+                                    <div *ngIf="showChallanNotes">
+                                        <label>Dispatched Notes:-</label>
+                                        "{{ChallanNotes}}"
+                                      </div>
+                                      <div class="form-group" *ngIf="showChallanImage">
+                                    <div class="col-sm-3 col-md-2 col-lg text-center" >
+                                    <div class="avatar avatar-xxl "><img src="{{challanImage}}" class="rounded-circle" alt=""></div>
+                                    </div>
+                                      </div>
+    
+                                </td> -->
+                                <td *ngIf="!orderSelected.rorder.recieved && orderSelected.rorder.status == 'Challan Accepted' " >
+                                  <input type="text"  (change)="recievedQuantityEnteredReturnOrder($event,i)"
+                                            class="form-control col-lg-8" [ngModel]="orderSelected.rorder.products[i].requested">
+                                            <!-- <input type="text"  
+                                            class="form-control col-lg-8" (change)="notesRecieved($event)"
+                                            placeholder="Notes" >
+                                           <input type="file"  
+                                           class="col-lg-" (change)="imageRecieved($event)" > -->
+                                </td>
+                                <td  *ngIf="orderSelected.rorder.recieved">{{product.recieved}}
+    
+                                    <!-- <div >
+                                        <label>Recieved By:-</label>
+                                      "{{orderSelected?.remarks?.recieveOrder?.recievedBy?.full_name}}"
+                                    </div>
+                                    <div >
+                                        <label>Recieved At:-</label>
+                                      "{{orderSelected?.remarks?.recieveOrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.recieveOrder?.at | date: 'h:mm a'}}"
+                                    </div>
+    
+                                    <div *ngIf="showRecieveOrderNotes">
+                                        <label>Recieved Notes:-</label>
+                                        "{{recieveOrderNotes}}"
+                                      </div>
+                                      <div class="form-group" *ngIf="showRecieveOrderImage">
+                                    <div class="col-sm-3 col-md-2 col-lg text-center" >
+                                    <div class="avatar avatar-xxl "><img src="{{recieveOrderImage}}" class="rounded-circle" alt=""></div>
+                                    </div>
+                                      </div> -->
+                                </td>
+                                <td *ngIf="!orderSelected.rorder.billed && orderSelected.rorder.status == 'Recieved' ">
+                                  <input type="text"  (change)="billedQuantityEnteredReturnOrder($event,i)"
+                                            class="form-control col-lg-10" [ngModel]="orderSelected.rorder.products[i].recieved">
+                                            <!-- <input type="text"  
+                                            class="form-control col-lg-10" (change)="notesBilled($event)"
+                                            placeholder="Notes" >
+                                           <input type="file"  
+                                           class="col-lg-10" (change)="imageBilled($event)" > -->
+                                </td>
+                                <td  *ngIf="orderSelected.rorder.billed">{{product.billed}}
+    
+                                    <!-- <div >
+                                        <label>Billed By:-</label>
+                                      "{{orderSelected?.remarks?.billOrder?.billedBy?.full_name}}"
+                                    </div>
+                                    <div >
+                                        <label>Billed At:-</label>
+                                      "{{orderSelected?.remarks?.billOrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.billOrder?.at | date: 'h:mm a'}}"
+                                    </div>
+    
+                                    <div *ngIf="showBillOrderNotes">
+                                        <label>Billed Notes:-</label>
+                                        "{{billOrderNotes}}"
+                                      </div>
+                                      <div class="form-group" *ngIf="showBillOrderImage">
+                                    <div class="col-sm-3 col-md-2 col-lg text-center" >
+                                    <div class="avatar avatar-xxl "><img src="{{billOrderImage}}" class="rounded-circle" alt=""></div>
+                                    </div>
+                                      </div> -->
+    
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+
+
+
+
+
+
+
+
+
+
+
+
+                      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     
                     <div class="row justify-content-between">
                       <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-40 mg-sm-t-0">
@@ -376,8 +732,27 @@
             <button class="btn btn-primary tx-13 mx-1" (click)="asde()" *ngIf="orderSelected.status == 'Pending' ">Accept Order</button>
             <button *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' " class="btn btn-primary tx-13 mx-1"
               (click)="asdef()">Recieved Challan Quantity</button>
-              <button *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' "  class="btn btn-primary tx-13 mx-1"
+              <button *ngIf=" orderSelected && !orderSelected.billed && orderSelected.status == 'Recieved' "  class="btn btn-primary tx-13 mx-1"
               (click)="billProductQuantity()">Bill Product Quantity</button>
+             
+              <!-- <div *ngIf="orderSelected.rorder"> -->
+              <button *ngIf=" orderSelected && !orderSelected.rorder_placed && orderSelected.status == 'Billed' "  class="btn btn-primary tx-13 mx-1"
+               data-toggle="modal" (click)="closeInvoiceModal()"
+              data-target="#returnOrdermodal">Generate Return Order</button>
+            <!-- </div> -->
+              <div *ngIf="orderSelected.rorder">
+              <button *ngIf=" !orderSelected.rorder.challan_generated && orderSelected.rorder.status == 'Pending' " class="btn btn-primary tx-13 mx-1"
+               data-toggle="modal" (click)="generateReturnOrderChallan()"
+              data-target="#returnOrderChallanModal">Generate Return Order Challan</button>
+            </div>
+            <div *ngIf="orderSelected.rorder">
+              <button *ngIf=" !orderSelected.rorder.recieved && orderSelected.rorder.status == 'Challan Accepted'" class="btn btn-primary tx-13 mx-1"
+               data-toggle="modal" (click)="asdefqw()">Recieve Return Order Challan</button>
+              </div>
+              <div *ngIf="orderSelected.rorder">
+               <button *ngIf=" !orderSelected.rorder.billed && orderSelected.rorder.status == 'Recieved' " class="btn btn-primary tx-13 mx-1"
+               data-toggle="modal" (click)="billProductQuantityReturnOrder()">Bill Return Order Challan</button>
+              </div>
             <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
           </div>
         </div>
@@ -518,3 +893,238 @@
       <!-- </div> -->
       
     </div>
+
+
+
+
+    <!-- Return Order Form -->
+    <div class="modal fade" id="returnOrdermodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div class="modal-content tx-14">
+            <div class="modal-header text-center">
+              <h6 class="modal-title" *ngIf="editing">Edit Order</h6>
+              <h6 class="modal-title  h4" *ngIf="!editing">Add New Return Order</h6>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form [formGroup]="returnOrderPlacedForm" (ngSubmit)="onSubmitReturnOrder()">
+                  <div class="divider-text">Select Organisation to Send Order </div>
+                  <div class="form-row">
+                      <div class="form-group col-md-4 offset-md-4">
+                        <label for="">Order To</label>
+                        <select formControlName="placed_to" class="form-control">
+                          <option selected disabled>Select User</option>
+                          <option [ngValue]="user._id" *ngFor="let user of allFarms;let i=index">{{user.full_name}}</option>
+                        </select>
+                        <div *ngIf="submitted && f2.placed_to.errors" class="invalid-feedback">
+                          <div *ngIf="f2.placed_to.errors.required">User is required</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="divider-text">Select And Add Products </div>
+                    
+              <div class="col-md-4 offset-md-5 mt-2">
+                <button type="button" class="btn btn-success" (click)="addProductsReturnOrder()">Add New Product</button>
+            </div>
+                    <div class="form-row">
+                    <div class="col-md-8  offset-md-3">
+                  <div formArrayName="products">
+                    <div *ngFor="let product of productsFormsReturnOrder.controls; let i=index" [formGroupName]="i">
+                        <div class="form-row">
+                                <div class="col-md-4">
+                                  <div>
+                                    <label for="period">Product</label>
+                                    <select name="product" formControlName="product" class="form-control">
+                                      <option selected disabled>Select Product</option>
+                                      <option [ngValue]="product._id" *ngFor="let product of allproducts;let i=index">{{product.name}}
+                                      </option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div class="col-md-4">
+                                  <div>
+                                    <label for="period">Quantity</label>
+                                    <input type="number" name="from" id="from" class="form-control" formControlName="requested">
+                                  </div>
+                                </div>
+                                <div class="col-md-1">
+                                  <label for="period">Remove</label>
+                                  <button class="form-control" (click)="deleteProductsReturnOrder(i)">-</button>
+                                </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+              
+                <div class="divider-text">Add Extra Note</div>
+                <div class="form-row offset-md-4">
+                    <input type="text" placeholder="Optinal Notes here" class="form-control" formControlName="notes">
+                  </div>
+                    <br>
+                    <div class=" text-center">
+                    <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+                    </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+
+      <!-- Return Order Challan Modal -->
+
+
+
+      <div id="returnOrderChallanModal" class="modal fade" role="dialog" tabindex="-1"  aria-hidden="true" *ngIf="orderSelected">
+        <div *ngIf="orderSelected.rorder">
+          <div class="modal-dialog modal-xl">
+            <!-- Modal content -->
+            <div class="modal-content tx-14">
+              <div class="modal-header">
+                  <div class="d-sm-flex align-items-center justify-content-between">
+                      <div>
+                        <h4 class="mg-b-5">Challan Details</h4>
+                        <!-- <p class="mg-b-0 tx-color-03">Due on {{orderSelected?.order_date | date : 'dd/MM/yy'}}</p> -->
+                      </div>
+                    </div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+              </div>
+              <div class="modal-body">
+                  <div class="content tx-13">
+                      <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed From</label>
+                            <h6 class="tx-15 mg-b-10">{{orderSelected?.rorder?.placed_by?.full_name}}</h6>
+                            <p class="mg-b-0">{{orderSelected?.rorder?.placed_by?.email}}</p>
+                          </div><!-- col -->
+                          <div class="col-sm-6 tx-right d-none d-md-block">
+                            <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{orderSelected?.rorder?.rorder_date | date : 'dd/MM/yy'}},{{orderSelected?.rorder?.rorder_date | date : 'h:mm a'}}</label>
+                            <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{orderSelected?.rorder?.rorder_id}}</h1>
+                          </div><!-- col -->
+                          <div class="col-sm-6 col-lg-8 mg-t-40 mg-sm-t-0 mg-md-t-40">
+                            <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Billed To</label>
+                            <h6 class="tx-15 mg-b-10">{{orderSelected?.rorder?.placed_to?.full_name}}</h6>
+                            <p class="mg-b-0">{{orderSelected?.rorder?.placed_to?.email}}</p>
+                          </div><!-- col -->
+                          <!-- <div class="col-sm-6 col-lg-4 mg-t-40">
+                            <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Invoice Information</label>
+                            <ul class="list-unstyled lh-7">
+                              <li class="d-flex justify-content-between">
+                                <span>Invoice Number</span>
+                                <span>#{{orderSelected?.order_id}}</span>
+                              </li>
+                              <li class="d-flex justify-content-between">
+                                <span>Order Date</span>
+                                <span>{{orderSelected?.order_date | date : 'dd/MM/yy'}}</span>
+                              </li>
+                            </ul>
+                          </div>col -->
+                        </div><!-- row -->
+                
+                        <div class="table-responsive mg-t-40">
+                          <table class="table table-invoice bd-b">
+                            <thead>
+                              <tr>
+                                <th class="wd-20p">Product</th>
+                                <th class="wd-20p">Brand</th>
+                                <th class="wd-20p">Requested Quantity</th>
+                                <!-- <th class="wd-20p">Accepted Quantity</th> -->
+                                <!-- <th class="wd-20p" *ngIf="orderSelected.challan_generated">Dispatched Quantity</th> -->
+                                <!-- <th class="wd-20p" *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' ">Recieved Quantity</th>
+                                <th class="wd-20p" *ngIf="orderSelected.recieved && orderSelected.status != 'Challan Accepted' ">Recieved Quantity</th>
+                                <th class="wd-20p" *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' ">Billed Quantity</th>
+                                <th class="wd-20p" *ngIf="orderSelected.billed && orderSelected.status != 'Recieved' ">Billed Quantity</th> -->
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let product of orderSelected.rorder.products;let i=index">
+                                <td class="tx-nowrap">{{product?.product?.name}}</td>
+                                <td class="d-none d-sm-table-cell tx-color-03">{{product?.product?.brand?.name}}</td>
+                                <td class="tx-nowrap">{{product.requested}}</td>
+                                <!-- <td class="tx-center" *ngIf="orderSelected.status == 'Pending' ">
+                                    <input type="text"  
+                                    class="form-control col-lg-9" (change)="asd($event,i)"
+                                    placeholder="Accepted Quantity">
+                                </td> -->
+                                <!-- <td class="tx-nowrap" *ngIf="orderSelected.status != 'Pending' ">{{product.accepted}}</td> -->
+                                <!-- <td class="tx-nowrap" *ngIf="orderSelected.challan_generated">{{product.dispatched}}</td> -->
+                                <!-- <td *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' " >
+                                  <input type="text"  (change)="recievedQuantityEntered($event,i)"
+                                            class="form-control col-lg-12" [ngModel]="orderSelected.products[i].requested">
+                                </td> -->
+                                <!-- <td class="tx-nowrap" *ngIf="orderSelected.recieved">{{product.recieved}}</td> -->
+                                <!-- <td *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' ">
+                                  <input type="text"  (change)="billedQuantityEntered($event,i)" [ngModel]="orderSelected.products[i].recieved"
+                                            class="form-control col-lg-12">
+                                </td> -->
+                                <!-- <td class="tx-nowrap" *ngIf="orderSelected.billed">{{product.billed}}</td> -->
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        
+                        <div class="row justify-content-between">
+                          <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-40 mg-sm-t-0">
+                            <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Notes</label>
+                            <p>{{orderSelected?.rorder?.notes}}</p>
+                          </div><!-- col -->
+                          
+                        </div><!-- row -->
+                        <div class="row" *ngIf="!orderSelected.rorder.challan_generated ">
+                          <div class="col">
+                            <div class="form-row">
+                              <div class="col-md-4"><label for="" class="label label-success">Vehicle Number</label></div>
+                              <div class="col-md-8">
+                                <select class="form-control" (change)="getVehicle2($event)">
+                                  <option selected disabled>Select vehicle Number</option>
+                                  <option [ngValue]="vehicle._id" *ngFor="let vehicle of allVehicle;let i=index">
+                                    {{vehicle.number}}</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="form-row">
+                              <div class="col-md-4"><label for="" class="label label-success">Driver Name</label></div>
+                              <div class="col-md-8">
+                                <select class="form-control" (change)="getDriver($event)">
+                                  <option selected disabled>Select Driver Name</option>
+                                  <option [ngValue]="driver._id" *ngFor="let driver of alldriver;let i=index">{{driver.full_name}}
+                                  </option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div><!-- container -->
+                    </div><!-- content -->
+              </div>
+              <div class="modal-footer">
+                  <button class="btn btn-primary tx-13 mx-1"  *ngIf="!orderSelected.rorder.challan_generated "  (click)="challanGenerateReturnOrder2()">
+                    <i data-feather="credit-card" class="mg-r-5" ></i> Generate Return Order Challan</button>
+                <!-- <button class="btn btn-primary tx-13 mx-1" (click)="asde()" *ngIf="orderSelected.status == 'Pending' ">Accept Order</button> -->
+                <!-- <button *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' " class="btn btn-primary tx-13 mx-1"
+                  (click)="asdef()">Recieved Challan Quantity</button> -->
+                  <!-- <button *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' "  class="btn btn-primary tx-13 mx-1"
+                  (click)="billProductQuantity()">Bill Product Quantity</button> -->
+                <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        
+        
+        
+         

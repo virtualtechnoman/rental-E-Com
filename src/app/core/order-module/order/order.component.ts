@@ -100,7 +100,12 @@ export class OrderComponent implements OnInit {
   showChallanImage:boolean=false
   showChallanNotes:boolean=false
   requestedOrderNotes: any;
-  showRequestedOrderNotes:boolean=false
+  showRequestedOrderNotes:boolean=false;
+  returnOrderPlacedForm:FormGroup;
+  allReturnOrders:any[]=[];
+  challanFormReturnOrder:FormGroup;
+  recievedValueFormReturnOrder:FormGroup;
+  billedValueFormReturnOrder:FormGroup
   constructor(private productService: ProductsService, private fb: FormBuilder, private toastr: ToastrService,
     private authService: AuthService, private orderService: OrderService, private userService: UserService,private vehicleService: TruckService
   ) {
@@ -111,6 +116,7 @@ export class OrderComponent implements OnInit {
     this.getVehicle();
     this.getDrivers();
     this.getFarms();
+    this.getReturnOrders()
   }
 
   ngOnInit() {
@@ -132,7 +138,11 @@ export class OrderComponent implements OnInit {
     this.billedValueForm=this.fb.group({
       billed:this.fb.array([])
     })
-
+    this.returnOrderPlacedForm = this.fb.group({
+      placed_to: ['',Validators.required],
+      notes:"",
+      products: this.fb.array([])
+    })
     this.challanForm = this.fb.group({
       dispatch_processing_unit: ['', Validators.required],
       products:this.fb.array([]),
@@ -140,6 +150,20 @@ export class OrderComponent implements OnInit {
       driver: ['', Validators.required],  
       departure: ['', Validators.required],
     });
+    this.challanFormReturnOrder = this.fb.group({
+      dispatch_processing_unit: ['', Validators.required],
+      
+      vehicle: ['', Validators.required],
+      driver: ['', Validators.required],  
+      departure: ['', Validators.required],
+    });
+    this.recievedValueFormReturnOrder=this.fb.group({
+      recieved:this.fb.array([])
+    })
+    this.billedValueFormReturnOrder=this.fb.group({
+      billed:this.fb.array([])
+    })
+
     this.dtOptions = {
       pagingType: 'full_numbers',
       lengthMenu: [
@@ -161,6 +185,163 @@ export class OrderComponent implements OnInit {
         'excel',
       ]
     };
+  }
+
+  get productsFormsReturnOrder() {
+    
+    return this.returnOrderPlacedForm.get('products') as FormArray;
+    
+  }
+
+  addProductsReturnOrder() {
+
+    const product = this.fb.group({ 
+      product: [],
+      requested: []
+    })
+  
+    this.productsFormsReturnOrder.push(product);
+  }
+
+  deleteProductsReturnOrder(i) {
+    this.productsFormsReturnOrder.removeAt(i)
+  }
+
+  closeInvoiceModal(){
+    jQuery('#invoiceModal').modal('hide');
+  }
+
+  onSubmitReturnOrder(){
+    if (this.returnOrderPlacedForm.invalid) {
+      return;
+    }
+    if(this.returnOrderPlacedForm.value.notes==null){
+      this.returnOrderPlacedForm.value.notes=""
+    }
+    this.returnOrderPlacedForm.value.order=this.orderSelected._id
+    console.log(this.returnOrderPlacedForm.value)
+    this.orderService.addReturnOrder(this.returnOrderPlacedForm.value).subscribe((res: ResponseModel) => {
+      console.log(res.data);
+      jQuery('#returnOrdermodal').modal('hide');
+      this.toastr.success('Return Order Added!', 'Success!');
+      this.allReturnOrders.push(res.data);
+      console.log(res.data)
+      this.allOrders.splice(this.orderIndex,1,res.data)
+      this.resetFormReturnOrder()
+  });
+  }
+
+  generateReturnOrderChallan(){
+    jQuery('#invoiceModal').modal('hide');
+  }
+
+  challanGenerateReturnOrder2(){
+    const date=new Date()
+    this.challanFormReturnOrder.controls['vehicle'].setValue(this.challanVehicle._id)
+    this.challanFormReturnOrder.controls['driver'].setValue(this.challanDriver._id)
+    this.challanFormReturnOrder.controls['departure'].setValue(date)
+    this.challanFormReturnOrder.controls['dispatch_processing_unit'].setValue(this.orderSelected.rorder.placed_to._id)
+    console.log(this.challanFormReturnOrder.value)
+
+    this.orderService.addReturnOrderChallan(this.challanFormReturnOrder.value,this.orderSelected.rorder._id).subscribe((res: ResponseModel) => {
+      this.toastr.success('Challan Generated successfully', 'Accepted');
+      console.log(res.data)
+      this.allOrders.splice(this.orderIndex,1,res.data.order)
+      jQuery('#returnOrderChallanModal').modal('hide');
+    });
+
+    
+  }
+
+  recievedQuantityEnteredReturnOrder(event:any,i){
+    if((event.target.value==Number(event.target.value)) && (event.target.value<=this.orderSelected.rorder.products[i].requested)){
+    var arr;
+    arr=event.target.value;
+    this.recievedValueFormReturnOrder.value.recieved[i]=arr
+    this.qwea();
+    }else{
+      alert("Enter Recieved Quantity Again")
+    }
+  }
+
+  qwea(){
+    for(var i=0;i<this.recievedValueFormReturnOrder.value.recieved.length;i++){
+      this.orderSelected.rorder.products[i].recieved=Number(this.recievedValueFormReturnOrder.value.recieved[i])
+    }
+  
+  }
+  
+  asdefqw(){
+    const order=<any> new Object();
+    order.products=this.orderSelected.rorder.products
+    for(var i=0;i<this.orderSelected.rorder.products.length;i++){
+      order.products[i].product=this.orderSelected.rorder.products[i].product._id;
+      if(order.products[i].recieved==0){
+        order.products[i].recieved=order.products[i].requested
+        }
+      delete order.products[i].accepted;
+      delete order.products[i].dispatched;
+      delete order.products[i].requested;
+      delete order.products[i]._id;
+      delete order.products[i].billed;
+      
+    }
+    console.log(order)
+    console.log(order,this.orderSelected.rorder._id)
+    this.orderService.recievedQuantityStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
+      console.log(res.data)
+      jQuery('#invoiceModal').modal('hide');
+      this.toastr.success('Recieved Order Challan!', 'Success!');
+      this.allOrders.splice(this.orderIndex,1,res.data)
+    })
+  }
+
+  billedQuantityEnteredReturnOrder(event:any,i){
+    if((event.target.value==Number(event.target.value)) && (event.target.value<=this.orderSelected.rorder.products[i].requested)){
+    var arr;
+    arr=event.target.value;
+    this.billedValueFormReturnOrder.value.billed[i]=arr
+    this.billedArrayReturnOrder();
+    }else{
+      alert("Enter Billing Quantity Again")
+    }
+  }
+
+  billedArrayReturnOrder(){
+    for(var i=0;i<this.billedValueFormReturnOrder.value.billed.length;i++){
+      this.orderSelected.rorder.products[i].billed=Number(this.billedValueFormReturnOrder.value.billed[i])
+    }
+  }
+
+  billProductQuantityReturnOrder(){
+    const order=<any> new Object();
+    order.products=this.orderSelected.rorder.products
+    for(var i=0;i<this.orderSelected.rorder.products.length;i++){
+      order.products[i].product=this.orderSelected.rorder.products[i].product._id
+      if(order.products[i].billed==0){
+        order.products[i].billed=order.products[i].recieved
+        }
+      delete order.products[i].accepted;
+      delete order.products[i].dispatched;
+      delete order.products[i].recieved;
+      delete order.products[i]._id;
+      delete order.products[i].requested;
+      
+    }
+    console.log(order)
+    this.orderService.recievedBillStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
+      jQuery('#invoiceModal').modal('hide');
+      console.log(res.data)
+      this.allOrders.splice(this.orderIndex,1,res.data)
+      this.toastr.success('Billed Challan!', 'Success!');
+    })
+  }
+
+  getReturnOrders() {
+    this.orderService.getAllReturnOrders().subscribe((res: ResponseModel) => {
+        this.allReturnOrders = res.data;
+        console.log(res.data);
+    });
   }
 
   getFarms(){
@@ -367,7 +548,7 @@ export class OrderComponent implements OnInit {
     this.productsForms.removeAt(i)
   }
   get f() { return this.orderPlacedForm.controls; }
-  get f2() { return this.challanForm.controls; }
+  get f2() { return this.returnOrderPlacedForm.controls; }
 
   onSubmit(){
     this.submitted = true;
@@ -1040,5 +1221,9 @@ if(this.orderSelected){
       this.toastr.success('Billed Challan!', 'Success!');
     })
   }
+  }
+  resetFormReturnOrder(){
+    this.submitted = false;
+    this.returnOrderPlacedForm.reset();
   }
 }
