@@ -17,6 +17,7 @@ const UserSchema = new mongoose.Schema({
   landmark: {type:String},
   street_address: {type:String},
   city: {type:String},
+  area: {type: mongoose.Schema.Types.ObjectId, ref: "area"},
   role: { type: mongoose.Schema.Types.ObjectId, ref: "user_role" },
   latitude:String,
   longitutde:String,
@@ -24,6 +25,7 @@ const UserSchema = new mongoose.Schema({
   dob: { type: Date },
   profile_picture:{type:String},
   anniversary: { type: Date },
+  route:{type: mongoose.Schema.Types.ObjectId, ref: "route"},
   //for driver =>
   dl_number:{type:String}
 }, {

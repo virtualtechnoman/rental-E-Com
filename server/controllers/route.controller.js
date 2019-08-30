@@ -11,12 +11,18 @@ const routeUpdateSchema = Joi.object({
     delivery_boy:Joi.string().optional(),
     is_active:Joi.boolean().optional()
 })
+const updateCustomerRoute = Joi.object({
+    route:Joi.string().required(),
+    customers:Joi.array().items(Joi.string().required()).required()
+})
 
 module.exports = {
     verifyCreate,
-    verifyUpdate
+    verifyUpdate,
+    verifyUpdateCustomer
 }
 
 function verifyCreate(route) { return helper.validator(route, routeCreateSchema) }
 function verifyUpdate(route) { return helper.validator(route, routeUpdateSchema) }
+function verifyUpdateCustomer(route) { return helper.validator(route, updateCustomerRoute) }
 

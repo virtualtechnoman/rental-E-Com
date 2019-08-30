@@ -16,6 +16,7 @@ export class CustomersService {
   url4 = "/api/customerassign"
   url5 = "/api/sectors";
   url6 = '/api/corder/all';
+  url7= '/api/customer/addresswithnoroute'
   constructor(private http: HttpClient,private tokenService:TokenStorage) { }
 
   getAllCustomers() {
@@ -116,4 +117,12 @@ export class CustomersService {
   getAllCustomersOrders() {
     return this.http.get(this.url6 + '/', { headers: this.headers })
   }
+
+  // Get Customer With No Routes
+
+  getAllCustomersWithNoRotes() {
+    return this.http.get(this.url7 + '/', { headers: this.headers })
+  }
+
+
 }

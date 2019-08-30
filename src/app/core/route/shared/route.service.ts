@@ -16,6 +16,7 @@ import { TokenStorage } from '../../../auth/token.storage';
       constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
       url='/api/route';
+      url2='/api/customer/addresswithnoroute'
       url4='/api/user/dboy';
 
     // Rotes APIS
@@ -43,4 +44,9 @@ import { TokenStorage } from '../../../auth/token.storage';
         return this.http.get(this.url4 + '/' , {headers:this.headers})
     }
     
+      // Get Customer With No Routes
+
+  getAllCustomersWithNoRoutes() {
+    return this.http.get(this.url2 + '/', { headers: this.headers })
+  }
   } 

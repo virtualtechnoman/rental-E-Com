@@ -1,4 +1,5 @@
 const Route = require("../models/route.model");
+const User = require("../models/user.model");
 const RouteController = require("../controllers/route.controller");
 const router = require("express").Router();
 const isEmpty = require('../utils/is-empty');
@@ -37,8 +38,23 @@ router.post('/', authorizePrivilege("ADD_NEW_ROUTE"), async (req, res) => {
     });
 });
 
+//Update given customers routes
+router.put("/customer",(req,res)=>{
+    let result = RouteController.verifyUpdateCustomer(req.body);
+    if(isEmpty(result.data)){
+        User.updateMany({_id:{$in:customers}},{$set:{route:result.data.route}}).exec().then(data=>{
+            res.json({message:"Selected recordsd updated successfully", data, status:200, errors:false})
+        }).catch(err=>{
+            console.log(err);
+            res.status(500).json({status:500, data:null, message:"Error while updating records", errors:true});
+        })
+    }else{
+        res.status(400).json({ status: 400, data: null, errors: true, message: "Fields required" });
+    }
+})
+
 //Update a route
-router.put("/:id", authorizePrivilege("UPDATE_ROUTE"), (req, res) => {
+router.put("/id/:id", authorizePrivilege("UPDATE_ROUTE"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         let result = RouteController.verifyUpdate(req.body);
         if (!isEmpty(result.errors)) {

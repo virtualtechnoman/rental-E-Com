@@ -63,6 +63,10 @@ const orderUpdateStatusSchema = Joi.object({
     // notes: Joi.optional().allow(''),
     status: Joi.string().required()
 })
+const orderBetweenDates = Joi.object({
+    date1:Joi.date().required(),
+    date2:Joi.date().required()
+})
 const orderRecievedSchema = Joi.object({
     products: Joi.array().items({
         product: Joi.string().required(),
@@ -90,10 +94,12 @@ module.exports = {
     // verifyUpdateStatus,
     verifyAccept,
     verifyRecieve,
-    verifyBill
+    verifyBill,
+    verifyDateBetween
 }
 function verifyCreate(order) { return helper.validator(order, orderCreateSchema) }
 // function verifyUpdateStatus(order) { return helper.validator(order, orderUpdateStatusSchema) }
 function verifyAccept(order) { return helper.validator(order, orderAcceptSchema) }
 function verifyRecieve(order) { return helper.validator(order, orderRecievedSchema) }
 function verifyBill(order) { return helper.validator(order, orderBilledSchema) }
+function verifyDateBetween(order) { return helper.validator(order, orderBetweenDates) }
