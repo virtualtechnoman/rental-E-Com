@@ -29,6 +29,7 @@ export class AppComponent implements OnInit, OnChanges {
     console.log('hiii', this.array);
     this.registerSvgIcons();
     this.getData();
+    this.user = localStorage.getItem('user')
   }
 
   ngOnChanges() {
@@ -41,8 +42,13 @@ export class AppComponent implements OnInit, OnChanges {
 
   public ngOnInit() {
     this.authService.me().subscribe(data => {
-      console.log(data);
+      // console.log(data);
+      if(this.user){
       this.user = data;
+      console.log(this.user.full_name)
+      localStorage.setItem('user', this.user.full_name)
+      }
+
       // this.get(data.user.id);
     });
     // update this.user after login/register/logout
