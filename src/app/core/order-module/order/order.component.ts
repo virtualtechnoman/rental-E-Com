@@ -11,6 +11,7 @@ import { ResponseModel } from '../../../shared/shared.model';
 import { UserService } from '../../user/shared/user-service.service';
 import { TruckService } from '../../truck/shared/truck.service';
 import { VehicleModel, DriverModel } from '../../truck/shared/truck.model';
+import { getMatIconFailedToSanitizeLiteralError } from '@angular/material';
 
 @Component({
   selector: 'app-order',
@@ -106,6 +107,24 @@ export class OrderComponent implements OnInit {
   challanFormReturnOrder:FormGroup;
   recievedValueFormReturnOrder:FormGroup;
   billedValueFormReturnOrder:FormGroup
+  imageRecievedFieldReturnOrder: any;
+  noteRecievedFieldReturnOrder:any
+  keyRecievedFieldReturnOrder:any;
+  urlRecievedFieldReturnOrder:any;
+  noteBilledFieldReturnOrder:any;
+  imageBilledFieldReturnOrder:any;
+  keyBilledFieldReturnOrder:any;
+  urlBilledFieldReturnOrder:any;
+  billOrderImageReturnOrder: string;
+  billOrderNotesReturnOrder:any;
+  showBillOrderImageReturnOrder:boolean=false;
+  showBillOrderNotesReturnOrder:boolean=false;
+  recieveOrderImageReturnOrder: string;
+  recieveOrderNotesReturnOrder:any;
+  showRecieveOrderImageReturnOrder:boolean=false;
+  showRecieveOrderNotesReturnOrder:boolean=false;
+  requestedNotes: any;
+  showRequestedNotes:boolean=false;
   constructor(private productService: ProductsService, private fb: FormBuilder, private toastr: ToastrService,
     private authService: AuthService, private orderService: OrderService, private userService: UserService,private vehicleService: TruckService
   ) {
@@ -286,14 +305,80 @@ export class OrderComponent implements OnInit {
       delete order.products[i].billed;
       
     }
+    
     console.log(order)
-    console.log(order,this.orderSelected.rorder._id)
-    this.orderService.recievedQuantityStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
-      console.log(res.data)
+
+    if(this.imageRecievedFieldReturnOrder){
+      this.orderService.getUrl().subscribe((res:ResponseModel)=>{
+        // console.log(res.data)
+        this.keyRecievedFieldReturnOrder=res.data.key;
+        this.urlRecievedFieldReturnOrder=res.data.url;
+          
+      if(this.urlRecievedFieldReturnOrder){
+        this.orderService.sendUrl(this.urlRecievedFieldReturnOrder,this.imageRecievedFieldReturnOrder).then(resp=>{
+          if(resp.status == 200 ){
+            // this.addVehicle(this.VehicleForm.value);
+            if(this.noteRecievedFieldReturnOrder){
+              order['remarks.recieveROrder']={
+                image:this.keyRecievedFieldReturnOrder,
+                note:this.noteRecievedFieldReturnOrder
+              }
+              console.log(order)
+              this.orderService.recievedQuantityStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
+                jQuery('#invoiceModal').modal('hide');
+                this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
+                // console.log(res.data)
+                this.allOrders.splice(this.orderIndex,1,res.data)
+              })
+            }else{
+            order['remarks.recieveROrder']={
+              image:this.keyRecievedFieldReturnOrder,
+            }
+            console.log(order)
+            this.orderService.recievedQuantityStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
+              jQuery('#invoiceModal').modal('hide');
+              this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
+              // console.log(res.data)
+              this.allOrders.splice(this.orderIndex,1,res.data)
+            })
+          }
+          }
+        })
+      }
+      })
+    }
+    if(!this.imageRecievedFieldReturnOrder){
+      if(this.noteRecievedFieldReturnOrder){
+        order['remarks.recieveROrder']={
+          note:this.noteRecievedFieldReturnOrder
+        }
+        console.log(order)
+        this.orderService.recievedQuantityStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
+          jQuery('#invoiceModal').modal('hide');
+          this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
+          console.log(res.data)
+          this.allOrders.splice(this.orderIndex,1,res.data)
+        })
+      }
+    }
+
+    // console.log(order)
+    if(!this.imageRecievedFieldReturnOrder && !this.noteRecievedFieldReturnOrder){
+      console.log(order)
+    this.orderService.addAcceptedOrder(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
       jQuery('#invoiceModal').modal('hide');
-      this.toastr.success('Recieved Order Challan!', 'Success!');
+      this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
+      // console.log(res.data)
       this.allOrders.splice(this.orderIndex,1,res.data)
     })
+  }
+
+    // this.orderService.recievedQuantityStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
+    //   console.log(res.data)
+    //   jQuery('#invoiceModal').modal('hide');
+    //   this.toastr.success('Recieved Order Challan!', 'Success!');
+    //   this.allOrders.splice(this.orderIndex,1,res.data)
+    // })
   }
 
   billedQuantityEnteredReturnOrder(event:any,i){
@@ -328,13 +413,81 @@ export class OrderComponent implements OnInit {
       delete order.products[i].requested;
       
     }
+
+    
     console.log(order)
-    this.orderService.recievedBillStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
-      jQuery('#invoiceModal').modal('hide');
-      console.log(res.data)
-      this.allOrders.splice(this.orderIndex,1,res.data)
-      this.toastr.success('Billed Challan!', 'Success!');
-    })
+
+    if(this.imageBilledFieldReturnOrder){
+      this.orderService.getUrl().subscribe((res:ResponseModel)=>{
+        // console.log(res.data)
+        this.keyBilledFieldReturnOrder=res.data.key;
+        this.urlBilledFieldReturnOrder=res.data.url;
+          
+      if(this.urlBilledFieldReturnOrder){
+        this.orderService.sendUrl(this.urlBilledFieldReturnOrder,this.imageBilledFieldReturnOrder).then(resp=>{
+          if(resp.status == 200 ){
+            // this.addVehicle(this.VehicleForm.value);
+            if(this.noteBilledFieldReturnOrder){
+              order['remarks.billROrder']={
+                image:this.keyBilledFieldReturnOrder,
+                note:this.noteBilledFieldReturnOrder
+              }
+              console.log(order)
+              this.orderService.recievedBillStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
+                jQuery('#invoiceModal').modal('hide');
+                console.log(res.data)
+                this.allOrders.splice(this.orderIndex,1,res.data)
+                this.toastr.success('Billed Challan!', 'Success!');
+              })
+              // this.orderService.recievedBillStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
+              //   jQuery('#invoiceModal').modal('hide');
+              //   console.log(res.data)
+              //   this.allOrders.splice(this.orderIndex,1,res.data)
+              //   this.toastr.success('Billed Challan!', 'Success!');
+              // })
+            }else{
+            order['remarks.billROrder']={
+              image:this.keyBilledFieldReturnOrder
+            }
+            console.log(order)
+            this.orderService.recievedBillStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
+              jQuery('#invoiceModal').modal('hide');
+              console.log(res.data)
+              this.allOrders.splice(this.orderIndex,1,res.data)
+              this.toastr.success('Billed Challan!', 'Success!');
+            })
+          }
+          }
+        })
+      }
+      })
+    }
+    if(!this.imageBilledFieldReturnOrder){
+      if(this.noteBilledFieldReturnOrder){
+        order['remarks.billROrder']={
+          note:this.noteBilledFieldReturnOrder
+        }
+        console.log(order)
+        this.orderService.recievedBillStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
+          jQuery('#invoiceModal').modal('hide');
+          console.log(res.data)
+          this.allOrders.splice(this.orderIndex,1,res.data)
+          this.toastr.success('Billed Challan!', 'Success!');
+        })
+      }
+    }
+
+    // console.log(order)
+    if(!this.imageBilledFieldReturnOrder && !this.noteBilledFieldReturnOrder){
+      console.log(order)
+      this.orderService.recievedBillStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
+        jQuery('#invoiceModal').modal('hide');
+        console.log(res.data)
+        this.allOrders.splice(this.orderIndex,1,res.data)
+        this.toastr.success('Billed Challan!', 'Success!');
+      })
+  }
+
   }
 
   getReturnOrders() {
@@ -409,6 +562,30 @@ export class OrderComponent implements OnInit {
 
   imageBilled(event){
     this.imageBilledField=event.target.files[0]
+    // console.log(this.imageRecievedField)
+  }
+
+  notesRecievedReturnOrder(event){
+    if(event.target.value){
+      this.noteRecievedFieldReturnOrder=event.target.value
+    }
+    // console.log(this.noteRecievedField)
+  }
+
+  imageRecievedReturnOrder(event){
+    this.imageRecievedFieldReturnOrder=event.target.files[0]
+    // console.log(this.imageRecievedField)
+  }
+
+  notesBilledReturnOrder(event){
+    if(event.target.value){
+      this.noteBilledFieldReturnOrder=event.target.value
+    }
+    // console.log(this.noteRecievedField)
+  }
+
+  imageBilledReturnOrder(event){
+    this.imageBilledFieldReturnOrder=event.target.files[0]
     // console.log(this.imageRecievedField)
   }
 
@@ -664,6 +841,64 @@ if(this.orderSelected){
   }
 }
 }
+
+
+if(this.orderSelected){
+  if(this.orderSelected.rorder){
+  if(this.orderSelected.rorder.remarks){
+  if(this.orderSelected.rorder.remarks.billROrder){
+  if(this.orderSelected.rorder.remarks.billROrder.image){
+    this.billOrderImageReturnOrder=this.imageUrl + this.orderSelected.rorder.remarks.billROrder.image
+    console.log(this.billOrderImageReturnOrder)
+    this.showBillOrderImageReturnOrder=true;
+  }else{
+    this.showBillOrderImageReturnOrder=false;
+  }
+  if(this.orderSelected.rorder.remarks.billROrder.note){
+    this.billOrderNotesReturnOrder=this.orderSelected.rorder.remarks.billROrder.note
+    console.log(this.billOrderNotesReturnOrder)
+    this.showBillOrderNotesReturnOrder=true;
+  }else{
+    this.showBillOrderNotesReturnOrder=false;
+  }
+  }
+}
+}
+}
+
+if(this.orderSelected){
+  if(this.orderSelected.rorder){
+    this.requestedNotes=this.orderSelected.rorder.notes
+    this.showRequestedNotes=true;
+  }
+else{
+  this.showRequestedNotes=false
+}}
+
+if(this.orderSelected){
+  if(this.orderSelected.rorder){
+  if(this.orderSelected.rorder.remarks){
+  if(this.orderSelected.rorder.remarks.recieveROrder){
+  if(this.orderSelected.rorder.remarks.recieveROrder.image){
+    this.recieveOrderImageReturnOrder=this.imageUrl + this.orderSelected.rorder.remarks.recieveROrder.image
+    console.log(this.recieveOrderImageReturnOrder)
+    this.showRecieveOrderImageReturnOrder=true;
+  }else{
+    this.showRecieveOrderImageReturnOrder=false;
+  }
+  if(this.orderSelected.rorder.remarks.recieveROrder.note){
+    this.recieveOrderNotesReturnOrder=this.orderSelected.rorder.remarks.recieveROrder.note
+    console.log(this.recieveOrderNotesReturnOrder)
+    this.showRecieveOrderNotesReturnOrder=true;
+  }else{
+    this.showRecieveOrderNotesReturnOrder=false;
+  }
+  }
+}
+}
+}
+
+
   }
 
 

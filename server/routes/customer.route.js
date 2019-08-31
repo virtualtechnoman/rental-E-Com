@@ -32,7 +32,7 @@ router.get('/', authorizePrivilege("GET_ALL_CUSTOMERS"), async (req, res) => {
 // GET all Customers address with no route
 router.get('/addresswithnoroute', authorizePrivilege("GET_ALL_CUSTOMERS"), async (req, res) => {
     try {
-        const allUsers = await User.find({ role: process.env.CUSTOMER_ROLE, route: { $exists: false } }, "street_address city area").populate({ path: "area", populate: { path: "city", populate: { path: "state" } } }).exec();
+        const allUsers = await User.find({ role: process.env.CUSTOMER_ROLE, route: { $exists: false } }, "street_address full_name city mobile_number email").populate({ path: "area", populate: { path: "city", populate: { path: "state" } } }).exec();
         // console.log(allUsers);
         res.json({ status: 200, message: "All customers", errors: false, data: allUsers });
     }

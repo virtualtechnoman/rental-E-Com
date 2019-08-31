@@ -17,7 +17,8 @@ export class ProductsComponent implements OnInit {
   @ViewChildren("checkboxes") checkboxes: QueryList<ElementRef>;
   @ViewChildren("selectallcheckboxes") selectallcheckboxes: QueryList<ElementRef>;
   @ViewChildren("selectallcheckboxes") selectallcheckboxes2: any;
-  @ViewChildren("checkboxes") checkboxes2:any;fileSelected: any;
+  @ViewChildren("checkboxes") checkboxes2:any;
+  fileSelected: any;
   imageUrl="https://binsar.s3.ap-south-1.amazonaws.com/"
   jQuery: any;
   allproducts: ProductModel[] = [];

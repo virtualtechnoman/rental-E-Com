@@ -546,18 +546,18 @@
                                 <td >{{product?.product?.name}}</td>
                                 <td >{{product?.product?.brand?.name}}</td>
                                 <td >{{product.requested}}
-                                    <!-- <div >
+                                    <div >
                                         <label>Requested By:-</label>
-                                      "{{orderSelected?.placed_by?.full_name}}"
+                                      "{{orderSelected?.rorder?.placed_by?.full_name}}"
                                     </div>
                                     <div >
                                         <label>Requested At:-</label>
-                                      "{{orderSelected?.order_date | date: 'dd/mm/yy'}},{{orderSelected?.order_date | date : 'h:mm a'}}"
+                                      "{{orderSelected?.rorder?.order_date | date: 'dd/mm/yy'}},{{orderSelected?.rorder?.order_date | date : 'h:mm a'}}"
                                     </div>
-                                    <div *ngIf="showRequestedOrderNotes">
+                                    <div *ngIf="showRequestedNotes">
                                         <label>Requested Notes:-</label>
-                                      "{{requestedOrderNotes}}"
-                                    </div> -->
+                                      "{{requestedNotes}}"
+                                    </div>
     
                                 </td>
                                 <!-- <td  *ngIf="orderSelected.status == 'Pending' ">
@@ -616,62 +616,62 @@
                                 <td *ngIf="!orderSelected.rorder.recieved && orderSelected.rorder.status == 'Challan Accepted' " >
                                   <input type="text"  (change)="recievedQuantityEnteredReturnOrder($event,i)"
                                             class="form-control col-lg-8" [ngModel]="orderSelected.rorder.products[i].requested">
-                                            <!-- <input type="text"  
-                                            class="form-control col-lg-8" (change)="notesRecieved($event)"
+                                            <input type="text"  
+                                            class="form-control col-lg-8" (change)="notesRecievedReturnOrder($event)"
                                             placeholder="Notes" >
                                            <input type="file"  
-                                           class="col-lg-" (change)="imageRecieved($event)" > -->
+                                           class="col-lg-" (change)="imageRecievedReturnOrder($event)" >
                                 </td>
                                 <td  *ngIf="orderSelected.rorder.recieved">{{product.recieved}}
     
-                                    <!-- <div >
+                                    <div >
                                         <label>Recieved By:-</label>
-                                      "{{orderSelected?.remarks?.recieveOrder?.recievedBy?.full_name}}"
+                                      "{{orderSelected?.rorder?.remarks?.recieveROrder?.recievedBy?.full_name}}"
                                     </div>
                                     <div >
                                         <label>Recieved At:-</label>
-                                      "{{orderSelected?.remarks?.recieveOrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.recieveOrder?.at | date: 'h:mm a'}}"
+                                      "{{orderSelected?.rorder?.remarks?.recieveROrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.rorder?.remarks?.recieveROrder?.at | date: 'h:mm a'}}"
                                     </div>
     
-                                    <div *ngIf="showRecieveOrderNotes">
+                                    <div *ngIf="showRecieveOrderNotesReturnOrder">
                                         <label>Recieved Notes:-</label>
-                                        "{{recieveOrderNotes}}"
+                                        "{{recieveOrderNotesReturnOrder}}"
                                       </div>
-                                      <div class="form-group" *ngIf="showRecieveOrderImage">
+                                      <div class="form-group" *ngIf="showRecieveOrderImageReturnOrder">
                                     <div class="col-sm-3 col-md-2 col-lg text-center" >
-                                    <div class="avatar avatar-xxl "><img src="{{recieveOrderImage}}" class="rounded-circle" alt=""></div>
+                                    <div class="avatar avatar-xxl "><img src="{{recieveOrderImageReturnOrder}}" class="rounded-circle" alt=""></div>
                                     </div>
-                                      </div> -->
+                                      </div>
                                 </td>
                                 <td *ngIf="!orderSelected.rorder.billed && orderSelected.rorder.status == 'Recieved' ">
                                   <input type="text"  (change)="billedQuantityEnteredReturnOrder($event,i)"
                                             class="form-control col-lg-10" [ngModel]="orderSelected.rorder.products[i].recieved">
-                                            <!-- <input type="text"  
-                                            class="form-control col-lg-10" (change)="notesBilled($event)"
+                                            <input type="text"  
+                                            class="form-control col-lg-10" (change)="notesBilledReturnOrder($event)"
                                             placeholder="Notes" >
                                            <input type="file"  
-                                           class="col-lg-10" (change)="imageBilled($event)" > -->
+                                           class="col-lg-10" (change)="imageBilledReturnOrder($event)" >
                                 </td>
                                 <td  *ngIf="orderSelected.rorder.billed">{{product.billed}}
     
-                                    <!-- <div >
+                                    <div >
                                         <label>Billed By:-</label>
-                                      "{{orderSelected?.remarks?.billOrder?.billedBy?.full_name}}"
+                                      "{{orderSelected?.rorder?.remarks?.billROrder?.billedBy?.full_name}}"
                                     </div>
                                     <div >
                                         <label>Billed At:-</label>
-                                      "{{orderSelected?.remarks?.billOrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.billOrder?.at | date: 'h:mm a'}}"
+                                      "{{orderSelected?.rorder?.remarks?.billROrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.rorder?.remarks?.billROrder?.at | date: 'h:mm a'}}"
                                     </div>
     
-                                    <div *ngIf="showBillOrderNotes">
+                                    <div *ngIf="showBillOrderNotesReturnOrder">
                                         <label>Billed Notes:-</label>
-                                        "{{billOrderNotes}}"
+                                        "{{billOrderNotesReturnOrder}}"
                                       </div>
-                                      <div class="form-group" *ngIf="showBillOrderImage">
+                                      <div class="form-group" *ngIf="showBillOrderImageReturnOrder">
                                     <div class="col-sm-3 col-md-2 col-lg text-center" >
-                                    <div class="avatar avatar-xxl "><img src="{{billOrderImage}}" class="rounded-circle" alt=""></div>
+                                    <div class="avatar avatar-xxl "><img src="{{billOrderImageReturnOrder}}" class="rounded-circle" alt=""></div>
                                     </div>
-                                      </div> -->
+                                      </div>
     
                                 </td>
                               </tr>
