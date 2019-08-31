@@ -43,24 +43,30 @@ export class CustomerRouteManagementComponent implements OnInit {
     this.routeService.updateCustomerRoute(customer).subscribe((res:ResponseModel)=>{
       console.log(res.data)
     })
-    }
 
+    
+    }
+    this.routeService.getAllRoutes().subscribe((res:ResponseModel)=>{
+      console.log(res.data)
+      this.allRoutes=res.data
+    })
+    this.routeService.getAllCustomersWithNoRoutes().subscribe((res:ResponseModel)=>{
+      console.log(res.data)
+      this.allNoRouteCustomers=res.data
+    })
   }
 
   selectRouteId(event){
     this.selectedIndex=event.target.selectedIndex;
     console.log(this.selectedIndex)
     console.log(event)
-    this.routeService.getCustomerByRoute(this.allRoutes[this.selectedIndex-1]._id).subscribe((res:ResponseModel)=>{
-      console.log(res.data)
-      this.allSelectedRoutesById=res.data;
-      
-    })
+
     this.routeService.getAllCustomersWithNoRoutes().subscribe((res:ResponseModel)=>{
       this.allNoRouteCustomers.length=0;
       console.log(res.data)
       this.allNoRouteCustomers=res.data
     })
+
   }
 
   getRoutes(){
