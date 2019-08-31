@@ -142,7 +142,7 @@
                 </div>
                 <div *ngFor="let hub of allHub;let i=index">
                 <div class="form-check form-group">
-                <input type="checkbox" size="lg" #checkboxes class="form-check-input" [ngClass]="{ 'is-invalid': submitted && f.available_for.errors }">
+                <input type="checkbox" size="lg" class="form-check-input" #checkboxes  [ngClass]="{ 'is-invalid': submitted && f.available_for.errors }">
                 <label class="form-check-label" for="exampleCheck1" >{{hub.full_name}}&nbsp;&nbsp;&nbsp;</label>
                 
               </div>

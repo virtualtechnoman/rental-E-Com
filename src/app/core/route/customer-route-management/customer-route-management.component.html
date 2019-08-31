@@ -1,0 +1,59 @@
+<div class="card">
+  <div class="card-header">
+    Customer Route Management
+  </div>
+  <div class="card-body">
+      <div class="form-row">
+        <div class="form-group col-md-4" >
+          <select class="form-control" (change)="selectRouteId($event)">
+            <option selected disabled>Select Route</option>
+            <option [ngValue]="route._id" *ngFor="let route of allRoutes;let i=index">{{route.name}} </option>
+          </select>
+        </div>
+      </div>
+
+      <table class="table table-bordered" >
+        <thead>
+          <tr>
+            <th>S no.</th>
+            <th>Customer Name</th>
+            <!-- <th>Email</th> -->
+            <!-- <th>Mobile Number</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let customer of allNoRouteCustomers;let i=index">
+            <td>{{i+1}}</td>
+            <td>{{customer?.full_name}}
+              <input type="checkbox" #checkboxes size="lg" >
+            </td>
+            <!-- <td>{{customer?.email}}</td> -->
+            <!-- <td>{{customer?.mobile_number}}</td> -->
+          </tr>
+        </tbody>
+        
+      </table>
+      <Button type="submit" class="btn btn-primary text-center" (click)="sendCustomer()">Send</Button>
+      <table class="table table-bordered" *ngIf="allSelectedRoutesById.length>0">
+          <thead>
+            <tr>
+              <th>S no.</th>
+              <th>Name</th>
+              <th>Address</th>
+              <!-- <th>Email</th> -->
+              <!-- <th>Mobile Number</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let customer of allSelectedRoutesById;let i=index">
+              <td>{{i+1}}</td>
+              <td>{{customer?.full_name}}
+              </td>
+              <td>{{customer?.street_address}},{{customer?.city}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+  </div>
+  
+</div>

@@ -21,7 +21,7 @@ router.get("/", authorizePrivilege("GET_ALL_ORDERS_OWN"), (req, res) => {
 
 //GET all orders
 router.get("/all", authorizePrivilege("GET_ALL_ORDERS"), (req, res) => {
-    Order.find().populate([{ path: "placed_by placed_to", select: "-password" }, { path: "remarks.acceptOrder.acceptedBy remarks.generateChallan.generatedBy remarks.recieveOrder.recievedBy remarks.billOrder.billedBy", populate: { path: "role", select: "name" } }, { path: "products.product", populate: { path: "category brand available_for" } }]).exec().then(doc => {
+    Order.find().populate([{ path: "placed_by placed_to rorder", select: "-password",populate:{path:"placed_to placed_by products.product remarks.generateChallan.generatedBy remarks.recieveROrder.recievedBy remarks.billROrder.billedBy",select:"-password", populate:{path:"brand"}} },{path:"remarks.acceptOrder.acceptedBy remarks.generateChallan.generatedBy remarks.recieveOrder.recievedBy remarks.billOrder.billedBy",populate:{path:"role", select:"name"}}, { path: "products.product", populate: { path: "category brand available_for" } }]).exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
     }).catch(err => {
         console.log(err);
