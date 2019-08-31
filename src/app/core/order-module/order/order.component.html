@@ -19,7 +19,7 @@
               <th scope="col">Order To</th>
               <!-- <th scope="col">Manager</th> -->
               <th scope="col">Order By</th>
-              <th scope="col">Status</th>
+              <th scope="col">Order Status / Return Order Status</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
@@ -30,7 +30,7 @@
               <td>{{order.order_date | date:'dd/MM/yy' }},{{order.order_date | date:'h:mm a' }}</td>
               <td>{{order.placed_to.full_name | titlecase}}</td>
               <td>{{order.placed_by.full_name | titlecase}}</td>
-              <td>{{order.status}}</td>
+              <td>{{order.status}}/{{order?.rorder?.status}}</td>
               <td>
                 <a style="cursor:pointer" data-toggle="modal" data-target="#invoiceModal" (click)="viewAcceptOrderButton(i)"><i class="fas fa-eye"></i></a>
                 <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteOrder(i)"></i></a>
@@ -552,7 +552,7 @@
                                     </div>
                                     <div >
                                         <label>Requested At:-</label>
-                                      "{{orderSelected?.rorder?.order_date | date: 'dd/mm/yy'}},{{orderSelected?.rorder?.order_date | date : 'h:mm a'}}"
+                                      "{{orderSelected?.rorder?.rorder_date | date: 'dd/mm/yy'}},{{orderSelected?.rorder?.rorder_date | date : 'h:mm a'}}"
                                     </div>
                                     <div *ngIf="showRequestedNotes">
                                         <label>Requested Notes:-</label>

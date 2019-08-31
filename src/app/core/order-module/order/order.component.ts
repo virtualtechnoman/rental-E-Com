@@ -365,7 +365,7 @@ export class OrderComponent implements OnInit {
     // console.log(order)
     if(!this.imageRecievedFieldReturnOrder && !this.noteRecievedFieldReturnOrder){
       console.log(order)
-    this.orderService.addAcceptedOrder(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
+    this.orderService.recievedQuantityStatus(this.orderSelected.rorder._id,order).subscribe((res:ResponseModel)=>{
       jQuery('#invoiceModal').modal('hide');
       this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
       // console.log(res.data)

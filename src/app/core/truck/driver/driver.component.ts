@@ -27,6 +27,8 @@ export class DriverComponent implements OnInit {
   submitted = false;
   viewArray: any = [];
   driverAddress:any;
+  image: string;
+  showImage:boolean=false
   constructor(private formBuilder: FormBuilder, private toastr: ToastrService, private DriverService: TruckService) { }
 
   ngOnInit() {
@@ -125,6 +127,15 @@ export class DriverComponent implements OnInit {
   viewDriver(i) {
     this.viewArray = this.allDrivers[i];
     this.driverAddress=this.viewArray.street_address + "," + " " + this.viewArray.city 
+    console.log(this.viewArray)
+    if(this.viewArray.profile_picture){
+      this.showImage=true;
+      this.image="https://binsar.s3.ap-south-1.amazonaws.com/" + this.viewArray.profile_picture
+      console.log(this.image)
+        }
+    else{
+      this.showImage=false;
+    }
   }
 
   resetForm() {

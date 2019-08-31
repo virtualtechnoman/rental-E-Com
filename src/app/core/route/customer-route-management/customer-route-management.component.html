@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <table class="table table-hover" >
+      <table class="table table-hover" *ngIf="!allSelectedRoutesById">
         <thead>
           <tr>
             <th>S no.</th>
@@ -34,24 +34,23 @@
         <Button type="submit" (click)="sendCustomer()">Send</Button>
       </table>
 
-      <table class="table table-hover" >
+      <table class="table table-hover" *ngIf="allSelectedRoutesById">
           <thead>
             <tr>
               <th>S no.</th>
               <th>Name</th>
+              <th>Address</th>
               <!-- <th>Email</th> -->
               <!-- <th>Mobile Number</th> -->
             </tr>
           </thead>
           <tbody>
-            <!-- <tr *ngFor="let customer of allNoRouteCustomers;let i=index">
+            <tr *ngFor="let customer of allSelectedRoutesById;let i=index">
               <td>{{i+1}}</td>
               <td>{{customer?.full_name}}
-                <input type="checkbox" #checkboxes size="lg" >
               </td>
-              <td>{{customer?.email}}</td>
-              <td>{{customer?.mobile_number}}</td>
-            </tr> -->
+              <td>{{customer?.street_address}},{{customer?.city}}</td>
+            </tr>
           </tbody>
         </table>
 

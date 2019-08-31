@@ -44,7 +44,7 @@ router.get('/addresswithnoroute', authorizePrivilege("GET_ALL_CUSTOMERS"), async
 router.get('/byroute/:id', authorizePrivilege("GET_ALL_CUSTOMERS"), async (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.id)) {
         try {
-            const allUsers = await User.find({ role: process.env.CUSTOMER_ROLE, route: req.params.id }, "street_address city area").populate({ path: "area", populate: { path: "city", populate: { path: "state" } } }).exec();
+            const allUsers = await User.find({ role: process.env.CUSTOMER_ROLE, route: req.params.id }, "full_name street_address city area").populate({ path: "area", populate: { path: "city", populate: { path: "state" } } }).exec();
             // console.log(allUsers);
             res.json({ status: 200, message: "All customers", errors: false, data: allUsers });
         }

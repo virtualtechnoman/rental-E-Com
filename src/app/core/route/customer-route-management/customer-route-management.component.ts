@@ -16,6 +16,7 @@ export class CustomerRouteManagementComponent implements OnInit {
   customerArray:any[]=[];
   customerArrayShow:boolean=false;
   routeId:any;
+  allSelectedRoutesById:any[]=[]
   constructor(private routeService:RouteService) { 
     this.getRoutes()
     this.getCustomersWithNoRoutes()
@@ -52,8 +53,14 @@ export class CustomerRouteManagementComponent implements OnInit {
     console.log(event)
     this.routeService.getCustomerByRoute(this.allRoutes[this.selectedIndex-1]._id).subscribe((res:ResponseModel)=>{
       console.log(res.data)
+      this.allSelectedRoutesById=res.data;
+      
     })
-
+    this.routeService.getAllCustomersWithNoRoutes().subscribe((res:ResponseModel)=>{
+      this.allNoRouteCustomers.length=0;
+      console.log(res.data)
+      this.allNoRouteCustomers=res.data
+    })
   }
 
   getRoutes(){
@@ -64,6 +71,7 @@ export class CustomerRouteManagementComponent implements OnInit {
   }
 
   getCustomersWithNoRoutes(){
+    this.allNoRouteCustomers.length=0;
     this.routeService.getAllCustomersWithNoRoutes().subscribe((res:ResponseModel)=>{
       console.log(res.data)
       this.allNoRouteCustomers=res.data

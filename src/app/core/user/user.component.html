@@ -23,7 +23,7 @@
             <th class="wd-20p">Email</th>
             <th class="wd-20p">Position</th>
             <th class="wd-20p">Mobile NUmber</th>
-            <!-- <th class="wd-20p">Action</th> -->
+            <th class="wd-20p">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -303,7 +303,41 @@
           </button>
         </div>
         <div class="modal-body">
-           
+
+            <div class="form-group">
+                <!-- <label>User Image</label> -->
+          <div class="col-sm-3 col-md-2 col-lg text-center" *ngIf="showImage">
+            <div class="avatar avatar-xxl "><img src="{{image}}" class="rounded-circle" alt=""></div>
+          </div>
+            </div>
+
+            <div class="form-group">
+                <label> Name</label>
+                <input type="text"  class="form-control" [(ngModel)]="viewArray.full_name" disabled />
+            </div>
+            <div class="form-group">
+                <label>Street Address</label>
+                <input type="text"  class="form-control" [(ngModel)]="viewArray.street_address" disabled />
+            </div>
+            <div class="form-group">
+                <label>City</label>
+                <input type="text"  class="form-control" [(ngModel)]="viewArray.city" disabled />
+            </div>  
+            <!-- <div class="form-group">
+                <label>DOB</label>
+                <input type="text"  class="form-control" [(ngModel)]="viewArray.dob" disabled />
+            </div> -->
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="text"  class="form-control" [(ngModel)]="viewArray.mobile_number" disabled />
+            </div>
+            
+            <!-- <div class="form-group">
+                <label>Landmark</label>
+                <input type="text"  class="form-control" [(ngModel)]="viewArray.landmark" disabled />
+            </div>            -->
+
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
