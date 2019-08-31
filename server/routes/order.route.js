@@ -98,12 +98,16 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_ORDER"), (req, res) => {
                     if (!isEmpty(result.errors))
                         return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
                     let upd = {}, arrfilter = [];
+                    console.log("ALL DATA : ",result.data)
+                    console.log("Products  : ",result.data.products)
                     result.data.products.forEach((ele, index) => {
                         upd["products.$[e" + index + "].accepted"] = ele.accepted;
                         let x = {};
                         x["e" + index + ".product"] = ele.product;
                         arrfilter.push(x);
                     })
+                    
+                    console.log("ARR FILTER : ",arrfilter);
                     if (result.data["remarks.acceptOrder"]) {
                         upd["remarks.acceptOrder"] = result.data["remarks.acceptOrder"];
                         upd["remarks.acceptOrder"].acceptedBy = req.user._id;
@@ -112,6 +116,7 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_ORDER"), (req, res) => {
                         upd["remarks.acceptOrder"] = { acceptedBy: req.user._id, at: Date.now() };
                     upd.accepted = true;
                     upd.status = "Order Accepted";
+                    console.log("UPD IS : ",upd);
                     Order.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
                         .populate([{ path: "placed_by placed_to", select: "-password" }, { path: "remarks.acceptOrder.acceptedBy", select: "-password", populate: { path: "role", select: "name" } }, { path: "products.product", populate: { path: "category brand available_for" } }]).lean().exec()
                         .then(d => {

@@ -240,12 +240,9 @@
                                 <input type="text"  
                                 class="form-control col-lg-6" (change)="asd($event,i)"
                                 placeholder="Accepted Quantity" [ngModel]="orderSelected.products[i].requested">
-                                <input type="text"  
-                                class="form-control col-lg-6" (change)="notesAccepted($event)"
-                                placeholder="Notes" >
-                                <input type="file"  
-                                class="col-lg-6" (change)="imageAccepted($event)" >
+                                
                             </td>
+                            
                             <td  *ngIf="orderSelected.status != 'Pending' ">
                               {{product.accepted}}
                               <div >
@@ -292,11 +289,7 @@
                             <td *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' " >
                               <input type="text"  (change)="recievedQuantityEntered($event,i)"
                                         class="form-control col-lg-8" [ngModel]="orderSelected.products[i].dispatched">
-                                        <input type="text"  
-                                        class="form-control col-lg-8" (change)="notesRecieved($event)"
-                                        placeholder="Notes" >
-                                       <input type="file"  
-                                       class="col-lg-" (change)="imageRecieved($event)" >
+                                        
                             </td>
                             <td  *ngIf="orderSelected.recieved">{{product.recieved}}
 
@@ -323,11 +316,7 @@
                             <td *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' ">
                               <input type="text"  (change)="billedQuantityEntered($event,i)"
                                         class="form-control col-lg-10" [ngModel]="orderSelected.products[i].recieved">
-                                        <input type="text"  
-                                        class="form-control col-lg-10" (change)="notesBilled($event)"
-                                        placeholder="Notes" >
-                                       <input type="file"  
-                                       class="col-lg-10" (change)="imageBilled($event)" >
+                                        
                             </td>
                             <td  *ngIf="orderSelected.billed">{{product.billed}}
 
@@ -353,12 +342,38 @@
 
                             </td>
                           </tr>
+                          
                         </tbody>
+                        
                       </table>
+                      <div *ngIf="orderSelected.status == 'Pending' ">
+                          <label>Input Optional Notes or Image For Accept Order</label><br>
+                            <input type="text"  
+                                  class="form-control col-lg-4" (change)="notesAccepted($event)"
+                                  placeholder="Notes" ><br>
+                                  <input type="file"  
+                                  class="col-lg-10" (change)="imageAccepted($event)" >
+                          </div>
+                    </div>
+
+                    <div *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' ">
+                        <label>Input Optional Notes or Image For Billing Order</label><br>
+                        <input type="text"  
+                        class="form-control col-lg-4" (change)="notesBilled($event)"
+                        placeholder="Notes" >
+                       <input type="file"  
+                       class="col-lg-10" (change)="imageBilled($event)" >
                     </div>
 
 
-
+                    <div *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' ">
+                        <label>Input Optional Notes or Image For Recieveing Order</label><br>
+                        <input type="text"  
+                        class="form-control col-lg-4" (change)="notesRecieved($event)"
+                        placeholder="Notes" >
+                       <input type="file"  
+                       class="col-lg-10" (change)="imageRecieved($event)" >
+                    </div>
 
 
 
@@ -571,67 +586,10 @@
                                     </div>
     
                                 </td>
-                                <!-- <td  *ngIf="orderSelected.status == 'Pending' ">
-                                    
-                                    <input type="text"  
-                                    class="form-control col-lg-6" (change)="asd($event,i)"
-                                    placeholder="Accepted Quantity" [ngModel]="orderSelected.products[i].requested">
-                                    <input type="text"  
-                                    class="form-control col-lg-6" (change)="notesAccepted($event)"
-                                    placeholder="Notes" >
-                                    <input type="file"  
-                                    class="col-lg-6" (change)="imageAccepted($event)" >
-                                </td> -->
-                                <!-- <td  *ngIf="orderSelected.status != 'Pending' ">
-                                  {{product.accepted}}
-                                  <div >
-                                      <label>Accepted By:-</label>
-                                    "{{orderSelected?.remarks?.acceptOrder?.acceptedBy?.full_name}}"
-                                  </div>
-                                  <div >
-                                      <label>Accepted At:-</label>
-                                    "{{orderSelected?.remarks?.acceptOrder?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.acceptOrder?.at | date: 'h:mm a'}}"
-                                  </div>
-                                  <div *ngIf="showAcceptOrderNotes">
-                                      <label>Accepted Notes</label>
-                                    "{{acceptOrderNotes}}"
-                                  </div>
-                                  
-                                  <div class="form-group" *ngIf="showAcceptOrderImage">
-                                      <label>Accepted Image</label>
-                                <div class="col-sm-3 col-md-2 col-lg text-center" >
-                                <div class="avatar avatar-xxl"><img src="{{acceptOrderImage}}" class="rounded-circle" alt=""></div>
-                                </div>
-                                  </div>
-                                </td> -->
-                                <!-- <td  *ngIf="orderSelected.challan_generated">{{product.dispatched}}
-                                    <div >
-                                        <label>Generated By:-</label>
-                                      "{{orderSelected?.remarks?.generateChallan?.generatedBy?.full_name}}"
-                                    </div>
-                                    <div >
-                                        <label>Generated At:-</label>
-                                      {{orderSelected?.remarks?.generateChallan?.at | date: 'dd/mm/yy'}},{{orderSelected?.remarks?.generateChallan?.at | date: 'h:mm a'}}"
-                                    </div>
-                                    <div *ngIf="showChallanNotes">
-                                        <label>Dispatched Notes:-</label>
-                                        "{{ChallanNotes}}"
-                                      </div>
-                                      <div class="form-group" *ngIf="showChallanImage">
-                                    <div class="col-sm-3 col-md-2 col-lg text-center" >
-                                    <div class="avatar avatar-xxl "><img src="{{challanImage}}" class="rounded-circle" alt=""></div>
-                                    </div>
-                                      </div>
-    
-                                </td> -->
                                 <td *ngIf="!orderSelected.rorder.recieved && orderSelected.rorder.status == 'Challan Accepted' " >
                                   <input type="text"  (change)="recievedQuantityEnteredReturnOrder($event,i)"
                                             class="form-control col-lg-8" [ngModel]="orderSelected.rorder.products[i].requested">
-                                            <input type="text"  
-                                            class="form-control col-lg-8" (change)="notesRecievedReturnOrder($event)"
-                                            placeholder="Notes" >
-                                           <input type="file"  
-                                           class="col-lg-" (change)="imageRecievedReturnOrder($event)" >
+                                            
                                 </td>
                                 <td  *ngIf="orderSelected.rorder.recieved">{{product.recieved}}
     
@@ -657,11 +615,7 @@
                                 <td *ngIf="!orderSelected.rorder.billed && orderSelected.rorder.status == 'Recieved' ">
                                   <input type="text"  (change)="billedQuantityEnteredReturnOrder($event,i)"
                                             class="form-control col-lg-10" [ngModel]="orderSelected.rorder.products[i].recieved">
-                                            <input type="text"  
-                                            class="form-control col-lg-10" (change)="notesBilledReturnOrder($event)"
-                                            placeholder="Notes" >
-                                           <input type="file"  
-                                           class="col-lg-10" (change)="imageBilledReturnOrder($event)" >
+                                           
                                 </td>
                                 <td  *ngIf="orderSelected.rorder.billed">{{product.billed}}
     
@@ -689,6 +643,24 @@
                             </tbody>
                           </table>
 
+                          <div *ngIf="!orderSelected.rorder.recieved && orderSelected.rorder.status == 'Challan Accepted' " >
+                            <label for="">Enter Optional Return Order Recieve Note Or Image</label>
+                              <input type="text"  
+                              class="form-control col-lg-4" (change)="notesRecievedReturnOrder($event)"
+                              placeholder="Notes" >
+                             <input type="file"  
+                             class="col-lg-" (change)="imageRecievedReturnOrder($event)" >
+                          </div>
+
+                          <div *ngIf="!orderSelected.rorder.billed && orderSelected.rorder.status == 'Recieved' ">
+                              <label for="">Enter Optional Return Order Bill Note Or Image</label>
+                              <input type="text"  
+                              class="form-control col-lg-4" (change)="notesBilledReturnOrder($event)"
+                              placeholder="Notes" >
+                             <input type="file"  
+                             class="col-lg-10" (change)="imageBilledReturnOrder($event)" >
+
+                          </div>
 
 
 
