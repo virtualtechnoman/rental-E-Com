@@ -31,7 +31,7 @@ router.get("/type/:type", authorizePrivilege("GET_ALL_CHALLAN_OWN"), (req, res) 
 
 //GET all challans assigned to self
 router.get("/assigned/:type", authorizePrivilege("GET_ALL_CHALLAN_ASSIGNED"), (req, res) => {
-    let p = { path: "order", match: { recieved: false }, populate: { path: "products.product placed_to placed_by",select:"-password", populate: { path: "brand category available_for", select:"-password" } } }
+    let p = { path: "order", match: { recieved: false }, populate: { path: "products.product placed_to placed_by",select:"-password", populate: { path: "brand category available_for created_by", select:"-password" } } }
     if (req.params.type == "order") {
         p.model = "order";
     } else if (req.params.type == "rorder") {

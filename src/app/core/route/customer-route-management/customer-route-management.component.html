@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <table class="table table-hover" *ngIf="!allSelectedRoutesById">
+      <table class="table table-bordered" >
         <thead>
           <tr>
             <th>S no.</th>
@@ -31,10 +31,10 @@
             <!-- <td>{{customer?.mobile_number}}</td> -->
           </tr>
         </tbody>
-        <Button type="submit" (click)="sendCustomer()">Send</Button>
+        
       </table>
-
-      <table class="table table-hover" *ngIf="allSelectedRoutesById">
+      <Button type="submit" class="btn btn-primary text-center" (click)="sendCustomer()">Send</Button>
+      <table class="table table-bordered" *ngIf="allSelectedRoutesById.length>0">
           <thead>
             <tr>
               <th>S no.</th>
