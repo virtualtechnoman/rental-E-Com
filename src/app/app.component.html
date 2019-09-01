@@ -23,7 +23,7 @@
             </div>
             <div class="aside-loggedin-user" >
               <a href="#loggedinMenu" class="d-flex align-items-center justify-content-between mg-b-2" data-toggle="collapse">
-                <h6 class="tx-semibold mg-b-0" *ngIf="user">{{user.full_name}}</h6>
+                <h6 class="tx-semibold mg-b-0" *ngIf="user">Suraj Joshi</h6>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
               </a>
               <p class="tx-color-03 tx-12 mg-b-0">Administrator</p>
@@ -37,6 +37,15 @@
             </div>
           </div>
       <ul class="nav nav-aside">
+
+          <li class="nav-item with-sub">
+              <a href="" class="nav-link with-sub"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>Dashboard</a>
+              <ul>
+                  <li><a href="" class="" > <span>Admin Dashboard</span></a></li>
+                  <li><a href="/" class="" > <span>Hub Dashboard</span></a></li>
+                  <li><a href="" class="" > <span>Farm Dashboard</span></a></li>
+                </ul>
+            </li>
        
 
         <li class="nav-item with-sub">
@@ -46,6 +55,8 @@
               <li><a href="" class="" routerLink="userrole"> <span>User Role</span></a></li>
             </ul>
           </li>
+
+       
 
           <li class="nav-item with-sub">
               <a href="" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg> <span>Product Management</span></a>
@@ -113,6 +124,7 @@
 
 
       </ul>
+      <div style="position: fixed;bottom: 10px;font-size: 12px;">&copy; Binsar Farms PVT LTD</div>
     </div>
   </aside>
 <div class="content ht-100v pd-0 ">
