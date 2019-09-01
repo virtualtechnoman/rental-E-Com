@@ -4,7 +4,7 @@
   </div>
   <div class="card-body">
       <div class="container">
-          <div class="row">
+          <div class="row" style="padding:20px;">
             <div class="col-md-4">
                 <div class="form-group" >
                     <select class="form-control" (change)="selectRouteId($event)">
@@ -13,39 +13,54 @@
                     </select>
                 </div>
             </div>
+            
             <div class="col-md-8">
-                <table class="table table-bordered" >
-                    <thead>
-                      <tr>
-                        <th>S no.</th>
-                        <th>Customer Name</th>
-                        <!-- <th>Email</th> -->
-                        <!-- <th>Mobile Number</th> -->
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let customer of allNoRouteCustomers;let i=index">
-                        <td>{{i+1}}</td>
-                        <td>{{customer?.full_name}}
-                          <input type="checkbox" #checkboxes size="lg" >
-                        </td>
-                        <!-- <td>{{customer?.email}}</td> -->
-                        <!-- <td>{{customer?.mobile_number}}</td> -->
-                      </tr>
-                    </tbody>
-                    
-                </table>
-                <Button type="submit" class="btn btn-primary text-center" (click)="sendCustomer()">Send</Button>
+                
+                        <table class="table table-bordered" datatable [dtOptions]="dtOptions"
+                        [dtTrigger]="dtTrigger">
+                            <thead>
+                              <tr>
+                                <th>S no.</th>
+                                <th>Customer Name</th>
+                                <th>Address</th>
+                                <th>No of botteles</th>
+                                <th>Delivery Time</th>
+                                <!-- <th>Email</th> -->
+                                <!-- <th>Mobile Number</th> -->
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let customer of allNoRouteCustomers;let i=index">
+                                <td>{{i+1}}</td>
+                                <td>{{customer?.full_name}}
+                                  <input type="checkbox" #checkboxes size="lg" >
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                              </tr>
+                            </tbody>
+                            <br>
+                            <Button type="submit" stye="padding:10px;" class="btn btn-primary text-center" (click)="sendCustomer()">Add to Current Route</Button>
+                            
+                        </table>
+                  
+                
+                
             </div>
           </div>
-          <div class="row">
-            <div class="col">
-                <table class="table table-bordered" *ngIf="allSelectedRoutesById.length>0">
+          <div class="row" style="padding:20px;">
+            <div class="col-md-12">
+               
+                <table class="table table-bordered" *ngIf="allSelectedRoutesById.length>0" datatable [dtOptions]="dtOptions2"
+                    [dtTrigger]="dtTrigger2">
                     <thead>
                       <tr>
                         <th>S no.</th>
                         <th>Name</th>
                         <th>Address</th>
+                        <th>No of botteles</th>
+                        <th>Delivery Time</th>
                         <!-- <th>Email</th> -->
                         <!-- <th>Mobile Number</th> -->
                       </tr>
@@ -53,12 +68,14 @@
                     <tbody>
                       <tr *ngFor="let customer of allSelectedRoutesById;let i=index">
                         <td>{{i+1}}</td>
-                        <td>{{customer?.full_name}}
-                        </td>
+                        <td>{{customer?.full_name}}</td>
                         <td>{{customer?.street_address}},{{customer?.city}}</td>
+                        <td></td>
+                        <td></td>
                       </tr>
                     </tbody>
                   </table>
+                
             </div>
           </div>
         </div>
