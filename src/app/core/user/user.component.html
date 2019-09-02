@@ -160,7 +160,7 @@
                 
               </div>
              
-              <div class="form-row">   
+              <div class="form-row" *ngIf="showLicenceField">   
                 <div class="form-group col-md-4" *ngIf="showLicenceField">
                   <label for="inputEmail4">License Number</label>
                   <input type="text" class="form-control"  required (change)="licenseNumber($event)">

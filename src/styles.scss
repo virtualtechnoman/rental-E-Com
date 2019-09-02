@@ -48,3 +48,7 @@ body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider {
 }
 
 .btn-uppercase.btn-sm, .btn-group-sm > .btn-uppercase.btn, .sp-container .btn-group-sm > button.btn-uppercase, .ui-datepicker-buttonpane button.btn-uppercase {color: white !important;}
+
+.table td, .table th {font-size: 14px;}
+
+table.dataTable thead .sorting , .btn-primary,table.dataTable thead .sorting_asc, table.dataTable thead .sorting_desc {font-size: 14px;}
