@@ -239,7 +239,7 @@ export class UserComponent implements OnInit {
     this.submitted = false;
     this.editing = false;
     this.registerForm.reset();
-    this.initForm();
+    this.initForm();  
   }
 
   getUserRoles() {
