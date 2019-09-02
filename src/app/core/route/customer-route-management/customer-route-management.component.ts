@@ -44,12 +44,6 @@ export class CustomerRouteManagementComponent implements OnInit {
         searchPlaceholder: 'Search records',
       },
       dom: 'Bfrtip',
-      buttons: [
-        // 'colvis',
-        'copy',
-        'print',
-        'excel',
-      ]
     };
     this.dtOptions2 = {
       pagingType: 'full_numbers',
@@ -65,12 +59,6 @@ export class CustomerRouteManagementComponent implements OnInit {
         searchPlaceholder: 'Search records',
       },
       dom: 'Bfrtip',
-      buttons: [
-        // 'colvis',
-        'copy',
-        'print',
-        'excel',
-      ]
     };
   }
   
@@ -86,14 +74,19 @@ export class CustomerRouteManagementComponent implements OnInit {
     }
     this.routeId=this.allRoutes[this.selectedIndex-1]._id;
     if(this.routeId){
+      this.allNoRouteCustomers.length=0;
     var customer =<any> new Object();
     customer.customers=this.customerArray;
     customer.route=this.routeId
     console.log(customer)
     this.routeService.updateCustomerRoute(customer).subscribe((res:ResponseModel)=>{
       console.log(res.data)
-      this.dtTrigger.next()
       
+    })
+    this.routeService.getAllCustomersWithNoRoutes().subscribe((res:ResponseModel)=>{
+      this.allNoRouteCustomers.length=0;
+      console.log(res.data)
+      this.allNoRouteCustomers=res.data
     })
 
     
@@ -108,19 +101,19 @@ export class CustomerRouteManagementComponent implements OnInit {
   }
 
   selectRouteId(event){
+    
     this.selectedIndex=event.target.selectedIndex;
     console.log(this.selectedIndex)
     console.log(event)
     this.routeService.getCustomerByRoute(this.allRoutes[this.selectedIndex-1]._id).subscribe((res:ResponseModel)=>{
+      this.allSelectedRoutesById.length=0
       console.log(res.data)
       this.allSelectedRoutesById=res.data
-      this.dtTrigger2.next()
     })
     this.routeService.getAllCustomersWithNoRoutes().subscribe((res:ResponseModel)=>{
       this.allNoRouteCustomers.length=0;
       console.log(res.data)
       this.allNoRouteCustomers=res.data
-      this.dtTrigger.next()
     })
 
   }
