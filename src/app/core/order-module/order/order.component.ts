@@ -642,6 +642,7 @@ export class OrderComponent implements OnInit {
                 image:this.keyAcceptedField,
                 note:this.noteAcceptedField
               }
+              console.log(order)
               this.orderService.addAcceptedOrder(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
                 jQuery('#invoiceModal').modal('hide');
                 this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
@@ -652,6 +653,7 @@ export class OrderComponent implements OnInit {
             order['remarks.acceptOrder']={
               image:this.keyAcceptedField,
             }
+            console.log(order)
             this.orderService.addAcceptedOrder(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
               jQuery('#invoiceModal').modal('hide');
               this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
@@ -669,6 +671,7 @@ export class OrderComponent implements OnInit {
         order['remarks.acceptOrder']={
           note:this.noteAcceptedField
         }
+        console.log(order)
         this.orderService.addAcceptedOrder(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
           jQuery('#invoiceModal').modal('hide');
           this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
@@ -680,6 +683,7 @@ export class OrderComponent implements OnInit {
 
     // console.log(order)
     if(!this.imageAcceptedField && !this.noteAcceptedField){
+      console.log(order)
     this.orderService.addAcceptedOrder(this.orderSelected._id,order).subscribe((res:ResponseModel)=>{
       jQuery('#invoiceModal').modal('hide');
       this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');

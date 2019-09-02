@@ -174,7 +174,7 @@ export class ProductsComponent implements OnInit {
 
   addProduct(product) {
     console.log(product);
-    
+    if(product)
     this.productService.addProduct(product).subscribe((res: ResponseModel) => {
       jQuery('#modal3').modal('hide');
       this.toastr.success('Product Added!', 'Success!');
@@ -280,7 +280,8 @@ export class ProductsComponent implements OnInit {
   updateProduct(product) {
     const id = this.allproducts[this.currentIndex]._id;
     // product._id = id;
-    console.log(product);
+    console.log(product,id);
+    if(id){
     this.productService.updateProduct(product, id).subscribe((res: ResponseModel) => {
       jQuery('#modal3').modal('hide');
       this.toastr.info('Product Updated Successfully!', 'Updated!!');
@@ -294,6 +295,7 @@ export class ProductsComponent implements OnInit {
         element.nativeElement.checked = false;
       });
     });
+    }
   }
 
   initForm() {
