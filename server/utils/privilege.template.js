@@ -23,6 +23,7 @@ module.exports = (p=false)=>({
     ACCEPT_ORDER:p,
     RECIEVE_ORDER:p,
     BILL_ORDER:p,
+    DECLINE_ORDER:p,
     //Return Order Privilege
     GET_ALL_RETURN_ORDERS:p,
     GET_ALL_RETURN_ORDERS_OWN:p,
