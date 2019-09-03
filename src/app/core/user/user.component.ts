@@ -11,7 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ResponseModel } from '../../shared/shared.model';
 
 @Component({
-  selector: 'app-user',
+  selector: 'app-user', 
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss']
 })
@@ -238,8 +238,8 @@ export class UserComponent implements OnInit {
   resetForm() {
     this.submitted = false;
     this.editing = false;
-    this.userForm.reset();
-    this.initForm();
+    this.registerForm.reset();
+    this.initForm();  
   }
 
   getUserRoles() {
@@ -281,6 +281,7 @@ export class UserComponent implements OnInit {
         this.allUsers = res.data;
         this.allUsers2=res.data;
         this.allUsers2=res.data;
+        this.dtTrigger.next();
       }
     });
   }
@@ -342,7 +343,8 @@ this.me(this.newArray)
     for(var i=0;i<array.length;i++){
       arra2[i]=array[i]
     }
-    this.allUsers=arra2
+    this.allUsers=arra2;
+    this.dtTrigger.next();
     console.log(arra2,this.allUsers)
   }
 

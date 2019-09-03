@@ -19,3 +19,36 @@ body {
 }
 
 p-inputswitch{border:0px solid white !important;}
+
+
+nav-item with-sub {padding-top: 5px;padding-bottom: 5px;}
+
+.btn-secondary, .btn {background-color: #164f81!important;}
+.btn-secondary {    font-size: 14px!important;}
+.form-row {padding: 10px;}
+
+.df-logo {    height: 70px;
+  margin-left: 50px;
+  padding: 10px;}
+
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover, .dataTables_wrapper .dataTables_paginate .paginate_button.current:focus {background-color: #164f81!important;}
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:focus {
+    background-color: #eceff3;
+    color: #164f81 !important;
+}
+
+body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider {
+  background-color: #164f81!important;
+}
+
+.h2, h2 {
+  font-size: 1.5rem!important;
+}
+
+.btn-uppercase.btn-sm, .btn-group-sm > .btn-uppercase.btn, .sp-container .btn-group-sm > button.btn-uppercase, .ui-datepicker-buttonpane button.btn-uppercase {color: white !important;}
+
+.table td, .table th {font-size: 14px;}
+
+table.dataTable thead .sorting , .btn-primary,table.dataTable thead .sorting_asc, table.dataTable thead .sorting_desc {font-size: 14px;}

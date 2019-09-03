@@ -72,6 +72,14 @@
               </div>
             </div> -->
             <div class="form-group col-md-4">
+                <label for="inputEmail4">Product Name</label>
+                <input type="text" class="form-control" placeholder="Product Name Here" formControlName="name" required
+                  [ngClass]="{ 'is-invalid': submitted && f.name.errors }">
+                <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+                  <div *ngIf="f.name.errors.required">Product Name is required</div>
+                </div>
+              </div>
+            <div class="form-group col-md-4">
               <label for="inputEmail4">Brand</label>
               <!-- <input type="text" class="form-control" placeholder="Brand here " formControlName="brand" required
                 [ngClass]="{ 'is-invalid': submitted && f.brand.errors }"> -->
@@ -86,13 +94,14 @@
               </div>
             </div>
             <div class="form-group col-md-4">
-              <label for="inputEmail4">Product Name</label>
-              <input type="text" class="form-control" placeholder="Product Name Here" formControlName="name" required
-                [ngClass]="{ 'is-invalid': submitted && f.name.errors }">
-              <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
-                <div *ngIf="f.name.errors.required">Product Name is required</div>
+                <label for="inputPassword4">Extra Details</label>
+                <input type="text" class="form-control" id="inputPassword4" placeholder="Any Extra Detail here"
+                  formControlName="details" required [ngClass]="{ 'is-invalid': submitted && f.details.errors }">
+                <div *ngIf="submitted && f.details.errors" class="invalid-feedback">
+                  <div *ngIf="f.details.errors.required">Details is required</div>
+                </div>
               </div>
-            </div>
+            
           </div>
           <div class="form-row">
             <div class="form-group col-md-4">
@@ -135,11 +144,11 @@
           </div>
           <div class="form-row">
             <div class="form-row text-center">
-                <label>&nbsp;Available For:&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                <div class="form-check form-group">
+                <label>&nbsp;Available For &nbsp;&nbsp;&nbsp;&nbsp;</label>
+                ( <div class="form-check form-group">
                 <input type="checkbox" #selectallcheckboxes (click)="selectAllCheckboxes()" class="form-check-input">
-                <label>Select All Hubs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                </div>
+                <label>Select All Hubs</label>
+                </div> ) <br>
                 <div *ngFor="let hub of allHub;let i=index">
                 <div class="form-check form-group">
                 <input type="checkbox" size="lg" class="form-check-input" #checkboxes  [ngClass]="{ 'is-invalid': submitted && f.available_for.errors }">
@@ -153,40 +162,32 @@
             </div>
             
           </div>
-          <div class="form-row">
-          <div class="form-group col-md-4">
-              <label for="inputPassword4">Extra Details</label>
-              <input type="text" class="form-control" id="inputPassword4" placeholder="Any Extra Detail here"
-                formControlName="details" required [ngClass]="{ 'is-invalid': submitted && f.details.errors }">
-              <div *ngIf="submitted && f.details.errors" class="invalid-feedback">
-                <div *ngIf="f.details.errors.required">Details is required</div>
-              </div>
-            </div>
-          </div>
-          <div class="form-row" *ngIf="editShowImage">
-              <div class="form-group">
+        
+          <div class="form-row" >
+              <div class=" col-md-4" *ngIf="editShowImage">
               <label>Product Image</label>
               <div class="col-sm-3 col-md-2 col-lg text-center" >
               <div class="avatar avatar-xxl avatar-online"><img src="{{editImage}}" class="rounded-circle" alt=""></div>
               </div>
               </div>
-          </div>
-          <div class="form-row offset-md-6">
-              <div class="form-group col-md-4">
-                <label for="inputEmail4">Select Product Image</label>
-                <input type="file" formControlName="image" (change)="selectFile($event)">
+         
+              <div class=" col-md-4">
+                  <div class="form-group  custom-file">
+                      <label class="custom-file-label" for="customFile">Select Product Image</label>
+                      <input type="file" formControlName="image" (change)="selectFile($event)" class="custom-file-input" id="customFile">
+                  </div>
+           
               </div>
+                <div class=" col-md-4 text-center">
+              
+                    <p-inputSwitch class="form-control" formControlName="is_active" required
+                      [ngClass]="{ 'is-invalid': submitted && f.is_active.errors }"></p-inputSwitch>
+                    <div *ngIf="submitted && f.is_active.errors" class="invalid-feedback">
+                      <div *ngIf="f.is_active.errors.required">Status is required</div>
+                    </div>
+                  </div>
            </div>
-          <div class="form-row text-center">
-            <div class="form-group col-md-2 text-center">
-              <label for="inputPassword4">Status</label>
-              <p-inputSwitch class="form-control" formControlName="is_active" required
-                [ngClass]="{ 'is-invalid': submitted && f.is_active.errors }"></p-inputSwitch>
-              <div *ngIf="submitted && f.is_active.errors" class="invalid-feedback">
-                <div *ngIf="f.is_active.errors.required">Status is required</div>
-              </div>
-            </div>
-          </div>
+         
           
           
           <br>

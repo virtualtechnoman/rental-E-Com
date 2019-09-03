@@ -79,9 +79,11 @@
               </div>
           </div>
           <div class="form-row offset-md-6">
-            <div class="form-group col-md-4">
-              <label for="inputEmail4">Select Vehicle Image</label>
-              <input type="file" formControlName="image" (change)="selectFile($event)">
+             
+            <div class="form-group custom-file">
+                <input type="file" class="custom-file-input" id="customFile" formControlName="image" (change)="selectFile($event)">
+              <label class="custom-file-label" for="customFile">Select Vehicle Image</label>
+              
             </div>
             </div>
           <div class="form-row">
