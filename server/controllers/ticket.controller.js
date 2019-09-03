@@ -5,35 +5,89 @@ const cartUpdateSchema = Joi.object({
 })
 
 const ticketCreateSchema = Joi.object({
-    // ticket_number: Joi.string().required(),
-    // created_by: { type: String, required: true },
+    customer: Joi.string().required(),
+    customerConcern: Joi.string().required(),
+    assignTo: Joi.string().required(),
+    isUrgent: Joi.boolean().optional(),
+    isSubscriptionClosed: Joi.boolean().optional(),
+    callType: Joi.object({
+        inbound: Joi.boolean(),
+        outbound: Joi.boolean()
+    }).or('inbound', 'outbound'),
+    customerConcernMedia: Joi.object({
+        mobile: Joi.boolean(),
+        whatsapp: Joi.boolean(),
+        hub: Joi.boolean()
+    }).or('mobile', 'whatsapp', 'hub'),
+    products: Joi.object({
+        milk: Joi.boolean(),
+        ghee: Joi.boolean(),
+        butter: Joi.boolean(),
+        cheese: Joi.boolean()
+    }),
     issues: Joi.object({
-        issue_with_previous_order: Joi.boolean().required(),
-        recharge_or_tech_related_issue: Joi.boolean().required(),
-        delivery_issue: Joi.boolean().required(),
-        quality_issue: Joi.boolean().required(),
-        timing_issue: Joi.boolean().required(),
-        other: Joi.boolean().required()
-    }).required(),
-    message:Joi.string().optional()
-    // note: Joi.string().required()
-    // created_at: { type: Date, default: Date.now },
-    // status: { type: String, default: "Pending" }
+        productConcern: ProductConcern,
+        serviceConcern: ServiceConcern,
+        closeSubscriptionRequest: CloseSubscriptionRequest,
+    })
 })
 
-const ticketMsgExecutive = Joi.object({
-    message:Joi.string().required()
+const ticketFollowUp = Joi.object({
+    followUpComments: Joi.string().required(),
+    actionTaken: Joi.string().required()
 })
-const ticketMsgCustomer = Joi.object({
-    message:Joi.string().required()
-})
-
 module.exports = {
     verifyCreate,
-    verifyExecutiveMsg,
-    verifyCustomerMsg
+    verifyTicketFollowUp
 }
 
 function verifyCreate(ticket) { return helper.validator(ticket, ticketCreateSchema) }
-function verifyExecutiveMsg(ticket) { return helper.validator(ticket, ticketMsgExecutive) } 
-function verifyCustomerMsg(ticket) { return helper.validator(ticket, ticketMsgCustomer) } 
+function verifyTicketFollowUp(ticket) { return helper.validator(ticket, ticketFollowUp) }
+// function verifyCustomerMsg(ticket) { return helper.validator(ticket, ticketMsgCustomer) }
+
+const ProductConcern = Joi.object({
+    milkComposition: Joi.object({
+        thinMilklessFat: Joi.boolean(),
+        thickMilkMoreFat: Joi.boolean(),
+    }),
+    impuritiesInMilk: Joi.object({
+        insectInMilk: Joi.boolean(),
+        siltInMilk: Joi.boolean(),
+        blackParticle: Joi.boolean(),
+    }),
+    packaging: Joi.object({
+        bottleBrokeOrChipped: Joi.boolean(),
+        sealBroken: Joi.boolean(),
+        dirtyCaps: Joi.boolean(),
+        noDCPLabel: Joi.boolean(),
+    }),
+    propertiesOfMilk: Joi.object({
+        offSmell: Joi.boolean(),
+        offTaste: Joi.boolean(),
+        curdlingOfMilk: Joi.boolean(),
+        noProperCurd: Joi.boolean(),
+        notYellowInColor: Joi.boolean(),
+        stickingToUtensilOnBoiling: Joi.boolean(),
+    })
+})
+const ServiceConcern = Joi.object({
+    deliverySchedule: Joi.object({
+        noDelivery: Joi.boolean(),
+        deliveredWithoutSubscription: Joi.boolean(),
+        wrongQuantityDelivered: Joi.boolean(),
+    }),
+    deliveryTiming: Joi.object({
+        deliveringLate: Joi.boolean(),
+        deliveringEarly: Joi.boolean(),
+        irregularDeliveryTime: Joi.boolean(),
+    }),
+    billingIssue: Joi.object({
+        paidAlready: Joi.boolean(),
+        wronglyBilledOnNonDeliveryDates: Joi.boolean()
+    }),
+    serviceIssue: Joi.object({
+        notFollowedUpRaisedConcern: Joi.boolean(),
+        notFollowedDeliveryInstruction: Joi.boolean(),
+        didNotStartSubscriptionAsPromised: Joi.boolean()
+    })
+})

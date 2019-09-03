@@ -227,7 +227,7 @@ router.post("/placeorder", authorizePrivilege("PLACE_ORDER"), (req, res) => {
                     order.status = "Placed";
                     let newOrder = new CustomerOrder(order);
                     newOrder.save().then(order => {
-                        CustomerOrder.findById(order._id).populate([{path:"placed_by products.product placed_to",populate:{path:"created_by available_for brand category"}}]).exec().then(d => {
+                        CustomerOrder.findById(order._id).populate([{path:"placed_by products.product placed_to",populate:{path:"created_by available_for brand category",select:"-password"}}]).exec().then(d => {
                             cart.delete();
                             return res.json({ status: 200, data: d, errors: false, message: "Order placed successfully" });
                         })
