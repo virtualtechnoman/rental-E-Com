@@ -42,6 +42,17 @@ router.get('/driver', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
     res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
   }
 })
+//Get all drivers
+router.get('/customer', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
+  try {
+    const allUsers = await User.find({ role: process.env.CUSTOMER_ROLE }, "-password").populate("role route area").exec();
+    // console.log(allUsers);
+    res.json({ status: 200, message: "All Customers", errors: false, data: allUsers });
+  }
+  catch (err) {
+    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
+  }
+})
 
 //Get all dboy
 router.get('/dboy', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
@@ -125,7 +136,7 @@ router.put('/id/:id', authorizePrivilege("UPDATE_USER"), (req, res) => {
     if (!isEmpty(result.errors)) {
       return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
     }
-    User.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
+    User.findByIdAndUpdate(req.params.id, {$set:result.data}, { new: true }, (err, doc) => {
       if (err) {
         console.log(err);
         return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating user data" });

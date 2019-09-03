@@ -48,6 +48,7 @@ module.exports = mongoose.model("order", new mongoose.Schema({
             note:{type:String}
         }
     },
+    declined: { type: Boolean, default: false },
     accepted: { type: Boolean, default: false },
     challan_accepted: { type: Boolean, default: false },
     recieved: { type: Boolean, default: false },

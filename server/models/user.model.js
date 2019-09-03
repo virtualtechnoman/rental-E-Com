@@ -21,6 +21,7 @@ const UserSchema = new mongoose.Schema({
   role: { type: mongoose.Schema.Types.ObjectId, ref: "user_role" },
   latitude:String,
   longitutde:String,
+  gender:String,
   //for customers =>
   dob: { type: Date },
   profile_picture:{type:String},
