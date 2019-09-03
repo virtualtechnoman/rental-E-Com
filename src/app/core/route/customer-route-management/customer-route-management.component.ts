@@ -73,8 +73,7 @@ export class CustomerRouteManagementComponent implements OnInit {
       }
     }
     this.routeId=this.allRoutes[this.selectedIndex-1]._id;
-    if(this.routeId){
-      this.allNoRouteCustomers.length=0;
+    if(this.routeId){ 
     var customer =<any> new Object();
     customer.customers=this.customerArray;
     customer.route=this.routeId
@@ -84,7 +83,6 @@ export class CustomerRouteManagementComponent implements OnInit {
       
     })
     this.routeService.getAllCustomersWithNoRoutes().subscribe((res:ResponseModel)=>{
-      this.allNoRouteCustomers.length=0;
       console.log(res.data)
       this.allNoRouteCustomers=res.data
     })
