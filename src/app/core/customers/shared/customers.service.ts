@@ -10,13 +10,14 @@ export class CustomersService {
     'Content-Type': 'application/json',
     'token': this.tokenService.getToken()
   });
-  url = "/api/customer"
+  url = "/api/user/customer"
   url2 = "/api/customertype"
   url3 = "/api/distirbutors"
   url4 = "/api/customerassign"
   url5 = "/api/sectors";
+  url7= '/api/customer/addresswithnoroute';
   url6 = '/api/corder/all';
-  url7= '/api/customer/addresswithnoroute'
+  url8 = '/api/corder/customer';
   constructor(private http: HttpClient,private tokenService:TokenStorage) { }
 
   getAllCustomers() {
@@ -124,5 +125,8 @@ export class CustomersService {
     return this.http.get(this.url7 + '/', { headers: this.headers })
   }
 
-
+  // 
+  getSpecificCustomerOrder(id){
+    return this.http.get(this.url8 + '/' +id, { headers: this.headers })
+  }
 }

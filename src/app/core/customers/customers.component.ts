@@ -32,7 +32,12 @@ export class CustomersComponent implements OnInit {
   editing: Boolean = false;
   submitted = false;
   registerForm: FormGroup;
-  viewArray:any=[]
+  viewArray:any=[];
+  orderHistory:any[]=[];
+  orderHistoryNumberInformation:any=[];
+  imageURL="https://binsar.s3.ap-south-1.amazonaws.com/";
+  showProfileImage:boolean=false;
+  image: string;
   constructor(private customerService: CustomersService, private formBuilder: FormBuilder, private toastr: ToastrService,private authService:AuthService) {
     this.currentcustomer = new CustomerClass();
     this.registerCustomer=new CustomerClass();
@@ -173,6 +178,30 @@ export class CustomersComponent implements OnInit {
   viewCustomer(i){
     this.viewArray=this.allcustomers[0][i]
     console.log(this.viewArray)
+    if(this.viewArray){
+      if(this.viewArray.profile_picture){
+        this.image=this.imageURL + this.viewArray.profile_picture
+        this.showProfileImage=true
+      }
+      else{
+        this.showProfileImage=false;
+      }
+    }
+    if(this.viewArray)
+
+    this.customerService.getSpecificCustomerOrder(this.viewArray._id).subscribe((res:ResponseModel)=>{
+      console.log(res.data)
+      this.orderHistory=res.data
+    })
+  }
+
+
+
+  seeCustomerFullOrderDetail(i){
+    if(this.orderHistory){
+      this.orderHistoryNumberInformation=this.orderHistory[i]
+      console.log(this.orderHistoryNumberInformation)
+    }
   }
   resetForm() {
     this.editing = false;

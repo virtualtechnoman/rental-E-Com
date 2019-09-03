@@ -54,6 +54,7 @@ export class UserComponent implements OnInit {
   licenseInformation:any;
   showImage:boolean=false;
   image:any;
+  selectedGender:any;
   constructor(private userService: UserService, private formBuilder: FormBuilder,
     private UserroleService: UserRoleService, private toastr: ToastrService, private activatedRoute: ActivatedRoute) {
     this.initForm();
@@ -94,14 +95,30 @@ export class UserComponent implements OnInit {
       street_address: ['', Validators.required],
       city: ['', Validators.required],
       profile_picture:[""],
-      dl_number:[""]
+      dl_number:[""],
+      dob:['',Validators.required],
+      gender:['']
     });
+  }
+
+  selectGender(event){
+    console.log(event)
+    if(event.target.value=="male"){
+      this.selectedGender="male"
+      this.registerForm.value.gender="male"
+    }
+    else {
+      this.selectedGender="female"
+      this.registerForm.value.gender="female"
+    }
+    console.log(this.registerForm.value)
   }
 
   driverField(event:any){
     console.log(event)
-
-    if(event.target.value=="5: 5d5e81a1549ce7c4877f5655"){
+    var driver=event.target.value.substring(0,1)
+    console.log(driver)
+    if(driver==5){
       this.showLicenceField=true;
     }
     else{
@@ -122,6 +139,8 @@ export class UserComponent implements OnInit {
 
   onSubmit() {
     this.submitted = true;
+    this.registerForm.value.gender=this.selectedGender
+    console.log(this.registerForm.value)
     // stop here if form is invalid
     if (this.registerForm.invalid) {
       return;
@@ -149,7 +168,7 @@ export class UserComponent implements OnInit {
           if(resp.status == 200 ){
             this.registerForm.value.profile_picture=this.keyProfileImage;
             
-    console.log(this.registerForm.value)
+            console.log(this.registerForm.value)  
             this.addUser(this.registerForm.value);
           }
         })

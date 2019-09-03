@@ -22,6 +22,21 @@ router.get("/", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS_OWN"), (req, res) =>
             return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
         });
 })
+//GET all orders placed by a specific User
+router.get("/customer/:id", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req, res) => {
+    CustomerOrder.find({ placed_by: req.params.id }).populate("placed_by placed_to")
+        .populate({
+            path: "products.product ",
+            populate:{
+                path:"created_by category brand available_for", select:"-password"
+            }
+        })
+        .exec().then(doc => {
+            return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
+        }).catch(err => {
+            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
+        });
+})
 
 //GET all orders
 router.get("/all", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req, res) => {
