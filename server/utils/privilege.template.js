@@ -131,5 +131,10 @@ module.exports = (p=false)=>({
     //Banner Privilege
     DELETE_BANNER:p,
     ADD_NEW_BANNER:p,
-    GET_ALL_BANNERS:p
+    GET_ALL_BANNERS:p,
+    //Attendance Privilege
+    GET_ALL_ATTENDANCE:p,
+    ADD_NEW_ATTENDANCE:p,
+    DELETE_ATTENDANCE:p,
+    GET_ALL_ATTENDANCE:p,
 })
