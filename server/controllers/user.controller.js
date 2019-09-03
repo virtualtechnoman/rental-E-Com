@@ -9,8 +9,8 @@ const userSchema = Joi.object({
   role: Joi.string().required(), 
   mobile_number: Joi.string().required(), 
   profile_picture: Joi.string().optional(),
-  is_active: Joi.boolean().required(), 
-  dob:Joi.date().required(),
+  is_active: Joi.boolean().required(),
+  H_no_society:Joi.string().required(),
   gender:Joi.string().required(),
   landmark: Joi.string().required(), 
   street_address: Joi.string().required(), 
@@ -38,6 +38,15 @@ const userRegisterSchema = Joi.object({
   password: Joi.string().required(),
   email: Joi.string().email().required(),
   // role:Joi.string().required()
+})
+const customerAddSchema = Joi.object({
+  full_name:Joi.string().required(),
+  mobile_number: Joi.string().required(),
+  landmark: Joi.string().required(),
+  street_address: Joi.string().required(),
+  city : Joi.string().required(),
+  dob : Joi.date().required(),
+  H_no_society:Joi.string().optional()
 })
 const userMobileRegisterSchema = Joi.object({
   // full_name: Joi.string().required(),
@@ -97,4 +106,5 @@ function verifyMobileLogin(user) { return helper.validator(user, userMobileLogin
 function verifyLogin(user) { return helper.validator(user, userLoginSchema) }
 function verifyMobileOtp(user) { return helper.validator(user, userMobileOtpSchema) }
 function verifyAddDriver(user) { return helper.validator(user, driverAddSchema) }
+function verifyAddCustomer(user) { return helper.validator(user, driverAddSchema) }
 

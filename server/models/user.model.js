@@ -16,6 +16,7 @@ const UserSchema = new mongoose.Schema({
   },
   landmark: {type:String},
   street_address: {type:String},
+  H_no_society:{type:String},
   city: {type:String},
   area: {type: mongoose.Schema.Types.ObjectId, ref: "area"},
   role: { type: mongoose.Schema.Types.ObjectId, ref: "user_role" },
