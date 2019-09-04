@@ -1,51 +1,9 @@
 const mongoose = require("mongoose");
-// const message = mongoose.Schema({
-//     customer: String, message: String, executive: { type: mongoose.Schema.Types.ObjectId, ref: "user" }, at: { type: Date, default: Date.now }
-// }, {
-//         versionKey: false,
-//         _id: false
-//     })
-
-
-module.exports = mongoose.model("ticket", new mongoose.Schema({
-    ticket_number: { type: String, required: true },
-    customerConcern: String,
-    assignTo: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
-    customer: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
-    created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
-    isUrgent: { type: Boolean, default: false },
-    isSubscriptionClosed: { type: Boolean, default: false },
-    callType: {
-        inbound: { type: Boolean, default: false },
-        outbound: { type: Boolean, default: false }
-    },
-    customerConcernMedia: {
-        mobile: { type: Boolean, default: false },
-        whatsapp: { type: Boolean, default: false },
-        hub: { type: Boolean, default: false }
-    },
-    products: {
-        milk: { type: Boolean, default: false },
-        ghee: { type: Boolean, default: false },
-        butter: { type: Boolean, default: false },
-        cheese: { type: Boolean, default: false }
-    },
-    issues: {
-        productConcern: ProductConcern,
-        serviceConcern: ServiceConcern,
-        closeSubscriptionRequest: CloseSubscriptionRequest
-    },
-    responses: [Responses],
-    created_at: { type: Date, default: Date.now },
-    status: { type: String, default: "Pending" }
-}, {
-        versionKey: false
-    }))
 
 const Responses = mongoose.Schema({
-    followUpComments:String,
-    actionTaken:String,
-    at:{type:Date, default:Date.now}
+    followUpComments: String,
+    actionTaken: String,
+    at: { type: Date, default: Date.now }
 });
 const ProductConcern = mongoose.Schema({
     milkComposition: {
@@ -71,7 +29,7 @@ const ProductConcern = mongoose.Schema({
         notYellowInColor: { type: Boolean, default: false },
         stickingToUtensilOnBoiling: { type: Boolean, default: false },
     }
-},{
+}, {
         versionKey: false,
         _id: false
     });
@@ -118,3 +76,37 @@ const CloseSubscriptionRequest = mongoose.Schema({
         versionKey: false,
         _id: false
     })
+module.exports = mongoose.model("ticket", new mongoose.Schema({
+    ticket_number: { type: String, required: true },
+    customerConcern: String,
+    assignTo: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+    customer: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
+    created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
+    isUrgent: { type: Boolean, default: false },
+    isSubscriptionClosed: { type: Boolean, default: false },
+    callType: {
+        inbound: { type: Boolean, default: false },
+        outbound: { type: Boolean, default: false }
+    },
+    customerConcernMedia: {
+        mobile: { type: Boolean, default: false },
+        whatsapp: { type: Boolean, default: false },
+        hub: { type: Boolean, default: false }
+    },
+    products: {
+        milk: { type: Boolean, default: false },
+        ghee: { type: Boolean, default: false },
+        butter: { type: Boolean, default: false },
+        cheese: { type: Boolean, default: false }
+    },
+    issues: {
+        productConcern: ProductConcern,
+        serviceConcern: ServiceConcern,
+        closeSubscriptionRequest: CloseSubscriptionRequest
+    },
+    responses: [Responses],
+    created_at: { type: Date, default: Date.now },
+    status: { type: String, default: "Pending" }
+}, {
+        versionKey: false
+    }))

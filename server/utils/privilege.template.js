@@ -133,8 +133,19 @@ module.exports = (p=false)=>({
     ADD_NEW_BANNER:p,
     GET_ALL_BANNERS:p,
     //Attendance Privilege
-    GET_ALL_ATTENDANCE:p,
-    ADD_NEW_ATTENDANCE:p,
+    // GET_ALL_ATTENDANCE:p,
+    GET_ATTENDANCE_OWN:p,
+    ADD_ATTENDANCE_OWN:p,
     DELETE_ATTENDANCE:p,
     GET_ALL_ATTENDANCE:p,
+    //Event Type Privilege
+    GET_ALL_EVENT_TYPES:p,
+    ADD_NEW_EVENT_TYPE:p,
+    UPDATE_EVENT_TYPE:p,
+    DELETE_EVENT_TYPE:p,
+    //Event Organizer Privilege
+    GET_ALL_EVENT_ORGANIZERS:p,
+    ADD_NEW_EVENT_ORGANIZER:p,
+    UPDATE_EVENT_ORGANIZER:p,
+    DELETE_EVENT_ORGANIZER:p,
 })

@@ -4,34 +4,6 @@ const cartUpdateSchema = Joi.object({
     quantity: Joi.number().min(1).required()
 })
 
-const ticketCreateSchema = Joi.object({
-    customer: Joi.string().required(),
-    customerConcern: Joi.string().required(),
-    assignTo: Joi.string().required(),
-    isUrgent: Joi.boolean().optional(),
-    isSubscriptionClosed: Joi.boolean().optional(),
-    callType: Joi.object({
-        inbound: Joi.boolean(),
-        outbound: Joi.boolean()
-    }).or('inbound', 'outbound'),
-    customerConcernMedia: Joi.object({
-        mobile: Joi.boolean(),
-        whatsapp: Joi.boolean(),
-        hub: Joi.boolean()
-    }).or('mobile', 'whatsapp', 'hub'),
-    products: Joi.object({
-        milk: Joi.boolean(),
-        ghee: Joi.boolean(),
-        butter: Joi.boolean(),
-        cheese: Joi.boolean()
-    }),
-    issues: Joi.object({
-        productConcern: ProductConcern,
-        serviceConcern: ServiceConcern,
-        closeSubscriptionRequest: CloseSubscriptionRequest,
-    })
-})
-
 const ticketFollowUp = Joi.object({
     followUpComments: Joi.string().required(),
     actionTaken: Joi.string().required()
@@ -89,5 +61,48 @@ const ServiceConcern = Joi.object({
         notFollowedUpRaisedConcern: Joi.boolean(),
         notFollowedDeliveryInstruction: Joi.boolean(),
         didNotStartSubscriptionAsPromised: Joi.boolean()
+    })
+})
+const CloseSubscriptionRequest = Joi.object({
+    relocated: Joi.boolean(),
+    costly: Joi.boolean(),
+    wantA2Milk: Joi.boolean(),
+    timingIssue: Joi.boolean(),
+    milkCompositionIssue: Joi.boolean(),
+    billingIssue: Joi.boolean(),
+    healthIssue: Joi.boolean(),
+    otherBrand: Joi.boolean(),
+    localVendor: Joi.boolean(),
+    wantBuffaloMilk: Joi.boolean(),
+    noReason: Joi.boolean(),
+    doctorAdvice: Joi.boolean(),
+    lessConsumption: Joi.boolean()
+})
+
+const ticketCreateSchema = Joi.object({
+    customer: Joi.string().required(),
+    customerConcern: Joi.string().required(),
+    assignTo: Joi.string().required(),
+    isUrgent: Joi.boolean().optional(),
+    isSubscriptionClosed: Joi.boolean().optional(),
+    callType: Joi.object({
+        inbound: Joi.boolean(),
+        outbound: Joi.boolean()
+    }).or('inbound', 'outbound'),
+    customerConcernMedia: Joi.object({
+        mobile: Joi.boolean(),
+        whatsapp: Joi.boolean(),
+        hub: Joi.boolean()
+    }).or('mobile', 'whatsapp', 'hub'),
+    products: Joi.object({
+        milk: Joi.boolean(),
+        ghee: Joi.boolean(),
+        butter: Joi.boolean(),
+        cheese: Joi.boolean()
+    }),
+    issues: Joi.object({
+        productConcern: ProductConcern,
+        serviceConcern: ServiceConcern,
+        closeSubscriptionRequest: CloseSubscriptionRequest,
     })
 })
