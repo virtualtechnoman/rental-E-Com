@@ -11,7 +11,7 @@ const Product = require("../models/Products.model");
 
 //GET own Tickets
 router.get("/", authorizePrivilege("GET_TICKETS_OWN"), (req, res) => {
-    Ticket.find({ created_by: req.user._id }, "ticket_number created_at status", {
+    Ticket.find({ created_by: req.user._id },null, {
         sort: {
             created_at: 'desc' //Sort by Date DESC
         }
@@ -59,10 +59,13 @@ router.post("/", authorizePrivilege("ADD_NEW_TICKET"), (req, res) => {
 
 //Follow up
 router.put("/followupconern/:id", authorizePrivilege("CONCERN_FOLLOWUP"), (req, res) => {
+
+    console.log("FIELDS : ",req.body);
     let result = TicketController.verifyTicketFollowUp(req.body);
     if (!isEmpty(result.errors))
         return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
-    Ticket.findById(req.params.id,{$push:result.data},{new:true}).exec().then(_tkt=>{
+        result.data.by = req.user._id;
+    Ticket.findByIdAndUpdate(req.params.id,{$push:{responses:result.data}},{new:true}).populate([{path:"created_by customer assignTo", select :"-password"}]).exec().then(_tkt=>{
         res.json({ status: 200, data: _tkt, errors: false, message: "Ticket Updated Successfully!" });
     }).catch(err=>{
         console.log(err);

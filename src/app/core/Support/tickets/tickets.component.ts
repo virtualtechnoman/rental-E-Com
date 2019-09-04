@@ -4,6 +4,9 @@ import { ResponseModel } from '../../../shared/shared.model';
 import { Subject } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { UserService } from '../../user/shared/user-service.service';
+import { CustomersService } from '../../customers/shared/customers.service';
+import { tick } from '@angular/core/testing';
 
 @Component({
   selector: 'app-tickets',
@@ -18,6 +21,7 @@ export class TicketsComponent implements OnInit {
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
   ticketsForm: FormGroup;
+  followUpForm: FormGroup;
   submitted:boolean=false;
   editing:boolean=false;
   viewIssuesArray:any=[];
@@ -26,88 +30,285 @@ export class TicketsComponent implements OnInit {
   textEntered:any;
   viewTotalData:any=[];
   ticketIndex:number;
-  constructor(private supportService:SupportService ,private formBuilder:FormBuilder,private toastr:ToastrService) { }
+  showCard:boolean=false;
+  name:string="";
+  showProductConcern:boolean=false;
+  showServiceConcern:boolean=false;
+  showCloseSubscription:boolean=false;
+  showCard2:boolean=false;
+  allUsers:any[]=[]
+  allCustomers:any[]=[];
+  viewArray:any=[]
+  currenTicketId: any;
+  currentIndex: any;
+  callType:any;
+  customerConcernMedia:any;
+  Products:any;
+  showTicketPructProblem:boolean=false;
+  showTicketServiceProblem:boolean=false;
+  showTicketSubscriptionProblem:boolean=false;
+  constructor(private supportService:SupportService ,private formBuilder:FormBuilder,private toastr:ToastrService,private userService:UserService,private customerService:CustomersService) { }
 
   ngOnInit() {  
-    this.ticketsForm = this.formBuilder.group({
-      message:[''],
-      issues: this.formBuilder.group({
-        issue_with_previous_order: [false],
-        recharge_or_tech_related_issue: [false],
-        delivery_issue: [false],
-        quality_issue: [false],
-        timing_issue: [false],
-        other: [false]
-  })
-})
-
+    
     this.dtOptions = {
-    pagingType: 'full_numbers',
-    lengthMenu: [
-      [10, 15, 25, -1],
-      [10, 15, 25, 'All']
-    ],
-    destroy: true,
-    retrive: true,
-    dom: '<"html5buttons"B>lTfgitp',
-    language: {
-      search: '_INPUT_',
-      searchPlaceholder: 'Search records',
-    },
-    // dom: 'Bfrtip',
-    buttons: [
-      // 'colvis',
-      'copy',
-      'print',
-      'excel',
-    ]
-  };
+      pagingType: 'full_numbers',
+      lengthMenu: [
+        [10, 15, 25, -1],
+        [10, 15, 25, 'All']
+      ],
+      destroy: true,
+      retrive: true,
+      dom: '<"html5buttons"B>lTfgitp',
+      language: {
+        search: '_INPUT_',
+        searchPlaceholder: 'Search records',
+      },
+      // dom: 'Bfrtip',
+      buttons: [
+        // 'colvis',
+        'copy',
+        'print',
+        'excel',
+      ]
+    };
+    this.followUpForm=this.formBuilder.group({
+      followUpComments:[''],
+      actionTaken:['']
+    })
+    this.ticketsForm=this.formBuilder.group({
+      customer:[''],
+      customerConcern:[''],
+      assignTo:[''],
+      isUrgent:[false],
+      isSubscriptionClosed:[false],
+      callType:this.formBuilder.group({
+        inbound:[false],
+        outbound:[false]
+      }),
+      customerConcernMedia:this.formBuilder.group({
+        mobile:[false],
+        whatsapp:[false],
+        hub:[false]
+      }),
+      products:this.formBuilder.group({
+        milk: [false],
+        ghee: [false],
+        butter: [false],
+        cheese: [false],
+      }),
+        milkComposition:this.formBuilder.group({ 
+        thinMilklessFat:[false] ,
+        thickMilkMoreFat:[false] ,
+    }),
+    impuritiesInMilk:this.formBuilder.group({ 
+      insectInMilk:[false] ,
+      siltInMilk:[false] ,
+      blackParticle:[false] ,
+
+    }),
+    packaging:this.formBuilder.group({ 
+      bottleBrokeOrChipped:[false] ,
+      sealBroken:[false] ,
+      dirtyCaps:[false] ,
+      noDCPLabel:[false] ,
+  }),
+  propertiesOfMilk:this.formBuilder.group({ 
+    offSmell:[false] ,
+    offTaste:[false] ,
+    curdlingOfMilk:[false] ,
+    noProperCurd:[false] ,
+    notYellowInColor:[false] ,
+    stickingToUtensilOnBoiling:[false] ,
+}),
+deliverySchedule:this.formBuilder.group({ 
+  noDelivery:[false] ,
+  deliveredWithoutSubscription:[false] ,
+  wrongQuantityDelivered:[false] ,
+}),
+deliveryTiming:this.formBuilder.group({ 
+  deliveringLate:[false] ,
+  deliveringEarly:[false] ,
+  irregularDeliveryTime:[false] ,
+}),
+
+billingIssue:this.formBuilder.group({ 
+  paidAlready:[false] ,
+  wronglyBilledOnNonDeliveryDates:[false] ,
+}),
+
+serviceIssue:this.formBuilder.group({ 
+  notFollowedUpRaisedConcern:[false] ,
+  notFollowedDeliveryInstruction:[false] ,
+  didNotStartSubscriptionAsPromised:[false] ,
+}),
+closeSubscriptionRequest:this.formBuilder.group({
+  
+  relocated:[false] ,
+  costly:[false] ,
+  wantA2Milk:[false] ,
+  timingIssue:[false] ,
+  milkCompositionIssue:[false] ,
+  billingIssue:[false] ,
+  healthIssue:[false] ,
+  otherBrand:[false] ,
+  localVendor:[false] ,
+  wantBuffaloMilk:[false] ,
+  noReason:[false] ,
+  doctorAdvice:[false] ,
+  lessConsumption:[false] ,
+})
+  })
+
     this.getTickets();
+    this.getUsers();
+    this.getCustomer();
+  }
+  
+  get f() { return this.ticketsForm.controls; }
+  get f2() { return this.followUpForm.controls; }
+
+  getCustomer(){
+    this.customerService.getAllCustomers().subscribe((res:ResponseModel)=>{
+      this.allCustomers=res.data
+      console.log(this.allCustomers)
+    })
   }
 
-  onSubmit() {
-    this.submitted = true;
-
-    // stop here if form is invalid
-    if (this.ticketsForm.invalid) {
-        return;
-    }
-    if(this.ticketsForm.value.issues.issue_with_previous_order== null){
-      this.ticketsForm.value.issues.issue_with_previous_order=false
-    }
-    if(this.ticketsForm.value.issues.recharge_or_tech_related_issue== null){
-      this.ticketsForm.value.issues.recharge_or_tech_related_issue=false
-    }
-    if(this.ticketsForm.value.issues.delivery_issue== null){
-      this.ticketsForm.value.issues.delivery_issue=false
-    }
-    if(this.ticketsForm.value.issues.quality_issue== null){
-      this.ticketsForm.value.issues.quality_issue=false
-    }
-    if(this.ticketsForm.value.issues.timing_issue== null){
-      this.ticketsForm.value.issues.timing_issue=false
-    }
-    if(this.ticketsForm.value.issues.other== null){
-      this.ticketsForm.value.issues.other=false
-    }
-    
-    if(this.ticketsForm.value.message== null){
-      this.ticketsForm.value.message=""
-    }
-
-    const ticket =<any> new Object();
-    ticket.issues=this.ticketsForm.value.issues;
-    ticket.message=this.ticketsForm.value.message;
-    console.log(ticket)
-
-    this.supportService.addTicket(ticket).subscribe((res:ResponseModel)=>{
-      this.allTickets.push(res.data);
-      jQuery('#modal3').modal('hide');
-      this.toastr.success('Ticket Added', 'Success!');
-      this.resetForm();
+  getUsers(){
+    this.userService.getAllUsers().subscribe((res:ResponseModel)=>{
+      this.allUsers=res.data;
+      console.log(this.allUsers)
     })
+  }
 
-}
+  onSubmitFollowUpForm(){
+    console.log(this.followUpForm.value)
+    this.supportService.sendTicketFollowUp(this.allTickets[this.currentIndex]._id,this.followUpForm.value).subscribe((res:ResponseModel)=>{
+      this.allTickets.splice(this.currentIndex,1,res.data)
+      this.toastr.info('Follow up is successfull!', 'Succcess!!');
+      jQuery('#ticketModal').modal('hide');
+      console.log(res.data)
+    })
+  }
+
+  onSubmit(){
+    this.ticketsForm.value.callType.inbound=Boolean(this.ticketsForm.value.callType.inbound)
+    this.ticketsForm.value.callType.outbound=Boolean(this.ticketsForm.value.callType.outbound)
+
+
+    this.ticketsForm.value.customerConcernMedia.mobile=Boolean(this.ticketsForm.value.customerConcernMedia.mobile)
+    this.ticketsForm.value.customerConcernMedia.whatsapp=Boolean(this.ticketsForm.value.customerConcernMedia.whatsapp)
+    this.ticketsForm.value.customerConcernMedia.hub=Boolean(this.ticketsForm.value.customerConcernMedia.hub)
+    this.ticketsForm.value.products.milk=Boolean(this.ticketsForm.value.products.milk)
+    this.ticketsForm.value.products.ghee=Boolean(this.ticketsForm.value.products.ghee)
+    this.ticketsForm.value.products.butter=Boolean(this.ticketsForm.value.products.butter)
+    this.ticketsForm.value.products.cheese=Boolean(this.ticketsForm.value.products.cheese)
+    this.ticketsForm.value.milkComposition.thinMilklessFat=Boolean(this.ticketsForm.value.milkComposition.thinMilklessFat)
+    this.ticketsForm.value.milkComposition.thickMilkMoreFat=Boolean(this.ticketsForm.value.milkComposition.thickMilkMoreFat)
+    this.ticketsForm.value.impuritiesInMilk.insectInMilk=Boolean(this.ticketsForm.value.impuritiesInMilk.insectInMilk)
+    this.ticketsForm.value.impuritiesInMilk.siltInMilk=Boolean(this.ticketsForm.value.impuritiesInMilk.siltInMilk)
+    this.ticketsForm.value.impuritiesInMilk.blackParticle=Boolean(this.ticketsForm.value.impuritiesInMilk.blackParticle)
+    this.ticketsForm.value.packaging.bottleBrokeOrChipped=Boolean(this.ticketsForm.value.packaging.bottleBrokeOrChipped)
+    this.ticketsForm.value.packaging.sealBroken=Boolean(this.ticketsForm.value.packaging.sealBroken)
+    this.ticketsForm.value.packaging.dirtyCaps=Boolean(this.ticketsForm.value.packaging.dirtyCaps)
+    this.ticketsForm.value.packaging.noDCPLabel=Boolean(this.ticketsForm.value.packaging.noDCPLabel)
+    this.ticketsForm.value.propertiesOfMilk.offSmell=Boolean(this.ticketsForm.value.propertiesOfMilk.offSmell)
+    this.ticketsForm.value.propertiesOfMilk.offTaste=Boolean(this.ticketsForm.value.propertiesOfMilk.offTaste)
+    this.ticketsForm.value.propertiesOfMilk.curdlingOfMilk=Boolean(this.ticketsForm.value.propertiesOfMilk.curdlingOfMilk)
+    this.ticketsForm.value.propertiesOfMilk.noProperCurd=Boolean(this.ticketsForm.value.propertiesOfMilk.noProperCurd)
+    this.ticketsForm.value.propertiesOfMilk.notYellowInColor=Boolean(this.ticketsForm.value.propertiesOfMilk.notYellowInColor)
+    this.ticketsForm.value.propertiesOfMilk.stickingToUtensilOnBoiling=Boolean(this.ticketsForm.value.propertiesOfMilk.stickingToUtensilOnBoiling)
+
+    // Service concern
+    
+    this.ticketsForm.value.deliverySchedule.noDelivery=Boolean(this.ticketsForm.value.deliverySchedule.noDelivery)
+    this.ticketsForm.value.deliverySchedule.deliveredWithoutSubscription=Boolean(this.ticketsForm.value.deliverySchedule.deliveredWithoutSubscription)
+    this.ticketsForm.value.deliverySchedule.wrongQuantityDelivered=Boolean(this.ticketsForm.value.deliverySchedule.wrongQuantityDelivered)
+
+    
+    this.ticketsForm.value.deliveryTiming.deliveringLate=Boolean(this.ticketsForm.value.deliveryTiming.deliveringLate)
+    this.ticketsForm.value.deliveryTiming.deliveringEarly=Boolean(this.ticketsForm.value.deliveryTiming.deliveringEarly)
+    this.ticketsForm.value.deliveryTiming.irregularDeliveryTime=Boolean(this.ticketsForm.value.deliveryTiming.irregularDeliveryTime)
+
+    
+    this.ticketsForm.value.billingIssue.paidAlready=Boolean(this.ticketsForm.value.billingIssue.paidAlready)
+    this.ticketsForm.value.billingIssue.wronglyBilledOnNonDeliveryDates=Boolean(this.ticketsForm.value.billingIssue.wronglyBilledOnNonDeliveryDates)
+
+    
+    this.ticketsForm.value.serviceIssue.notFollowedUpRaisedConcern=Boolean(this.ticketsForm.value.serviceIssue.notFollowedUpRaisedConcern)
+    this.ticketsForm.value.serviceIssue.notFollowedDeliveryInstruction=Boolean(this.ticketsForm.value.serviceIssue.notFollowedDeliveryInstruction)
+    this.ticketsForm.value.serviceIssue.didNotStartSubscriptionAsPromised=Boolean(this.ticketsForm.value.serviceIssue.didNotStartSubscriptionAsPromised)
+
+
+    // Closed Subscription
+    this.ticketsForm.value.closeSubscriptionRequest.relocated=Boolean(this.ticketsForm.value.closeSubscriptionRequest.relocated)
+    this.ticketsForm.value.closeSubscriptionRequest.costly=Boolean(this.ticketsForm.value.closeSubscriptionRequest.costly)
+    this.ticketsForm.value.closeSubscriptionRequest.wantA2Milk=Boolean(this.ticketsForm.value.closeSubscriptionRequest.wantA2Milk)
+    this.ticketsForm.value.closeSubscriptionRequest.timingIssue=Boolean(this.ticketsForm.value.closeSubscriptionRequest.timingIssue)
+    this.ticketsForm.value.closeSubscriptionRequest.milkCompositionIssue=Boolean(this.ticketsForm.value.closeSubscriptionRequest.milkCompositionIssue)
+    this.ticketsForm.value.closeSubscriptionRequest.billingIssue=Boolean(this.ticketsForm.value.closeSubscriptionRequest.billingIssue)
+    this.ticketsForm.value.closeSubscriptionRequest.healthIssue=Boolean(this.ticketsForm.value.closeSubscriptionRequest.healthIssue)
+    this.ticketsForm.value.closeSubscriptionRequest.otherBrand=Boolean(this.ticketsForm.value.closeSubscriptionRequest.otherBrand)
+    this.ticketsForm.value.closeSubscriptionRequest.localVendor=Boolean(this.ticketsForm.value.closeSubscriptionRequest.localVendor)
+    this.ticketsForm.value.closeSubscriptionRequest.wantBuffaloMilk=Boolean(this.ticketsForm.value.closeSubscriptionRequest.wantBuffaloMilk)
+    this.ticketsForm.value.closeSubscriptionRequest.noReason=Boolean(this.ticketsForm.value.closeSubscriptionRequest.noReason)
+    this.ticketsForm.value.closeSubscriptionRequest.doctorAdvice=Boolean(this.ticketsForm.value.closeSubscriptionRequest.doctorAdvice)
+    this.ticketsForm.value.closeSubscriptionRequest.lessConsumption=Boolean(this.ticketsForm.value.closeSubscriptionRequest.lessConsumption)
+
+    // isSubscriptionClosed and isUrgent
+
+    this.ticketsForm.value.isSubscriptionClosed=Boolean(this.ticketsForm.value.isSubscriptionClosed)
+    this.ticketsForm.value.isUrgent=Boolean(this.ticketsForm.value.isUrgent)
+    const ticket=<any> new Object();
+    ticket['issues'] = {};
+    ticket['callType'] = {};
+    ticket['customerConcernMedia'] = {};
+    ticket['products'] = {};
+    ticket['issues']['productConcern']={
+      milkComposition:this.ticketsForm.value.milkComposition,
+      impuritiesInMilk:this.ticketsForm.value.impuritiesInMilk,
+      packaging:this.ticketsForm.value.packaging,
+      propertiesOfMilk:this.ticketsForm.value.propertiesOfMilk
+    }
+    ticket['issues']['serviceConcern']={
+      deliverySchedule:this.ticketsForm.value.deliverySchedule,
+      serviceIssue:this.ticketsForm.value.serviceIssue,
+      deliveryTiming:this.ticketsForm.value.deliveryTiming,
+      billingIssue:this.ticketsForm.value.billingIssue
+    }
+    ticket['issues']['closeSubscriptionRequest']=this.ticketsForm.value.closeSubscriptionRequest
+    ticket['customer']=this.ticketsForm.value.customer
+    ticket['customerConcern']=this.ticketsForm.value.customerConcern
+    ticket['assignTo']=this.ticketsForm.value.assignTo
+    ticket['isUrgent']=this.ticketsForm.value.isUrgent
+    ticket['isSubscriptionClosed']=this.ticketsForm.value.isSubscriptionClosed
+    ticket['callType']={
+      inbound:this.ticketsForm.value.callType.inbound,
+      outbound:this.ticketsForm.value.callType.outbound
+    }
+    ticket['customerConcernMedia']={
+      mobile:this.ticketsForm.value.customerConcernMedia.mobile,
+      whatsapp:this.ticketsForm.value.customerConcernMedia.whatsapp,
+      hub:this.ticketsForm.value.customerConcernMedia.hub
+    }
+    ticket['products']={
+      milk:this.ticketsForm.value.products.milk,
+      ghee:this.ticketsForm.value.products.ghee,
+      butter:this.ticketsForm.value.products.butter,
+      cheese:this.ticketsForm.value.products.cheese
+    }
+
+    console.log(ticket)
+    this.supportService.addTicket(ticket).subscribe((res:ResponseModel)=>{
+      this.allTickets.push(res.data)
+      console.log(res.data)
+      this.toastr.info('Ticket Has Been Generated Successfully!', 'Generated!!');
+      jQuery('#modal3').modal('hide');
+    })
+    console.log(this.ticketsForm.value)
+  }
+
 
   getTickets(){
     this.supportService.getAllTickets().subscribe((res:ResponseModel)=>{
@@ -117,39 +318,98 @@ export class TicketsComponent implements OnInit {
     })
   }
 
-  viewTicket(i){
-    this.ticketID=this.allTickets[i]._id;
-    this.ticketIndex=i;
-    this.supportService.getTicketInfo(this.ticketID).subscribe((res:ResponseModel)=>{
-      this.viewTotalData=res.data;
-      console.log(res.data)
-      this.viewIssuesArray=res.data.issues
-      this.viewMessagesArray=res.data.messages
-      console.log(this.viewIssuesArray,this.viewMessagesArray)
-    })
-  }
-
-  ticketText(event:any){
-    this.textEntered=event.target.value;
-  }
-
-  sendMessage(){
-    console.log(this.textEntered)
-    const message=<any> new Object();
-    message.message=this.textEntered;
-    console.log(message)
-    this.supportService.sendMessage(this.ticketID,message).subscribe((res:ResponseModel)=>{
-      console.log(res.data)
-      this.searchInput.nativeElement.value = '';
-      this.viewMessagesArray.push(res.data.messages[res.data.messages.length-1])
-    })
-  }
 
   resetForm() {
     this.editing = false;
     this.submitted = false;
+    this.showProductConcern=true;
+    this.showServiceConcern=false;
+    this.showCloseSubscription=false;
     this.ticketsForm.reset();
     // this.initForm();
   }
+products(){
+  this.showProductConcern=true;
+  this.showServiceConcern=false;
+  this.showCloseSubscription=false;
+}
+service(){
+  
+  this.showProductConcern=false;
+  this.showServiceConcern=true;
+  this.showCloseSubscription=false;
+}
 
+subscription(){
+  this.showProductConcern=false;
+  this.showServiceConcern=false;
+  this.showCloseSubscription=true;
+}
+
+showTicketProductConcern(){
+  this.showTicketPructProblem=true;
+  this.showTicketServiceProblem=false;
+  this.showTicketSubscriptionProblem=false;
+}
+
+showTicketServiceConcern(){
+  this.showTicketPructProblem=false;
+  this.showTicketServiceProblem=true;
+  this.showTicketSubscriptionProblem=false;
+}
+
+showTicketSubscriptionConcern(){
+this.showTicketSubscriptionProblem=true;
+this.showTicketPructProblem=false;
+  this.showTicketServiceProblem=false;
+}
+
+viewTicket(i){
+  this.showTicketPructProblem=true;
+  this.showTicketServiceProblem=false;
+  this.showTicketSubscriptionProblem=false;
+  this.viewArray=this.allTickets[i]
+  console.log(this.viewArray)
+  this.editing=true;
+    this.currenTicketId = this.allTickets[i]._id;
+    this.currentIndex = i;
+    if(this.viewArray.callType.inbound==true){
+      this.callType="inbound"
+    }
+    else{
+      this.callType="inbound"
+    }
+
+    if(this.viewArray.customerConcernMedia.hub==true){
+      this.customerConcernMedia="hub"
+    }
+    else if(this.viewArray.customerConcernMedia.mobile==true){
+      this.customerConcernMedia="mobile"
+    }
+    else{
+      this.customerConcernMedia="whatsapp"
+    }
+
+    if(this.viewArray.products.butter==true){
+      this.Products="butter"
+    }
+    else if(this.viewArray.products.cheese==true){
+      this.Products="cheese"
+    }
+    else if(this.viewArray.products.ghee==true){
+      this.Products="ghee"
+    }
+    else{
+      this.Products="milk"
+    }
+
+    this.setFormValue();
+}
+setFormValue() {
+    if(this.viewArray.responses.length>0){
+      this.followUpForm.controls['actionTaken'].setValue(this.viewArray.responses[this.viewArray.responses.length-1].actionTaken)
+      this.followUpForm.controls['followUpComments'].setValue(this.viewArray.responses[this.viewArray.responses.length-1].followUpComments)
+    }
+
+}
 }
