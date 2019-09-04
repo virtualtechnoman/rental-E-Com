@@ -18,11 +18,12 @@ router.get("/all", authorizePrivilege("GET_ALL_ATTENDANCE"), (req, res) => {
 // Get own attendance
 router.get("/", authorizePrivilege("GET_ATTENDANCE_OWN"), (req, res) => {
     Attendance.findOne({user:req.user._id}).lean().exec().then(docs => {
-        if (docs.length > 0)
+        if (docs)
             res.json({ status: 200, data: docs, errors: false, message: "Your attendance" });
         else
-            res.json({ status: 200, data: docs, errors: true, message: "No attendance found" });
+            res.json({ status: 200, data: {user: req.user._id,dates:[]}, errors: false, message: "No attendance found" });
     }).catch(err => {
+        console.log(err);
         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting attendance" })
     })
 })

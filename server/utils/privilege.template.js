@@ -148,4 +148,14 @@ module.exports = (p=false)=>({
     ADD_NEW_EVENT_ORGANIZER:p,
     UPDATE_EVENT_ORGANIZER:p,
     DELETE_EVENT_ORGANIZER:p,
+    //Marketing Material Privilege
+    GET_ALL_MARKETING_MATERIALS:p,
+    ADD_NEW_MARKETING_MATERIAL:p,
+    UPDATE_MARKETING_MATERIAL:p,
+    DELETE_MARKETING_MATERIAL:p,
+    //Event Privilege
+    GET_ALL_EVENTS:p,
+    GET_ALL_EVENTS_OWN:p,
+    ADD_NEW_EVENT:p,
+    CANCEL_EVENT:p,
 })

@@ -33,7 +33,7 @@ router.post('/', authorizePrivilege("ADD_NEW_EVENT_TYPE"), async (req, res) => {
 });
 
 //Update a event type
-router.put("/id/:id", authorizePrivilege("UPDATE_EVENT_TYPE"), (req, res) => {
+router.put("/:id", authorizePrivilege("UPDATE_EVENT_TYPE"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         let result = EventTypeController.verifyUpdate(req.body);
         if (!isEmpty(result.errors)) {
