@@ -41,7 +41,7 @@ const ProductConcern = mongoose.Schema({
         notYellowInColor: { type: Boolean, default: false },
         stickingToUtensilOnBoiling: { type: Boolean, default: false },
     }
-},{
+}, {
         versionKey: false,
         _id: false
     });

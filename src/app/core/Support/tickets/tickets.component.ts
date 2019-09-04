@@ -410,6 +410,10 @@ setFormValue() {
       this.followUpForm.controls['actionTaken'].setValue(this.viewArray.responses[this.viewArray.responses.length-1].actionTaken)
       this.followUpForm.controls['followUpComments'].setValue(this.viewArray.responses[this.viewArray.responses.length-1].followUpComments)
     }
+    else{
+      this.followUpForm.value.actionTaken="";
+      this.followUpForm.value.followUpComments=""
+    }
 
 }
 }

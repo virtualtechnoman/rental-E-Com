@@ -12,6 +12,7 @@ router.get("/", authorizePrivilege("GET_ALL_AREAS"), (req, res) => {
         else
             res.json({ status: 200, data: docs, errors: true, message: "No area found" });
     }).catch(err => {
+        console.log(err);
         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting areas" })
     })
 })

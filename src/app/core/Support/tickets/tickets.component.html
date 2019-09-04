@@ -433,7 +433,7 @@
                                       <div class="card-body">
                                         <h5 class="card-title">Billing Issue</h5>
                                         <input type='checkbox' [(ngModel)]="viewArray.issues.serviceConcern.billingIssue.paidAlready" disabled id="valuable1"/><label for="valuable1"><span></span> Paid Already</label> 
-                                            <input type='checkbox' [(ngModel)]="viewArray.issues.serviceConcern.billingIssue.wronglyBilledOnNonDeliveryDates" disabledid="valuable2"/><label for="valuable2"><span></span> Wrong billed on non dilivery date</label> 
+                                            <input type='checkbox' [(ngModel)]="viewArray.issues.serviceConcern.billingIssue.wronglyBilledOnNonDeliveryDates" disabled id="valuable2"/><label for="valuable2"><span></span> Wrong billed on non dilivery date</label> 
                                       </div>
                                     </div>
                                     <div class="card">
@@ -487,6 +487,7 @@
                     <br>
                     <div class="form-group text-center">
                         <button type="submit" class="btn btn-primary">Register</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                     </div>
                 </form>
 

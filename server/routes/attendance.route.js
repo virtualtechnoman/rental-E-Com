@@ -1,28 +1,39 @@
-const Attendance = require("../models/area.model");
-const AttendanceController = require("../controllers/area.controller");
+const Attendance = require("../models/attendence.model");
+const AttendanceController = require("../controllers/attendance.controller");
 const router = require("express").Router();
 const isEmpty = require('../utils/is-empty');
 const mongodb = require('mongoose').Types;
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 // Get all attendance
-router.get("/", authorizePrivilege("GET_ALL_ATTENDANCE"), (req, res) => {
+router.get("/all", authorizePrivilege("GET_ALL_ATTENDANCE"), (req, res) => {
     Attendance.find().populate("user","-password").exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All attendance" });
         else
-            res.json({ status: 200, data: docs, errors: true, message: "No area found" });
+            res.json({ status: 200, data: docs, errors: true, message: "No attendance found" });
     }).catch(err => {
-        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting areas" })
+        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting attendance" })
+    })
+})
+// Get own attendance
+router.get("/", authorizePrivilege("GET_ATTENDANCE_OWN"), (req, res) => {
+    Attendance.findOne({user:req.user._id}).lean().exec().then(docs => {
+        if (docs.length > 0)
+            res.json({ status: 200, data: docs, errors: false, message: "Your attendance" });
+        else
+            res.json({ status: 200, data: docs, errors: true, message: "No attendance found" });
+    }).catch(err => {
+        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting attendance" })
     })
 })
 
 //Add new attendance
-router.post('/', authorizePrivilege("ADD_NEW_ATTENDANCE"), async (req, res) => {
+router.post('/', authorizePrivilege("ADD_ATTENDANCE_OWN"), async (req, res) => {
     let result = AttendanceController.verifyCreate(req.body);
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
     }
-    Attendance.findOneAndUpdate({user:result.user},{$push:{dates:result.date}},{new:true, upsert:true}).populate("user","-password").exec()
+    Attendance.findOneAndUpdate({user:req.user._id},{$push:{dates:result.data.date}},{new:true, upsert:true}).exec()
     .then(_attendance=>{
             res.json({ status: 200, data: _attendance, errors: false, message: "Attendance added successfully" })
         }).catch(e => {
@@ -30,6 +41,20 @@ router.post('/', authorizePrivilege("ADD_NEW_ATTENDANCE"), async (req, res) => {
         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while adding attendance" })
     });
 });
+// //Add new attendance
+// router.post('/', authorizePrivilege("ADD_NEW_ATTENDANCE"), async (req, res) => {
+//     let result = AttendanceController.verifyCreate(req.body);
+//     if (!isEmpty(result.errors)) {
+//         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
+//     }
+//     Attendance.findOneAndUpdate({user:result.user},{$push:{dates:result.date}},{new:true, upsert:true}).populate("user","-password").exec()
+//     .then(_attendance=>{
+//             res.json({ status: 200, data: _attendance, errors: false, message: "Attendance added successfully" })
+//         }).catch(e => {
+//         console.log(e);
+//         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while adding attendance" })
+//     });
+// });
 
 //Update a city
 // router.put("/:id", authorizePrivilege("UPDATE_AREA"), (req, res) => {

@@ -2,7 +2,7 @@ const Joi = require('joi');
 const helper = require('../utils/helper');
 
 const attendanceCreateSchema = Joi.object({
-    user:Joi.string().required(),
+    // user:Joi.string().required(),
     date:Joi.date().required()
 })
 const areaUpdateSchema = Joi.object({
