@@ -3,7 +3,11 @@ const mongoose = require("mongoose");
 const Responses = mongoose.Schema({
     followUpComments: String,
     actionTaken: String,
+    by:{type:mongoose.Schema.Types.ObjectId, ref:"user"},
     at: { type: Date, default: Date.now }
+},{
+    versionKey: false,
+    _id: false
 });
 const ProductConcern = mongoose.Schema({
     milkComposition: {
