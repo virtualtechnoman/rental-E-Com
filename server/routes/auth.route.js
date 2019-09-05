@@ -282,6 +282,7 @@ router.post('/verifyotp/:type', async (req, res) => {
               }
             }
             newUser.full_name = "";
+            newUser.profile_picture = "";
             newUser.landmark = "";
             newUser.H_no_society = "";
             newUser.street_address = "";
