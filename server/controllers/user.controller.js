@@ -110,7 +110,10 @@ const dBoyProfileUpdateOwnSchema = Joi.object({
   dl_number: Joi.string().optional(), 
   emergency_contact: Joi.string().optional(), 
   street_address: Joi.string().optional(),
-  permanent_address: Joi.string().optional()
+  permanent_address: Joi.string().optional(),
+  kyc:Joi.object({
+    documentType:Joi.string().optional()
+  }).optional()
 })
 
 function verifyCreate(user) { return helper.validator(user, userSchema) }
