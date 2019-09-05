@@ -8,7 +8,8 @@ const cartUpdateSchema = Joi.object({
 
 const ticketFollowUp = Joi.object({
     followUpComments: Joi.string().required(),
-    actionTaken: Joi.string().required()
+    actionTaken: Joi.string().required(),
+    assignTo: Joi.string().optional()
 })
 // function verifyCustomerMsg(ticket) { return helper.validator(ticket, ticketMsgCustomer) }
 

@@ -62,6 +62,7 @@ module.exports = (p=false)=>({
     GET_CUSTOMER_ORDER:p,
     DELETE_CUSTOMER_ORDER:p,
     GET_ALL_CUSTOMER_ORDERS:p,
+    GET_CUSTOMER_ORDER_ASSIGNED:p,
     GET_ALL_CUSTOMER_ORDERS_OWN:p,
     CANCEL_CUSTOMER_ORDER:p,
     //Cart Privilege
@@ -159,4 +160,8 @@ module.exports = (p=false)=>({
     GET_ALL_EVENTS_OWN:p,
     ADD_NEW_EVENT:p,
     CANCEL_EVENT:p,
+    //Event Lead Privilege
+    GET_ALL_EVENT_LEADS:p,
+    GET_EVENT_LEADS_OWN:p,
+    ADD_NEW_EVENT_LEAD:p,
 })

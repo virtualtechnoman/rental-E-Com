@@ -12,8 +12,8 @@ router.get("/", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS_OWN"), (req, res) =>
     CustomerOrder.find({ placed_by: req.user._id }).populate("placed_by placed_to")
         .populate({
             path: "products.product ",
-            populate:{
-                path:"created_by category brand available_for", select:"-password"
+            populate: {
+                path: "created_by category brand available_for", select: "-password"
             }
         })
         .exec().then(doc => {
@@ -27,8 +27,8 @@ router.get("/customer/:id", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req,
     CustomerOrder.find({ placed_by: req.params.id }).populate("placed_by placed_to")
         .populate({
             path: "products.product ",
-            populate:{
-                path:"created_by category brand available_for", select:"-password"
+            populate: {
+                path: "created_by category brand available_for", select: "-password"
             }
         })
         .exec().then(doc => {
@@ -41,16 +41,16 @@ router.get("/customer/:id", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req,
 //GET all orders
 router.get("/all", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req, res) => {
     CustomerOrder.find().populate("placed_by placed_to")
-    .populate({
-        path: "products.product",
-        populate:{
-            path:"created_by category brand available_for", select:"-password"
-        }
-    }).exec().then(doc => {
-        return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
-    }).catch(err => {
-        return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
-    });
+        .populate({
+            path: "products.product",
+            populate: {
+                path: "created_by category brand available_for", select: "-password"
+            }
+        }).exec().then(doc => {
+            return res.json({ status: 200, data: doc, errors: false, message: "All Orders" });
+        }).catch(err => {
+            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })
+        });
 })
 
 // Create an order
@@ -88,6 +88,42 @@ router.delete("/:id", authorizePrivilege("DELETE_CUSTOMER_ORDER"), (req, res) =>
         })
     }
 })
+// Cancel a order
+router.post("/assigned", authorizePrivilege("GET_CUSTOMER_ORDER_ASSIGNED"), (req, res) => {
+    CustomerOrder.aggregate([
+        {
+            $lookup:
+            {
+                from: "routes",
+                pipeline: [
+                    {
+                        $match: { delivery_boy: req.user._id }
+                    }
+                ],
+                as: "routeId"
+            }
+        }
+    ]).exec().then(data=>{
+        res.json(data);
+    }).catch(err=>{
+        console.log(err);
+        res.json({message:"Error"})
+    })
+    // if (!mongodb.ObjectId.isValid(req.params.id)) {
+    //     res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid Order id" });
+    // }
+    // else {
+    //     CustomerOrder.find(req.params.id, { $set: { status: "Cancelled" } }, { new: true }, (err, doc) => {
+    //         if (err) {
+    //             return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while cancelling the order" })
+    //         }
+    //         if (doc) {
+    //             res.json({ status: 200, data: doc, errors: false, message: "Order cancelled successfully!" });
+    //         }
+    //     })
+    // }
+})
+
 // Canel a order
 router.post("/cancel/:id", authorizePrivilege("CANCEL_CUSTOMER_ORDER"), (req, res) => {
     if (!mongodb.ObjectId.isValid(req.params.id)) {
@@ -120,8 +156,8 @@ router.put("/:id", authorizePrivilege("UPDATE_CUSTOMER_ORDER"), (req, res) => {
             if (doc) {
                 doc.populate("placed_by placed_to").populate({
                     path: "products.product",
-                    populate:{
-                        path:"created_by category brand available_for", select:"-password"
+                    populate: {
+                        path: "created_by category brand available_for", select: "-password"
                     }
                 }).execPopulate()
                     .then(d => {
@@ -146,8 +182,8 @@ router.get("/id/:id", authorizePrivilege("GET_CUSTOMER_ORDER"), (req, res) => {
             .populate("placed_by placed_to")
             .populate({
                 path: "products.product",
-                populate:{
-                    path:"created_by category brand available_for", select:"-password"
+                populate: {
+                    path: "created_by category brand available_for", select: "-password"
                 }
             })
             .exec()
