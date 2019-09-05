@@ -273,17 +273,17 @@ router.post('/verifyotp/:type', async (req, res) => {
               newUser.city = "";
               newUser.vehicle_type = "";
               newUser.emergency_contact = "";
+              newUser.permanent_address = "";
+              newUser.dl_number = "";
               newUser.kyc = {
-                documentType:"",
-                image:"",
-                verified:false
+                documentType: "",
+                image: "",
+                verified: false
               }
             }
             newUser.full_name = "";
             newUser.landmark = "";
             newUser.H_no_society = "";
-            newUser.permanent_address = "";
-            newUser.dl_number = "";
             newUser.street_address = "";
             newUser.user_id = "USR" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
             const u = new User(newUser);
