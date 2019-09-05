@@ -88,6 +88,23 @@ router.delete("/:id", authorizePrivilege("DELETE_CUSTOMER_ORDER"), (req, res) =>
         })
     }
 })
+// Cancel a order
+router.post("/assigned", authorizePrivilege("GET_CUSTOMER_ORDER_ASSIGNED"), (req, res) => {
+    // if (!mongodb.ObjectId.isValid(req.params.id)) {
+    //     res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid Order id" });
+    // }
+    // else {
+    //     CustomerOrder.find(req.params.id, { $set: { status: "Cancelled" } }, { new: true }, (err, doc) => {
+    //         if (err) {
+    //             return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while cancelling the order" })
+    //         }
+    //         if (doc) {
+    //             res.json({ status: 200, data: doc, errors: false, message: "Order cancelled successfully!" });
+    //         }
+    //     })
+    // }
+})
+
 // Canel a order
 router.post("/cancel/:id", authorizePrivilege("CANCEL_CUSTOMER_ORDER"), (req, res) => {
     if (!mongodb.ObjectId.isValid(req.params.id)) {

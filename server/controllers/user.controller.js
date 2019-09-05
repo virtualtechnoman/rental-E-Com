@@ -105,13 +105,11 @@ module.exports = {
 const dBoyProfileUpdateOwnSchema = Joi.object({
   full_name: Joi.string().required(),
   H_no_society:Joi.string().optional(),
-  gender:Joi.string().optional(),
   landmark: Joi.string().optional(), 
-  dob:Joi.string().optional(),
+  dob:Joi.date().optional(),
   dl_number: Joi.string().optional(), 
   emergency_contact: Joi.string().optional(), 
   street_address: Joi.string().optional(),
-  city: Joi.string().optional(),
   permanent_address: Joi.string().optional()
 })
 

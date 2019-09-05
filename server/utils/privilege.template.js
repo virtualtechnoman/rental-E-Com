@@ -62,6 +62,7 @@ module.exports = (p=false)=>({
     GET_CUSTOMER_ORDER:p,
     DELETE_CUSTOMER_ORDER:p,
     GET_ALL_CUSTOMER_ORDERS:p,
+    GET_CUSTOMER_ORDER_ASSIGNED:p,
     GET_ALL_CUSTOMER_ORDERS_OWN:p,
     CANCEL_CUSTOMER_ORDER:p,
     //Cart Privilege

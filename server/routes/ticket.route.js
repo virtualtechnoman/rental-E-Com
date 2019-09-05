@@ -65,7 +65,7 @@ router.put("/followupconern/:id", authorizePrivilege("CONCERN_FOLLOWUP"), (req, 
     if (!isEmpty(result.errors))
         return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
         result.data.by = req.user._id;
-    Ticket.findByIdAndUpdate(req.params.id,{$push:{responses:result.data}},{new:true}).populate([{path:"created_by customer assignTo", select :"-password"}]).exec().then(_tkt=>{
+    Ticket.findByIdAndUpdate(req.params.id,{$push:{responses:result.data,status:"Open"}},{new:true}).populate([{path:"created_by customer assignTo", select :"-password"}]).exec().then(_tkt=>{
         res.json({ status: 200, data: _tkt, errors: false, message: "Ticket Updated Successfully!" });
     }).catch(err=>{
         console.log(err);
@@ -110,7 +110,7 @@ router.put("/followupconern/:id", authorizePrivilege("CONCERN_FOLLOWUP"), (req, 
 router.put("/close/:id", authorizePrivilege("CLOSE_TICKET"), (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.id)) {
        Ticket.findByIdAndUpdate(req.params.id, { $set: { status: "Close" }}, { new: true })
-            .populate({ path: "created_by messages.executive", select: "full_name" }).lean().exec().then(_tkt => {
+            .populate([{path:"created_by customer assignTo", select :"-password"}]).lean().exec().then(_tkt => {
                 return res.json({ status: 200, data: _tkt, errors: false, message: "Ticket Closed Successfully" });
             }).catch(_err => {
                 console.log(_err);
