@@ -34,7 +34,7 @@ router.get("/", authorizePrivilege("GET_TICKETS_OWN"), (req, res) => {
 
 //GET all tickets from all users
 router.get("/all", authorizePrivilege("GET_TICKETS_ALL"), (req, res) => {
-    Ticket.find().populate([{path:"created_by customer assignTo", select :"-password"}]).sort({ created_at: 'desc' }).lean().exec().then(doc => {
+    Ticket.find().populate([{path:"created_by customer assignTo", select :"-password"},{path:"responses.by", select :"-password"}]).sort({ created_at: 'desc' }).lean().exec().then(doc => {
         return res.json({ status: 200, data: doc, errors: false, message: "All Tickets" });
     }).catch(err => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting orders" })

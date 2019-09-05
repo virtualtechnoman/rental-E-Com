@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ViewChildren, QueryList } from '@angular/core';
 import { SupportService } from '../Shared/support.service';
 import { ResponseModel } from '../../../shared/shared.model';
 import { Subject } from 'rxjs';
@@ -16,7 +16,10 @@ import { tick } from '@angular/core/testing';
 export class TicketsComponent implements OnInit {
 
   @ViewChild('searchInput') searchInput: ElementRef;
-
+  @ViewChildren("radio") radio1: any;
+  @ViewChildren("radio2") radio2: any;
+  @ViewChildren("radio3") radio3: any;
+  @ViewChildren("radio4") radio4: any;
   allTickets:any[]=[]
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
@@ -47,6 +50,7 @@ export class TicketsComponent implements OnInit {
   showTicketPructProblem:boolean=false;
   showTicketServiceProblem:boolean=false;
   showTicketSubscriptionProblem:boolean=false;
+  showResponses:boolean=false;
   constructor(private supportService:SupportService ,private formBuilder:FormBuilder,private toastr:ToastrService,private userService:UserService,private customerService:CustomersService) { }
 
   ngOnInit() {  
@@ -192,24 +196,86 @@ closeSubscriptionRequest:this.formBuilder.group({
     })
   }
 
+  selectustomerConcernMedia(event){
+    if(event.target.value=="1"){
+      this.ticketsForm.value.customerConcernMedia.mobile=true;
+      this.ticketsForm.value.customerConcernMedia.whatsapp=false;
+      this.ticketsForm.value.customerConcernMedia.hub=false;
+    }
+    else if(event.target.value=="2"){
+      this.ticketsForm.value.customerConcernMedia.mobile=false;
+      this.ticketsForm.value.customerConcernMedia.whatsapp=true;
+      this.ticketsForm.value.customerConcernMedia.hub=false;
+    }
+    else if(event.target.value=="3"){
+      this.ticketsForm.value.customerConcernMedia.mobile=false;
+      this.ticketsForm.value.customerConcernMedia.whatsapp=false;
+      this.ticketsForm.value.customerConcernMedia.hub=true;
+    }
+  }
+
+  selectustomerProducts(event){
+
+    // milk: [false],
+    //     ghee: [false],
+    //     butter: [false],
+    //     cheese: [false],
+
+    if(event.target.value=="1"){
+      this.ticketsForm.value.products.milk=true;
+      this.ticketsForm.value.products.ghee=false;
+      this.ticketsForm.value.products.butter=false;
+      this.ticketsForm.value.products.cheese=false;
+    }
+    else if(event.target.value=="2"){
+      this.ticketsForm.value.products.milk=false;
+      this.ticketsForm.value.products.ghee=true;
+      this.ticketsForm.value.products.butter=false;
+      this.ticketsForm.value.products.cheese=false;
+    }
+    else if(event.target.value=="3"){
+      this.ticketsForm.value.products.milk=false;
+      this.ticketsForm.value.products.ghee=false;
+      this.ticketsForm.value.products.butter=true;
+      this.ticketsForm.value.products.cheese=false;
+    }
+    else if(event.target.value=="4"){
+      this.ticketsForm.value.products.milk=false;
+      this.ticketsForm.value.products.ghee=false;
+      this.ticketsForm.value.products.butter=false;
+      this.ticketsForm.value.products.cheese=true;
+    }
+  }
+
   onSubmit(){
-    this.ticketsForm.value.callType.inbound=Boolean(this.ticketsForm.value.callType.inbound)
-    this.ticketsForm.value.callType.outbound=Boolean(this.ticketsForm.value.callType.outbound)
+    console.log(this.radio1)
+    if(this.radio1._results[0].nativeElement.checked==true){
+    this.ticketsForm.value.callType.inbound=true
+    this.ticketsForm.value.callType.outbound=false
+    }else{
+      this.ticketsForm.value.callType.inbound=false
+      this.ticketsForm.value.callType.outbound=true
+    }
+    
 
 
     this.ticketsForm.value.customerConcernMedia.mobile=Boolean(this.ticketsForm.value.customerConcernMedia.mobile)
     this.ticketsForm.value.customerConcernMedia.whatsapp=Boolean(this.ticketsForm.value.customerConcernMedia.whatsapp)
     this.ticketsForm.value.customerConcernMedia.hub=Boolean(this.ticketsForm.value.customerConcernMedia.hub)
+
     this.ticketsForm.value.products.milk=Boolean(this.ticketsForm.value.products.milk)
     this.ticketsForm.value.products.ghee=Boolean(this.ticketsForm.value.products.ghee)
     this.ticketsForm.value.products.butter=Boolean(this.ticketsForm.value.products.butter)
     this.ticketsForm.value.products.cheese=Boolean(this.ticketsForm.value.products.cheese)
+
     this.ticketsForm.value.milkComposition.thinMilklessFat=Boolean(this.ticketsForm.value.milkComposition.thinMilklessFat)
     this.ticketsForm.value.milkComposition.thickMilkMoreFat=Boolean(this.ticketsForm.value.milkComposition.thickMilkMoreFat)
+
     this.ticketsForm.value.impuritiesInMilk.insectInMilk=Boolean(this.ticketsForm.value.impuritiesInMilk.insectInMilk)
     this.ticketsForm.value.impuritiesInMilk.siltInMilk=Boolean(this.ticketsForm.value.impuritiesInMilk.siltInMilk)
     this.ticketsForm.value.impuritiesInMilk.blackParticle=Boolean(this.ticketsForm.value.impuritiesInMilk.blackParticle)
     this.ticketsForm.value.packaging.bottleBrokeOrChipped=Boolean(this.ticketsForm.value.packaging.bottleBrokeOrChipped)
+
     this.ticketsForm.value.packaging.sealBroken=Boolean(this.ticketsForm.value.packaging.sealBroken)
     this.ticketsForm.value.packaging.dirtyCaps=Boolean(this.ticketsForm.value.packaging.dirtyCaps)
     this.ticketsForm.value.packaging.noDCPLabel=Boolean(this.ticketsForm.value.packaging.noDCPLabel)
@@ -260,6 +326,7 @@ closeSubscriptionRequest:this.formBuilder.group({
 
     this.ticketsForm.value.isSubscriptionClosed=Boolean(this.ticketsForm.value.isSubscriptionClosed)
     this.ticketsForm.value.isUrgent=Boolean(this.ticketsForm.value.isUrgent)
+    console.log(this.ticketsForm.value)
     const ticket=<any> new Object();
     ticket['issues'] = {};
     ticket['callType'] = {};
@@ -306,7 +373,7 @@ closeSubscriptionRequest:this.formBuilder.group({
       this.toastr.info('Ticket Has Been Generated Successfully!', 'Generated!!');
       jQuery('#modal3').modal('hide');
     })
-    console.log(this.ticketsForm.value)
+   
   }
 
 
@@ -320,14 +387,15 @@ closeSubscriptionRequest:this.formBuilder.group({
 
 
   resetForm() {
+    console.log(this.ticketsForm)
     this.editing = false;
     this.submitted = false;
     this.showProductConcern=true;
     this.showServiceConcern=false;
     this.showCloseSubscription=false;
     this.ticketsForm.reset();
-    // this.initForm();
   }
+
 products(){
   this.showProductConcern=true;
   this.showServiceConcern=false;
@@ -403,17 +471,12 @@ viewTicket(i){
       this.Products="milk"
     }
 
-    this.setFormValue();
-}
-setFormValue() {
     if(this.viewArray.responses.length>0){
-      this.followUpForm.controls['actionTaken'].setValue(this.viewArray.responses[this.viewArray.responses.length-1].actionTaken)
-      this.followUpForm.controls['followUpComments'].setValue(this.viewArray.responses[this.viewArray.responses.length-1].followUpComments)
+      this.showResponses=true
     }
     else{
-      this.followUpForm.value.actionTaken="";
-      this.followUpForm.value.followUpComments=""
+      this.showResponses=false
     }
-
 }
+
 }

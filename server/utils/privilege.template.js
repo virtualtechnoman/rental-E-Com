@@ -126,6 +126,7 @@ module.exports = (p=false)=>({
     GET_ALL_SUBSCRIPTIONS:p,
     GET_SUBSCRIPTIONS_OWN:p,
     ADD_NEW_SUBSCRIPTION:p,
+    ADD_NEW_SUBSCRIPTION_OWN:p,
     UPDATE_SUBSCRIPTION:p,
     DELETE_SUBSCRIPTION:p,
     //Banner Privilege

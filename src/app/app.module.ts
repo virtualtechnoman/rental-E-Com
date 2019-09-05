@@ -32,7 +32,6 @@ import { LocationManagerModule } from './core/location-manager/location-manager.
 import { SupportModule } from './core/Support/support.module';
 import { RouteModule } from './core/route/route.module';
 import { SubscriptionModule } from './core/customersubscription/subscription.module';
-
 @NgModule({
   declarations: [
     AppComponent,

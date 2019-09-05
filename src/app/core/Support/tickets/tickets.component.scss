@@ -61,9 +61,11 @@ background-color: rgb(210, 213, 219) !important;
     color: white !important;
     cursor: pointer;
 }
-input[type=checkbox] {
+// input[type=checkbox] {
+//     display:block;
+// }
+.check{
     display:block;
-    // visibility: hidden;
 }
 .v1 {
     border-left: 6px solid grey;
