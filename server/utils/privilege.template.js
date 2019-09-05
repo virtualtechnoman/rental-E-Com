@@ -158,4 +158,8 @@ module.exports = (p=false)=>({
     GET_ALL_EVENTS_OWN:p,
     ADD_NEW_EVENT:p,
     CANCEL_EVENT:p,
+    //Event Lead Privilege
+    GET_ALL_EVENT_LEADS:p,
+    GET_EVENT_LEADS_OWN:p,
+    ADD_NEW_EVENT_LEAD:p,
 })

@@ -9,7 +9,8 @@ module.exports = mongoose.model("event_lead", new mongoose.Schema({
     address: { type: String, required: true },
     comments: { type: String},
     mode: { type: String},
-    event: { type: mongoose.Schema.Types.ObjectId, ref: 'event', required: true }
+    event: { type: mongoose.Schema.Types.ObjectId, ref: 'event', required: true },
+    created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
 }, {
         versionKey: false
     }))
