@@ -4,8 +4,6 @@ const KYC = mongoose.Schema({
   documentType:{type:String},
   image:{type:String},
   verified:{type:Boolean}
-},{
-  versionKey:false
 })
 
 const UserSchema = new mongoose.Schema({
