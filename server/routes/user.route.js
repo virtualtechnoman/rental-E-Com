@@ -224,7 +224,6 @@ router.put('/me/kyc', authorizePrivilege("UPDATE_USER_OWN"), upload.single("kyc"
               console.log(err);
               return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while uploading the file" });
             } else {
-              _user.kyc.documentType = req.body.documentType;
               _user.kyc.image = k;
               _user.save().then(doc => {
                 doc = doc.toObject();

@@ -271,6 +271,11 @@ router.post('/verifyotp/:type', async (req, res) => {
               newUser.role = process.env.DELIVERY_BOY_ROLE;//"5d5157820250e60017e64d42";
               newUser.dob = Date.now();
               newUser.city = "";
+              newUser.kyc = {
+                documentType:"",
+                image:"",
+                verified:false
+              }
             }
             newUser.full_name = "";
             newUser.landmark = "";

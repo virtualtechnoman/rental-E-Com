@@ -33,9 +33,9 @@ const UserSchema = new mongoose.Schema({
   dl_number: { type: String },
   //for dboy =>
   kyc: {
-    documentType:{type:String,default:''},
-    image:{type:String, default:''},
-    verified:{type:Boolean, default:false}
+    documentType:{type:String},
+    image:{type:String},
+    verified:{type:Boolean}
   },
   permanent_address:String
 }, {
