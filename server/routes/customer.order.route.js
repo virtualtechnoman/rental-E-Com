@@ -90,6 +90,7 @@ router.delete("/:id", authorizePrivilege("DELETE_CUSTOMER_ORDER"), (req, res) =>
 })
 // Cancel a order
 router.post("/assigned", authorizePrivilege("GET_CUSTOMER_ORDER_ASSIGNED"), (req, res) => {
+    // CustomerOrder
     // if (!mongodb.ObjectId.isValid(req.params.id)) {
     //     res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid Order id" });
     // }
