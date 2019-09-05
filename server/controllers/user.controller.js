@@ -112,10 +112,8 @@ const dBoyProfileUpdateOwnSchema = Joi.object({
   street_address: Joi.string().optional(),
   permanent_address: Joi.string().optional(),
   vehicle_type: Joi.string().optional(),
-  kyc:Joi.object({
-    documentType:Joi.string().optional()
-  }).optional()
-})
+  'kyc.documentType':Joi.string().optional()
+  })
 
 function verifyCreate(user) { return helper.validator(user, userSchema) }
 function verifyUpdate(user) { return helper.validator(user, userUpdateSchema) }
