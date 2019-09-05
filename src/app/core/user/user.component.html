@@ -159,6 +159,29 @@
                   </div>
                 
               </div>
+
+              <div class="form-row">
+
+                <div class="form-group col-md-4">
+                  <label for="inputEmail4">Date Of Birth</label>
+                  <input type="date" class="form-control" placeholder="Street Address" formControlName="dob" required
+                    [ngClass]="{ 'is-invalid': submitted && f.dob.errors }">
+                  <div *ngIf="submitted && f.dob.errors" class="invalid-feedback">
+                    <div *ngIf="f.dob.errors.required">DOB is required</div>
+                  </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="inputEmail4">Gender</label>
+                      <div (change)="selectGender($event)">
+                        <label class="radio-inline">
+                          <input type="radio" value="male" name="optradio" >Male
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" value="female" name="optradio">Female
+                        </label>
+                      </div>
+                  </div>
+              </div>
              
               <div class="form-row" >   
                 <div class="form-group col-md-4" *ngIf="showLicenceField">
@@ -185,6 +208,7 @@
             </div>
           </div>
               </div>
+              <br>  
           <div class="text-center">
             <button type="submit" class="text-center btn btn-primary text-center">Submit
               Form</button>

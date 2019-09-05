@@ -2,9 +2,9 @@
   <div class="card">
     <div class="card-header">
       <h2 class="float-left">Customer Management</h2>
-      <a class="btn btn-secondary float-right text-white" (click)="resetForm()" data-toggle="modal"
+      <!-- <a class="btn btn-secondary float-right text-white" (click)="resetForm()" data-toggle="modal"
         data-target="#modal3">Add New
-        Customer</a>
+        Customer</a> -->
       <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
         data-target="#modal2">Upload CSV</a>
     </div>
@@ -38,8 +38,8 @@
             <td>
               <a style="cursor: pointer" (click)="viewCustomer(i)" data-toggle="modal" data-target="#exampleModal"><i
                   class="fas fa-eye"></i></a>
-              <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editCustomer(i)"><i
-                  class="fas fa-edit mx-2"></i> </a>
+              <!-- <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editCustomer(i)"><i
+                  class="fas fa-edit mx-2"></i> </a> -->
               <a style="cursor: pointer" (click)="deleteCustomer(i)"><i class="fas fa-trash-alt"></i></a>
             </td>
           </tr>
@@ -159,7 +159,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-  aria-hidden="true">
+  aria-hidden="true" *ngIf="viewArray">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -179,8 +179,12 @@
               <div class="contact-content-header">
                 <nav class="nav nav-pills nav-justified">
                   <a href="#contactInformation" class="nav-item nav-link active" data-toggle="tab">Contact
-                    Info<span>rmation</span></a>
-                  <a href="#contactLogs" class=" nav-item nav-link" data-toggle="tab"><span>Call &amp; Message </span>Logs</a>
+                    </a>
+                  <a href="" class=" nav-item nav-link" data-toggle="tab"><span>Subscription </span></a>
+                  <a href="#contactLogs" class=" nav-item nav-link" data-toggle="tab" ><span>Orders </span></a>
+                  <a href="" class=" nav-item nav-link" data-toggle="tab"><span>Bills </span></a>
+                  <a href="" class=" nav-item nav-link" data-toggle="tab"><span>Activity Log </span></a>
+                  <a href="" class=" nav-item nav-link" data-toggle="tab"><span>Tickets </span></a>
                 </nav>
                 <a href="" id="contactOptions" class="text-secondary mg-l-auto d-xl-none"><i
                     data-feather="more-horizontal"></i></a>
@@ -203,21 +207,29 @@
                     </div>
 
                     <div class="row">
+                        <div class="col-6 col-sm" *ngIf="showProfileImage">
+                            <label
+                              class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Profile Picture</label>
+                              
+                              <div class="col-sm-3 col-md-2 col-lg text-center" >
+                                  <div class="avatar avatar-xxl "><img src="{{image}}" class="rounded-circle" alt=""></div>
+                          </div><!-- col -->
+                        </div>
                       <div class="col-6 col-sm">
                         <label
-                          class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Firstname</label>
-                        <p class="mg-b-0">Abigail</p>
+                          class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Name</label>
+                        <p class="mg-b-0">{{viewArray?.full_name}}</p>
                       </div><!-- col -->
                       <div class="col-6 col-sm">
-                        <label
-                          class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Middlename</label>
-                        <p class="mg-b-0">Christensen</p>
-                      </div><!-- col -->
-                      <div class="col-sm mg-t-20 mg-sm-t-0">
-                        <label
-                          class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Lastname</label>
-                        <p class="mg-b-0">Johnson</p>
-                      </div><!-- col -->
+                          <label
+                            class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Gender</label>
+                          <p class="mg-b-0">{{viewArray?.gender}}</p>
+                        </div><!-- col -->
+                        <div class="col-6 col-sm">
+                            <label
+                              class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">DOB</label>
+                            <p class="mg-b-0">{{viewArray?.dob}}</p>
+                          </div><!-- col -->
                     </div><!-- row -->
 
                     <h6 class="mg-t-40 mg-b-20">Contact Details</h6>
@@ -226,73 +238,85 @@
                       <div class="col-6 col-sm-4">
                         <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Mobile
                           Phone</label>
-                        <p class="tx-primary tx-rubik mg-b-0">+1 290 912 3868</p>
+                        <p class="tx-primary tx-rubik mg-b-0">{{viewArray?.mobile_number}}</p>
                       </div>
                       <div class="col-6 col-sm-4">
-                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Home
-                          Phone</label>
-                        <p class="tx-primary tx-rubik mg-b-0">+1 011 342 3129</p>
+                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Subscription</label>
+                        <!-- <p class="tx-primary tx-rubik mg-b-0">{{viewArray?.gender}}</p> -->
                       </div>
                       <div class="col-6 col-sm-4 mg-t-20 mg-sm-t-0">
-                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Work
-                          Phone</label>
-                        <p class="tx-primary tx-rubik mg-b-0">+1 100 003 3344</p>
+                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Hub Manager
+                          </label>
+                        <!-- <p class="tx-primary tx-rubik mg-b-0">{{viewArray?.dob}}</p> -->
                       </div>
                       <div class="col-sm-4 mg-t-20 mg-sm-t-30">
-                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Email
-                          Address</label>
-                        <p class="tx-primary mg-b-0">me@themepixels.me</p>
+                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Hub
+                          </label>
+                        <!-- <p class="tx-primary mg-b-0">{{viewArray?.email}}</p> -->
                       </div>
                       <div class="col-sm-4 mg-t-20 mg-sm-t-30">
                         <label
-                          class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Company</label>
-                        <p class="mg-b-0">ThemePixels, Inc.</p>
+                          class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Route</label>
+                        <!-- <p class="mg-b-0">Binsar Farms</p> -->
                       </div>
                       <div class="col-sm-4 mg-t-20 mg-sm-t-30">
-                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Job
-                          Position</label>
-                        <p class="mg-b-0">President &amp; CEO</p>
+                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Delivery
+                          Boy</label>
+                        <!-- <p class="mg-b-0">{{viewArray?.role?.name}}</p> -->
                       </div>
                       <div class="col-sm-6 mg-t-20 mg-sm-t-30">
-                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Home
-                          Address</label>
-                        <p class="mg-b-0">4658 Kenwood Place<br>Pompano Beach, FL 33060, United States</p>
+                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Status
+                          </label>
+                        <!-- <p class="mg-b-0">4658 Kenwood Place<br>Pompano Beach, FL 33060, United States</p> -->
                       </div>
                       <div class="col-sm-6 mg-t-20 mg-sm-t-30">
-                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Work
-                          Address</label>
-                        <p class="mg-b-0">819 Waldeck Street<br>Farmers Branch, TX 75244, United States</p>
+                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Subscription
+                          </label>
+                        <!-- <p class="mg-b-0">819 Waldeck Street<br>Farmers Branch, TX 75244, United States</p> -->
                       </div>
                       <div class="col-sm-6 mg-t-20 mg-sm-t-30">
-                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Personal
-                          Website</label>
-                        <p class="tx-primary mg-b-0">http://themepixels.me/</p>
-                      </div>
-                      <div class="col-sm-6 mg-t-20 mg-sm-t-30">
-                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Social
-                          Profiles</label>
-                        <nav class="nav nav-social">
-                          <a href="" class="nav-link"><i data-feather="facebook"></i></a>
-                          <a href="" class="nav-link"><i data-feather="twitter"></i></a>
-                          <a href="" class="nav-link"><i data-feather="instagram"></i></a>
-                          <a href="" class="nav-link"><i data-feather="github"></i></a>
-                        </nav>
-                      </div><!-- col -->
-                      <div class="col-sm mg-t-20 mg-sm-t-30">
-                        <label
-                          class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Notes</label>
-                        <p class="tx-13 mg-b-0">It is a long established fact that a reader will be distracted by the
-                          readable content of a page when looking at its layout. The point of using Lorem Ipsum is that
-                          it has a more-or-less normal distribution of letters, as opposed to using 'Content here,
-                          content here', making it look like readable English.</p>
+                        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Balance
+                          </label>
+                        <!-- <p class="tx-primary mg-b-0">http://themepixels.me/</p> -->
                       </div>
                     </div><!-- row -->
                   </div>
-                  <div id="contactLogs" class="tab-pane pd-20 pd-xl-25">
+                  <div id="contactLogs" class="tab-pane pd-20 pd-xl-25" *ngIf="orderHistory">
                     <div class="d-flex align-items-center justify-content-between mg-b-30">
-                      <h6 class="tx-15 mg-b-0">Call &amp; Message Logs</h6>
-                      <a href="#" class="btn btn-sm btn-white d-flex align-items-center"><i
-                          class="icon ion-md-time mg-r-5 tx-16 lh--9"></i> Clear History</a>
+                      <h6 class="tx-15 mg-b-0"></h6>
+
+
+
+
+                      <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Placed By</th>
+                              <th scope="col">Order ID</th>
+                              <th scope="col">Order Date</th>
+                              <th scope="col">Status</th>
+                              <th scope="col">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let order of orderHistory;let i=index">
+                              <th scope="row">{{i+1}}</th>
+                              <td>{{order?.placed_by?.full_name}}</td>
+                              <td>{{order?.order_id}}</td>
+                              <td>{{order?.order_date | date: 'dd/MM/yy'}},{{order?.order_date | date:'h:mm a'}}</td>
+                              <td>{{order?.status}}</td>
+                              <td>
+                                  <a style="cursor: pointer" (click)="seeCustomerFullOrderDetail(i)" data-toggle="modal" data-target="#customerOrderModal" ><i
+                                      class="fas fa-eye"></i></a>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+
+                      <!-- <a href="#" class="btn btn-sm btn-white d-flex align-items-center"><i
+                          class="icon ion-md-time mg-r-5 tx-16 lh--9"></i> Clear History</a> -->
                     </div>
                   </div><!-- tab-pane -->
                 </div><!-- tab-content -->
@@ -310,3 +334,84 @@
     </div>
   </div>
 </div>
+
+
+<!-- customerPrderModal -->
+
+<!-- Button trigger modal -->
+
+  
+  <!-- Modal -->
+  <div class="modal fade" id="customerOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="orderHistoryNumberInformation">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Order Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        
+        <div class="modal-body">
+            <div class="content tx-13">
+                <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Order From</label>
+                      <h6 class="tx-15 mg-b-10">{{orderHistoryNumberInformation?.placed_by?.full_name}}</h6>
+                      <p class="mg-b-0">{{orderHistoryNumberInformation?.placed_by?.email}}</p>
+                      <p class="mg-b-0">{{orderHistoryNumberInformation?.placed_by?.street_address}},{{orderHistoryNumberInformation?.placed_by?.city}}</p>
+                      <p class="mg-b-0">{{orderHistoryNumberInformation?.placed_by?.mobile_number}}</p>
+                    </div><!-- col -->
+                    <div class="col-sm-6 tx-right d-none d-md-block">
+                      <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{orderHistoryNumberInformation?.order_date | date : 'dd/MM/yy'}},{{orderHistoryNumberInformation?.order_date | date : 'h:mm a'}}</label>
+                      <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{orderHistoryNumberInformation?.order_id}}</h1>
+                    </div><!-- col -->
+                  </div><!-- row -->
+          
+                  <div class="table-responsive mg-t-40">
+                    <table class="table table-invoice bd-b">
+                      <thead>
+                        <tr>
+                          <th class="wd-20p">Product</th>
+                          <th class="wd-20p">Brand</th>
+                          <th class="wd-20p">Quantity</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let product of orderHistoryNumberInformation.products;let i=index">
+                          <td class="tx-nowrap">{{product?.product?.name}}</td>
+                          <td class="d-none d-sm-table-cell tx-color-03">{{product?.product?.brand?.name}}</td>
+                          <td class="tx-nowrap">{{product.quantity}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="row justify-content-between">
+                      <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-40 mg-sm-t-0">
+                          <h5><label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Status</label></h5>
+                          <h5>{{orderHistoryNumberInformation?.status}} </h5>
+                        </div><!-- col -->
+                      <div class="col-sm-6 col-lg-4 order-1 order-sm-0">
+                        <ul class="list-unstyled lh-7 pd-r-10">
+                          <li class="d-flex justify-content-between">
+                            <h5><b>Total Due</b></h5>
+                            <h5><b>₹{{orderHistoryNumberInformation?.amount}}</b></h5>
+                          </li>
+                        </ul>
+            
+                        <!-- <button class="btn btn-block btn-primary">Pay Now</button> -->
+                      </div><!-- col -->
+                    </div>
+
+                </div><!-- container -->
+              </div><!-- content -->
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -24,10 +24,11 @@
           <tr *ngFor="let ticket of allTickets; let i = index">
             <td>{{i+1}}</td>
             <td>{{ticket.ticket_number}}</td>
-            <td>{{ticket.created_at | date: 'dd/mm/yy'}}</td>
+            <td>{{ticket.created_at | date: 'dd/MM/yy'}},{{ticket.created_at | date: 'h:mm a'}}</td>
             <td>{{ticket.status | uppercase}}</td>
             <td>
-                <a style="cursor: pointer" (click)="viewTicket(i)" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-eye"></i></a>
+                <a style="cursor: pointer" (click)="viewTicket(i)" data-toggle="modal"
+                data-target="#ticketModal"><i class="fas fa-eye"></i></a>
               <!-- <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editState(i)"><i
                   class="fas fa-edit mx-2"></i> </a>
               <a style="cursor: pointer" (click)="deleteState(i)"><i class="fas fa-trash-alt"></i></a> -->
@@ -42,142 +43,461 @@
 <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
     <div class="modal-content tx-14">
-      <div class="modal-header">
-        <h6 class="modal-title" id="exampleModalLabel3" >Add New Ticket</h6>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+      <!-- <div class="modal-body"> -->
+
+          <div class="card">
+              <div class="card-header">
+                Generate Ticket
+              </div>
+              <div class="card-body">
+
+                  <form [formGroup]="ticketsForm" (ngSubmit)="onSubmit()">
+                    <div class="form-row">
+                      <div class="form-group col-md-4" >
+                          <label for="inputEmail4">Customer Name</label>
+                          <!-- <input type="text" class="form-control" placeholder="Brand here " formControlName="brand" required
+                            [ngClass]="{ 'is-invalid': submitted && f.brand.errors }"> -->
+                            <select class="form-control" formControlName="customer" required
+                            [ngClass]="{ 'is-invalid': submitted && f.customer.errors }">
+                            <option selected disabled>Select Customer</option>
+                            <option [ngValue]="customer._id" *ngFor="let customer of allCustomers;let i=index">{{customer.full_name}}
+                            </option>
+                          </select>
+                          <div *ngIf="submitted && f.customer.errors" class="invalid-feedback">
+                            <div *ngIf="f.customer.errors.required">User is required</div>
+                          </div>
+                        </div>
+                      </div>
+
+                    <div class="form-row">
+                      <div>                       
+                         <legend>Call type:</legend>
+                        <div class="form-group " formGroupName="callType">
+                      <div class="form-check form-check-inline" >
+                      <input class="form-check-input" formControlName="inbound" type="radio" name="{{name}}" value="true">
+                      <label class="form-check-label" for="inlineRadio1">Inbound</label>
+                      </div>
+                      <div class="form-check form-check-inline" >
+                      <input class="form-check-input" type="radio" value="true" name="{{name}}" formControlName="outbound"  >
+                      <label class="form-check-label" for="inlineRadio2">Outbound</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="margin-left: 100px">
+                    <legend>Customer Concern Media:</legend>
+                        <div  formGroupName="customerConcernMedia">
+                      <div class="form-check form-check-inline">
+                      <input class="form-check-input" formControlName="mobile" type="radio"  value="true">
+                      <label class="form-check-label" for="inlineRadio1">Mobile</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" formControlName="whatsapp" value="true" >
+                      <label class="form-check-label" for="inlineRadio2">whatsapp</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" formControlName="hub" value="true" >
+                          <label class="form-check-label" for="inlineRadio2">Hub</label>
+                       </div>
+                    </div>
+                  </div>
+                  <div style="margin-left: 100px">
+                    <legend>Products:</legend>
+                        <div  formGroupName="products">
+                      <div class="form-check form-check-inline">
+                      <input class="form-check-input" formControlName="milk" type="radio"  value="true">
+                      <label class="form-check-label" for="inlineRadio1">Milk</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" formControlName="ghee" value="true" >
+                      <label class="form-check-label" for="inlineRadio2">Ghee</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" formControlName="butter" value="true" >
+                          <label class="form-check-label" for="inlineRadio2">Butter</label>
+                       </div>
+                       
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" formControlName="cheese" value="true" >
+                          <label class="form-check-label" for="inlineRadio2">Cheese</label>
+                       </div>
+                    </div>
+                  </div>
+
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group col-lg-8">
+                        <nav class="nav nav-pills nav-justified">
+                            <a  class=" nav-item nav-link active" (click)="products()" data-toggle="tab">Product Concern </a>
+                            <a  class=" nav-item nav-link" (click)="service()" data-toggle="tab"><span>Service Concern </span></a>
+                            <a  class=" nav-item nav-link" (click)="subscription()" data-toggle="tab"><span>Close Subscription Request </span></a>
+                          </nav>
+                        </div>
+                    </div>
+
+
+
+                    <div class="card-deck" *ngIf="showProductConcern">
+                        <div class="card">
+                          <div class="card-body">
+                            <h5 class="card-title">Milk Composition</h5>
+                            <div id="checkBoxesContainer" formGroupName="milkComposition" >
+                                <input type='checkbox' value='true' formControlName="thinMilklessFat" id="valuable1"/><label for="valuable1"><span></span> Thin milk/less fat</label> 
+                                <input type='checkbox' value='true' formControlName="thickMilkMoreFat" id="valuable2"/><label for="valuable2"><span></span> Thick milk/more fat</label> 
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card">
+                          <div class="card-body">
+                            <h5 class="card-title">Impurities in milk</h5>
+                            <div id="checkBoxesContainer"  formGroupName="impuritiesInMilk" >
+                                <input type='checkbox' value='true' formControlName="insectInMilk" id="valuable1"/><label for="valuable1"><span></span> Insect in milk</label> 
+                                <input type='checkbox' value='true' formControlName="siltInMilk" id="valuable2"/><label for="valuable2"><span></span> Silt in milk</label> 
+                                <input type='checkbox' value='true' formControlName="blackParticle" id="valuable2"/><label for="valuable2"><span></span>Black partcles</label> 
+                        </div>
+                          </div>
+                        </div>
+                        <div class="card">
+                          <div class="card-body">
+                            <h5 class="card-title">Packaging</h5>
+                            <div id="checkBoxesContainer"  formGroupName="packaging" >
+                                <input type='checkbox' value='true' formControlName="bottleBrokeOrChipped" id="valuable1"/><label for="valuable1"><span></span> Bottle broke/chipped</label> 
+                                <input type='checkbox' value='true' formControlName="sealBroken" id="valuable2"/><label for="valuable2"><span></span> Seal broken</label> 
+                                <input type='checkbox' value='true' formControlName="dirtyCaps" id="valuable2"/><label for="valuable2"><span></span>Dirty Caps</label> 
+                                <input type='checkbox' value='true' formControlName="noDCPLabel" id="valuable2"/><label for="valuable2"><span></span>No dcp label</label> 
+                        </div>
+                          </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                              <h5 class="card-title">Propeties of milk</h5>
+                              <div id="checkBoxesContainer"  formGroupName="propertiesOfMilk" >
+                                  <input type='checkbox' value='true' formControlName="offSmell" id="valuable1"/><label for="valuable1"><span></span> Off smell</label> 
+                                  <input type='checkbox' value='true' formControlName="offTaste" id="valuable2"/><label for="valuable2"><span></span> Off taste</label> 
+                                  <input type='checkbox' value='true' formControlName="curdlingOfMilk" id="valuable2"/><label for="valuable2"><span></span>Curdig of milk</label> 
+                                  <input type='checkbox' value='true' formControlName="noProperCurd" id="valuable2"/><label for="valuable2"><span></span>No proper curd</label> 
+                                  <input type='checkbox' value='true' formControlName="notYellowInColor" id="valuable2"/><label for="valuable2"><span></span>Not yellow in color</label> 
+                                  <input type='checkbox' value='true' formControlName="stickingToUtensilOnBoiling" id="valuable2"/><label for="valuable2"><span></span>Sticking to utensil on boiling</label> 
+                          </div>
+                            </div>
+                          </div>
+                      </div>
+                  
+                      <!-- Service Concern -->
+
+                      <div class="card-deck" *ngIf="showServiceConcern">
+                          <div class="card">
+                            <div class="card-body">
+                              <h5 class="card-title">Delivery Schedule</h5>
+                              <div id="checkBoxesContainer"   formGroupName="deliverySchedule" >
+                                  <input type='checkbox' value='true' formControlName="noDelivery" id="valuable1"/><label for="valuable1"><span></span> No dilvery</label> 
+                                  <input type='checkbox' value='true' formControlName="deliveredWithoutSubscription" id="valuable2"/><label for="valuable2"><span></span> Diliveed without subscription</label> 
+                                  <input type='checkbox' value='true' formControlName="wrongQuantityDelivered" id="valuable2"/><label for="valuable2"><span></span> Wrong Quantity entered</label> 
+                          </div> 
+                            </div>
+                          </div>
+                          <div class="card">
+                            <div class="card-body">
+                              <h5 class="card-title">Delivery timing</h5>
+                              <div id="checkBoxesContainer"  formGroupName="deliveryTiming" >
+                                  <input type='checkbox' value='true' formControlName="deliveringLate" id="valuable1"/><label for="valuable1"><span></span> Late Delivery</label> 
+                                  <input type='checkbox' value='true' formControlName="deliveringEarly" id="valuable2"/><label for="valuable2"><span></span> Delivering earle</label> 
+                                  <input type='checkbox' value='true' formControlName="irregularDeliveryTime" id="valuable2"/><label for="valuable2"><span></span> Irregular delivery time</label> 
+                          </div>
+                            </div>
+                          </div>
+                          <div class="card">
+                            <div class="card-body">
+                              <h5 class="card-title">Billing Issue</h5>
+                              <div id="checkBoxesContainer"  formGroupName="billingIssue" >
+                                  <input type='checkbox' value='true' formControlName="paidAlready" id="valuable1"/><label for="valuable1"><span></span> Paid Already</label> 
+                                  <input type='checkbox' value='true' formControlName="wronglyBilledOnNonDeliveryDates" id="valuable2"/><label for="valuable2"><span></span> Wrong billed on non dilivery date</label> 
+                          </div>
+                            </div>
+                          </div>
+                          <div class="card">
+                              <div class="card-body">
+                                <h5 class="card-title">Service Issue</h5>
+                                <div id="checkBoxesContainer"  formGroupName="serviceIssue" >
+                                    <input type='checkbox' value='true' formControlName="notFollowedUpRaisedConcern" id="valuable1"/><label for="valuable1"><span></span> Not followed up raised reason</label> 
+                                    <input type='checkbox' value='true' formControlName="notFollowedDeliveryInstruction" id="valuable2"/><label for="valuable2"><span></span> Not followed delivery istruction</label> 
+                                    <input type='checkbox' value='true' formControlName="didNotStartSubscriptionAsPromised" id="valuable2"/><label for="valuable2"><span></span>Did not start subscription as provided</label> 
+                            </div>
+                              </div>
+                            </div>
+                        </div>
+
+                    
+                        <!-- closed Subscription -->
+
+                        <div class="card" *ngIf="showCloseSubscription">
+                            <div class="card-body">
+      
+      
+                                <div id="checkBoxesContainer" class="form-group" formGroupName="closeSubscriptionRequest" >
+                                        <input type='checkbox' value='true' formControlName="relocated" id="valuable1"/><label for="valuable1"><span></span> Relocated</label> 
+                                        <input type='checkbox' value='true' formControlName="costly" id="valuable2"/><label for="valuable2"><span></span> Costly</label> 
+                                        <input type='checkbox' value='true' formControlName="wantA2Milk" id="valuable2"/><label for="valuable2"><span></span>Want A2 Milk</label> 
+                                        <input type='checkbox' value='true' formControlName="timingIssue" id="valuable2"/><label for="valuable2"><span></span>Timing issue</label> 
+                                        <input type='checkbox' value='true' formControlName="milkCompositionIssue" id="valuable2"/><label for="valuable2"><span></span>Milk composition ssue</label> 
+                                        <input type='checkbox' value='true' formControlName="billingIssue" id="valuable2"/><label for="valuable2"><span></span>Billing issue</label> 
+                                        <input type='checkbox' value='true' formControlName="healthIssue" id="valuable2"/><label for="valuable2"><span></span>Health issue</label> 
+                                        <input type='checkbox' value='true' formControlName="otherBrand" id="valuable2"/><label for="valuable2"><span></span>Other brand</label> 
+                                        <input type='checkbox' value='true' formControlName="localVendor" id="valuable2"/><label for="valuable2"><span></span>Local vendor</label> 
+                                        <input type='checkbox' value='true' formControlName="wantBuffaloMilk" id="valuable2"/><label for="valuable2"><span></span>Want buffalo milk</label> 
+                                        <input type='checkbox' value='true' formControlName="noReason" id="valuable2"/><label for="valuable2"><span></span>No reason</label> 
+                                        <input type='checkbox' value='true' formControlName="doctorAdvice" id="valuable2"/><label for="valuable2"><span></span>Doctor advice</label> 
+                                        <input type='checkbox' value='true' formControlName="lessConsumption" id="valuable2"/><label for="valuable2"><span></span>Less consumption</label> 
+                                </div>
+                            </div>
+                          </div>
+
+                          <div class="form-row">
+                              <div class="form-group col-md-4">
+                                  <label>Customer Concern</label>
+                                  <input type="text" style="height:150px;width:350px" formControlName="customerConcern" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.customerConcern.errors }" />
+                                  <div *ngIf="submitted && f.customerConcern.errors" class="invalid-feedback">
+                                      <div *ngIf="f.customerConcern.errors.required">Customer concern is required</div>
+                                  </div>
+                              </div>
+
+                              <div class="form-group col-md-4">
+                                  <label for="inputEmail4">Assign To</label>
+                                  <!-- <input type="text" class="form-control" placeholder="Brand here " formControlName="brand" required
+                                    [ngClass]="{ 'is-invalid': submitted && f.brand.errors }"> -->
+                                    <select class="form-control" formControlName="assignTo" required
+                                    [ngClass]="{ 'is-invalid': submitted && f.assignTo.errors }">
+                                    <option selected disabled>Select User</option>
+                                    <option [ngValue]="user._id" *ngFor="let user of allUsers;let i=index">{{user.full_name}}
+                                    </option>
+                                  </select>
+                                  <div *ngIf="submitted && f.assignTo.errors" class="invalid-feedback">
+                                    <div *ngIf="f.assignTo.errors.required">User is required</div>
+                                  </div>
+                                </div>
+
+                                <div class="card form-group col-md-4" style="width: 18rem;margin-top: 30px">
+                                    <div class="card-body">
+                                        <label for="valuable1"><span></span> Mark as urgent?</label> <input type='checkbox' value='true' formControlName="isUrgent" id="valuable1"/>
+                                        <label for="valuable1"><span></span> Closed subscription?</label>  <input type='checkbox' value='true' formControlName="isSubscriptionClosed" id="valuable1"/>
+                                    </div>
+                                  </div>
+                                  
+
+                            </div>                        
+  
+                            <br>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Generate</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                  </form>
+
+            </div>
+
       </div>
-      <div class="modal-body">
-
-        <form [formGroup]="ticketsForm" (ngSubmit)="onSubmit()">
-
-              <div class="form-check" formGroupName="issues">
-                <input type="checkbox" class="form-check-input" formControlName="issue_with_previous_order">
-                <label class="form-check-label" for="exampleCheck1">Issue With Previous Order</label>
-              </div>
-              <div class="form-check" formGroupName="issues">
-                  <input type="checkbox" class="form-check-input" formControlName="recharge_or_tech_related_issue">
-                  <label class="form-check-label" for="exampleCheck1">Recharge Or Tech Related Issue</label>
-              </div>
-              <div class="form-check" formGroupName="issues">
-                  <input type="checkbox" class="form-check-input" formControlName="delivery_issue">
-                  <label class="form-check-label" for="exampleCheck1">Delievery Issue</label>
-              </div>
-              <div class="form-check" formGroupName="issues">
-                  <input type="checkbox" class="form-check-input" formControlName="quality_issue">
-                  <label class="form-check-label" for="exampleCheck1">Quality Issue</label>
-              </div>
-              <div class="form-check" formGroupName="issues">
-                  <input type="checkbox" class="form-check-input" formControlName="timing_issue">
-                  <label class="form-check-label" for="exampleCheck1">Timing Issue</label>
-              </div>
-              <div class="form-check" formGroupName="issues">
-                  <input type="checkbox" class="form-check-input" formControlName="other">
-                  <label class="form-check-label" for="exampleCheck1">Others</label>
-              </div>
-              <div class="form-group shadow-textarea">
-                  <textarea class="form-control z-depth-1" id="exampleFormControlTextarea6" rows="3" formControlName="message"
-                  placeholder="Type Here For Others"></textarea>
-                </div>
-                <br>
-                <div class=" text-center">
-                <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-                <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
-                </div>
-                  <!-- <button class="text-center btn btn-primary text-center">Save</button> -->
-              
-        </form>
-
-      </div>
-      <!-- <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div> -->
     </div>
   </div>
 </div>
 
-  
-  <!--View Example Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
-   aria-labelledby="exampleModalLabel" aria-hidden="true" >
-    <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Ticket Information</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body" style="overflow-y:scroll;height:700px;">
-            
-                <div class="form-group">
-                    <input type="checkbox"  disabled [(ngModel)]="viewIssuesArray.delivery_issue" >
-                  <label class="form-check-label" for="exampleCheck1">Delievery Issue</label>
-                </div>
-                <div class="form-group">
-                    <input type="checkbox"  disabled [(ngModel)]="viewIssuesArray.issue_with_previous_order" >
-                  <label class="form-check-label" for="exampleCheck1">Issue With Previous Order</label>
-                </div>
-                <div class="form-group">
-                    <input type="checkbox"  disabled [(ngModel)]="viewIssuesArray.quality_issue" >
-                  <label class="form-check-label" for="exampleCheck1">Quality Issue</label>
-                </div>
-                <div class="form-group">
-                    <input type="checkbox"  disabled [(ngModel)]="viewIssuesArray.recharge_or_tech_related_issue" >
-                  <label class="form-check-label" for="exampleCheck1">Recharge Or Tech Related Issue</label>
-                </div>
-                <div class="form-group">
-                    <input type="checkbox"  disabled [(ngModel)]="viewIssuesArray.timing_issue" >
-                  <label class="form-check-label" for="exampleCheck1">Timing Issue</label>
-                </div>
-                <div class="form-group">
-                    <input type="checkbox"  disabled [(ngModel)]="viewIssuesArray.other" >
-                  <label class="form-check-label" for="exampleCheck1">Others</label>
-                </div> 
 
-                <div class="divider-text">Messages</div>
-                
-                <div *ngFor="let message of viewMessagesArray;let i=index">
+      <div class="modal fade" id="ticketModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true" *ngIf="viewArray">
+          <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+            <div class="modal-content tx-14">
+                <div class="card">
+                    <div class="card-header">
+                      Ticket Details
+                    </div>
+                    <div class="card-body">
+                      <div class="form-row">
+                        <div class="form-group col-md-4" *ngIf="viewArray.customer">
+                            <label for="inputEmail4">Customer Name</label>
+                            <input type="text" class="form-control" [(ngModel)]="viewArray.customer.full_name" disabled>
+                          </div>
+                  
+                          <div class="form-group col-md-4" *ngIf="viewArray.customer">
+                              <label for="inputEmail4">Registered Number</label>
+                              <input type="text" class="form-control" [(ngModel)]="viewArray.customer.mobile_number" disabled>
+                            </div>
+                  
+                            <div class="form-group col-md-4" *ngIf="viewArray.customer">
+                                <label for="inputEmail4"> Address</label>
+                                <input type="text" class="form-control" [(ngModel)]="viewArray.customer.street_address" disabled>
+                              </div>
+                        </div>
+                        <div class="form-row">
+
+                            <div class="form-group col-md-3" *ngIf="viewArray.customer">
+                                <label for="inputEmail4">Hub</label>
+                                <input type="text" class="form-control" disabled>
+                              </div>
+                      
+                              <div class="form-group col-md-3" *ngIf="callType">
+                                  <label for="inputEmail4">Call Type</label>
+                                  <input type="text" class="form-control" [(ngModel)]="callType" disabled>
+                                </div>
+                      
+                                <div class="form-group col-md-3" *ngIf="customerConcernMedia">
+                                    <label for="inputEmail4"> customer Concern Media</label>
+                                    <input type="text" class="form-control" [(ngModel)]="customerConcernMedia" disabled>
+                                  </div>
+                                  <div class="form-group col-md-3" *ngIf="Products">
+                                      <label for="inputEmail4"> Products</label>
+                                      <input type="text" class="form-control" [(ngModel)]="Products" disabled>
+                                    </div>
+
+                        </div>
+                        <div class="form-row">
+
+                            <div class="form-group col-md-3" *ngIf="viewArray">
+                                <label for="inputEmail4">Customer Concern</label>
+                                <input type="text" class="form-control" style="width: 600px;height:150px" [(ngModel)]="viewArray.customerConcern" disabled>
+                              </div>
+
+                        </div>
+
+                        <div class="form-row">
+
+                            <ul class="nav nav-pills nav-fill">
+                                <li class="nav-item active" >
+                                  <a class="nav-link " data-toggle="tab" (click)="showTicketProductConcern()">Product Concern</a>
+                                </li>
+                                <li class="nav-item" >
+                                  <a class="nav-link" data-toggle="tab" (click)="showTicketServiceConcern()">Service Concern</a>
+                                </li>
+                                <li class="nav-item" >
+                                  <a class="nav-link"  data-toggle="tab" (click)="showTicketSubscriptionConcern()">Close Subscription Request</a>
+                                </li>
+                              </ul>
+                        </div>
+                        
+
+
+                              <div class="card-deck" *ngIf="showTicketPructProblem">
+                                  <div class="card">
+                                    <div class="card-body">
+                                      <h5 class="card-title">Milk Composition</h5>
+                                      <input type='checkbox' [(ngModel)]="viewArray.issues.productConcern.milkComposition.thinMilklessFat" disabled id="valuable1"/><label for="valuable1"> Thin milk/less fat</label> 
+                                                <input type='checkbox' [(ngModel)]="viewArray.issues.productConcern.milkComposition.thickMilkMoreFat" disabled id="valuable2"/><label for="valuable2"> Thick milk/more fat</label>
+                                    </div>
+                                  </div>
+                                  <div class="card">
+                                    <div class="card-body">
+                                      <h5 class="card-title">Impurities in milk</h5>
+                                      <input type='checkbox'  [(ngModel)]="viewArray.issues.productConcern.impuritiesInMilk.insectInMilk" disabled id="valuable1"/><label for="valuable1"><span></span> Insect in milk</label> 
+                                                <input type='checkbox'   [(ngModel)]="viewArray.issues.productConcern.impuritiesInMilk.siltInMilk" disabled id="valuable2"/><label for="valuable2"><span></span> Silt in milk</label> 
+                                                <input type='checkbox' [(ngModel)]="viewArray.issues.productConcern.impuritiesInMilk.blackParticle" disabled id="valuable2"/><label for="valuable2"><span></span>Black partcles</label> 
+                                    </div>
+                                  </div>
+                                  <div class="card">
+                                    <div class="card-body">
+                                      <h5 class="card-title">Packaging</h5>
+                                      <input type='checkbox'[(ngModel)]="viewArray.issues.productConcern.packaging.bottleBrokeOrChipped" disabled id="valuable1"/><label for="valuable1"><span></span> Bottle broke/chipped</label> 
+                                      <input type='checkbox' [(ngModel)]="viewArray.issues.productConcern.packaging.sealBroken" disabled id="valuable2"/><label for="valuable2"><span></span> Seal broken</label> 
+                                      <input type='checkbox' [(ngModel)]="viewArray.issues.productConcern.packaging.dirtyCaps" disabled id="valuable2"/><label for="valuable2"><span></span>Dirty Caps</label> 
+                                      <input type='checkbox' [(ngModel)]="viewArray.issues.productConcern.packaging.noDCPLabel" disabled id="valuable2"/><label for="valuable2"><span></span>No dcp label</label> 
+                                    </div>
+                                  </div>
+                                  <div class="card">
+                                      <div class="card-body">
+                                        <h5 class="card-title">Properties of milk</h5>
+                                        <input type='checkbox' [(ngModel)]="viewArray.issues.productConcern.propertiesOfMilk.offSmell" disabled id="valuable1"/><label for="valuable1"><span></span> Off smell</label> 
+                                        <input type='checkbox' [(ngModel)]="viewArray.issues.productConcern.propertiesOfMilk.offTaste" disabled id="valuable2"/><label for="valuable2"><span></span> Off taste</label> 
+                                        <input type='checkbox' [(ngModel)]="viewArray.issues.productConcern.propertiesOfMilk.curdlingOfMilk" disabled id="valuable2"/><label for="valuable2"><span></span>Curdling of milk</label> 
+                                        <input type='checkbox' [(ngModel)]="viewArray.issues.productConcern.propertiesOfMilk.noProperCurd" disabled id="valuable2"/><label for="valuable2"><span></span>No proper curd</label> 
+                                        <input type='checkbox' [(ngModel)]="viewArray.issues.productConcern.propertiesOfMilk.notYellowInColor" disabled id="valuable2"/><label for="valuable2"><span></span>Not yellow in color</label> 
+                                        <input type='checkbox' [(ngModel)]="viewArray.issues.productConcern.propertiesOfMilk.stickingToUtensilOnBoiling" disabled id="valuable2"/><label for="valuable2"><span></span>Sticking to utensil on boiling</label> 
+
+                                      </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="card-deck"  *ngIf="showTicketServiceProblem">
+                                    <div class="card">
+                                      <div class="card-body">
+                                        <h5 class="card-title">Delivery Schedule</h5>
+                                        <input type='checkbox' [(ngModel)]="viewArray.issues.serviceConcern.deliverySchedule.noDelivery" disabled id="valuable1"/><label for="valuable1"><span></span> No dilvery</label> 
+                                            <input type='checkbox' [(ngModel)]="viewArray.issues.serviceConcern.deliverySchedule.deliveredWithoutSubscription" disabled id="valuable2"/><label for="valuable2"><span></span> Diliveed without subscription</label> 
+                                            <input type='checkbox' [(ngModel)]="viewArray.issues.serviceConcern.deliverySchedule.wrongQuantityDelivered" disabled id="valuable2"/><label for="valuable2"><span></span> Wrong Quantity entered</label> 
+                                      </div>
+                                    </div>
+                                    <div class="card">
+                                      <div class="card-body">
+                                        <h5 class="card-title">Delivery Timing</h5>
+                                        <input type='checkbox' [(ngModel)]="viewArray.issues.serviceConcern.deliveryTiming.deliveringLate" disabled id="valuable1"/><label for="valuable1"><span></span> Late Delivery</label> 
+                                                <input type='checkbox' [(ngModel)]="viewArray.issues.serviceConcern.deliveryTiming.deliveringEarly" disabled  id="valuable2"/><label for="valuable2"><span></span> Delivering earle</label> 
+                                                <input type='checkbox' [(ngModel)]="viewArray.issues.serviceConcern.deliveryTiming.irregularDeliveryTime" disabled  id="valuable2"/><label for="valuable2"><span></span> Irregular delivery time</label> 
+                                      </div>
+                                    </div>
+                                    <div class="card">
+                                      <div class="card-body">
+                                        <h5 class="card-title">Billing Issue</h5>
+                                        <input type='checkbox' [(ngModel)]="viewArray.issues.serviceConcern.billingIssue.paidAlready" disabled id="valuable1"/><label for="valuable1"><span></span> Paid Already</label> 
+                                            <input type='checkbox' [(ngModel)]="viewArray.issues.serviceConcern.billingIssue.wronglyBilledOnNonDeliveryDates" disabled id="valuable2"/><label for="valuable2"><span></span> Wrong billed on non dilivery date</label> 
+                                      </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-body">
+                                          <h5 class="card-title">Service Issue</h5>
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.serviceConcern.serviceIssue.notFollowedUpRaisedConcern" disabled id="valuable1"/><label for="valuable1"><span></span> Not followed up raised reason</label> 
+                                          <input type='checkbox'[(ngModel)]="viewArray.issues.serviceConcern.serviceIssue.notFollowedDeliveryInstruction" disabled id="valuable2"/><label for="valuable2"><span></span> Not followed delivery istruction</label> 
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.serviceConcern.serviceIssue.didNotStartSubscriptionAsPromised" disabled id="valuable2"/><label for="valuable2"><span></span>Did not start subscription as provided</label> 
+                                        </div>
+                                      </div>
+                                  </div>
+
+                                  <div class="card" style="width: 18rem;" *ngIf="showTicketSubscriptionProblem">
+                                      <div class="card-body">
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.closeSubscriptionRequest.relocated" disabled id="valuable1"/><label for="valuable1"><span></span> Relocated</label> 
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.closeSubscriptionRequest.costly" disabled id="valuable2"/><label for="valuable2"><span></span> Costly</label> 
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.closeSubscriptionRequest.wantA2Milk" disabled id="valuable2"/><label for="valuable2"><span></span>Want A2 Milk</label> 
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.closeSubscriptionRequest.timingIssue" disabled id="valuable2"/><label for="valuable2"><span></span>Timing issue</label> 
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.closeSubscriptionRequest.milkCompositionIssue" disabled id="valuable2"/><label for="valuable2"><span></span>Milk composition ssue</label> 
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.closeSubscriptionRequest.billingIssue" disabled id="valuable2"/><label for="valuable2"><span></span>Billing issue</label> 
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.closeSubscriptionRequest.healthIssue" disabled id="valuable2"/><label for="valuable2"><span></span>Health issue</label> 
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.closeSubscriptionRequest.otherBrand" disabled id="valuable2"/><label for="valuable2"><span></span>Other brand</label> 
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.closeSubscriptionRequest.localVendor" disabled id="valuable2"/><label for="valuable2"><span></span>Local vendor</label> 
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.closeSubscriptionRequest.wantBuffaloMilk" disabled id="valuable2"/><label for="valuable2"><span></span>Want buffalo milk</label> 
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.closeSubscriptionRequest.noReason" disabled id="valuable2"/><label for="valuable2"><span></span>No reason</label> 
+                                          <input type='checkbox' [(ngModel)]="viewArray.issues.closeSubscriptionRequest.doctorAdvice" disabled id="valuable2"/><label for="valuable2"><span></span>Doctor advice</label> 
+                                          <input type='checkbox'[(ngModel)]="viewArray.issues.closeSubscriptionRequest.lessConsumption" disabled id="valuable2"/><label for="valuable2"><span></span>Less consumption</label> 
+                                      </div>
+                                    </div>
+
+                             <div >
+
+
+                                <form [formGroup]="followUpForm" (ngSubmit)="onSubmitFollowUpForm()">
+                                  <div class="form-row">
+                             <div class="form-group">
+                        <label>Follow Up Comments</label>
+                        <input type="text" formControlName="followUpComments" style="width: 400px;height:100px" class="form-control" [ngClass]="{ 'is-invalid': submitted && f2.followUpComments.errors }" />
+                        <div *ngIf="submitted && f2.followUpComments.errors" class="invalid-feedback">
+                            <div *ngIf="f2.followUpComments.errors.required">Comments are required</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="margin-left: 30px">Action Taken</label>
+                        <input type="text" formControlName="actionTaken" style="width: 400px;height:100px;margin-left: 50px" class="form-control" [ngClass]="{ 'is-invalid': submitted && f2.actionTaken.errors }" />
+                        <div *ngIf="submitted && f2.actionTaken.errors" class="invalid-feedback">
+                            <div *ngIf="f2.actionTaken.errors.required">Actions are required</div>
+                        </div>
+                    </div>
+                  </div>
+                    <br>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+
+                             </div>
+                        
+                    </div>
+                  </div>
+              </div>
+              </div>
+              </div>
+
                    
-                  <div *ngIf="message.customer"> 
-                    <div  class="d-flex justify-content-start mb-4">
-                      <div class="msg_cotainer">
-                        {{message.customer}}
-                        <span class="msg_time">{{message.at | date: 'dd/mm/yy'}}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div *ngIf="!message.customer">
-                    <div class="d-flex justify-content-end mb-4">
-                      <div class="msg_cotainer_send">
-                        {{message.message}}
-                        <span class="msg_time_send">{{message.at | date: 'dd/mm/yy'}}</span>
-                      </div>
-                    </div>
-                  </div>
-                 </div>
-
-
-
-
-
-
-
-
-        </div>
-        <div class="divider-text">Write Message To Customer</div>
-        <div class="modal-footer">
-            
-            <div class="input-group">
-                <textarea id="input-box" #searchInput  class="form-control" (change)="ticketText($event)" rows="1" placeholder="Type a message..."></textarea>
-                  <span class="input-group-btn">
-                      <button class="btn btn-secondary" type="button" (click)="sendMessage()">send</button>
-                  </span>
-             </div>
-          <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
-        </div>
-      </div>
-    </div>
-  </div>

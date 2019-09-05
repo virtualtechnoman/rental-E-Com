@@ -31,6 +31,7 @@ import { TruckModule } from './core/truck/truck.module';
 import { LocationManagerModule } from './core/location-manager/location-manager.module';
 import { SupportModule } from './core/Support/support.module';
 import { RouteModule } from './core/route/route.module';
+import { SubscriptionModule } from './core/customersubscription/subscription.module';
 
 @NgModule({
   declarations: [
@@ -63,7 +64,8 @@ import { RouteModule } from './core/route/route.module';
     ToastrModule.forRoot(),
     LocationManagerModule,
     SupportModule,
-    RouteModule
+    RouteModule,
+    SubscriptionModule
   ],
   providers: [
     LoginAuthGraud,

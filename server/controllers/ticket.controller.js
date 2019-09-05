@@ -4,17 +4,12 @@ const cartUpdateSchema = Joi.object({
     quantity: Joi.number().min(1).required()
 })
 
+
+
 const ticketFollowUp = Joi.object({
     followUpComments: Joi.string().required(),
     actionTaken: Joi.string().required()
 })
-module.exports = {
-    verifyCreate,
-    verifyTicketFollowUp
-}
-
-function verifyCreate(ticket) { return helper.validator(ticket, ticketCreateSchema) }
-function verifyTicketFollowUp(ticket) { return helper.validator(ticket, ticketFollowUp) }
 // function verifyCustomerMsg(ticket) { return helper.validator(ticket, ticketMsgCustomer) }
 
 const ProductConcern = Joi.object({
@@ -78,7 +73,6 @@ const CloseSubscriptionRequest = Joi.object({
     doctorAdvice: Joi.boolean(),
     lessConsumption: Joi.boolean()
 })
-
 const ticketCreateSchema = Joi.object({
     customer: Joi.string().required(),
     customerConcern: Joi.string().required(),
@@ -106,3 +100,12 @@ const ticketCreateSchema = Joi.object({
         closeSubscriptionRequest: CloseSubscriptionRequest,
     })
 })
+
+
+function verifyCreate(ticket) { return helper.validator(ticket, ticketCreateSchema) }
+function verifyTicketFollowUp(ticket) { return helper.validator(ticket, ticketFollowUp) }
+
+module.exports = {
+    verifyCreate,
+    verifyTicketFollowUp
+}
