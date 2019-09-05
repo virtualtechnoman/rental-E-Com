@@ -269,6 +269,7 @@ router.post('/verifyotp/:type', async (req, res) => {
             }
             else if (req.params.type == 'dboy') {
               newUser.role = process.env.DELIVERY_BOY_ROLE;//"5d5157820250e60017e64d42";
+              newUser.dob = Date.now();
               newUser.city = "";
             }
             newUser.full_name = "";

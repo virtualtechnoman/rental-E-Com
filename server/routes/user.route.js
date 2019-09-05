@@ -7,6 +7,15 @@ const moment = require('moment');
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
+const uuid = require("uuid/v1");
+const AWS = require("aws-sdk");
+const S3 = new AWS.S3({
+  accessKeyId: process.env.AWS_S3_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
+  region: process.env.AWS_S3_REGION
+});
 
 
 //GET all users
@@ -136,7 +145,7 @@ router.put('/id/:id', authorizePrivilege("UPDATE_USER"), (req, res) => {
     if (!isEmpty(result.errors)) {
       return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
     }
-    User.findByIdAndUpdate(req.params.id, {$set:result.data}, { new: true }, (err, doc) => {
+    User.findByIdAndUpdate(req.params.id, { $set: result.data }, { new: true }, (err, doc) => {
       if (err) {
         console.log(err);
         return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating user data" });
@@ -166,49 +175,86 @@ router.put('/id/:id', authorizePrivilege("UPDATE_USER"), (req, res) => {
 
 // UPDATE USER OWN
 router.put('/me', authorizePrivilege("UPDATE_USER_OWN"), (req, res) => {
-  if (mongodb.ObjectID.isValid(req.params.id)) {
-    // let user = (({ full_name, email, role }) => ({ full_name, email, role }))(req.body);
-    const result = userCtrl.verifyUpdate(req.body);
-    if (!isEmpty(result.errors)) {
-      return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
-    }
-    User.findByIdAndUpdate(req.user._id, result.data, { new: true }, (err, doc) => {
-      if (err) {
-        console.log(err);
-        return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating user data" });
-      }
-      else {
-        doc.populate("role route area").execPopulate().then(d => {
-          if (!d)
-            return res.status(200).json({ status: 200, errors: true, data: doc, message: "No User Found" });
-          else {
-            d = d.toObject();
-            delete d.password;
-            console.log("Updated User", d);
-            res.status(200).json({ status: 200, errors: false, data: d, message: "Updated User" });
-          }
-        }
-        ).catch(e => {
-          console.log(e);
-          return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating user details" });
-        });
-      }
-    })
+  let result;
+  if (req.user.role._id == process.env.DELIVERY_BOY_ROLE) {
+    result = userCtrl.verifyDBoyProfileUpdateOwn(req.body)
   } else {
-    return res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid user id" });
-    // return res.status(404).send("ID NOT FOUND");
+    result = userCtrl.verifyUpdate(req.body)
   }
+  if (!isEmpty(result.errors)) {
+    return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
+  }
+  User.findByIdAndUpdate(req.user._id, { $set: result.data }, { new: true }, (err, doc) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating user data" });
+    }
+    else {
+      doc.populate("role route").execPopulate().then(d => {
+        if (!d)
+          return res.status(200).json({ status: 200, errors: true, data: doc, message: "No User Found" });
+        else {
+          d = d.toObject();
+          delete d.password;
+          console.log("Updated User", d);
+          res.status(200).json({ status: 200, errors: false, data: d, message: "Updated User" });
+        }
+      }
+      ).catch(e => {
+        console.log(e);
+        return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating user details" });
+      });
+    }
+  })
 })
 
+// KYC USER OWN
+router.put('/me/kyc', authorizePrivilege("UPDATE_USER_OWN"), upload.single("kyc"), (req, res) => {
+  if (req.file) {
+    if (req.file.mimetype != 'image/jpeg' || req.file.mimetype != 'image/png') {
+      User.findById(req.user._id).exec().then(_user => {
+        if (_user.kyc.verified) {
+          return res.status(400).json({ status: 400, errors: true, data: null, message: "Your KYC is already verified" });
+        } else {
+          let k = `kyc/${req.user._id}/${uuid()}.${req.file.originalname.split('.').pop()}`;
+          S3.upload({
+            Bucket: 'binsar', Key: k, Body: req.file.buffer
+          }, (err, data) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while uploading the file" });
+            } else {
+              _user.kyc.documentType = req.body.documentType;
+              _user.kyc.image = k;
+              _user.save().then(doc => {
+                doc = doc.toObject();
+                delete doc.password;
+                res.status(200).json({ status: 200, errors: false, data: doc, message: "Profile Updated Successfully" });
+              }).catch(err => {
+                console.log(err);
+                return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating profile" });
+              })
+            }
+          })
+        }
+      }).catch(err => {
+        console.log(err);
+        return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while getting profile details" });
+      })
+    } else {
+      return res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid file type" });
+    }
+  }else{
+    return res.status(400).json({ status: 400, errors: true, data: null, message: "Please upload the image" });
+  }
+})
 // ADD NEW USER
 router.post("/", authorizePrivilege("ADD_NEW_USER"), (req, res) => {
-  // let result = userCtrl.insert(req.body);
-  // let user = (({ full_name, email, password, role }) => ({ full_name, email, password, role }))(req.body);
   let result;
-  if(req.body.role == process.env.DRIVER_ROLE)
-  result = userCtrl.verifyAddDriver(req.body);
+  if (req.body.role == process.env.DRIVER_ROLE)
+    result = userCtrl.verifyAddDriver(req.body);
   else
-  result = userCtrl.verifyCreate(req.body);
+    result = userCtrl.verifyCreate(req.body);
   if (isEmpty(result.errors)) {
     User.findOne({ email: result.data.email }, (err, doc) => {
       if (err)
@@ -222,7 +268,7 @@ router.post("/", authorizePrivilege("ADD_NEW_USER"), (req, res) => {
           result.data.password = hash;
           const newuser = new User(result.data);
           newuser.save().then(data => {
-            data.populate("role route area").execPopulate().then(data=>{
+            data.populate("role route area").execPopulate().then(data => {
               data = data.toObject();
               delete data.password;
               res.status(200).json({ status: 200, errors: false, data, message: "User Added successfully" });

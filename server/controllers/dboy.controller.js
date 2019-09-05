@@ -2,24 +2,7 @@ const helper = require('../utils/helper');
 const Joi = require('joi');
 
 
-const dBoyProfileSchema = Joi.object({
-  full_name: Joi.string().required(),
-  H_no_society:Joi.string().optional(),
-  gender:Joi.string().optional(),
-  landmark: Joi.string().optional(), 
-  street_address: Joi.string().optional(), 
-  city: Joi.string().optional(),
-  permanent_address: Joi.string().optional()
-})
-const dBoyKycSchema = Joi.object({
-  full_name: Joi.string().required(),
-  H_no_society:Joi.string().optional(),
-  gender:Joi.string().optional(),
-  landmark: Joi.string().optional(), 
-  street_address: Joi.string().optional(), 
-  city: Joi.string().optional(),
-  permanent_address: Joi.string().optional()
-})
+
 const userUpdateSchema = Joi.object({
   full_name: Joi.string().optional(),
   password: Joi.string().optional(),
@@ -37,10 +20,10 @@ const userUpdateSchema = Joi.object({
   city: Joi.string().optional()
 })
 module.exports = {
-  verifyCreate,
+  // verifyCreate,
   verifyUpdate,
 }
 
-function verifyCreate(user) { return helper.validator(user, dBoySchema) }
-function verifyUpdate(user) { return helper.validator(user, userUpdateSchema) }
+// function verifyCreate(user) { return helper.validator(user, dBoyProfileSchema) }
+// function verifyUpdate(user) { return helper.validator(user, dBoyProfileSchema) }
 

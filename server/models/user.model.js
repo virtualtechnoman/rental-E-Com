@@ -29,6 +29,7 @@ const UserSchema = new mongoose.Schema({
   anniversary: { type: Date },
   route: { type: mongoose.Schema.Types.ObjectId, ref: "route" },
   //for driver =>
+  emergency_contact: { type: String },
   dl_number: { type: String },
   //for dboy =>
   kyc: {

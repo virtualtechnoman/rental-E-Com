@@ -98,8 +98,22 @@ module.exports = {
   verifyMobileRegister: verifyMobileRegister,
   verifyMobileLogin: verifyMobileLogin,
   verifyMobileOtp: verifyMobileOtp,
-  verifyAddDriver
+  verifyAddDriver,
+  verifyDBoyProfileUpdateOwn
 }
+
+const dBoyProfileUpdateOwnSchema = Joi.object({
+  full_name: Joi.string().required(),
+  H_no_society:Joi.string().optional(),
+  gender:Joi.string().optional(),
+  landmark: Joi.string().optional(), 
+  dob:Joi.string().optional(),
+  dl_number: Joi.string().optional(), 
+  emergency_contact: Joi.string().optional(), 
+  street_address: Joi.string().optional(),
+  city: Joi.string().optional(),
+  permanent_address: Joi.string().optional()
+})
 
 function verifyCreate(user) { return helper.validator(user, userSchema) }
 function verifyUpdate(user) { return helper.validator(user, userUpdateSchema) }
@@ -109,5 +123,6 @@ function verifyMobileLogin(user) { return helper.validator(user, userMobileLogin
 function verifyLogin(user) { return helper.validator(user, userLoginSchema) }
 function verifyMobileOtp(user) { return helper.validator(user, userMobileOtpSchema) }
 function verifyAddDriver(user) { return helper.validator(user, driverAddSchema) }
-function verifyAddCustomer(user) { return helper.validator(user, driverAddSchema) }
+// function verifyAddCustomer(user) { return helper.validator(user, driverAddSchema) }
+function verifyDBoyProfileUpdateOwn(user) { return helper.validator(user, dBoyProfileUpdateOwnSchema) }
 
