@@ -37,7 +37,8 @@ const UserSchema = new mongoose.Schema({
     image:{type:String},
     verified:{type:Boolean}
   },
-  permanent_address:String
+  permanent_address:String,
+  vehicle_type:String
 }, {
     versionKey: false
   });
