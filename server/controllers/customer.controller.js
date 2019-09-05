@@ -3,9 +3,9 @@ const helper = require('../utils/helper');
 
 
 const customerSelfUpdateSchema = Joi.object({
-    full_name: Joi.string().required(),
-    landmark: Joi.string().required(),
-    street_address: Joi.string().required(),
+    full_name: Joi.string().optional(),
+    landmark: Joi.string().optional(),
+    street_address: Joi.string().optional(),
     mobile_number:Joi.string().optional(),
     // city : Joi.string().required(),
     area : Joi.string().optional(),
