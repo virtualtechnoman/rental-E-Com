@@ -6,7 +6,8 @@ const subscriptionSchema = new Schema({
     quantity:{type:Number},
     startDate:{type:Date},
     frequencyDates:[Date],
-    user:{type:Schema.Types.ObjectId, ref:"user"}
+    user:{type:Schema.Types.ObjectId, ref:"user"},
+    created_by:{type:Schema.Types.ObjectId, ref:"user"}
 },
 {versionKey:false});
 

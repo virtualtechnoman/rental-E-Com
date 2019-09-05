@@ -18,6 +18,8 @@ export class CustomersService {
   url7= '/api/customer/addresswithnoroute';
   url6 = '/api/corder/all';
   url8 = '/api/corder/customer';
+  url9= "/api/user/ticket"
+  url10= "/api/subscription/user"
   constructor(private http: HttpClient,private tokenService:TokenStorage) { }
 
   getAllCustomers() {
@@ -125,8 +127,25 @@ export class CustomersService {
     return this.http.get(this.url7 + '/', { headers: this.headers })
   }
 
-  // 
+  // get orders of specific customer
   getSpecificCustomerOrder(id){
     return this.http.get(this.url8 + '/' +id, { headers: this.headers })
+  }
+
+  // get ticket of specific customer
+  getSpecificCustomerTickets(id){
+    return this.http.get(this.url9 + '/' +id, { headers: this.headers })
+  }
+  
+  // add subscription
+
+  addSubscriptionn(subscription){
+    return this.http.post(this.url10 + '/', subscription,{ headers: this.headers });
+  }
+
+  // get subscription of specific user
+
+  getAllSubscriptionspecificCustomer(id){
+    return this.http.get(this.url10 + '/' +id, { headers: this.headers })
   }
 }

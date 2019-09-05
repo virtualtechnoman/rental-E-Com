@@ -6,6 +6,7 @@ var mongodb = require("mongodb");
 const moment = require('moment');
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+const Ticket = require("../models/ticket.model");
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
@@ -102,7 +103,6 @@ router.get('/all', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
 
 // GET all users by role
 router.get('/role/:role', authorizePrivilege("GET_USER_BY_ROLE"), async (req, res) => {
-  console.log(req.body.role)
   if (mongodb.ObjectId.isValid(req.params.role)) {
     try {
       const allUsers = await User.find({ role: req.params.role }).populate("role route area").exec()
@@ -117,6 +117,19 @@ router.get('/role/:role', authorizePrivilege("GET_USER_BY_ROLE"), async (req, re
     }
   } else {
     res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid role id" });
+  }
+})
+// GET all tickets by user
+router.get('/ticket/:id', authorizePrivilege("GET_TICKETS_ALL"), (req, res) => {
+  if (mongodb.ObjectId.isValid(req.params.id)) {
+    Ticket.find({customer:req.params.id}).populate([{path:"created_by customer assignTo", select :"-password"},{path:"responses.by", select :"-password"}]).exec().then(_tkts=>{
+      res.status(200).json({ status: 200, errors: false, data: _tkts, message: "All tickets for the given user" })
+    }).catch(err=>{
+      console.log(err);
+      res.status(500).json({ status: 500, errors: true, data: null, message: "Error while getting tickets" });
+    })
+  } else {
+    res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid user id" });
   }
 })
 
