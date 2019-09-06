@@ -70,7 +70,7 @@ router.post('/', authorizePrivilege("ADD_NEW_SUBSCRIPTION_OWN"), async (req, res
     result.data.user = req.user._id;
     let newState = new Subscription(result.data);
     newState.save().then(subscription => {
-        subscription.populate({ path: "product", populate: { path: "category available_for brand", select: "-password" } }).execPopulate().then(subscription => {
+        subscription.populate([{ path: "product", populate: { path: "category available_for brand", select: "-password" } }, { path: "user created_by", select: "-password" }]).execPopulate().then(subscription => {
             res.json({ status: 200, data: subscription, errors: false, message: "Subscription added successfully" })
         }).catch(e => {
             console.log(e);

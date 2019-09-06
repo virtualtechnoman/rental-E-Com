@@ -2,6 +2,12 @@
   <div class="card">
     <div class="card-header">
       <h2 class="float-left">Challan Management</h2>
+      <select class="form-control float-right" (change)="getChallanmannagement($event)" 
+        style="width:20%" >
+        <option  selected disabled>Select User Role</option>
+        <option  value="order">Order Challan</option>
+        <option  value="rorder">Return Order Challan</option>
+      </select>
     </div>
     <div class="card-body">
       <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"

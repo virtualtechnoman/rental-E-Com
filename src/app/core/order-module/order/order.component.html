@@ -1,7 +1,46 @@
 <div class="container-fluid">
+
+    <div class="card">
+        <div class="card-header">
+          <h2 class="float-left">Latest Order </h2>
+        </div>
+        <div class="card-body">
+      <table class="table table-bordered table-hover table-striped">
+        <thead>
+          <tr>
+              <th scope="col">S.no</th>
+              <th scope="col">Order No.</th>
+              <th scope="col">Order Date</th>
+              <!-- <th scope="col">Order Time</th> -->
+              <th scope="col">Order To</th>
+              <!-- <th scope="col">Manager</th> -->
+              <th scope="col">Order By</th>
+              <th scope="col">Order Status / Return Order Status</th>
+              <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr >
+            <td>1</td>
+            <td>{{lastOrder[0]?.order_id}}</td>
+            <td>{{lastOrder[0]?.order_date | date:'dd/MM/yy' }},{{lastOrder[0]?.order_date | date:'h:mm a' }}</td>
+            <td>{{lastOrder[0]?.placed_to.full_name | titlecase}}</td>
+            <td>{{lastOrder[0]?.placed_by.full_name | titlecase}}</td>
+            <td>{{lastOrder[0]?.status}}/{{lastOrder[0]?.rorder?.status}}</td>
+            <td>
+              <a style="cursor:pointer" data-toggle="modal" data-target="#invoiceModal" (click)="showLastOrderFunc()"><i class="fas fa-eye"></i></a>
+              <!-- <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteOrder(i)"></i></a> -->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+
+
   <div class="card">
     <div class="card-header">
-      <h2 class="float-left">Order Management</h2>
+      <h2 class="float-left">All Orders</h2>
       <a class="btn btn-secondary text-white float-right" (click)="resetForm()" data-toggle="modal"
         data-target="#modal3">Add New Order</a>
       <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
@@ -374,31 +413,34 @@
                       
                     </table>
                     <br>
-                    <div *ngIf="orderSelected.status == 'Pending' ">
+                    <div *ngIf="orderSelected.status == 'Pending' " style="margin-left: 200px">
                         <label> Optional Notes or Image </label>
-                          <input type="text"  
-                                class="form-control col-md-4" (change)="notesAccepted($event)"
-                                placeholder="Notes" ><br>
+                                <div class="form-group green-border-focus">
+                                  <textarea (change)="notesAccepted($event)"  placeholder="Notes"
+                                   class="form-control" cols="40"  id="exampleFormControlTextarea5" rows="3"></textarea>
+                                </div><br>
                                 <input type="file"  
                                 class="col-lg-10" (change)="imageAccepted($event)" >
                         </div>
                   </div>
 
-                  <div *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' ">
+                  <div *ngIf="!orderSelected.billed && orderSelected.status == 'Recieved' "  style="margin-left: 200px">
                       <label>Input Optional Notes or Image For Billing Order</label><br>
-                      <input type="text"  
-                      class="form-control col-md-4" (change)="notesBilled($event)"
-                      placeholder="Notes" >
+                      <div class="form-group green-border-focus">
+                        <textarea (change)="notesBilled($event)"  placeholder="Notes"
+                         class="form-control" cols="40"  id="exampleFormControlTextarea5" rows="3"></textarea>
+                      </div>
                      <input type="file"  
                      class="col-lg-10" (change)="imageBilled($event)" >
                   </div>
 
 
-                  <div *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' ">
+                  <div *ngIf="!orderSelected.recieved && orderSelected.status == 'Challan Accepted' " style="margin-left: 200px">
                       <label> Optional Notes or Image </label><br>
-                      <input type="text"  
-                      class="form-control col-md-4" (change)="notesRecieved($event)"
-                      placeholder="Notes" >
+                      <div class="form-group green-border-focus">
+                        <textarea (change)="notesRecieved($event)"  placeholder="Notes"
+                         class="form-control" cols="40" id="exampleFormControlTextarea5" rows="3"></textarea>
+                      </div>
                       <br>
                      <input type="file"  
                      class="col-lg-10" (change)="imageRecieved($event)" >
@@ -456,7 +498,7 @@
                                         class="form-control col-lg-8" [ngModel]="orderSelected.products[i].dispatched">
                                         <input type="text"  
                                         class="form-control col-lg-8" (change)="notesRecieved($event)"
-                                        placeholder="Notes" >
+                                        placeholder="Notes" > 
                                        <input type="file"  
                                        class="col-lg-" (change)="imageRecieved($event)" >
                             </td>
@@ -712,60 +754,30 @@
                           </tbody>
                         </table>
                         <br>
-                        <div *ngIf="!orderSelected.rorder.recieved && orderSelected.rorder.status == 'Challan Accepted' " >
+                        <div *ngIf="!orderSelected.rorder.recieved && orderSelected.rorder.status == 'Challan Accepted' " style="margin-left: 200px">
                           <label for=""> Optional Note Or Image</label>
-                            <input type="text"  
-                            class="form-control col-sm-4" (change)="notesRecievedReturnOrder($event)"
-                            placeholder="Notes" >
+                            <div class="form-group green-border-focus">
+                              <textarea (change)="notesRecievedReturnOrder($event)" placeholder="Notes"
+                               class="form-control" id="exampleFormControlTextarea5" cols="40" rows="3"></textarea>
+                            </div>
                             <br>
                            <input type="file"  
                            class="col-lg-10" (change)="imageRecievedReturnOrder($event)" style="margin-left: -15px">
                         </div>
                         <br>
-                        <div *ngIf="!orderSelected.rorder.billed && orderSelected.rorder.status == 'Recieved' ">
+                        <div *ngIf="!orderSelected.rorder.billed && orderSelected.rorder.status == 'Recieved' " style="margin-left: 200px">
                             <label for="">Optional Note Or Image</label>
-                            <input type="text"  
-                            class="form-control col-sm-4" (change)="notesBilledReturnOrder($event)"
-                            placeholder="Notes" >
+                            <div class="form-group green-border-focus">
+                              <textarea (change)="notesBilledReturnOrder($event)" placeholder="Notes"
+                               class="form-control" cols="40" id="exampleFormControlTextarea5" rows="3"></textarea>
+                            </div>
                             <br>
                            <input type="file"  style="margin-left: -15px"
                            class="col-lg-10" (change)="imageBilledReturnOrder($event)" >
 
                         </div>
 
-
-
-
-
-
-
-
-
-
-
                     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  
                   
                 </div><!-- container -->
               </div><!-- content -->

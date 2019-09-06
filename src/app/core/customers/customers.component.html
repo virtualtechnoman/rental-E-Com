@@ -182,8 +182,8 @@
                       </a>
                     <a href="#subscriptionLogs" class=" nav-item nav-link" data-toggle="tab"><span>Subscription </span></a>
                     <a href="#contactLogs" class=" nav-item nav-link" data-toggle="tab" ><span>Orders </span></a>
-                    <a href="" class=" nav-item nav-link" data-toggle="tab"><span>Bills </span></a>
-                    <a href="" class=" nav-item nav-link" data-toggle="tab"><span>Activity Log </span></a>
+                    <a href="#billLogs" class=" nav-item nav-link" data-toggle="tab"><span>Bills </span></a>
+                    <a href="#activityLogs" class=" nav-item nav-link" data-toggle="tab"><span>Activity Log </span></a>
                     <a href="#ticketslogs" class=" nav-item nav-link" data-toggle="tab"><span>Tickets </span></a>
                   </nav>
                   <a href="" id="contactOptions" class="text-secondary mg-l-auto d-xl-none"><i
@@ -237,42 +237,42 @@
                         </div>
                         <div class="col-6 col-sm-4">
                           <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Subscription</label>
-                          <!-- <p class="tx-primary tx-rubik mg-b-0">{{viewArray?.gender}}</p> -->
+                          <p class="tx-primary tx-rubik mg-b-0">Alternate Day</p>
                         </div>
                         <div class="col-6 col-sm-4 mg-t-20 mg-sm-t-0">
                           <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Hub Manager
                             </label>
-                          <!-- <p class="tx-primary tx-rubik mg-b-0">{{viewArray?.dob}}</p> -->
+                          <p class="tx-primary tx-rubik mg-b-0">Rajesh Aggarwal</p>
                         </div>
                         <div class="col-sm-4 mg-t-20 mg-sm-t-30">
                           <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Hub
                             </label>
-                          <!-- <p class="tx-primary mg-b-0">{{viewArray?.email}}</p> -->
+                          <p class="tx-primary mg-b-0">Noida Hub</p>
                         </div>
                         <div class="col-sm-4 mg-t-20 mg-sm-t-30">
                           <label
                             class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Route</label>
-                          <!-- <p class="mg-b-0">Binsar Farms</p> -->
+                          <p class="mg-b-0">Sector 52 Route</p>
                         </div>
                         <div class="col-sm-4 mg-t-20 mg-sm-t-30">
                           <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Delivery
                             Boy</label>
-                          <!-- <p class="mg-b-0">{{viewArray?.role?.name}}</p> -->
+                          <p class="mg-b-0">Rajpal</p>
                         </div>
                         <div class="col-sm-6 mg-t-20 mg-sm-t-30">
                           <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Status
                             </label>
-                          <!-- <p class="mg-b-0">4658 Kenwood Place<br>Pompano Beach, FL 33060, United States</p> -->
+                          <p class="mg-b-0">Active</p>
                         </div>
                         <div class="col-sm-6 mg-t-20 mg-sm-t-30">
                           <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Subscription
                             </label>
-                          <!-- <p class="mg-b-0">819 Waldeck Street<br>Farmers Branch, TX 75244, United States</p> -->
+                          <p class="mg-b-0">Alternate</p>
                         </div>
                         <div class="col-sm-6 mg-t-20 mg-sm-t-30">
                           <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Balance
                             </label>
-                          <!-- <p class="tx-primary mg-b-0">http://themepixels.me/</p> -->
+                          <p class="tx-primary mg-b-0">Rs.1400</p>
                         </div>
                       </div><!-- row -->
                     </div>
@@ -308,12 +308,70 @@
                               </tr>
                             </tbody>
                           </table>
+
+                          <div id="billLogs" class="tab-pane pd-20 pd-xl-25" >
+                              <div class="d-flex align-items-center justify-content-between mg-b-30">
+                                <h6 class="tx-15 mg-b-0"></h6>
+          
+          
+          
+          
+                                <table class="table table-hover">
+                                    <thead>
+                                      <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Bill No</th>
+                                        <th scope="col">Bill Date</th>
+                                        <th scope="col">Action</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                  </table>
+          
+          
+                                <!-- <a href="#" class="btn btn-sm btn-white d-flex align-items-center"><i
+                                    class="icon ion-md-time mg-r-5 tx-16 lh--9"></i> Clear History</a> -->
+                              </div>
+                            </div><!-- tab-pane -->
   
   
                         <!-- <a href="#" class="btn btn-sm btn-white d-flex align-items-center"><i
                             class="icon ion-md-time mg-r-5 tx-16 lh--9"></i> Clear History</a> -->
                       </div>
                     </div><!-- tab-pane -->
+
+                    <div id="activityLogs" class="tab-pane pd-20 pd-xl-25" >
+                        <div class="d-flex align-items-center justify-content-between mg-b-30">
+                          <h6 class="tx-15 mg-b-0"></h6>
+    
+    
+    
+    
+                          <table class="table table-hover">
+                              <thead>
+                                <tr>
+                                  <th scope="col">#</th>
+                                  <th scope="col">Log No</th>
+                                  <th scope="col">Last Logs</th>
+                                  <th scope="col">Action</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                              </tbody>
+                            </table>
+    
+    
+                          <!-- <a href="#" class="btn btn-sm btn-white d-flex align-items-center"><i
+                              class="icon ion-md-time mg-r-5 tx-16 lh--9"></i> Clear History</a> -->
+                        </div>
+                      </div><!-- tab-pane -->
+
+
+                  <!-- <a href="#" class="btn btn-sm btn-white d-flex align-items-center"><i
+                      class="icon ion-md-time mg-r-5 tx-16 lh--9"></i> Clear History</a> -->
+                </div>
+              </div><!-- tab-pane -->
   
   
   
@@ -356,7 +414,7 @@
   
   
                       <div id="subscriptionLogs" class="tab-pane pd-20 pd-xl-25" >
-                          <div class="d-flex align-items-center justify-content-between mg-b-30">
+                          <div class=" align-items-center justify-content-between mg-b-30">
                               <div class="form-row">
                               <table class="table table-hover">
                                   <thead>
@@ -389,8 +447,8 @@
                             </div>
                             <div class="form-row">
                             <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmitSubscriptionForm()" *ngIf="showSubform">
-                              <div class="form-row">
-                                <div class="form-group ">
+                              <div class="form-row ">
+                                <div class="form-group col-lg-4">
                                   <label for="inputEmail4">Product</label>
                                     <select class="form-control" formControlName="product" required
                                     [ngClass]="{ 'is-invalid': submitted && f3.product.errors }">
@@ -402,7 +460,7 @@
                                     <div *ngIf="f3.product.errors.required">Product is required</div>
                                   </div>
                                 </div>
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-lg-4">
                                     <label>Quantity</label>
                                     <input type="number" formControlName="quantity" class="form-control" [ngClass]="{ 'is-invalid': submitted && f3.quantity.errors }" />
                                     <div *ngIf="submitted && f3.quantity.errors" class="invalid-feedback">
@@ -417,7 +475,7 @@
                       
                                 </div>
                                 <div class="form-row">
-                                <div class="form-group">
+                                <div class="form-group col-lg-4">
                                     <label>Start Date</label>
                                     <input type="date"  data-date="" data-date-format="DD MMMM YYYY" formControlName="startDate" id="dateformat" class="form-control" [ngClass]="{ 'is-invalid': submitted && f3.startDate.errors }"  />
                                     <div *ngIf="submitted && f3.startDate.errors" class="invalid-feedback">

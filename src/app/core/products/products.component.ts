@@ -52,6 +52,7 @@ export class ProductsComponent implements OnInit {
   editShowImage:boolean=false
   editImage: any;
   mastImage: any;
+  productImagesArray:any[]=[]
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService
   ) {
@@ -254,11 +255,18 @@ export class ProductsComponent implements OnInit {
     this.productService.getAllProduct().subscribe((res: ResponseModel) => {
       console.log(res);
       this.allproducts = res.data;
+      
       console.log(this.allproducts);
+      if(res.data){
+        for(var i=0;i<res.data.length;i++){
+          this.productImagesArray.push(this.imageUrl + res.data[i].image)
+        }
+      }
+      console.log(this.productImagesArray);
+      
       this.dtTrigger.next();
     });
   }
-
   getallBrand(){
     this.productService.getAllBrand().subscribe((res: ResponseModel) => {
       console.log(res);

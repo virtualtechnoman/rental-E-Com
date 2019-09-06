@@ -57,6 +57,22 @@ export class ChallanComponent implements OnInit {
     this.getAllChallan();
   }
 
+  getChallanmannagement(event){
+    this.allChallans.length=0;
+    if(event.target.value=="order"){
+      this.orderService.getAllChallan().subscribe((res: ResponseModel) => {
+          this.allChallans = res.data;
+          console.log(this.allChallans);
+      });
+    }
+    if(event.target.value=="rorder"){
+      this.orderService.getAllReturnOrdersChallans().subscribe((res: ResponseModel) => {
+          this.allChallans = res.data;
+          console.log(this.allChallans);
+      });
+    }
+  }
+
   recievedQuantityEntered(event:any,i){
     var arr;
     arr=event.target.value;

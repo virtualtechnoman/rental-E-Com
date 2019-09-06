@@ -125,6 +125,9 @@ export class OrderComponent implements OnInit {
   showRecieveOrderNotesReturnOrder:boolean=false;
   requestedNotes: any;
   showRequestedNotes:boolean=false;
+  lastOrder:any[]=[];
+  showLastOrder:boolean=false;
+  lastOrderIndex: number;
   constructor(private productService: ProductsService, private fb: FormBuilder, private toastr: ToastrService,
     private authService: AuthService, private orderService: OrderService, private userService: UserService,private vehicleService: TruckService
   ) {
@@ -648,6 +651,7 @@ export class OrderComponent implements OnInit {
                 this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
                 // console.log(res.data)
                 this.allOrders.splice(this.orderIndex,1,res.data)
+
               })
             }else{
             order['remarks.acceptOrder']={
@@ -658,7 +662,9 @@ export class OrderComponent implements OnInit {
               jQuery('#invoiceModal').modal('hide');
               this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
               // console.log(res.data)
-              this.allOrders.splice(this.orderIndex,1,res.data)
+              
+                this.allOrders.splice(this.orderIndex,1,res.data)
+              
             })
           }
           }
@@ -676,7 +682,8 @@ export class OrderComponent implements OnInit {
           jQuery('#invoiceModal').modal('hide');
           this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
           console.log(res.data)
-          this.allOrders.splice(this.orderIndex,1,res.data)
+            this.allOrders.splice(this.orderIndex,1,res.data)
+          
         })
       }
     }
@@ -688,7 +695,7 @@ export class OrderComponent implements OnInit {
       jQuery('#invoiceModal').modal('hide');
       this.toastr.info('Order Has Been Accepeted Successfully!', 'Accepeted!!');
       // console.log(res.data)
-      this.allOrders.splice(this.orderIndex,1,res.data)
+        this.allOrders.splice(this.orderIndex,1,res.data)
     })
   }
   }
@@ -744,6 +751,171 @@ export class OrderComponent implements OnInit {
     // console.log(this.orderPlacedForm.value)
       this.addOrder(this.orderPlacedForm.value);
     
+  }
+
+  showLastOrderFunc(){
+    this.showLastOrder=true;
+    this.showAcceptOrderImage=false;
+    this.showRecieveOrderImage=false;
+    this.showBillOrderImage=false;
+    if(this.showLastOrder==true){
+      this.orderSelected=this.allOrders[this.allOrders.length-1]
+      this.lastOrderIndex=this.allOrders.length-1
+    }
+    else{
+      this.orderSelected=null
+    }
+    console.log(this.orderSelected)
+    this.orderSelectedProducts=this.allOrders[this.allOrders.length-1].products;
+    this.orderSelectedNotes=this.allOrders[this.allOrders.length-1].notes;
+    this.orderId=this.allOrders[this.allOrders.length-1]._id
+    this.orderIndex=this.allOrders.length-1;
+    this.orderTime=this.orderSelected.order_date.substr(11, 8)
+    if(this.orderSelected){
+      if(this.orderSelected.notes){
+        this.requestedOrderNotes=this.orderSelected.notes
+        // console.log(this.acceptOrderNotes)
+        this.showRequestedOrderNotes=true;
+      }else{
+        this.showRequestedOrderNotes=false;
+      }
+    }
+    if(this.orderSelected){
+    if(this.orderSelected.remarks){
+    if(this.orderSelected.remarks.acceptOrder){
+    if(this.orderSelected.remarks.acceptOrder.image){
+      this.acceptOrderImage=this.imageUrl + this.orderSelected.remarks.acceptOrder.image
+      // console.log(this.acceptOrderImage)
+      this.showAcceptOrderImage=true;
+    }else{
+      this.showAcceptOrderImage=false;
+    }
+    if(this.orderSelected.remarks.acceptOrder.note){
+      this.acceptOrderNotes=this.orderSelected.remarks.acceptOrder.note
+      // console.log(this.acceptOrderNotes)
+      this.showAcceptOrderNotes=true;
+    }else{
+      this.showAcceptOrderNotes=false;
+    }
+  }
+  }
+  }
+  if(this.orderSelected){
+    if(this.orderSelected.remarks){
+    if(this.orderSelected.remarks.recieveOrder){
+    if(this.orderSelected.remarks.recieveOrder.image){
+      this.recieveOrderImage=this.imageUrl + this.orderSelected.remarks.recieveOrder.image
+      // console.log(this.recieveOrderImage)
+      this.showRecieveOrderImage=true;
+    }else{
+      this.showRecieveOrderImage=false;
+    }
+    if(this.orderSelected.remarks.recieveOrder.note){
+      this.recieveOrderNotes=this.orderSelected.remarks.recieveOrder.note
+      // console.log(this.recieveOrderNotes)
+      this.showRecieveOrderNotes=true;
+    }else{
+      this.showRecieveOrderNotes=false;
+    }
+  }
+}
+  }
+  if(this.orderSelected){
+    if(this.orderSelected.remarks){
+    if(this.orderSelected.remarks.billOrder){
+    if(this.orderSelected.remarks.billOrder.image){
+      this.billOrderImage=this.imageUrl + this.orderSelected.remarks.billOrder.image
+      // console.log(this.billOrderImage)
+      this.showBillOrderImage=true;
+    }else{
+      this.showBillOrderImage=false;
+    }
+    if(this.orderSelected.remarks.billOrder.note){
+      this.billOrderNotes=this.orderSelected.remarks.billOrder.note
+      console.log(this.billOrderNotes)
+      this.showBillOrderNotes=true;
+    }else{
+      this.showBillOrderNotes=false;
+    }
+    }
+  }
+}
+if(this.orderSelected){
+  if(this.orderSelected.remarks){
+  if(this.orderSelected.remarks.generateChallan){
+  if(this.orderSelected.remarks.generateChallan.image){
+    this.challanImage=this.imageUrl + this.orderSelected.remarks.generateChallan.image
+    // console.log(this.challanImage)
+    this.showChallanImage=true;
+  }else{
+    this.showChallanImage=false;
+  }
+  if(this.orderSelected.remarks.generateChallan.note){
+    this.ChallanNotes=this.orderSelected.remarks.generateChallan.note
+    // console.log(this.ChallanNotes)
+    this.showChallanNotes=true;
+  }else{
+    this.showChallanNotes=false;
+  }
+  }
+}
+}
+
+
+if(this.orderSelected){
+  if(this.orderSelected.rorder){
+  if(this.orderSelected.rorder.remarks){
+  if(this.orderSelected.rorder.remarks.billROrder){
+  if(this.orderSelected.rorder.remarks.billROrder.image){
+    this.billOrderImageReturnOrder=this.imageUrl + this.orderSelected.rorder.remarks.billROrder.image
+    console.log(this.billOrderImageReturnOrder)
+    this.showBillOrderImageReturnOrder=true;
+  }else{
+    this.showBillOrderImageReturnOrder=false;
+  }
+  if(this.orderSelected.rorder.remarks.billROrder.note){
+    this.billOrderNotesReturnOrder=this.orderSelected.rorder.remarks.billROrder.note
+    console.log(this.billOrderNotesReturnOrder)
+    this.showBillOrderNotesReturnOrder=true;
+  }else{
+    this.showBillOrderNotesReturnOrder=false;
+  }
+  }
+}
+}
+}
+
+if(this.orderSelected){
+  if(this.orderSelected.rorder){
+    this.requestedNotes=this.orderSelected.rorder.notes
+    this.showRequestedNotes=true;
+  }
+else{
+  this.showRequestedNotes=false
+}}
+
+if(this.orderSelected){
+  if(this.orderSelected.rorder){
+  if(this.orderSelected.rorder.remarks){
+  if(this.orderSelected.rorder.remarks.recieveROrder){
+  if(this.orderSelected.rorder.remarks.recieveROrder.image){
+    this.recieveOrderImageReturnOrder=this.imageUrl + this.orderSelected.rorder.remarks.recieveROrder.image
+    console.log(this.recieveOrderImageReturnOrder)
+    this.showRecieveOrderImageReturnOrder=true;
+  }else{
+    this.showRecieveOrderImageReturnOrder=false;
+  }
+  if(this.orderSelected.rorder.remarks.recieveROrder.note){
+    this.recieveOrderNotesReturnOrder=this.orderSelected.rorder.remarks.recieveROrder.note
+    console.log(this.recieveOrderNotesReturnOrder)
+    this.showRecieveOrderNotesReturnOrder=true;
+  }else{
+    this.showRecieveOrderNotesReturnOrder=false;
+  }
+  }
+}
+}
+}
   }
   viewAcceptOrderButton(i){
     this.showAcceptOrderImage=false;
@@ -914,6 +1086,8 @@ if(this.orderSelected){
         jQuery('#modal3').modal('hide');
         this.toastr.success('Order Added!', 'Success!');
         this.allOrders.push(res.data);
+        this.lastOrder.length=0;
+        this.lastOrder.push(res.data)
         this.resetForm();
       }
     });
@@ -977,9 +1151,18 @@ if(this.orderSelected){
       } else {
         this.allOrders = res.data;
         // console.log(res.data)
+        if(res.data){
+          this.lastOrder.push(res.data[res.data.length-1])
+        }
+        console.log(this.lastOrder)
         this.dtTrigger.next();
       }
     });
+    
+  }
+
+  latestOrderShow(){
+
   }
 
   getVehicle() {

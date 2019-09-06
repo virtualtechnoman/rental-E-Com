@@ -15,9 +15,9 @@ import * as moment from 'moment';
   styleUrls: ['./customers.component.scss']
 })
 export class CustomersComponent implements OnInit {
-  registerCustomer:CustomerClass
+  registerCustomer: CustomerClass
   jQuery: any;
-  allregisterCustomer:any[]=[]
+  allregisterCustomer: any[] = []
   allcustomers: any[] = [];
   currentcustomer: CustomerClass;
   currentcustomerId: string;
@@ -34,61 +34,61 @@ export class CustomersComponent implements OnInit {
   submitted = false;
   registerForm: FormGroup;
   subscriptionForm: FormGroup;
-  viewArray:any=[];
-  orderHistory:any[]=[];
-  custometTickets:any[]=[]
-  ticketInformation:any=[]
-  orderHistoryNumberInformation:any=[];
-  imageURL="https://binsar.s3.ap-south-1.amazonaws.com/";
-  showProfileImage:boolean=false;
+  viewArray: any = [];
+  orderHistory: any[] = [];
+  custometTickets: any[] = []
+  ticketInformation: any = []
+  orderHistoryNumberInformation: any = [];
+  imageURL = "https://binsar.s3.ap-south-1.amazonaws.com/";
+  showProfileImage: boolean = false;
   image: string;
-  callType:any;
-  customerConcernMedia:any;
-  Products:any;
-  showTicketPructProblem:boolean=false;
-  showTicketServiceProblem:boolean=false;
-  showTicketSubscriptionProblem:boolean=false;
-  showResponses:boolean=false;
-  followUpForm:FormGroup
+  callType: any;
+  customerConcernMedia: any;
+  Products: any;
+  showTicketPructProblem: boolean = false;
+  showTicketServiceProblem: boolean = false;
+  showTicketSubscriptionProblem: boolean = false;
+  showResponses: boolean = false;
+  followUpForm: FormGroup
   currentTicketIndex: any;
-  allProducts:any[]=[]
+  allProducts: any[] = []
   selectedEvent: any;
-  totalDatesArray:any[]=[];
-  allSubscriptions:any[]=[];
-  viewPerticularSubscription:any[]=[]
-  showSubform:boolean=false;
-  showSubscriptionButton:boolean=false;
-  constructor(private productService:ProductsService,private customerService: CustomersService,private supportService:SupportService, private formBuilder: FormBuilder, private toastr: ToastrService,private authService:AuthService) {
+  totalDatesArray: any[] = [];
+  allSubscriptions: any[] = [];
+  viewPerticularSubscription: any[] = []
+  showSubform: boolean = false;
+  showSubscriptionButton: boolean = false;
+  constructor(private productService: ProductsService, private customerService: CustomersService, private supportService: SupportService, private formBuilder: FormBuilder, private toastr: ToastrService, private authService: AuthService) {
     this.currentcustomer = new CustomerClass();
-    this.registerCustomer=new CustomerClass();
+    this.registerCustomer = new CustomerClass();
     this.initForm();
-    this.authService.me().subscribe((res:any)=>{
+    this.authService.me().subscribe((res: any) => {
       console.log(res)
     })
   }
 
   ngOnInit() {
     this.getProducts()
-    this.subscriptionForm=this.formBuilder.group({
-      user:[''],
-      product:[''],
-      quantity:[''],
-      frequencyDates:this.formBuilder.array([]),
-      startDate:['']
+    this.subscriptionForm = this.formBuilder.group({
+      user: [''],
+      product: [''],
+      quantity: [''],
+      frequencyDates: this.formBuilder.array([]),
+      startDate: ['']
     })
-    this.followUpForm=this.formBuilder.group({
-      followUpComments:[''],
-      actionTaken:['']
+    this.followUpForm = this.formBuilder.group({
+      followUpComments: [''],
+      actionTaken: ['']
     })
     this.registerForm = this.formBuilder.group({
       full_name: ['', Validators.required],
       mobile_number: ['', Validators.required],
       landmark: ['', Validators.required],
-      street_address: ['', Validators.required ],
-      city:['', Validators.required],
-      dob:['', Validators.required]
-  });
-    
+      street_address: ['', Validators.required],
+      city: ['', Validators.required],
+      dob: ['', Validators.required]
+    });
+
     this.dtOptions = {
       pagingType: 'full_numbers',
       lengthMenu: [
@@ -116,13 +116,14 @@ export class CustomersComponent implements OnInit {
   get f2() { return this.followUpForm.controls; }
   get f3() { return this.subscriptionForm.controls; }
 
-  onSubmitFollowUpForm(){
+  onSubmitFollowUpForm() {
     console.log(this.followUpForm.value)
-    this.supportService.sendTicketFollowUp(this.custometTickets[this.currentTicketIndex]._id,this.followUpForm.value).subscribe((res:ResponseModel)=>{
-      this.custometTickets.splice(this.currentTicketIndex,1,res.data)
+    this.supportService.sendTicketFollowUp(this.custometTickets[this.currentTicketIndex]._id, this.followUpForm.value).subscribe((res: ResponseModel) => {
+      this.custometTickets.splice(this.currentTicketIndex, 1, res.data)
       this.toastr.info('Follow up is successfull!', 'Succcess!!');
       jQuery('#ticketModal').modal('hide');
       console.log(res.data)
+      this.followUpForm.reset();
     })
   }
 
@@ -131,7 +132,7 @@ export class CustomersComponent implements OnInit {
     console.log(this.registerForm)
     // stop here if form is invalid
     if (this.registerForm.invalid) {
-        return;
+      return;
     }
     this.registerCustomer = this.registerForm.value;
     if (this.editing) {
@@ -140,7 +141,7 @@ export class CustomersComponent implements OnInit {
       this.addCustomer(this.registerCustomer);
     }
     // this.registerForm.reset();
-}
+  }
   // get f() { return this.customerForm.controls; }
 
   submit() {
@@ -154,18 +155,18 @@ export class CustomersComponent implements OnInit {
     this.currentcustomer = this.customerForm.value;
     if (this.editing) {
       this.updateCustomer(this.currentcustomer);
-      
+
     } else {
       this.addCustomer(this.currentcustomer);
     }
   }
-  closeModal(){
+  closeModal() {
     this.registerForm.reset()
   }
 
   addCustomer(customer) {
     console.log(customer);
-    this.customerService.addCustomer(customer).subscribe((res:ResponseModel) => {
+    this.customerService.addCustomer(customer).subscribe((res: ResponseModel) => {
       console.log(res)
       jQuery('#modal3').modal('hide');
       this.toastr.success('Customer Added', 'Success!');
@@ -199,9 +200,9 @@ export class CustomersComponent implements OnInit {
 
   get_customers() {
     this.allcustomers.length = 0;
-    this.customerService.getAllCustomers().subscribe((res:ResponseModel) => {
+    this.customerService.getAllCustomers().subscribe((res: ResponseModel) => {
       console.log(res);
-      this.allcustomers.push(res.data) ;
+      this.allcustomers.push(res.data);
       console.log('All Customers', this.allcustomers);
       this.dtTrigger.next();
     });
@@ -209,7 +210,7 @@ export class CustomersComponent implements OnInit {
 
   updateCustomer(customer) {
     console.log(customer)
-    console.log(this.allcustomers[0][this.current_customer_index]._id,customer)
+    console.log(this.allcustomers[0][this.current_customer_index]._id, customer)
     this.customerService.updateCustomer(this.allcustomers[0][this.current_customer_index]._id, customer).subscribe(res => {
       console.log(res)
       this.toastr.info('Customer Updated Successfully!', 'Updated!');
@@ -220,115 +221,115 @@ export class CustomersComponent implements OnInit {
     });
   }
 
-  viewCustomer(i){
-    this.viewArray=this.allcustomers[0][i]
+  viewCustomer(i) {
+    this.viewArray = this.allcustomers[0][i]
     console.log(this.viewArray)
-    if(this.viewArray){
-      if(this.viewArray.profile_picture){
-        this.image=this.imageURL + this.viewArray.profile_picture
-        this.showProfileImage=true
+    if (this.viewArray) {
+      if (this.viewArray.profile_picture) {
+        this.image = this.imageURL + this.viewArray.profile_picture
+        this.showProfileImage = true
       }
-      else{
-        this.showProfileImage=false;
+      else {
+        this.showProfileImage = false;
       }
     }
-    if(this.viewArray){
+    if (this.viewArray) {
 
-    this.customerService.getSpecificCustomerOrder(this.viewArray._id).subscribe((res:ResponseModel)=>{
-      this.orderHistory.length=0
-      console.log(res.data)
-      this.orderHistory=res.data
-    })
+      this.customerService.getSpecificCustomerOrder(this.viewArray._id).subscribe((res: ResponseModel) => {
+        this.orderHistory.length = 0
+        console.log(res.data)
+        this.orderHistory = res.data
+      })
 
-    this.customerService.getSpecificCustomerTickets(this.viewArray._id).subscribe((res:ResponseModel)=>{
-      this.custometTickets.length=0;
-      console.log(res.data)
-      this.custometTickets=res.data
-    })
-    
-    this.customerService.getAllSubscriptionspecificCustomer(this.viewArray._id).subscribe((res:ResponseModel)=>{
-      this.allSubscriptions.length=0
-      console.log(res.data)
-      this.allSubscriptions=res.data
-    })
+      this.customerService.getSpecificCustomerTickets(this.viewArray._id).subscribe((res: ResponseModel) => {
+        this.custometTickets.length = 0;
+        console.log(res.data)
+        this.custometTickets = res.data
+      })
+
+      this.customerService.getAllSubscriptionspecificCustomer(this.viewArray._id).subscribe((res: ResponseModel) => {
+        this.allSubscriptions.length = 0
+        console.log(res.data)
+        this.allSubscriptions = res.data
+      })
+    }
   }
-  }
 
 
 
-  seeCustomerFullOrderDetail(i){
-    if(this.orderHistory){
-      this.orderHistoryNumberInformation=this.orderHistory[i]
+  seeCustomerFullOrderDetail(i) {
+    if (this.orderHistory) {
+      this.orderHistoryNumberInformation = this.orderHistory[i]
       console.log(this.orderHistoryNumberInformation)
     }
   }
 
-  seeCustomerFullTicketDetail(i){
-    if(this.custometTickets){
-      this.currentTicketIndex=i;
-      this.ticketInformation=this.custometTickets[i]
+  seeCustomerFullTicketDetail(i) {
+    if (this.custometTickets) {
+      this.currentTicketIndex = i;
+      this.ticketInformation = this.custometTickets[i]
       console.log(this.ticketInformation)
-      if(this.ticketInformation.callType.inbound==true){
-        this.callType="inbound"
+      if (this.ticketInformation.callType.inbound == true) {
+        this.callType = "inbound"
       }
-      else{
-        this.callType="inbound"
-      }
-  
-      if(this.ticketInformation.customerConcernMedia.hub==true){
-        this.customerConcernMedia="hub"
-      }
-      else if(this.ticketInformation.customerConcernMedia.mobile==true){
-        this.customerConcernMedia="mobile"
-      }
-      else{
-        this.customerConcernMedia="whatsapp"
-      }
-  
-      if(this.ticketInformation.products.butter==true){
-        this.Products="butter"
-      }
-      else if(this.ticketInformation.products.cheese==true){
-        this.Products="cheese"
-      }
-      else if(this.ticketInformation.products.ghee==true){
-        this.Products="ghee"
-      }
-      else{
-        this.Products="milk"
+      else {
+        this.callType = "inbound"
       }
 
-      if(this.ticketInformation.responses.length>0){
-        this.showResponses=true
+      if (this.ticketInformation.customerConcernMedia.hub == true) {
+        this.customerConcernMedia = "hub"
       }
-      else{
-        this.showResponses=false
+      else if (this.ticketInformation.customerConcernMedia.mobile == true) {
+        this.customerConcernMedia = "mobile"
       }
-  
+      else {
+        this.customerConcernMedia = "whatsapp"
+      }
+
+      if (this.ticketInformation.products.butter == true) {
+        this.Products = "butter"
+      }
+      else if (this.ticketInformation.products.cheese == true) {
+        this.Products = "cheese"
+      }
+      else if (this.ticketInformation.products.ghee == true) {
+        this.Products = "ghee"
+      }
+      else {
+        this.Products = "milk"
+      }
+
+      if (this.ticketInformation.responses.length > 0) {
+        this.showResponses = true
+      }
+      else {
+        this.showResponses = false
+      }
+
     }
   }
 
-  showPerticularSubscrition(i){
-    this.viewPerticularSubscription=this.allSubscriptions[i]
+  showPerticularSubscrition(i) {
+    this.viewPerticularSubscription = this.allSubscriptions[i]
     console.log(this.viewPerticularSubscription)
   }
 
-  showTicketProductConcern(){
-    this.showTicketPructProblem=true;
-    this.showTicketServiceProblem=false;
-    this.showTicketSubscriptionProblem=false;
+  showTicketProductConcern() {
+    this.showTicketPructProblem = true;
+    this.showTicketServiceProblem = false;
+    this.showTicketSubscriptionProblem = false;
   }
-  
-  showTicketServiceConcern(){
-    this.showTicketPructProblem=false;
-    this.showTicketServiceProblem=true;
-    this.showTicketSubscriptionProblem=false;
+
+  showTicketServiceConcern() {
+    this.showTicketPructProblem = false;
+    this.showTicketServiceProblem = true;
+    this.showTicketSubscriptionProblem = false;
   }
-  
-  showTicketSubscriptionConcern(){
-  this.showTicketSubscriptionProblem=true;
-  this.showTicketPructProblem=false;
-    this.showTicketServiceProblem=false;
+
+  showTicketSubscriptionConcern() {
+    this.showTicketSubscriptionProblem = true;
+    this.showTicketPructProblem = false;
+    this.showTicketServiceProblem = false;
   }
   resetForm() {
     this.editing = false;
@@ -361,11 +362,11 @@ export class CustomersComponent implements OnInit {
   }
 
   setFormValue() {
-  
+
     console.log(this.registerForm.controls)
     const customer = this.allcustomers[0][this.current_customer_index];
     console.log(customer);
-   var dob= customer.dob.substring(0, 10)
+    var dob = customer.dob.substring(0, 10)
     this.registerForm.controls['city'].setValue(customer.city);
     this.registerForm.controls['mobile_number'].setValue(customer.mobile_number);
     this.registerForm.controls['full_name'].setValue(customer.full_name);
@@ -461,80 +462,57 @@ export class CustomersComponent implements OnInit {
     }
   }
 
-  fillSubscriptionForm(){
+  fillSubscriptionForm() {
     // console.log(this.subscriptionForm.value)
     this.subscriptionForm.reset();
   }
 
-  onSubmitSubscriptionForm(){
-    if(this.viewArray){
-      this.subscriptionForm.value.user=this.viewArray._id
+  onSubmitSubscriptionForm() {
+    if (this.viewArray) {
+      this.subscriptionForm.value.user = this.viewArray._id
     }
-    var subscriptionStatDate=moment(this.subscriptionForm.value.startDate).format()
-    this.subscriptionForm.value.startDate=subscriptionStatDate
-    var monthsTwo=moment(this.subscriptionForm.value.startDate).add(59, 'days').calendar();
-    var subscriptionEndDate=moment(monthsTwo).format('ll')
-    var end=moment(this.subscriptionForm.value.startDate).add(0, 'days').calendar();
-    var array=[]
-    var array2=[]
-    var start;
-    if(this.selectedEvent=="daily"){
-    for(var i=0;i<60;i++){
-       start=monthsTwo;
-        array[i]=start
-        array2[i]=moment(start).format()
-        this.totalDatesArray.push(array2[i])
-        monthsTwo=moment(monthsTwo).subtract(1, 'days').calendar();
-      }
+
+    var subscriptionStatDate = moment(this.subscriptionForm.value.startDate).toDate()
+    let arr = [];
+    let totalDays = 60;
+    let days = 0;
+    switch(this.selectedEvent){
+      case 'daily': days = 1;
+      break;
+      case 'alternate': days = 2;
+      break;
+      case 'in3days': days = 3;
+      break;
+    }
+    for (let i = 0; i < totalDays/days; i++) {
+      arr.push(subscriptionStatDate);
+      subscriptionStatDate = moment(subscriptionStatDate).add(days, 'days').toDate()
+    }
+    console.log(arr);
+    this.subscriptionForm.value.startDate = subscriptionStatDate
+    console.log(this.subscriptionForm.value)
+    this.customerService.addSubscriptionn(this.subscriptionForm.value).subscribe((res:ResponseModel)=>{
+      console.log(res.data)
+      this.allSubscriptions.push(res.data)
+      this.showSubform=false;
+    })
   }
 
-  if(this.selectedEvent=="alternate"){
-    for(var i=0;i<60;i=i+2){
-       start=monthsTwo;
-        array[i]=start
-        array2[i]=moment(start).format()
-        this.totalDatesArray.push(array2[i])
-        monthsTwo=moment(monthsTwo).subtract(2, 'days').calendar();
-      }
-  }
-
-  if(this.selectedEvent=="in3days"){
-    for(var i=0;i<60;i=i+3){
-       start=monthsTwo;
-        array[i]=start
-        array2[i]=moment(start).format()
-        this.totalDatesArray.push(array2[i])
-        monthsTwo=moment(monthsTwo).subtract(3, 'days').calendar();
-      }
-  }
-
- 
-  this.totalDatesArray.reverse()
-  console.log(array,this.totalDatesArray)
-  this.subscriptionForm.value.frequencyDates=this.totalDatesArray
-  console.log(this.subscriptionForm.value)
-  this.customerService.addSubscriptionn(this.subscriptionForm.value).subscribe((res:ResponseModel)=>{
-    console.log(res.data)
-    this.allSubscriptions.push(res.data)
-    this.showSubform=false;
-  })
-}
 
 
-
-  selectPlan(event){
-    this.selectedEvent=event.target.value
+  selectPlan(event) {
+    this.selectedEvent = event.target.value
   }
 
   getProducts() {
     this.allProducts.length = 0;
-    this.productService.getAllProduct().subscribe((res:ResponseModel) => {
+    this.productService.getAllProduct().subscribe((res: ResponseModel) => {
       this.allProducts = res.data;
     });
   }
 
-  showSubscriptionForm(){
-    this.showSubform=true
-    this.showSubscriptionButton=false;
+  showSubscriptionForm() {
+    this.showSubform = true
+    this.showSubscriptionButton = false;
   }
 }

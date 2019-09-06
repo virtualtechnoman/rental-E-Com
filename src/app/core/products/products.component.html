@@ -13,7 +13,7 @@
         <thead>
           <tr>
             <th scope="col">S No.</th>
-            <th scope="col">Product ID</th>
+            <th scope="col">Product Image</th>
             <th scope="col">Product Name</th>
             <th scope="col">Category Name</th>
             <th scope="col">Brand</th>
@@ -27,7 +27,7 @@
         <tbody>
           <tr *ngFor="let product of allproducts; let i = index">
             <td>{{i+1}}</td>
-            <td>{{product?.product_id | titlecase}}</td>
+            <td *ngIf="product.image"><img src="{{productImagesArray[i]}}" alt="" width="25px" class="img-thumbnail"></td>
             <td>{{product?.name | titlecase}}</td>
             <td>{{product?.category?.name | titlecase}}</td>
             <td>{{product?.brand?.name | titlecase}}</td>

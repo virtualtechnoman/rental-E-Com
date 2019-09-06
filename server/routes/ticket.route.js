@@ -65,7 +65,7 @@ router.put("/followupconern/:id", authorizePrivilege("CONCERN_FOLLOWUP"), (req, 
     if (!isEmpty(result.errors))
         return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
         result.data.by = req.user._id;
-    Ticket.findByIdAndUpdate(req.params.id,{$push:{responses:result.data,status:"Open"}},{new:true}).populate([{path:"created_by customer assignTo", select :"-password"}]).exec().then(_tkt=>{
+    Ticket.findByIdAndUpdate(req.params.id,{$push:{responses:result.data},status:"Open"},{new:true}).populate([{path:"created_by customer assignTo responses.by", select :"-password"}]).exec().then(_tkt=>{
         res.json({ status: 200, data: _tkt, errors: false, message: "Ticket Updated Successfully!" });
     }).catch(err=>{
         console.log(err);
