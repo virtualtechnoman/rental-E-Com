@@ -135,6 +135,7 @@ router.put('/id/:id', authorizePrivilege("UPDATE_CUSTOMER"), (req, res) => {
         
             User.findByIdAndUpdate(req.params.id, { $set: result.data }, { new: true }, (err, doc) => {
                 if (err) {
+                    console.log(err);
                     return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating Customer data" });
                 }
                 else {
@@ -143,7 +144,6 @@ router.put('/id/:id', authorizePrivilege("UPDATE_CUSTOMER"), (req, res) => {
                     else {
                         doc = doc.toObject();
                         delete doc.password;
-                        console.log("Updated User", doc);
                         res.status(200).json({ status: 200, errors: false, data: doc, message: "Updated Customer" });
                     }
                 }

@@ -21,11 +21,16 @@ const customerOrderUpdateSchema = Joi.object({
     // status: Joi.boolean().required()
     status:Joi.string().optional()
 })
+const getCustomerOrderByDateForDboySchema = Joi.object({
+    date:Joi.date().required()
+})
 
 module.exports = {
-    verifyCreate: verifyCreate,
-    verifyUpdate: verifyUpdate
+    verifyCreate,
+    verifyUpdate,
+    verifyDateForDboy
 }
 
 function verifyCreate(order) { return helper.validator(order, customerOrderCreateSchema) }
 function verifyUpdate(order) { return helper.validator(order, customerOrderUpdateSchema) }
+function verifyDateForDboy(order) { return helper.validator(order, getCustomerOrderByDateForDboySchema) }
