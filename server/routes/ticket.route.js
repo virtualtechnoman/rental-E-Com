@@ -11,7 +11,13 @@ const Product = require("../models/Products.model");
 
 //GET own Tickets
 router.get("/", authorizePrivilege("GET_TICKETS_OWN"), (req, res) => {
-    Ticket.find({ created_by: req.user._id },null, {
+    let query;
+    if(req.user.role._id == process.env.CUSTOMER_ROLE){
+        query = { customer: req.user._id }
+    }else{
+        query = { created_by: req.user._id }
+    }
+    Ticket.find(query,null, {
         sort: {
             created_at: 'desc' //Sort by Date DESC
         }
@@ -47,6 +53,7 @@ router.post("/", authorizePrivilege("ADD_NEW_TICKET"), (req, res) => {
     if (!isEmpty(result.errors))
         return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
     result.data.ticket_number = "TKT" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
+    if(req.user.role._id != process.env.CUSTOMER_ROLE)
     result.data.created_by = req.user._id;
     let newTicket = new Ticket(result.data)
     newTicket.save().then(_tkt=>{
@@ -59,7 +66,6 @@ router.post("/", authorizePrivilege("ADD_NEW_TICKET"), (req, res) => {
 
 //Follow up
 router.put("/followupconern/:id", authorizePrivilege("CONCERN_FOLLOWUP"), (req, res) => {
-
     console.log("FIELDS : ",req.body);
     let result = TicketController.verifyTicketFollowUp(req.body);
     if (!isEmpty(result.errors))
