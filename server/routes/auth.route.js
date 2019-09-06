@@ -334,7 +334,7 @@ router.get('/me', async (req, res) => {
             else {
               res.status(403).json({ status: 403, data: null, errors: true, message: "Your token is not valid anymore" });
             }
-          })
+          }).populate("area route")
         }
       })
     } else {

@@ -65,6 +65,7 @@ module.exports = (p=false)=>({
     GET_CUSTOMER_ORDER_ASSIGNED:p,
     GET_ALL_CUSTOMER_ORDERS_OWN:p,
     CANCEL_CUSTOMER_ORDER:p,
+    DELIVER_CUSTOMER_ORDER:p,
     //Cart Privilege
     GET_CART:p,
     ADD_PRODUCT_TO_CART:p,

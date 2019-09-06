@@ -24,33 +24,42 @@ router.post('/', authorizePrivilege("ADD_NEW_ROUTE"), async (req, res) => {
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
     }
-    let newState = new Route(result.data);
-    newState.save().then(route => {
-        route.populate("delivery_boy", "-password").execPopulate().then(route => {
-            res.json({ status: 200, data: route, errors: false, message: "Area added successfully" });
-        }).catch(e => {
-            console.log(e);
-            res.status(500).json({ status: 500, data: null, errors: true, message: "Error while populating" });
-        });
-    }).catch(e => {
-        console.log(e);
-        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while adding route" });
-    });
+    Route.findOne({ delivery_boy: result.data.delivery_boy }).exec().then(_route => {
+        if (_route) {
+            return res.status(400).json({ status: 400, data: null, errors: true, message: `Delivery Boy  already assigned to route : ${_route.name}` });
+        } else {
+            let newState = new Route(result.data);
+            newState.save().then(route => {
+                route.populate("delivery_boy", "-password").execPopulate().then(route => {
+                    res.json({ status: 200, data: route, errors: false, message: "Route added successfully" });
+                }).catch(e => {
+                    console.log(e);
+                    res.status(500).json({ status: 500, data: null, errors: true, message: "Error while populating" });
+                });
+            }).catch(e => {
+                console.log(e);
+                res.status(500).json({ status: 500, data: null, errors: true, message: "Error while adding route" });
+            });
+        }
+    }).catch(err=>{
+        console.log(err);
+        return res.status(500).json({status:500, data:null, errors:true, message:"Error while verifying details"});
+    })
 });
 
 //Update given customers routes
-router.put("/customer",(req,res)=>{
+router.put("/customer", (req, res) => {
     let result = RouteController.verifyUpdateCustomer(req.body);
-    console.log("RESULT: ",result.errors);
-    if(isEmpty(result.errors)){
-        User.updateMany({_id:{$in:result.data.customers}},{$set:{route:result.data.route}}).exec().then(data=>{
-            res.json({message:"Selected record updated successfully", data, status:200, errors:false})
-        }).catch(err=>{
+    console.log("RESULT: ", result.errors);
+    if (isEmpty(result.errors)) {
+        User.updateMany({ _id: { $in: result.data.customers } }, { $set: { route: result.data.route } }).exec().then(data => {
+            res.json({ message: "Selected record updated successfully", data, status: 200, errors: false })
+        }).catch(err => {
             console.log(err);
-            res.status(500).json({status:500, data:null, message:"Error while updating records", errors:true});
+            res.status(500).json({ status: 500, data: null, message: "Error while updating records", errors: true });
         })
-    }else{
-        res.status(400).json({ status: 400, data: null, errors:result.errors, message: "Fields required" });
+    } else {
+        res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" });
     }
 })
 
@@ -63,11 +72,11 @@ router.put("/id/:id", authorizePrivilege("UPDATE_ROUTE"), (req, res) => {
         }
         Route.findByIdAndUpdate(req.params.id, result.data, { new: true }).populate("delivery_boy", "-password").exec()
             .then(doc => {
-                res.status(200).json({ status: 200, data: doc, errors: false, message: "Area Updated Successfully" });
+                res.status(200).json({ status: 200, data: doc, errors: false, message: "Route Updated Successfully" });
             }).catch(err => {
                 console.log(err);
                 res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating route" })
-        })
+            })
     }
     else {
         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid route id" });
