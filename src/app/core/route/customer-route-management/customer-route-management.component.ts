@@ -79,23 +79,21 @@ export class CustomerRouteManagementComponent implements OnInit {
     customer.route=this.routeId
     console.log(customer)
     this.routeService.updateCustomerRoute(customer).subscribe((res:ResponseModel)=>{
+    
       console.log(res.data)
       
+      if(res.data){
+        for(var i=0;i<res.data.length;i++){
+          console.log(res.data[i])
+          this.allSelectedRoutesById.push(res.data[i])
+        }
+      }
     })
     this.routeService.getAllCustomersWithNoRoutes().subscribe((res:ResponseModel)=>{
       console.log(res.data)
       this.allNoRouteCustomers=res.data
     })
-
-    
     }
-
-    this.routeService.getAllCustomersWithNoRoutes().subscribe((res:ResponseModel)=>{
-      this.allNoRouteCustomers.length=0;
-      console.log(res.data)
-      this.allNoRouteCustomers=res.data
-      this.dtTrigger.next()
-    })
   }
 
   selectRouteId(event){
@@ -120,7 +118,6 @@ export class CustomerRouteManagementComponent implements OnInit {
     this.routeService.getAllRoutes().subscribe((res:ResponseModel)=>{
       console.log(res.data)
       this.allRoutes=res.data
-      this.dtTrigger.next()
     })
   }
 
@@ -129,7 +126,6 @@ export class CustomerRouteManagementComponent implements OnInit {
     this.routeService.getAllCustomersWithNoRoutes().subscribe((res:ResponseModel)=>{
       console.log(res.data)
       this.allNoRouteCustomers=res.data
-      this.dtTrigger.next()
     })
   }
 

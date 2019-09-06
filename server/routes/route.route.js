@@ -53,7 +53,16 @@ router.put("/customer", (req, res) => {
     console.log("RESULT: ", result.errors);
     if (isEmpty(result.errors)) {
         User.updateMany({ _id: { $in: result.data.customers } }, { $set: { route: result.data.route } }).exec().then(data => {
-            res.json({ message: "Selected record updated successfully", data, status: 200, errors: false })
+            let arr = [];
+            result.data.customers.forEach(ele=>{
+                arr.push(mongodb.ObjectId(ele));
+            })
+            User.find({_id:{$in:arr}},"-password").exec().then(_rec=>{
+                res.json({ message: "Selected record updated successfully", data:_rec, status: 200, errors: false })
+            }).catch(err=>{
+                console.log(err);
+                res.status(500).json({ status: 500, data: null, message: "Error while updating records", errors: true });
+            })
         }).catch(err => {
             console.log(err);
             res.status(500).json({ status: 500, data: null, message: "Error while updating records", errors: true });
