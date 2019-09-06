@@ -54,7 +54,10 @@ export class CustomersComponent implements OnInit {
   allProducts:any[]=[]
   selectedEvent: any;
   totalDatesArray:any[]=[];
-  allSubscriptions:any[]=[]
+  allSubscriptions:any[]=[];
+  viewPerticularSubscription:any[]=[]
+  showSubform:boolean=false;
+  showSubscriptionButton:boolean=false;
   constructor(private productService:ProductsService,private customerService: CustomersService,private supportService:SupportService, private formBuilder: FormBuilder, private toastr: ToastrService,private authService:AuthService) {
     this.currentcustomer = new CustomerClass();
     this.registerCustomer=new CustomerClass();
@@ -232,16 +235,19 @@ export class CustomersComponent implements OnInit {
     if(this.viewArray){
 
     this.customerService.getSpecificCustomerOrder(this.viewArray._id).subscribe((res:ResponseModel)=>{
+      this.orderHistory.length=0
       console.log(res.data)
       this.orderHistory=res.data
     })
 
     this.customerService.getSpecificCustomerTickets(this.viewArray._id).subscribe((res:ResponseModel)=>{
+      this.custometTickets.length=0;
       console.log(res.data)
       this.custometTickets=res.data
     })
     
     this.customerService.getAllSubscriptionspecificCustomer(this.viewArray._id).subscribe((res:ResponseModel)=>{
+      this.allSubscriptions.length=0
       console.log(res.data)
       this.allSubscriptions=res.data
     })
@@ -300,6 +306,11 @@ export class CustomersComponent implements OnInit {
       }
   
     }
+  }
+
+  showPerticularSubscrition(i){
+    this.viewPerticularSubscription=this.allSubscriptions[i]
+    console.log(this.viewPerticularSubscription)
   }
 
   showTicketProductConcern(){
@@ -504,6 +515,8 @@ export class CustomersComponent implements OnInit {
   console.log(this.subscriptionForm.value)
   this.customerService.addSubscriptionn(this.subscriptionForm.value).subscribe((res:ResponseModel)=>{
     console.log(res.data)
+    this.allSubscriptions.push(res.data)
+    this.showSubform=false;
   })
 }
 
@@ -518,5 +531,10 @@ export class CustomersComponent implements OnInit {
     this.productService.getAllProduct().subscribe((res:ResponseModel) => {
       this.allProducts = res.data;
     });
+  }
+
+  showSubscriptionForm(){
+    this.showSubform=true
+    this.showSubscriptionButton=false;
   }
 }

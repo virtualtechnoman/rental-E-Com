@@ -14,7 +14,6 @@ import { OrderComponent } from './order/order.component';
     DataTablesModule,
     FormsModule,
     ReactiveFormsModule,
-
     InputSwitchModule
   ],
   declarations: [CustomersComponent, DistirbutorComponent, SectorComponent, OrderComponent],

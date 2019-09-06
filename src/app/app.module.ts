@@ -32,6 +32,7 @@ import { LocationManagerModule } from './core/location-manager/location-manager.
 import { SupportModule } from './core/Support/support.module';
 import { RouteModule } from './core/route/route.module';
 import { SubscriptionModule } from './core/customersubscription/subscription.module';
+import { EventModule } from './core/event/event.module';
 @NgModule({
   declarations: [
     AppComponent,
@@ -64,7 +65,8 @@ import { SubscriptionModule } from './core/customersubscription/subscription.mod
     LocationManagerModule,
     SupportModule,
     RouteModule,
-    SubscriptionModule
+    SubscriptionModule,
+    EventModule
   ],
   providers: [
     LoginAuthGraud,

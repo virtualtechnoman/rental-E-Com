@@ -362,6 +362,7 @@ this.me(this.newArray)
     for(var i=0;i<array.length;i++){
       arra2[i]=array[i]
     }
+    this.allUsers.length=0
     this.allUsers=arra2;
     this.dtTrigger.next();
     console.log(arra2,this.allUsers)
