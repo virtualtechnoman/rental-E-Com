@@ -19,7 +19,7 @@ module.exports = mongoose.model("event", new mongoose.Schema({
     event_id: { type: String, required: true },
     type: { type: mongoose.Schema.Types.ObjectId, ref: "event_type" },
     name: { type: String, required: true },
-    city: { type: mongoose.Schema.Types.ObjectId, ref: 'city', required: true },
+    city: { type: String },
     address: { type: String, required: true },
     organizer: { type: mongoose.Schema.Types.ObjectId, ref: 'event_organizer', required: true },
     incharge: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true }],
