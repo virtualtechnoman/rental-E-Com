@@ -8,14 +8,24 @@ const challanCreateFromOrderSchema = Joi.object({
     dispatch_processing_unit: Joi.string().required(),
     vehicle:Joi.string().required(),
     driver:Joi.string().required(),
-    departure: Joi.date().required()
+    departure: Joi.date().required(),
+    'remarks.generateChallan': Joi.object({
+        // recievedBy:Joi.string().required(),
+        image: Joi.string().optional(),
+        note: Joi.string().optional()
+    }).optional()
 })
 
 const challanCreateFromReturnOrderSchema = Joi.object({
     dispatch_processing_unit: Joi.string().required(),
     vehicle:Joi.string().required(),
     driver:Joi.string().required(),
-    departure: Joi.date().required()
+    departure: Joi.date().required(),
+    'remarks.generateChallan': Joi.object({
+        // recievedBy:Joi.string().required(),
+        image: Joi.string().optional(),
+        note: Joi.string().optional()
+    }).optional()
 })
 
 module.exports = {

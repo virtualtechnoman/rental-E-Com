@@ -64,7 +64,7 @@ router.post('/', authorizePrivilege("ADD_NEW_PRODUCT"), async (req, res) => {
         .then(product => {
             product
                 .populate("created_by", "-password")
-                .populate("category brand")
+                .populate("category brand available_for")
                 .execPopulate()
                 .then(p => res.json({ status: 200, data: p, errors: false, message: "Product added successfully" }))
                 .catch(e => {
@@ -85,7 +85,7 @@ router.put("/:id", authorizePrivilege("UPDATE_PRODUCT"), (req, res) => {
         if (!isEmpty(result.errors)) {
             return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
         }
-        Product.findByIdAndUpdate(req.params.id, result.data, { new: true }).populate("created_by", "-password").populate("category brand")
+        Product.findByIdAndUpdate(req.params.id, result.data, { new: true }).populate("created_by category brand available_for", "-password").populate("category brand")
             .exec()
             .then(doc => res.status(200).json({ status: 200, data: doc, errors: false, message: "Product Updated Successfully" }))
             .catch(err => {
@@ -138,7 +138,7 @@ router.delete("/:id", authorizePrivilege("DELETE_PRODUCT"), (req, res) => {
 // GET SPECIFIC PRODUCT
 router.get("/id/:id", authorizePrivilege("GET_PRODUCT"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
-        Product.findById(req.params.id).populate("created_by", "-password").populate("category brand").exec().then(doc => {
+        Product.findById(req.params.id).populate("created_by", "-password").populate("category brand available_for").exec().then(doc => {
             res.json({ status: 200, data: doc, errors: false, message: "Product" });
         }).catch(e => {
             console.log(e);

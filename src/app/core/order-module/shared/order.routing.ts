@@ -4,6 +4,7 @@ import { AuthGuard } from '../../../auth/auth-guard.service';
 import { OrderComponent } from '../order/order.component';
 import { ReturnOrderComponent } from '../return-order/return-order.component';
 import { ChallanComponent } from '../challan/challan.component';
+import { ReturnorderchallanComponent } from '../returnorderchallan/returnorderchallan.component';
 
 const routes: Routes = [
     {
@@ -16,6 +17,10 @@ const routes: Routes = [
     },
     {
         path: 'challan', children: [{ path: '', component: ChallanComponent }],
+        canActivate: [AuthGuard]
+    },
+    {
+        path: 'rchallan', children: [{ path: '', component: ReturnorderchallanComponent }],
         canActivate: [AuthGuard]
     }
 ];

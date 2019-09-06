@@ -5,6 +5,7 @@ module.exports = (p=false)=>({
     ADD_NEW_USER:p,
     DELETE_USER:p,
     UPDATE_USER:p,
+    UPDATE_USER_OWN:p,
     //Product Privilege
     GET_ALL_PRODUCTS:p,
     GET_ALL_PRODUCTS_OWN:p,
@@ -22,6 +23,7 @@ module.exports = (p=false)=>({
     ACCEPT_ORDER:p,
     RECIEVE_ORDER:p,
     BILL_ORDER:p,
+    DECLINE_ORDER:p,
     //Return Order Privilege
     GET_ALL_RETURN_ORDERS:p,
     GET_ALL_RETURN_ORDERS_OWN:p,
@@ -60,6 +62,7 @@ module.exports = (p=false)=>({
     GET_CUSTOMER_ORDER:p,
     DELETE_CUSTOMER_ORDER:p,
     GET_ALL_CUSTOMER_ORDERS:p,
+    GET_CUSTOMER_ORDER_ASSIGNED:p,
     GET_ALL_CUSTOMER_ORDERS_OWN:p,
     CANCEL_CUSTOMER_ORDER:p,
     //Cart Privilege
@@ -95,8 +98,9 @@ module.exports = (p=false)=>({
     GET_TICKETS_ALL:p,
     ADD_NEW_TICKET:p,
     DELETE_TICKET:p,
-    ADD_NEW_MESSAGE_ON_TICKET_EXECUTIVE:p,
-    ADD_NEW_MESSAGE_ON_TICKET_CUSTOMER:p,
+    CONCERN_FOLLOWUP:p,
+    // ADD_NEW_MESSAGE_ON_TICKET_EXECUTIVE:p,
+    // ADD_NEW_MESSAGE_ON_TICKET_CUSTOMER:p,
     CLOSE_TICKET:p,
     //Chat Privilege
     CREATE_NEW_CHAT:p,
@@ -109,4 +113,55 @@ module.exports = (p=false)=>({
     DELETE_BRAND:p,
     UPDATE_BRAND:p,
     ADD_NEW_BRAND:p,
+    //Farm Visit Privilege
+    GET_FARM_VISITS_OWN:p,
+    GET_ALL_FARM_VISITS:p,
+    ADD_NEW_FARM_VISIT:p,
+    DELETE_FARM_VISIT:p,
+    //Route Privilege
+    GET_ALL_ROUTES:p,
+    ADD_NEW_ROUTE:p,
+    UPDATE_ROUTE:p,
+    DELETE_ROUTE:p,
+    //Subscription Privilege
+    GET_ALL_SUBSCRIPTIONS:p,
+    GET_SUBSCRIPTIONS_OWN:p,
+    ADD_NEW_SUBSCRIPTION:p,
+    ADD_NEW_SUBSCRIPTION_OWN:p,
+    UPDATE_SUBSCRIPTION:p,
+    DELETE_SUBSCRIPTION:p,
+    //Banner Privilege
+    DELETE_BANNER:p,
+    ADD_NEW_BANNER:p,
+    GET_ALL_BANNERS:p,
+    //Attendance Privilege
+    // GET_ALL_ATTENDANCE:p,
+    GET_ATTENDANCE_OWN:p,
+    ADD_ATTENDANCE_OWN:p,
+    DELETE_ATTENDANCE:p,
+    GET_ALL_ATTENDANCE:p,
+    //Event Type Privilege
+    GET_ALL_EVENT_TYPES:p,
+    ADD_NEW_EVENT_TYPE:p,
+    UPDATE_EVENT_TYPE:p,
+    DELETE_EVENT_TYPE:p,
+    //Event Organizer Privilege
+    GET_ALL_EVENT_ORGANIZERS:p,
+    ADD_NEW_EVENT_ORGANIZER:p,
+    UPDATE_EVENT_ORGANIZER:p,
+    DELETE_EVENT_ORGANIZER:p,
+    //Marketing Material Privilege
+    GET_ALL_MARKETING_MATERIALS:p,
+    ADD_NEW_MARKETING_MATERIAL:p,
+    UPDATE_MARKETING_MATERIAL:p,
+    DELETE_MARKETING_MATERIAL:p,
+    //Event Privilege
+    GET_ALL_EVENTS:p,
+    GET_ALL_EVENTS_OWN:p,
+    ADD_NEW_EVENT:p,
+    CANCEL_EVENT:p,
+    //Event Lead Privilege
+    GET_ALL_EVENT_LEADS:p,
+    GET_EVENT_LEADS_OWN:p,
+    ADD_NEW_EVENT_LEAD:p,
 })

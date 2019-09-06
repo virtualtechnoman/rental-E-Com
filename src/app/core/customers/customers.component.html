@@ -1,157 +1,166 @@
 <div class="container-fluid">
-  <div class="card">
-    <div class="card-header">
-      <h2 class="float-left">Customer Management</h2>
-      <a class="btn btn-secondary float-right text-white" (click)="resetForm()" data-toggle="modal"
-        data-target="#modal3">Add New
-        Customer</a>
-      <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
-        data-target="#modal2">Upload CSV</a>
-    </div>
-    <div class="card-body">
-      <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
-        [dtTrigger]="dtTrigger">
-        <thead>
-          <tr>
-            <th scope="col">S.No</th>
-            <th scope="col">ID</th>
-            <th scope="col">Customer Name</th>
-            <th scope="col">Customer Mobile Number</th>
-            <!-- <th scope="col">City</th>
-            <th scope="col">District</th>
-            <th scope="col">Region</th>
-            <th scope="col">Sector</th>
-            <th scope="col">Type</th> -->
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let customer of allcustomers[0]; let i = index">
-            <td>{{i+1}}</td>
-            <td>{{customer._id}}</td>
-            <td>{{customer.full_name}}</td>
-            <td>{{customer.mobile_number}}</td>
-            <!-- <td>{{customer.city.city_name}}</td>
-            <td>{{customer.region.region_name}}</td>
-            <td>{{customer.sector}}</td>
-            <td>{{customer.customer_type.customer_type}}</td> -->
-            <td>
-                <a style="cursor: pointer" (click)="viewCustomer(i)" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-eye"></i></a>
-              <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editCustomer(i)"><i
-                  class="fas fa-edit mx-2"></i> </a>
-              <a style="cursor: pointer" (click)="deleteCustomer(i)"><i class="fas fa-trash-alt"></i></a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="float-left">Customer Management</h2>
+        <!-- <a class="btn btn-secondary float-right text-white" (click)="resetForm()" data-toggle="modal"
+          data-target="#modal3">Add New
+          Customer</a> -->
+        <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+          data-target="#modal2">Upload CSV</a>
+      </div>
+      <div class="card-body">
+        <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
+          [dtTrigger]="dtTrigger">
+          <thead>
+            <tr>
+              <th scope="col">S.No</th>
+              <th scope="col">ID</th>
+              <th scope="col">Customer Name</th>
+              <th scope="col">Customer Mobile Number</th>
+              <!-- <th scope="col">City</th>
+              <th scope="col">District</th>
+              <th scope="col">Region</th>
+              <th scope="col">Sector</th>
+              <th scope="col">Type</th> -->
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let customer of allcustomers[0]; let i = index">
+              <td>{{i+1}}</td>
+              <td>{{customer._id}}</td>
+              <td>{{customer.full_name}}</td>
+              <td>{{customer.mobile_number}}</td>
+              <!-- <td>{{customer.city.city_name}}</td>
+              <td>{{customer.region.region_name}}</td>
+              <td>{{customer.sector}}</td>
+              <td>{{customer.customer_type.customer_type}}</td> -->
+              <td>
+                <a style="cursor: pointer" (click)="viewCustomer(i)" data-toggle="modal" data-target="#exampleModal"><i
+                    class="fas fa-eye"></i></a>
+                <!-- <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editCustomer(i)"><i
+                    class="fas fa-edit mx-2"></i> </a> -->
+                <a style="cursor: pointer" (click)="deleteCustomer(i)"><i class="fas fa-trash-alt"></i></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-</div>
-
-<div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-    <div class="modal-content tx-14">
-      <div class="modal-header">
-        <h6 class="modal-title" id="exampleModalLabel3">Add New Customer</h6>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
+  
+  <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+      <div class="modal-content tx-14">
+        <div class="modal-header">
+          <h6 class="modal-title" id="exampleModalLabel3">Add New Customer</h6>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
           <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-              <div class="form-group">
-                  <label>Enter Name</label>
-                  <input type="text" formControlName="full_name" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.full_name.errors }" />
-                  <div *ngIf="submitted && f.full_name.errors" class="invalid-feedback">
-                      <div *ngIf="f.full_name.errors.required">Name is required</div>
-                  </div>
+            <div class="form-group">
+              <label>Enter Name</label>
+              <input type="text" formControlName="full_name" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f.full_name.errors }" />
+              <div *ngIf="submitted && f.full_name.errors" class="invalid-feedback">
+                <div *ngIf="f.full_name.errors.required">Name is required</div>
               </div>
-              <div class="form-group">
-                  <label>Enter Mobile Number</label>
-                  <input type="text" formControlName="mobile_number" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.mobile_number.errors }" />
-                  <div *ngIf="submitted && f.mobile_number.errors" class="invalid-feedback">
-                      <div *ngIf="f.mobile_number.errors.required">Mobile Number is required</div>
-                  </div>
+            </div>
+            <div class="form-group">
+              <label>Enter Mobile Number</label>
+              <input type="text" formControlName="mobile_number" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f.mobile_number.errors }" />
+              <div *ngIf="submitted && f.mobile_number.errors" class="invalid-feedback">
+                <div *ngIf="f.mobile_number.errors.required">Mobile Number is required</div>
               </div>
-              <div class="form-group">
-                  <label>Landmark</label>
-                  <input type="text" formControlName="landmark" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.landmark.errors }" />
-                  <div *ngIf="submitted && f.landmark.errors" class="invalid-feedback">
-                      <div *ngIf="f.landmark.errors.required">Landmark is required</div>
-                  </div>
+            </div>
+            <div class="form-group">
+              <label>Landmark</label>
+              <input type="text" formControlName="landmark" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f.landmark.errors }" />
+              <div *ngIf="submitted && f.landmark.errors" class="invalid-feedback">
+                <div *ngIf="f.landmark.errors.required">Landmark is required</div>
               </div>
-              <div class="form-group">
-                  <label>Enter Street Address</label>
-                  <input type="text" formControlName="street_address" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.street_address.errors }" />
-                  <div *ngIf="submitted && f.street_address.errors" class="invalid-feedback">
-                      <div *ngIf="f.street_address.errors.required">Street Address is required</div>
-                  </div>
+            </div>
+            <div class="form-group">
+              <label>Enter Street Address</label>
+              <input type="text" formControlName="street_address" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f.street_address.errors }" />
+              <div *ngIf="submitted && f.street_address.errors" class="invalid-feedback">
+                <div *ngIf="f.street_address.errors.required">Street Address is required</div>
               </div>
-              <div class="form-group">
-                  <label>Enter City </label>
-                  <input type="text" formControlName="city" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.city.errors }" />
-                  <div *ngIf="submitted && f.city.errors" class="invalid-feedback">
-                      <div *ngIf="f.city.errors.required">City is required</div>
-                  </div>
+            </div>
+            <div class="form-group">
+              <label>Enter City </label>
+              <input type="text" formControlName="city" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f.city.errors }" />
+              <div *ngIf="submitted && f.city.errors" class="invalid-feedback">
+                <div *ngIf="f.city.errors.required">City is required</div>
               </div>
-              <div class="form-group">
-                  <label>Enter DOB</label>
-                  <input type="date" formControlName="dob" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.dob.errors }" />
-                  <div *ngIf="submitted && f.dob.errors" class="invalid-feedback">
-                      <div *ngIf="f.dob.errors.required">DOB is required</div>
-                  </div>
+            </div>
+            <div class="form-group">
+              <label>Enter DOB</label>
+              <input type="date" formControlName="dob" class="form-control"
+                [ngClass]="{ 'is-invalid': submitted && f.dob.errors }" />
+              <div *ngIf="submitted && f.dob.errors" class="invalid-feedback">
+                <div *ngIf="f.dob.errors.required">DOB is required</div>
               </div>
-              <br>
-              <div class=" text-center">
+            </div>
+            <br>
+            <div class=" text-center">
               <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-              <button type="button" class="btn btn-secondary tx-13" (click)="closeModal()" data-dismiss="modal">Close</button>
-              </div>
-              <!-- <div class="form-group">
-                  <button class="btn btn-primary" >Register</button>
-                  <button class="btn btn-primary" data-dismiss="modal" (click)="closeModal()">Close</button>
-              </div> -->
+              <button type="button" class="btn btn-secondary tx-13" (click)="closeModal()"
+                data-dismiss="modal">Close</button>
+            </div>
+            <!-- <div class="form-group">
+                    <button class="btn btn-primary" >Register</button>
+                    <button class="btn btn-primary" data-dismiss="modal" (click)="closeModal()">Close</button>
+                </div> -->
           </form>
-        <!-- <form [formGroup]="customerForm" (ngSubmit)="submit()">
-          <div class="row">
-            <div class="col-md-8">
-              <div class="divider-text">Fill Customer Details</div>
-              <div class="form-row">
-                <div class="form-group col-md-4">
-                  <label for="inputEmail4">Customer Name*</label>
-                  <input type="text" class="form-control" placeholder="Customer Name" name="customer_name"
-                    formControlName="customer_name" [ngClass]="{ 'is-invalid': submitted && f.customer_name.errors }"
-                    required>
-                  <div *ngIf="submitted && f.customer_name.errors" class="invalid-feedback">
-                    <div *ngIf="f.customer_name.errors.required">Customer Name is required</div>
+          <!-- <form [formGroup]="customerForm" (ngSubmit)="submit()">
+            <div class="row">
+              <div class="col-md-8">
+                <div class="divider-text">Fill Customer Details</div>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="inputEmail4">Customer Name*</label>
+                    <input type="text" class="form-control" placeholder="Customer Name" name="customer_name"
+                      formControlName="customer_name" [ngClass]="{ 'is-invalid': submitted && f.customer_name.errors }"
+                      required>
+                    <div *ngIf="submitted && f.customer_name.errors" class="invalid-feedback">
+                      <div *ngIf="f.customer_name.errors.required">Customer Name is required</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                  <label for="inputEmail4">Notes*</label>
-                  <input type="text" class="form-control" placeholder="Notes" formControlName="notes">
-                </div>
-                <div class="form-group col-md-2">
-                  <label for="inputPassword4">Active</label>
-                  <p-inputSwitch class="form-control" formControlName="is_active" required></p-inputSwitch>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="inputEmail4">Notes*</label>
+                    <input type="text" class="form-control" placeholder="Notes" formControlName="notes">
+                  </div>
+                  <div class="form-group col-md-2">
+                    <label for="inputPassword4">Active</label>
+                    <p-inputSwitch class="form-control" formControlName="is_active" required></p-inputSwitch>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="form-row text-center">
-            <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-            <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
-          </div>
-        </form> -->
+            <div class="form-row text-center">
+              <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+              <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+            </div>
+          </form> -->
+        </div>
       </div>
     </div>
   </div>
-</div>
-
+  
   
   <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" *ngIf="viewArray">
+    <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Customer Details</h5>
@@ -160,34 +169,644 @@
           </button>
         </div>
         <div class="modal-body">
-            
-                <div class="form-group">
-                    <label> Name</label>
-                    <input type="text"  class="form-control" [(ngModel)]="viewArray.full_name" disabled />
-                </div>
-                <div class="form-group">
-                    <label>City</label>
-                    <input type="text"  class="form-control" [(ngModel)]="viewArray.city" disabled />
-                </div>  
-                <div class="form-group">
-                    <label>DOB</label>
-                    <input type="text"  class="form-control" [(ngModel)]="viewArray.dob" disabled />
-                </div>
-                <div class="form-group">
-                    <label>Mobile Number</label>
-                    <input type="text"  class="form-control" [(ngModel)]="viewArray.mobile_number" disabled />
-                </div>
-                <div class="form-group">
-                    <label>Street Address</label>
-                    <input type="text"  class="form-control" [(ngModel)]="viewArray.street_address" disabled />
-                </div>
-                <div class="form-group">
-                    <label>Landmark</label>
-                    <input type="text"  class="form-control" [(ngModel)]="viewArray.landmark" disabled />
-                </div>              
+  
+          <div class="content-body">
+            <div class="contact-wrapper contact-wrapper-two  ">
+  
+              
+  
+              <div class="contact-content ">
+                <div class="contact-content-header">
+                  <nav class="nav nav-pills nav-justified">
+                    <a href="#contactInformation" class="nav-item nav-link active" data-toggle="tab">Contact
+                      </a>
+                    <a href="#subscriptionLogs" class=" nav-item nav-link" data-toggle="tab"><span>Subscription </span></a>
+                    <a href="#contactLogs" class=" nav-item nav-link" data-toggle="tab" ><span>Orders </span></a>
+                    <a href="" class=" nav-item nav-link" data-toggle="tab"><span>Bills </span></a>
+                    <a href="" class=" nav-item nav-link" data-toggle="tab"><span>Activity Log </span></a>
+                    <a href="#ticketslogs" class=" nav-item nav-link" data-toggle="tab"><span>Tickets </span></a>
+                  </nav>
+                  <a href="" id="contactOptions" class="text-secondary mg-l-auto d-xl-none"><i
+                      data-feather="more-horizontal"></i></a>
+                </div><!-- contact-content-header -->
+  
+                <div class="contact-content-body" style="background-color:#f8f9fc;border:1px solid lightgray;">
+                  <div class="tab-content">
+  
+                    <div id="contactInformation" class="tab-pane show active pd-20 pd-xl-25">
+                      <div class="d-flex align-items-center justify-content-between mg-b-25">
+                        <h6 class="mg-b-0">Personal Details</h6>
+                        <div class="d-flex">
+                          
+                        </div>
+                      </div>
+  
+                      <div class="row">
+                          <div class="col-6 col-sm" *ngIf="showProfileImage">
+                              <label
+                                class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Profile Picture</label>
+                                
+                                <div class="col-sm-3 col-md-2 col-lg text-center" >
+                                    <div class="avatar avatar-xxl "><img src="{{image}}" class="" alt=""></div>
+                            </div><!-- col -->
+                          </div>
+                        <div class="col-6 col-sm">
+                          <label
+                            class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Name</label>
+                          <p class="mg-b-0">{{viewArray?.full_name}}</p>
+                        </div><!-- col -->
+                        <div class="col-6 col-sm">
+                            <label
+                              class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Gender</label>
+                            <p class="mg-b-0">{{viewArray?.gender}}</p>
+                          </div><!-- col -->
+                          <div class="col-6 col-sm">
+                              <label
+                                class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">DOB</label>
+                              <p class="mg-b-0">{{viewArray?.dob|date: 'dd/MM/yy'}}</p>
+                            </div><!-- col -->
+                      </div><!-- row -->
+  
+                      <h6 class="mg-t-40 mg-b-20">Contact Details</h6>
+  
+                      <div class="row row-sm">
+                        <div class="col-6 col-sm-4">
+                          <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Mobile
+                            Phone</label>
+                          <p class="tx-primary tx-rubik mg-b-0">{{viewArray?.mobile_number}}</p>
+                        </div>
+                        <div class="col-6 col-sm-4">
+                          <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Subscription</label>
+                          <!-- <p class="tx-primary tx-rubik mg-b-0">{{viewArray?.gender}}</p> -->
+                        </div>
+                        <div class="col-6 col-sm-4 mg-t-20 mg-sm-t-0">
+                          <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Hub Manager
+                            </label>
+                          <!-- <p class="tx-primary tx-rubik mg-b-0">{{viewArray?.dob}}</p> -->
+                        </div>
+                        <div class="col-sm-4 mg-t-20 mg-sm-t-30">
+                          <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Hub
+                            </label>
+                          <!-- <p class="tx-primary mg-b-0">{{viewArray?.email}}</p> -->
+                        </div>
+                        <div class="col-sm-4 mg-t-20 mg-sm-t-30">
+                          <label
+                            class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Route</label>
+                          <!-- <p class="mg-b-0">Binsar Farms</p> -->
+                        </div>
+                        <div class="col-sm-4 mg-t-20 mg-sm-t-30">
+                          <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Delivery
+                            Boy</label>
+                          <!-- <p class="mg-b-0">{{viewArray?.role?.name}}</p> -->
+                        </div>
+                        <div class="col-sm-6 mg-t-20 mg-sm-t-30">
+                          <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Status
+                            </label>
+                          <!-- <p class="mg-b-0">4658 Kenwood Place<br>Pompano Beach, FL 33060, United States</p> -->
+                        </div>
+                        <div class="col-sm-6 mg-t-20 mg-sm-t-30">
+                          <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Subscription
+                            </label>
+                          <!-- <p class="mg-b-0">819 Waldeck Street<br>Farmers Branch, TX 75244, United States</p> -->
+                        </div>
+                        <div class="col-sm-6 mg-t-20 mg-sm-t-30">
+                          <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Balance
+                            </label>
+                          <!-- <p class="tx-primary mg-b-0">http://themepixels.me/</p> -->
+                        </div>
+                      </div><!-- row -->
+                    </div>
+                    <div id="contactLogs" class="tab-pane pd-20 pd-xl-25" *ngIf="orderHistory">
+                      <div class="d-flex align-items-center justify-content-between mg-b-30">
+                        <h6 class="tx-15 mg-b-0"></h6>
+  
+  
+  
+  
+                        <table class="table table-hover">
+                            <thead>
+                              <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Placed By</th>
+                                <th scope="col">Order ID</th>
+                                <th scope="col">Order Date</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let order of orderHistory;let i=index">
+                                <th scope="row">{{i+1}}</th>
+                                <td>{{order?.placed_by?.full_name}}</td>
+                                <td>{{order?.order_id}}</td>
+                                <td>{{order?.order_date | date: 'dd/MM/yy'}},{{order?.order_date | date:'h:mm a'}}</td>
+                                <td>{{order?.status}}</td>
+                                <td>
+                                    <a style="cursor: pointer" (click)="seeCustomerFullOrderDetail(i)" data-toggle="modal" data-target="#customerOrderModal" ><i
+                                        class="fas fa-eye"></i></a>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+  
+  
+                        <!-- <a href="#" class="btn btn-sm btn-white d-flex align-items-center"><i
+                            class="icon ion-md-time mg-r-5 tx-16 lh--9"></i> Clear History</a> -->
+                      </div>
+                    </div><!-- tab-pane -->
+  
+  
+  
+                    
+                    <div id="ticketslogs" class="tab-pane pd-20 pd-xl-25" >
+                        <div class="d-flex align-items-center justify-content-between mg-b-30">
+                          <h6 class="tx-15 mg-b-0"></h6>
+    
+    
+    
+    
+                          <table class="table table-hover">
+                              <thead>
+                                <tr>
+                                  <th scope="col">#</th>
+                                  <th scope="col">Customer name</th>
+                                  <th scope="col">Ticket number</th>
+                                  <th scope="col">Ticket Created At</th>
+                                  <th scope="col">Status</th>
+                                  <th scope="col">Action</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr *ngFor="let ticket of custometTickets;let i=index">
+                                  <td scope="row">{{i+1}}</td>
+                                  <td>{{ticket?.customer?.full_name}}</td>
+                                  <td>{{ticket?.ticket_number}}</td>
+                                  <td>{{ticket?.created_at | date: 'dd/Mm/yy'}},{{ticket?.created_at | date: 'h:mm a'}}</td>
+                                  <td>{{ticket?.status}}</td>
+                                  <td>
+                                  <a style="cursor: pointer" (click)="seeCustomerFullTicketDetail(i)" data-toggle="modal" data-target="#ticketModal"><i
+                                   class="fas fa-eye"></i></a>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                        </div>
+                      </div><!-- tab-pane -->
+  
+  
+  
+                      <div id="subscriptionLogs" class="tab-pane pd-20 pd-xl-25" >
+                          <div class="d-flex align-items-center justify-content-between mg-b-30">
+                              <div class="form-row">
+                              <table class="table table-hover">
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">#</th>
+                                      <th scope="col">Customer Name</th>
+                                      <th scope="col">Start Date</th>
+                                      <th scope="col">Product Name </th>
+                                      <th scope="col">Action</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let subscription of allSubscriptions;let i=index">
+                                      <th >{{i+1}}</th>
+                                      <td>{{subscription?.user?.full_name}}</td>
+                                      <td>{{subscription?.startDate | date: 'dd/MM/yy'}},{{subscription?.startDate | date: 'h:mm a'}}</td>
+                                      <td>{{subscription?.product?.name}}</td>
+                                      <td>
+                                      <a style="cursor: pointer" (click)="showPerticularSubscrition(i)" data-toggle="modal" data-target="#subscritionViewModal" ><i
+                                        class="fas fa-eye"></i></a>
+                                       </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                </div>
+                                <div class="form-row">
+                                  <div class="form-group">
+                              <button type="button" class="btn btn-primary text-center form-control" (click)="showSubscriptionForm()" *ngIf="!showSubform">Add New Subscrition</button>
+                            </div>
+                            </div>
+                            <div class="form-row">
+                            <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmitSubscriptionForm()" *ngIf="showSubform">
+                              <div class="form-row">
+                                <div class="form-group ">
+                                  <label for="inputEmail4">Product</label>
+                                    <select class="form-control" formControlName="product" required
+                                    [ngClass]="{ 'is-invalid': submitted && f3.product.errors }">
+                                    <option selected disabled>Select Product</option>
+                                    <option [ngValue]="product._id" *ngFor="let product of allProducts;let i=index">{{product?.name}}
+                                    </option>
+                                  </select>
+                                  <div *ngIf="submitted && f3.product.errors" class="invalid-feedback">
+                                    <div *ngIf="f3.product.errors.required">Product is required</div>
+                                  </div>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label>Quantity</label>
+                                    <input type="number" formControlName="quantity" class="form-control" [ngClass]="{ 'is-invalid': submitted && f3.quantity.errors }" />
+                                    <div *ngIf="submitted && f3.quantity.errors" class="invalid-feedback">
+                                        <div *ngIf="f3.quantity.errors.required">Quantity is required</div>
+                                    </div>
+                                </div>
+                              </div>
+                                <div class="form-row" (change)="selectPlan($event)">
+                                  <span class="check"><input type='checkbox' name="plan" value="daily" id="valuable2"/><label for="valuable2">Daily</label> </span>&nbsp;&nbsp;&nbsp;
+                                  <span class="check"><input type='checkbox' name="plan" value="alternate" id="valuable2"/><label for="valuable2">Alternate</label> </span>&nbsp;&nbsp;&nbsp;
+                                  <span class="check"><input type='checkbox' name="plan" value="in3days" id="valuable2"/><label for="valuable2">In 3 Days</label> </span>
+                      
+                                </div>
+                                <div class="form-row">
+                                <div class="form-group">
+                                    <label>Start Date</label>
+                                    <input type="date"  data-date="" data-date-format="DD MMMM YYYY" formControlName="startDate" id="dateformat" class="form-control" [ngClass]="{ 'is-invalid': submitted && f3.startDate.errors }"  />
+                                    <div *ngIf="submitted && f3.startDate.errors" class="invalid-feedback">
+                                        <div *ngIf="f3.startDate.errors.required">Date is required</div>
+                                    </div>
+                                </div>
+                              </div>
+                              <br>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Register</button>
+                                </div>
+                            </form>
+                          </div>
+  
+                              
+  
+                              <!-- <full-calendar defaultView="dayGridMonth" [plugins]="calendarPlugins"></full-calendar> -->
+                            <h6 class="tx-15 mg-b-0"></h6>
+                          </div>
+                        </div><!-- tab-pane -->
+  
+  
+  
+                  </div><!-- tab-content -->
+                </div><!-- contact-content-body -->
+  
+              </div><!-- contact-content -->
+  
+            </div><!-- contact-wrapper -->
+          </div>
+  
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <!-- customerPrderModal -->
+  
+  <!-- Button trigger modal -->
+  
+    
+    <!-- Modal -->
+    <div class="modal fade" id="customerOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="orderHistoryNumberInformation">
+      <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Order Details</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+  
+          
+          <div class="modal-body">
+              <div class="content tx-13">
+                  <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Order From</label>
+                        <h6 class="tx-15 mg-b-10">{{orderHistoryNumberInformation?.placed_by?.full_name}}</h6>
+                        <p class="mg-b-0">{{orderHistoryNumberInformation?.placed_by?.email}}</p>
+                        <p class="mg-b-0">{{orderHistoryNumberInformation?.placed_by?.street_address}},{{orderHistoryNumberInformation?.placed_by?.city}}</p>
+                        <p class="mg-b-0">{{orderHistoryNumberInformation?.placed_by?.mobile_number}}</p>
+                      </div><!-- col -->
+                      <div class="col-sm-6 tx-right d-none d-md-block">
+                        <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{orderHistoryNumberInformation?.order_date | date : 'dd/MM/yy'}},{{orderHistoryNumberInformation?.order_date | date : 'h:mm a'}}</label>
+                        <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{orderHistoryNumberInformation?.order_id}}</h1>
+                      </div><!-- col -->
+                    </div><!-- row -->
+            
+                    <div class="table-responsive mg-t-40">
+                      <table class="table table-invoice bd-b">
+                        <thead>
+                          <tr>
+                            <th class="wd-20p">Product</th>
+                            <th class="wd-20p">Brand</th>
+                            <th class="wd-20p">Quantity</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let product of orderHistoryNumberInformation.products;let i=index">
+                            <td class="tx-nowrap">{{product?.product?.name}}</td>
+                            <td class="d-none d-sm-table-cell tx-color-03">{{product?.product?.brand?.name}}</td>
+                            <td class="tx-nowrap">{{product.quantity}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="row justify-content-between">
+                        <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-40 mg-sm-t-0">
+                            <h5><label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Status</label></h5>
+                            <h5>{{orderHistoryNumberInformation?.status}} </h5>
+                          </div><!-- col -->
+                        <div class="col-sm-6 col-lg-4 order-1 order-sm-0">
+                          <ul class="list-unstyled lh-7 pd-r-10">
+                            <li class="d-flex justify-content-between">
+                              <h5><b>Total Due</b></h5>
+                              <h5><b>₹{{orderHistoryNumberInformation?.amount}}</b></h5>
+                            </li>
+                          </ul>
+              
+                          <!-- <button class="btn btn-block btn-primary">Pay Now</button> -->
+                        </div><!-- col -->
+                      </div>
+  
+                  </div><!-- container -->
+                </div><!-- content -->
+          </div>
+  
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- perticulat ticket modal -->
+  
+    <div class="modal fade" id="ticketModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true" *ngIf="ticketInformation">
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+          <div class="modal-content tx-14">
+              <div class="card">
+                  <div class="card-header">
+                    Ticket Details
+                  </div>
+                  <div class="card-body">
+                    <div class="form-row">
+                      <div class="form-group col-md-4" *ngIf="ticketInformation.customer">
+                          <label for="inputEmail4">Customer Name</label>
+                          <input type="text" class="form-control" [(ngModel)]="ticketInformation.customer.full_name" disabled>
+                        </div>
+                
+                        <div class="form-group col-md-4" *ngIf="ticketInformation.customer">
+                            <label for="inputEmail4">Registered Number</label>
+                            <input type="text" class="form-control" [(ngModel)]="ticketInformation.customer.mobile_number" disabled>
+                          </div>
+                
+                          <div class="form-group col-md-4" *ngIf="ticketInformation.customer">
+                              <label for="inputEmail4"> Address</label>
+                              <input type="text" class="form-control" [(ngModel)]="ticketInformation.customer.street_address" disabled>
+                            </div>
+                      </div>
+                      <div class="form-row">
+  
+                          <div class="form-group col-md-3" *ngIf="ticketInformation.customer">
+                              <label for="inputEmail4">Hub</label>
+                              <input type="text" class="form-control" disabled>
+                            </div>
+                    
+                            <div class="form-group col-md-3" *ngIf="callType">
+                                <label for="inputEmail4">Call Type</label>
+                                <input type="text" class="form-control" [(ngModel)]="callType" disabled>
+                              </div>
+                    
+                              <div class="form-group col-md-3" *ngIf="customerConcernMedia">
+                                  <label for="inputEmail4"> customer Concern Media</label>
+                                  <input type="text" class="form-control" [(ngModel)]="customerConcernMedia" disabled>
+                                </div>
+                                <div class="form-group col-md-3" *ngIf="Products">
+                                    <label for="inputEmail4"> Products</label>
+                                    <input type="text" class="form-control" [(ngModel)]="Products" disabled>
+                                  </div>
+  
+                      </div>
+                      <div class="form-row">
+  
+                          <div class="form-group col-md-3" *ngIf="ticketInformation">
+                              <label for="inputEmail4">Customer Concern</label>
+                              <textarea class="form-control" id="exampleFormControlTextarea5" rows="5" [(ngModel)]="ticketInformation.customerConcern" disabled></textarea>
+  
+                            </div>
+  
+                      </div>
+  
+                      <div class="form-row">
+  
+                          <ul class="nav nav-pills nav-fill">
+                              <li class="nav-item active" >
+                                <a class="nav-link " data-toggle="tab" (click)="showTicketProductConcern()">Product Concern</a>
+                              </li>
+                              <li class="nav-item" >
+                                <a class="nav-link" data-toggle="tab" (click)="showTicketServiceConcern()">Service Concern</a>
+                              </li>
+                              <li class="nav-item" >
+                                <a class="nav-link"  data-toggle="tab" (click)="showTicketSubscriptionConcern()">Close Subscription Request</a>
+                              </li>
+                            </ul>
+                      </div>
+                      
+  
+  
+                            <div class="card-deck" *ngIf="showTicketPructProblem">
+                                <div class="card">
+                                  <div class="card-body">
+                                    <h5 class="card-title">Milk Composition</h5>
+                                              <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.productConcern.milkComposition.thinMilklessFat" disabled id="valuable1"/><label for="valuable1"> Thin milk/less fat</label> </span>
+                                             <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.productConcern.milkComposition.thickMilkMoreFat" disabled id="valuable2"/><label for="valuable2"> Thick milk/more fat</label></span>
+                                  </div>
+                                </div>
+                                <div class="card">
+                                  <div class="card-body">
+                                    <h5 class="card-title">Impurities in milk</h5>
+                                    <span class="check"> <input type='checkbox'  [(ngModel)]="ticketInformation.issues.productConcern.impuritiesInMilk.insectInMilk" disabled id="valuable1"/><label for="valuable1"> Insect in milk</label></span> 
+                                    <span class="check"> <input type='checkbox'   [(ngModel)]="ticketInformation.issues.productConcern.impuritiesInMilk.siltInMilk" disabled id="valuable2"/><label for="valuable2"> Silt in milk</label></span> 
+                                    <span class="check"> <input type='checkbox' [(ngModel)]="ticketInformation.issues.productConcern.impuritiesInMilk.blackParticle" disabled id="valuable2"/><label for="valuable2">Black partcles</label> </span>
+                                  </div>
+                                </div>
+                                <div class="card">
+                                  <div class="card-body">
+                                    <h5 class="card-title">Packaging</h5>
+                                    <span class="check"> <input type='checkbox'[(ngModel)]="ticketInformation.issues.productConcern.packaging.bottleBrokeOrChipped" disabled id="valuable1"/><label for="valuable1"> Bottle broke/chipped</label></span> 
+                                    <span class="check"> <input type='checkbox' [(ngModel)]="ticketInformation.issues.productConcern.packaging.sealBroken" disabled id="valuable2"/><label for="valuable2">Seal broken</label></span> 
+                                    <span class="check"> <input type='checkbox' [(ngModel)]="ticketInformation.issues.productConcern.packaging.dirtyCaps" disabled id="valuable2"/><label for="valuable2">Dirty Caps</label> </span>
+                                    <span class="check"> <input type='checkbox' [(ngModel)]="ticketInformation.issues.productConcern.packaging.noDCPLabel" disabled id="valuable2"/><label for="valuable2">No dcp label</label> </span>
+                                  </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-body">
+                                      <h5 class="card-title">Properties of milk</h5>
+                                      <span class="check">   <input type='checkbox' [(ngModel)]="ticketInformation.issues.productConcern.propertiesOfMilk.offSmell" disabled id="valuable1"/><label for="valuable1">Off smell</label> </span>
+                                      <span class="check">  <input type='checkbox' [(ngModel)]="ticketInformation.issues.productConcern.propertiesOfMilk.offTaste" disabled id="valuable2"/><label for="valuable2"> Off taste</label> </span>
+                                      <span class="check">  <input type='checkbox' [(ngModel)]="ticketInformation.issues.productConcern.propertiesOfMilk.curdlingOfMilk" disabled id="valuable2"/><label for="valuable2">Curdling of milk</label> </span>
+                                      <span class="check">  <input type='checkbox' [(ngModel)]="ticketInformation.issues.productConcern.propertiesOfMilk.noProperCurd" disabled id="valuable2"/><label for="valuable2">No proper curd</label> </span>
+                                      <span class="check">  <input type='checkbox' [(ngModel)]="ticketInformation.issues.productConcern.propertiesOfMilk.notYellowInColor" disabled id="valuable2"/><label for="valuable2">Not yellow in color</label> </span>
+                                      <span class="check"> <input type='checkbox' [(ngModel)]="ticketInformation.issues.productConcern.propertiesOfMilk.stickingToUtensilOnBoiling" disabled id="valuable2"/><label for="valuable2">Sticking to utensil on boiling</label> </span>
+  
+                                    </div>
+                                  </div>
+                              </div>
+  
+  
+  
+                              <div class="card-deck"  *ngIf="showTicketServiceProblem">
+                                  <div class="card">
+                                    <div class="card-body">
+                                      <h5 class="card-title">Delivery Schedule</h5>
+                                      <span class="check"> <input type='checkbox' [(ngModel)]="ticketInformation.issues.serviceConcern.deliverySchedule.noDelivery" disabled id="valuable1"/><label for="valuable1"> No dilvery</label> </span> 
+                                      <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.serviceConcern.deliverySchedule.deliveredWithoutSubscription" disabled id="valuable2"/><label for="valuable2"> Diliveed without subscription</label> </span>
+                                      <span class="check">  <input type='checkbox' [(ngModel)]="ticketInformation.issues.serviceConcern.deliverySchedule.wrongQuantityDelivered" disabled id="valuable2"/><label for="valuable2"> Wrong Quantity entered</label> </span>
+                                    </div>
+                                  </div>
+                                  <div class="card">
+                                    <div class="card-body">
+                                      <h5 class="card-title">Delivery Timing</h5>
+                                      <span class="check"> <input type='checkbox' [(ngModel)]="ticketInformation.issues.serviceConcern.deliveryTiming.deliveringLate" disabled id="valuable1"/><label for="valuable1"> Late Delivery</label> </span>
+                                      <span class="check"> <input type='checkbox' [(ngModel)]="ticketInformation.issues.serviceConcern.deliveryTiming.deliveringEarly" disabled  id="valuable2"/><label for="valuable2">Delivering earle</label> </span>
+                                      <span class="check">     <input type='checkbox' [(ngModel)]="ticketInformation.issues.serviceConcern.deliveryTiming.irregularDeliveryTime" disabled  id="valuable2"/><label for="valuable2">Irregular delivery time</label> </span>
+                                    </div>
+                                  </div>
+                                  <div class="card">
+                                    <div class="card-body">
+                                      <h5 class="card-title">Billing Issue</h5>
+                                      <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.serviceConcern.billingIssue.paidAlready" disabled id="valuable1"/><label for="valuable1"> Paid Already</label> </span>
+                                      <span class="check"> <input type='checkbox' [(ngModel)]="ticketInformation.issues.serviceConcern.billingIssue.wronglyBilledOnNonDeliveryDates" disabled id="valuable2"/><label for="valuable2">Wrong billed on non dilivery date</label> </span>
+                                    </div>
+                                  </div>
+                                  <div class="card">
+                                      <div class="card-body">
+                                        <h5 class="card-title">Service Issue</h5>
+                                        <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.serviceConcern.serviceIssue.notFollowedUpRaisedConcern" disabled id="valuable1"/><label for="valuable1"> Not followed up raised reason</label> </span>
+                                        <span class="check"><input type='checkbox'[(ngModel)]="ticketInformation.issues.serviceConcern.serviceIssue.notFollowedDeliveryInstruction" disabled id="valuable2"/><label for="valuable2"> Not followed delivery istruction</label> </span>
+                                        <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.serviceConcern.serviceIssue.didNotStartSubscriptionAsPromised" disabled id="valuable2"/><label for="valuable2">Did not start subscription as provided</label> </span>
+                                      </div>
+                                    </div>
+                                </div>
+  
+                                <div class="card" style="width: 18rem;" *ngIf="showTicketSubscriptionProblem">
+                                    <div class="card-body">
+                                      <span class="check">  <input type='checkbox' [(ngModel)]="ticketInformation.issues.closeSubscriptionRequest.relocated" disabled id="valuable1"/><label for="valuable1"> Relocated</label> </span>
+                                      <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.closeSubscriptionRequest.costly" disabled id="valuable2"/><label for="valuable2">Costly</label> </span>
+                                      <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.closeSubscriptionRequest.wantA2Milk" disabled id="valuable2"/><label for="valuable2">Want A2 Milk</label> </span>
+                                      <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.closeSubscriptionRequest.timingIssue" disabled id="valuable2"/><label for="valuable2">Timing issue</label> </span>
+                                      <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.closeSubscriptionRequest.milkCompositionIssue" disabled id="valuable2"/><label for="valuable2">Milk composition ssue</label> </span>
+                                      <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.closeSubscriptionRequest.billingIssue" disabled id="valuable2"/><label for="valuable2">Billing issue</label> </span>
+                                      <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.closeSubscriptionRequest.healthIssue" disabled id="valuable2"/><label for="valuable2">Health issue</label> </span>
+                                      <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.closeSubscriptionRequest.otherBrand" disabled id="valuable2"/><label for="valuable2">Other brand</label> </span>
+                                      <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.closeSubscriptionRequest.localVendor" disabled id="valuable2"/><label for="valuable2">Local vendor</label> </span>
+                                      <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.closeSubscriptionRequest.wantBuffaloMilk" disabled id="valuable2"/><label for="valuable2">Want buffalo milk</label> </span>
+                                      <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.closeSubscriptionRequest.noReason" disabled id="valuable2"/><label for="valuable2">No reason</label> </span>
+                                      <span class="check"><input type='checkbox' [(ngModel)]="ticketInformation.issues.closeSubscriptionRequest.doctorAdvice" disabled id="valuable2"/><label for="valuable2">Doctor advice</label> </span>
+                                      <span class="check"><input type='checkbox'[(ngModel)]="ticketInformation.issues.closeSubscriptionRequest.lessConsumption" disabled id="valuable2"/><label for="valuable2">Less consumption</label> </span> 
+                                    </div>
+                                  </div>
+  
+                           <div >
+  
+  
+                            <br>
+  
+                              <table class="table table-bordered" *ngIf="showResponses">
+                                  <thead>
+                                    <tr>
+                                        <th>S no.</th>
+                                        <th>Response By</th>
+                                      <th>Response At</th>
+                                      <th>Action Taken</th>
+                                      <th>Follow Up Comments</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let response of ticketInformation.responses;let i=index">
+                                      <td>{{i+1}}</td>
+                                      <td>{{response?.by?.full_name}}</td>
+                                      <td>{{response?.at | date: 'dd/MM/yy'}},{{response?.at | date: 'h:mm a'}}</td>
+                                      <td>{{response?.actionTaken}}</td>
+                                      <td>{{response?.followUpComments}}</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+  
+  
+  
+  
+                              <form [formGroup]="followUpForm" (ngSubmit)="onSubmitFollowUpForm()">
+                                <div class="form-row">
+                           <div class="form-group">
+                      <label>Follow Up Comments</label>
+                      <textarea class="form-control" formControlName="followUpComments" id="exampleFormControlTextarea3" cols="40" rows="6" [ngClass]="{ 'is-invalid': submitted && f2.followUpComments.errors }"></textarea>
+                          <div *ngIf="submitted && f2.followUpComments.errors" class="invalid-feedback">
+                          <div *ngIf="f2.followUpComments.errors.required">Comments are required</div>
+                      </div>
+                  </div>
+                  <div class="form-group" style="margin-left: 100px">
+                      <label style="margin-left: 10px">Action Taken</label>
+                      <textarea class="form-control" formControlName="actionTaken" id="exampleFormControlTextarea3" cols="40" rows="6" [ngClass]="{ 'is-invalid': submitted && f2.actionTaken.errors }"></textarea>
+                      <div *ngIf="submitted && f2.actionTaken.errors" class="invalid-feedback">
+                          <div *ngIf="f2.actionTaken.errors.required">Actions are required</div>
+                      </div>
+                  </div>
+                </div>
+                  <br>
+                  <div class="text-center">
+                      <button type="submit" class="btn btn-primary">Register</button>
+                      <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                  </div>
+              </form>
+  
+                           </div>
+                      
+                  </div>
+                </div>
+            </div>
+            </div>
+            </div>
+  
+            <!-- Subscription Form Modal -->
+  
+            <!-- Button trigger modal -->
+  
+
+  <!-- Subscrition View Modal -->
+
+  
+  <!-- Modal -->
+  <div class="modal fade" id="subscritionViewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="viewPerticularSubscription">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Subscription Information</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            
+              <div class="form-group col-lg-4" *ngIf="viewPerticularSubscription.product">
+                  <label for="">Product</label>
+                <input type="text" class="form-control" disabled [(ngModel)]="viewPerticularSubscription.product.name">
+              </div>
+              <div class="form-group col-lg-4 " *ngIf="viewPerticularSubscription.product">
+                  <label for="">Brand</label>
+                  <input type="text" class="form-control" disabled [(ngModel)]="viewPerticularSubscription.product.brand.name">
+                </div>
+                <div class="form-group col-lg-4 " *ngIf="viewPerticularSubscription">
+                    <label for="">Quanity</label>
+                    <input type="text" class="form-control" disabled [(ngModel)]="viewPerticularSubscription.quantity">
+                  </div>
+          </div>
+
+          <div class="form-row">
+
+              <!-- <full-calendar defaultView="dayGridMonth" [plugins]="calendarPlugins"></full-calendar> -->
+          </div>
+              
         </div>
       </div>
     </div>

@@ -11,7 +11,13 @@ export class UserService {
     'Content-Type': 'application/json',
     'token': this.tokenService.getToken()
   });
+  
+    headers2 = new HttpHeaders({
+      'Content-Type': 'jpeg,png'
+    });
+  
   url = '/api/user';
+  url2 = '/api/upload/profile'
   constructor(private http: HttpClient, private tokenService: TokenStorage) {
   }
 
@@ -46,4 +52,19 @@ export class UserService {
   importUser(csv) {
     return this.http.post(this.url + '/import', csv);
   }
+
+  getUrl() {
+    return this.http.get(this.url2 + '/', { headers: this.headers })
+  }
+
+  sendUrl(url, file) {
+    return fetch(url,{
+      method:"PUT",
+      body:file,
+      headers:{
+        'Content-Type':"jpeg,png"
+      }
+    })
+  }
+
 }

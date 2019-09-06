@@ -11,9 +11,10 @@ export class TruckService {
     'token': this.tokenService.getToken()
   });
 
-  url = '/api/driver';
+  url = '/api/user/driver';
   url2 = '/api/vehicle';
   url3='/api/user/driver';
+  url4='/api/upload/vehicle'
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   getAllDrivers() {
@@ -60,5 +61,21 @@ export class TruckService {
 
   alldrivers(){
     return this.http.get(this.url3 + '/', { headers: this.headers });
+  }
+
+  // Vehicle Image
+
+  getUrl() {
+    return this.http.get(this.url4 + '/', { headers: this.headers })
+  }
+
+  sendUrl(url, file) {
+    return fetch(url,{
+      method:"PUT",
+      body:file,
+      headers:{
+        'Content-Type':"jpeg,png"
+      }
+    })
   }
 }

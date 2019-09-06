@@ -8,6 +8,7 @@ import { OrderService } from './shared/order.service';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { DataTablesModule } from 'angular-datatables';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { ReturnorderchallanComponent } from './returnorderchallan/returnorderchallan.component';
 
 @NgModule({
   imports: [
@@ -18,7 +19,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     DataTablesModule,
     InputSwitchModule,
   ],
-  declarations: [ReturnOrderComponent, ChallanComponent, OrderComponent],
+  declarations: [ReturnOrderComponent, ChallanComponent, OrderComponent, ReturnorderchallanComponent],
   providers: [OrderService],
   exports: [OrderRoutingModule]
 })

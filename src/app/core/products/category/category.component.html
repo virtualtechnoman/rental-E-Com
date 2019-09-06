@@ -42,15 +42,15 @@
   <div class="modal-dialog modal-dialog-centered modal-md" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header text-center">
-        <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="editing">Edit Product</h6>
-        <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="!editing">Add New Product Product</h6>
+        <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="editing">Edit Category</h6>
+        <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="!editing">Add New Category</h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <form [formGroup]="categoryForm" (ngSubmit)="submit()">
-          <div class="divider-text">Give Category a Name</div>
+          <!-- <div class="divider-text">Give Category a Name</div> -->
           <div class="form-row">
             <label for="inputEmail4">Category Name</label>
             <input type="text" class="form-control" placeholder="Category Name Here " formControlName="name" required
@@ -59,8 +59,29 @@
               <div *ngIf="f.name.errors.required">Category Name Is Required</div>
             </div>
           </div>
-          <div class="divider-text">Select Status </div>
-          <div class="form-row text-center">
+          
+          <div class="form-row" *ngIf="editShowImage">
+              <div class="form-group">
+              <label>Category Image</label>
+              <div class="col-sm-3 col-md-2 col-lg text-center" >
+              <div class="avatar avatar-xxl avatar-online"><img src="{{editImage}}" class="rounded-circle" alt=""></div>
+              </div>
+              </div>
+          </div>
+         
+          <div class="form-row offset-md-6">
+             
+              <div class="form-group  custom-file">
+                  <label class="custom-file-label" for="customFile">Select Category Image</label>
+                  <input type="file" formControlName="image" (change)="selectFile($event)" class="custom-file-input" id="customFile">
+                
+                
+              </div>
+           </div>
+          
+          
+          <!-- <div class="divider-text">Select Status </div> -->
+          <div class="form-row">
             <label for="inputPassword4">Status</label>
             <p-inputSwitch class="form-control" formControlName="is_active" required
               [ngClass]="{ 'is-invalid': submitted && f.is_active.errors }"></p-inputSwitch>
@@ -68,7 +89,7 @@
               <div *ngIf="f.is_active.errors.required">Status is required</div>
             </div>
           </div>
-          <br>
+         
           <div class=" text-center">
           <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
           <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
@@ -94,7 +115,12 @@
         </button>
       </div>
       <div class="modal-body">
-
+          <div class="form-group" *ngIf="showImage">
+              <label>Category Image</label>
+        <div class="col-sm-3 col-md-2 col-lg text-center" >
+          <div class="avatar avatar-xxl avatar-online"><img src="{{image}}" class="rounded-circle" alt=""></div>
+        </div>
+          </div>
         <div class="form-group">
           <label>Category Name</label>
           <input type="text" class="form-control" [(ngModel)]="viewArray.name" disabled />

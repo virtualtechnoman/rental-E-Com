@@ -6,12 +6,13 @@ const mongodb = require('mongoose').Types;
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 // Get all areas
 router.get("/", authorizePrivilege("GET_ALL_AREAS"), (req, res) => {
-    Area.find().populate("hub").populate({path:"city",populate:{path:"state"}}).exec().then(docs => {
+    Area.find().populate("hub","-password").populate({path:"city",populate:{path:"state"}}).exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All areas" });
         else
             res.json({ status: 200, data: docs, errors: true, message: "No area found" });
     }).catch(err => {
+        console.log(err);
         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting areas" })
     })
 })
@@ -24,15 +25,15 @@ router.post('/', authorizePrivilege("ADD_NEW_AREA"), async (req, res) => {
     }
     let newState = new Area(result.data);
     newState.save().then(area => {
-        area.populate("hub").populate({path:"city",populate:{path:"state"}}).execPopulate().then(area=>{
+        area.populate("hub","-password").populate({path:"city",populate:{path:"state"}}).execPopulate().then(area=>{
             res.json({ status: 200, data: area, errors: false, message: "Area added successfully" })
         }).catch(e => {
             console.log(e);
-            res.json({ status: 500, data: null, errors: true, message: "Error while populating" })
+            res.status(500).json({ status: 500, data: null, errors: true, message: "Error while populating" })
         });
     }).catch(e => {
         console.log(e);
-        res.json({ status: 500, data: null, errors: true, message: "Error while adding area" })
+        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while adding area" })
     });
 });
 
@@ -43,22 +44,16 @@ router.put("/:id", authorizePrivilege("UPDATE_AREA"), (req, res) => {
         if (!isEmpty(result.errors)) {
             return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
         }
-        Area.findByIdAndUpdate(req.params.id, result.data, { new: true }).exec()
-            .then(doc => {
-                doc.populate("hub").populate({path:"city",populate:{path:"state"}}).execPopulate().then(area=>{
-                    res.status(200).json({ status: 200, data: area, errors: false, message: "Area Updated Successfully" })
-                }).catch(e => {
-                    console.log(e);
-                    res.json({ status: 500, data: null, errors: true, message: "Error while populating" })
-                });
-                
+        Area.findByIdAndUpdate(req.params.id, result.data, { new: true }).populate("hub","-password").populate({path:"city",populate:{path:"state"}}).exec()
+            .then(area=>{
+                    res.status(200).json({ status: 200, data: area, errors: false, message: "Area Updated Successfully" });
             }).catch(err => {
                 console.log(err);
                 res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating area" })
             })
     }
     else {
-        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid city id" });
+        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid area id" });
     }
 })
 

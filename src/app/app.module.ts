@@ -30,7 +30,9 @@ import { CustomersModule } from './core/customers/customers.module';
 import { TruckModule } from './core/truck/truck.module';
 import { LocationManagerModule } from './core/location-manager/location-manager.module';
 import { SupportModule } from './core/Support/support.module';
-
+import { RouteModule } from './core/route/route.module';
+import { SubscriptionModule } from './core/customersubscription/subscription.module';
+import { EventModule } from './core/event/event.module';
 @NgModule({
   declarations: [
     AppComponent,
@@ -61,7 +63,10 @@ import { SupportModule } from './core/Support/support.module';
     InputSwitchModule,
     ToastrModule.forRoot(),
     LocationManagerModule,
-    SupportModule
+    SupportModule,
+    RouteModule,
+    SubscriptionModule,
+    EventModule
   ],
   providers: [
     LoginAuthGraud,

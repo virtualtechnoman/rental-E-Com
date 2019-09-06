@@ -133,7 +133,7 @@ router.post('/login', async (req, res) => {
           bcrypt.compare(req.body.password, user.password, function (er, isMatched) {
             if (er) {
               console.log(er);
-              return res.status(401).json({ status:401, data:null, errors:true, message: "Error in validating Credentials" });
+              return res.status(401).json({ status: 401, data: null, errors: true, message: "Error in validating Credentials" });
             }
             if (isMatched) {
               const u = user.toObject();
@@ -142,21 +142,21 @@ router.post('/login', async (req, res) => {
               jwt.sign({ _id: u._id }, process.env.JWT_SECRET, function (err, token) {
                 if (err) {
                   console.log(err);
-                  res.status(500).json({ status:500, errors:true, data:null,message: "Error while generating token" })
+                  res.status(500).json({ status: 500, errors: true, data: null, message: "Error while generating token" })
                 }
                 else {
                   user = user.toObject();
                   delete user.password;
                   req.user = user;
-                  res.json({ status:200, data:{token, user}, errors:false, message: "Login successfull" })
+                  res.json({ status: 200, data: { token, user }, errors: false, message: "Login successfull" })
                 }
               });
             } else {
-              return res.status(401).json({ status:401, data:null, errors:true, notmessage: "Invalid Credentials" });
+              return res.status(401).json({ status: 401, data: null, errors: true, notmessage: "Invalid Credentials" });
             }
           });
         } else {
-          res.status(404).json({ status:404, data:null, errors:true, message: "User not exist" });
+          res.status(404).json({ status: 404, data: null, errors: true, message: "User not exist" });
         }
       })
     }
@@ -210,7 +210,7 @@ router.post('/register2', async (req, res) => {
       })
   }
 });
-router.post('/verifyotp', async (req, res) => {
+router.post('/verifyotp/:type', async (req, res) => {
   if (req.headers.token) {
     if (typeof req.headers.token == "string" && req.headers.token.trim() !== "") {
       try {
@@ -262,13 +262,30 @@ router.post('/verifyotp', async (req, res) => {
             let newUser = {};
             // newUser.role = 
             newUser.mobile_number = result.data.mobile_number;
-            newUser.role = process.env.CUSTOMER_ROLE;//"5d5157820250e60017e64d42";
+            if (req.params.type == 'customer') {
+              newUser.role = process.env.CUSTOMER_ROLE;//"5d5157820250e60017e64d42";
+              newUser.dob = Date.now();
+              newUser.anniversary = Date.now();
+            }
+            else if (req.params.type == 'dboy') {
+              newUser.role = process.env.DELIVERY_BOY_ROLE;//"5d5157820250e60017e64d42";
+              newUser.dob = Date.now();
+              newUser.city = "";
+              newUser.vehicle_type = "";
+              newUser.emergency_contact = "";
+              newUser.permanent_address = "";
+              newUser.dl_number = "";
+              newUser.kyc = {
+                documentType: "",
+                image: "",
+                verified: false
+              }
+            }
             newUser.full_name = "";
+            newUser.profile_picture = "";
             newUser.landmark = "";
+            newUser.H_no_society = "";
             newUser.street_address = "";
-            newUser.city = "";
-            newUser.dob = Date.now();
-            newUser.anniversary = Date.now();
             newUser.user_id = "USR" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
             const u = new User(newUser);
             u.save().then(d => {
@@ -300,31 +317,31 @@ router.get('/me', async (req, res) => {
       jwt.verify(req.headers.token, process.env.JWT_SECRET, (err, payload) => {
         if (err) {
           console.log(err);
-          res.status(400).json({ status:400, data:null, errors:true, message: "Invalid token" });
+          res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid token" });
         } else {
           // req.user = payload;
           User.findById(payload._id, (e, d) => {
             if (e) {
-              res.status(500).json({ status:500, data:null, errors:true, message: "Error while retriving user details" });
+              res.status(500).json({ status: 500, data: null, errors: true, message: "Error while retriving user details" });
             }
             if (d) {
               d = d.toObject();
               delete d.password;
               req.user = d;
-              
-              res.json({ status:200, data:{user: d}, errors:false, message:"User Details" });
+
+              res.json({ status: 200, data: { user: d }, errors: false, message: "User Details" });
             }
             else {
-              res.status(403).json({ status:403, data:null, errors:true, message: "Your token is not valid anymore" });
+              res.status(403).json({ status: 403, data: null, errors: true, message: "Your token is not valid anymore" });
             }
           })
         }
       })
     } else {
-      res.status(400).json({ status:400, data:null, errors:true, message: "Invalid token" })
+      res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid token" })
     }
   } else {
     console.log("THIS CALLED");
-    res.status(401).json({ status:401, data:null, errors:true, message: "Unauthorized" })
+    res.status(401).json({ status: 401, data: null, errors: true, message: "Unauthorized" })
   }
 });

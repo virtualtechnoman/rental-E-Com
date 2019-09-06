@@ -4,10 +4,11 @@ import { CustomersService } from './shared/customers.service';
 import { CustomerModel, CustomerTypeModel, DistirbutorModel, SectorModel, CustomerClass } from './shared/customer.model';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
-import * as moment from 'moment';
 import { ResponseModel } from '../../shared/shared.model';
 import { AuthService } from '../../auth/auth.service';
-
+import { SupportService } from '../Support/Shared/support.service';
+import { ProductsService } from '../products/shared/products.service';
+import * as moment from 'moment';
 @Component({
   selector: 'app-customers',
   templateUrl: './customers.component.html',
@@ -32,8 +33,32 @@ export class CustomersComponent implements OnInit {
   editing: Boolean = false;
   submitted = false;
   registerForm: FormGroup;
-  viewArray:any=[]
-  constructor(private customerService: CustomersService, private formBuilder: FormBuilder, private toastr: ToastrService,private authService:AuthService) {
+  subscriptionForm: FormGroup;
+  viewArray:any=[];
+  orderHistory:any[]=[];
+  custometTickets:any[]=[]
+  ticketInformation:any=[]
+  orderHistoryNumberInformation:any=[];
+  imageURL="https://binsar.s3.ap-south-1.amazonaws.com/";
+  showProfileImage:boolean=false;
+  image: string;
+  callType:any;
+  customerConcernMedia:any;
+  Products:any;
+  showTicketPructProblem:boolean=false;
+  showTicketServiceProblem:boolean=false;
+  showTicketSubscriptionProblem:boolean=false;
+  showResponses:boolean=false;
+  followUpForm:FormGroup
+  currentTicketIndex: any;
+  allProducts:any[]=[]
+  selectedEvent: any;
+  totalDatesArray:any[]=[];
+  allSubscriptions:any[]=[];
+  viewPerticularSubscription:any[]=[]
+  showSubform:boolean=false;
+  showSubscriptionButton:boolean=false;
+  constructor(private productService:ProductsService,private customerService: CustomersService,private supportService:SupportService, private formBuilder: FormBuilder, private toastr: ToastrService,private authService:AuthService) {
     this.currentcustomer = new CustomerClass();
     this.registerCustomer=new CustomerClass();
     this.initForm();
@@ -43,6 +68,18 @@ export class CustomersComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getProducts()
+    this.subscriptionForm=this.formBuilder.group({
+      user:[''],
+      product:[''],
+      quantity:[''],
+      frequencyDates:this.formBuilder.array([]),
+      startDate:['']
+    })
+    this.followUpForm=this.formBuilder.group({
+      followUpComments:[''],
+      actionTaken:['']
+    })
     this.registerForm = this.formBuilder.group({
       full_name: ['', Validators.required],
       mobile_number: ['', Validators.required],
@@ -76,6 +113,19 @@ export class CustomersComponent implements OnInit {
     this.get_customers();
   }
   get f() { return this.registerForm.controls; }
+  get f2() { return this.followUpForm.controls; }
+  get f3() { return this.subscriptionForm.controls; }
+
+  onSubmitFollowUpForm(){
+    console.log(this.followUpForm.value)
+    this.supportService.sendTicketFollowUp(this.custometTickets[this.currentTicketIndex]._id,this.followUpForm.value).subscribe((res:ResponseModel)=>{
+      this.custometTickets.splice(this.currentTicketIndex,1,res.data)
+      this.toastr.info('Follow up is successfull!', 'Succcess!!');
+      jQuery('#ticketModal').modal('hide');
+      console.log(res.data)
+    })
+  }
+
   onSubmit() {
     this.submitted = true;
     console.log(this.registerForm)
@@ -173,6 +223,112 @@ export class CustomersComponent implements OnInit {
   viewCustomer(i){
     this.viewArray=this.allcustomers[0][i]
     console.log(this.viewArray)
+    if(this.viewArray){
+      if(this.viewArray.profile_picture){
+        this.image=this.imageURL + this.viewArray.profile_picture
+        this.showProfileImage=true
+      }
+      else{
+        this.showProfileImage=false;
+      }
+    }
+    if(this.viewArray){
+
+    this.customerService.getSpecificCustomerOrder(this.viewArray._id).subscribe((res:ResponseModel)=>{
+      this.orderHistory.length=0
+      console.log(res.data)
+      this.orderHistory=res.data
+    })
+
+    this.customerService.getSpecificCustomerTickets(this.viewArray._id).subscribe((res:ResponseModel)=>{
+      this.custometTickets.length=0;
+      console.log(res.data)
+      this.custometTickets=res.data
+    })
+    
+    this.customerService.getAllSubscriptionspecificCustomer(this.viewArray._id).subscribe((res:ResponseModel)=>{
+      this.allSubscriptions.length=0
+      console.log(res.data)
+      this.allSubscriptions=res.data
+    })
+  }
+  }
+
+
+
+  seeCustomerFullOrderDetail(i){
+    if(this.orderHistory){
+      this.orderHistoryNumberInformation=this.orderHistory[i]
+      console.log(this.orderHistoryNumberInformation)
+    }
+  }
+
+  seeCustomerFullTicketDetail(i){
+    if(this.custometTickets){
+      this.currentTicketIndex=i;
+      this.ticketInformation=this.custometTickets[i]
+      console.log(this.ticketInformation)
+      if(this.ticketInformation.callType.inbound==true){
+        this.callType="inbound"
+      }
+      else{
+        this.callType="inbound"
+      }
+  
+      if(this.ticketInformation.customerConcernMedia.hub==true){
+        this.customerConcernMedia="hub"
+      }
+      else if(this.ticketInformation.customerConcernMedia.mobile==true){
+        this.customerConcernMedia="mobile"
+      }
+      else{
+        this.customerConcernMedia="whatsapp"
+      }
+  
+      if(this.ticketInformation.products.butter==true){
+        this.Products="butter"
+      }
+      else if(this.ticketInformation.products.cheese==true){
+        this.Products="cheese"
+      }
+      else if(this.ticketInformation.products.ghee==true){
+        this.Products="ghee"
+      }
+      else{
+        this.Products="milk"
+      }
+
+      if(this.ticketInformation.responses.length>0){
+        this.showResponses=true
+      }
+      else{
+        this.showResponses=false
+      }
+  
+    }
+  }
+
+  showPerticularSubscrition(i){
+    this.viewPerticularSubscription=this.allSubscriptions[i]
+    console.log(this.viewPerticularSubscription)
+  }
+
+  showTicketProductConcern(){
+    this.showTicketPructProblem=true;
+    this.showTicketServiceProblem=false;
+    this.showTicketSubscriptionProblem=false;
+  }
+  
+  showTicketServiceConcern(){
+    this.showTicketPructProblem=false;
+    this.showTicketServiceProblem=true;
+    this.showTicketSubscriptionProblem=false;
+  }
+  
+  showTicketSubscriptionConcern(){
+  this.showTicketSubscriptionProblem=true;
+  this.showTicketPructProblem=false;
+    this.showTicketServiceProblem=false;
   }
   resetForm() {
     this.editing = false;
@@ -305,4 +461,80 @@ export class CustomersComponent implements OnInit {
     }
   }
 
+  fillSubscriptionForm(){
+    // console.log(this.subscriptionForm.value)
+    this.subscriptionForm.reset();
+  }
+
+  onSubmitSubscriptionForm(){
+    if(this.viewArray){
+      this.subscriptionForm.value.user=this.viewArray._id
+    }
+    var subscriptionStatDate=moment(this.subscriptionForm.value.startDate).format()
+    this.subscriptionForm.value.startDate=subscriptionStatDate
+    var monthsTwo=moment(this.subscriptionForm.value.startDate).add(59, 'days').calendar();
+    var subscriptionEndDate=moment(monthsTwo).format('ll')
+    var end=moment(this.subscriptionForm.value.startDate).add(0, 'days').calendar();
+    var array=[]
+    var array2=[]
+    var start;
+    if(this.selectedEvent=="daily"){
+    for(var i=0;i<60;i++){
+       start=monthsTwo;
+        array[i]=start
+        array2[i]=moment(start).format()
+        this.totalDatesArray.push(array2[i])
+        monthsTwo=moment(monthsTwo).subtract(1, 'days').calendar();
+      }
+  }
+
+  if(this.selectedEvent=="alternate"){
+    for(var i=0;i<60;i=i+2){
+       start=monthsTwo;
+        array[i]=start
+        array2[i]=moment(start).format()
+        this.totalDatesArray.push(array2[i])
+        monthsTwo=moment(monthsTwo).subtract(2, 'days').calendar();
+      }
+  }
+
+  if(this.selectedEvent=="in3days"){
+    for(var i=0;i<60;i=i+3){
+       start=monthsTwo;
+        array[i]=start
+        array2[i]=moment(start).format()
+        this.totalDatesArray.push(array2[i])
+        monthsTwo=moment(monthsTwo).subtract(3, 'days').calendar();
+      }
+  }
+
+ 
+  this.totalDatesArray.reverse()
+  console.log(array,this.totalDatesArray)
+  this.subscriptionForm.value.frequencyDates=this.totalDatesArray
+  console.log(this.subscriptionForm.value)
+  this.customerService.addSubscriptionn(this.subscriptionForm.value).subscribe((res:ResponseModel)=>{
+    console.log(res.data)
+    this.allSubscriptions.push(res.data)
+    this.showSubform=false;
+  })
+}
+
+
+
+  selectPlan(event){
+    this.selectedEvent=event.target.value
+  }
+
+  getProducts() {
+    this.allProducts.length = 0;
+    this.productService.getAllProduct().subscribe((res:ResponseModel) => {
+      this.allProducts = res.data;
+    });
+  }
+
+  showSubscriptionForm(){
+    this.showSubform=true
+    this.showSubscriptionButton=false;
+  }
 }

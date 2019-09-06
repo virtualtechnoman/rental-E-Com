@@ -6,6 +6,7 @@ const orderCreateSchema = Joi.object({
         product:Joi.string().required(),
         requested:Joi.number().min(1).required()
     }).required(),
+    order: Joi.string().required(),
     notes: Joi.string().optional().allow('')
 })
 
@@ -13,13 +14,23 @@ const returnOrderRecieveSchema = Joi.object({
     products: Joi.array().items({
         product: Joi.string().required(),
         recieved: Joi.number().required()
-    }).required()
+    }).required(),
+    'remarks.recieveROrder': Joi.object({
+        // recievedBy:Joi.string().required(),
+        image: Joi.string().optional(),
+        note: Joi.string().optional()
+    }).optional()
 })
 const returnOrderBilledSchema = Joi.object({
     products: Joi.array().items({
         product: Joi.string().required(),
         billed: Joi.number().required()
-    }).required()
+    }).required(),
+    'remarks.billROrder': Joi.object({
+        // recievedBy:Joi.string().required(),
+        image: Joi.string().optional(),
+        note: Joi.string().optional()
+    }).optional()
 })
 
 module.exports={

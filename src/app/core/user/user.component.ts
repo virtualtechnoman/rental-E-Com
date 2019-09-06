@@ -11,7 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ResponseModel } from '../../shared/shared.model';
 
 @Component({
-  selector: 'app-user',
+  selector: 'app-user', 
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss']
 })
@@ -21,6 +21,8 @@ export class UserComponent implements OnInit {
   allTherapies: any[] = [];
   allTherayId: any[] = [];
   allUsers: any[] = [];
+  allUsers2: any[] = [];
+  allUsers3: any[] = [];
   allUserRole: any[] = [];
   CSV: File = null;
   confirmPassword: any = '';
@@ -44,6 +46,15 @@ export class UserComponent implements OnInit {
   viewArray: any = [];
   fullTable: Boolean = true;
   registerForm: FormGroup;
+  newArray:any[]=[];
+  fileSelected;
+  keyProfileImage:any;
+  urlProfileImage:any;
+  showLicenceField:boolean=false;
+  licenseInformation:any;
+  showImage:boolean=false;
+  image:any;
+  selectedGender:any;
   constructor(private userService: UserService, private formBuilder: FormBuilder,
     private UserroleService: UserRoleService, private toastr: ToastrService, private activatedRoute: ActivatedRoute) {
     this.initForm();
@@ -75,53 +86,116 @@ export class UserComponent implements OnInit {
     };
     this.registerForm = this.formBuilder.group({
       full_name: ['', Validators.required],
+      email: ['', Validators.required],
+      is_active: [true, Validators.required],
+      password: ['', Validators.required],
+      role: ['', Validators.required],
       mobile_number: ['', Validators.required],
       landmark: ['', Validators.required],
       street_address: ['', Validators.required],
       city: ['', Validators.required],
-      dob: ['', Validators.required]
+      profile_picture:[""],
+      dl_number:[""],
+      dob:['',Validators.required],
+      gender:['']
     });
   }
 
-  get f() { return this.userForm.controls; }
-  get f2() { return this.registerForm.controls; }
+  selectGender(event){
+    console.log(event)
+    if(event.target.value=="male"){
+      this.selectedGender="male"
+      this.registerForm.value.gender="male"
+    }
+    else {
+      this.selectedGender="female"
+      this.registerForm.value.gender="female"
+    }
+    console.log(this.registerForm.value)
+  }
+
+  driverField(event:any){
+    console.log(event)
+    var driver=event.target.value.substring(0,1)
+    console.log(driver)
+    if(driver==5){
+      this.showLicenceField=true;
+    }
+    else{
+      this.showLicenceField=false
+    }
+  }
+
+  get f() { return this.registerForm.controls; }
+
+  licenseNumber(event:any){
+    this.licenseInformation=event.target.value;
+
+  }
+  selectFile(event:any){
+    this.fileSelected=event.target.files[0];
+    console.log(this.fileSelected)
+  }
 
   onSubmit() {
     this.submitted = true;
+    this.registerForm.value.gender=this.selectedGender
+    console.log(this.registerForm.value)
     // stop here if form is invalid
     if (this.registerForm.invalid) {
       return;
     }
-    alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registerForm.value));
-  }
+    
+    
+    if(this.showLicenceField==true){
+      this.registerForm.value.dl_number=this.licenseInformation;
+    }
+    if(this.showLicenceField==false){
+      delete this.registerForm.value.dl_number;
+    }
 
-  submit() {
-    console.log('USER FORM VALUES ====>>>', this.userForm.value);
-    this.submitted = true;
-    if (this.userForm.invalid && !this.passwordMatched) {
-      return;
+    console.log(this.registerForm.value)
+    // if(this.registerForm.value.profile_picture==null || this.registerForm.value.profile_picture==""){
+    //   this.registerForm.value.profile_picture==""
+    // }
+    if(this.fileSelected){
+      this.userService.getUrl().subscribe((res:ResponseModel)=>{
+        this.keyProfileImage=res.data.key;
+        this.urlProfileImage=res.data.url;
+          
+      if(this.urlProfileImage){
+        this.userService.sendUrl(this.urlProfileImage,this.fileSelected).then(resp=>{
+          if(resp.status == 200 ){
+            this.registerForm.value.profile_picture=this.keyProfileImage;
+            
+            console.log(this.registerForm.value)  
+            this.addUser(this.registerForm.value);
+          }
+        })
+      }
+      })
+    }else{
+      delete this.registerForm.value.profile_picture;
+      this.addUser(this.registerForm.value);
     }
-    this.currentUser = this.userForm.value;
-    if (this.editing) {
-      this.updateUser(this.currentUser);
-    } else {
-      this.addUser(this.currentUser);
+
     }
-  }
+
+
+
+
 
   addUser(user) {
     console.log(user);
-    try {
       this.userService.addUser(user).subscribe((res: ResponseModel) => {
         console.log(res);
         jQuery('#modal3').modal('hide');
         this.toastr.success('User Added!', 'Success!');
         this.allUsers.push(res.data);
         this.resetForm();
+        console.log(res.data)
       });
-    } catch (error) {
-      console.log(error);
-    }
+    
 
   }
 
@@ -143,6 +217,14 @@ export class UserComponent implements OnInit {
 
   viewUser(i) {
     this.viewArray = this.allUsers[i];
+    if(this.viewArray.profile_picture){
+      this.showImage=true;
+      this.image="https://binsar.s3.ap-south-1.amazonaws.com/" + this.viewArray.profile_picture
+      console.log(this.image)
+        }
+    else{
+      this.showImage=false;
+    }
     console.log(this.allUsers[i]);
   }
 
@@ -175,8 +257,8 @@ export class UserComponent implements OnInit {
   resetForm() {
     this.submitted = false;
     this.editing = false;
-    this.userForm.reset();
-    this.initForm();
+    this.registerForm.reset();
+    this.initForm();  
   }
 
   getUserRoles() {
@@ -216,13 +298,51 @@ export class UserComponent implements OnInit {
       } else {
         console.log(res.data);
         this.allUsers = res.data;
+        this.allUsers2=res.data;
+        this.allUsers2=res.data;
+        this.dtTrigger.next();
       }
     });
   }
 
   getUserbyRole(event:any) {
-    this.allUsers.length = 0;
     console.log(event)
+    if(event.target.selectedIndex==1){
+
+      this.allUsers.length=0;
+      var arr=[]
+      arr.push(this.allUsers2);
+      this.allUsers=arr[0]
+      console.log(arr,this.allUsers)
+    }else {
+    this.newArray.length=0;
+    console.log(this.newArray)
+    for(var i=0;i<this.allUsers2.length;i++){
+      if(this.allUsers2[i].role){
+      if(this.allUsers2[i].role.name){
+      if(this.allUsers2[i].role.name==event.target.value){
+        this.newArray.push(this.allUsers2[i])
+      }
+    }
+  }
+}
+    }
+    if(event.target.selectedIndex!=1){
+this.me(this.newArray)
+    }
+  // console.log(this.newArray)
+  // this.allUsers.length=0;
+  // if(this.newArray.length>0){
+  //   for(var i=0;i<this.newArray.length;i++){
+  //     this.allUsers[i]=this.newArray[i]
+  //   }
+  // }
+
+  // this.allUsers.length=0;
+  // this.allUsers.push(this.newArray)
+  // console.log(this.allUsers)
+    
+  
     // if (!this.selectedUserRole) {
     //   this.getAllUsers();
     // } else {
@@ -234,6 +354,18 @@ export class UserComponent implements OnInit {
     //     }
     //   });
     // }
+  }
+
+  me(array){
+    console.log(array)
+    var arra2=[];
+    for(var i=0;i<array.length;i++){
+      arra2[i]=array[i]
+    }
+    this.allUsers.length=0
+    this.allUsers=arra2;
+    this.dtTrigger.next();
+    console.log(arra2,this.allUsers)
   }
 
   public uploadCSV(files: FileList) {
@@ -333,7 +465,7 @@ export class UserComponent implements OnInit {
 
   checkPassword() {
     console.log(this.confirmPassword);
-    if (this.confirmPassword !== this.userForm.get('password').value) {
+    if (this.confirmPassword !== this.registerForm.get('password').value) {
       this.passwordMatched = false;
       console.log('TRUE');
       return true;
