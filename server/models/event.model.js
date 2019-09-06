@@ -1,19 +1,19 @@
 const mongoose = require("mongoose");
 
 const MarketingMaterial = mongoose.Schema({
-    material:{ type: mongoose.Schema.Types.ObjectId, ref: 'marketing_material', required: true },
-    quantity:{type:Number, required:true}
-},{
-    versionKey:false,
-    _id:false   
+    material: { type: mongoose.Schema.Types.ObjectId, ref: 'marketing_material', required: true },
+    quantity: { type: Number, required: true }
+}, {
+    versionKey: false,
+    _id: false
 });
 
 const Product = mongoose.Schema({
-    product:{ type: mongoose.Schema.Types.ObjectId, ref: 'product'},
-    quantity:{type:Number}
-},{
-    versionKey:false,
-    _id:false   
+    product: { type: mongoose.Schema.Types.ObjectId, ref: 'product' },
+    quantity: { type: Number }
+}, {
+    versionKey: false,
+    _id: false
 });
 module.exports = mongoose.model("event", new mongoose.Schema({
     event_id: { type: String, required: true },
@@ -30,11 +30,11 @@ module.exports = mongoose.model("event", new mongoose.Schema({
     targetLeads: { type: Number, required: true },
     targetConversion: { type: Number, required: true },
     farm: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
-    products:[Product],
+    products: [Product],
     hub: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
     created_at: { type: Date, default: Date.now },
-    cancelled:{type:Boolean, default:false},
+    cancelled: { type: Boolean, default: false },
     status: { type: String, default: "Pending" }
 }, {
-        versionKey: false
-    }))
+    versionKey: false
+}))
