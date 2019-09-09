@@ -8,11 +8,17 @@ const eventLeadCreateSchema = Joi.object({
     gender: Joi.string().required(),
     city: Joi.string().required(),
     address: Joi.string().required(),
-    comments: Joi.string().required(),
+    comments: Joi.array().items(Joi.string().required()).required(),
     mode: Joi.string().required(),
+    preferredTime: Joi.date().required(),
     event: Joi.string().required()
 })
-function verifyCreate(event) { return helper.validator(event, eventLeadCreateSchema) }
+const eventLeadCommentSchema = Joi.object({
+    comment: Joi.string().required()
+})
+function verifyCreate(lead) { return helper.validator(lead, eventLeadCreateSchema) }
+function verifyComment(lead) { return helper.validator(lead, eventLeadCommentSchema) }
 module.exports = {
-    verifyCreate
+    verifyCreate,
+    verifyComment
 }

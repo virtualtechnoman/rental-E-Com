@@ -148,7 +148,7 @@
                 ( <div class="form-check form-group">
                 <input type="checkbox" #selectallcheckboxes (click)="selectAllCheckboxes()" class="form-check-input">
                 <label>Select All Hubs</label>
-                </div> ) <br>
+                </div>  <br>
                 <div *ngFor="let hub of allHub;let i=index">
                 <div class="form-check form-group">
                 <input type="checkbox" size="lg" class="form-check-input" #checkboxes  [ngClass]="{ 'is-invalid': submitted && f.available_for.errors }">

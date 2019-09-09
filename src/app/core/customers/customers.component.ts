@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { CustomersService } from './shared/customers.service';
 import { CustomerModel, CustomerTypeModel, DistirbutorModel, SectorModel, CustomerClass } from './shared/customer.model';
@@ -9,6 +9,11 @@ import { AuthService } from '../../auth/auth.service';
 import { SupportService } from '../Support/Shared/support.service';
 import { ProductsService } from '../products/shared/products.service';
 import * as moment from 'moment';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import { FullCalendarComponent } from '@fullcalendar/angular';
+import { OptionsInput } from '@fullcalendar/core';
+import { EventSesrvice } from '../../event.service';
+
 @Component({
   selector: 'app-customers',
   templateUrl: './customers.component.html',
@@ -58,16 +63,26 @@ export class CustomersComponent implements OnInit {
   viewPerticularSubscription: any[] = []
   showSubform: boolean = false;
   showSubscriptionButton: boolean = false;
-  constructor(private productService: ProductsService, private customerService: CustomersService, private supportService: SupportService, private formBuilder: FormBuilder, private toastr: ToastrService, private authService: AuthService) {
+  calendarPlugins = [dayGridPlugin]; // important!
+  options: OptionsInput;
+  eventsModel: any;
+  displayEvent: any;
+  events = null;
+  allEvents2:any[]=[]
+
+
+  
+  @ViewChild('calendar') calendarComponent: FullCalendarComponent;
+  allEvents: any[]=[];
+
+  constructor(protected eventService: EventSesrvice,private productService: ProductsService, private customerService: CustomersService, private supportService: SupportService, private formBuilder: FormBuilder, private toastr: ToastrService, private authService: AuthService) {
     this.currentcustomer = new CustomerClass();
     this.registerCustomer = new CustomerClass();
     this.initForm();
-    this.authService.me().subscribe((res: any) => {
-      console.log(res)
-    })
   }
 
   ngOnInit() {
+
     this.getProducts()
     this.subscriptionForm = this.formBuilder.group({
       user: [''],
@@ -111,10 +126,43 @@ export class CustomersComponent implements OnInit {
       ]
     };
     this.get_customers();
+    this.options = {
+      editable: true,
+      header: {
+        left: 'prev,next today ',
+        center: 'title',
+        right: 'month,agendaWeek,agendaDay,listMonth'
+      },
+      defaultView: 'dayGridMonth',
+      plugins: [dayGridPlugin],
+      events: []
+    };
   }
+  loadevents() {
+    this.eventService.getEvents().subscribe(data => {
+      this.events = data;
+    });
+  }
+  clickButton(model: any) {
+    console.log(model);
+
+  }
+  dayClick(model: any) {
+    console.log(this.calendarComponent)
+    console.log(model);
+  }
+
+  eventClick(model) {
+    console.log(model);
+  }
+
+
+
   get f() { return this.registerForm.controls; }
   get f2() { return this.followUpForm.controls; }
   get f3() { return this.subscriptionForm.controls; }
+
+  
 
   onSubmitFollowUpForm() {
     console.log(this.followUpForm.value)
@@ -310,8 +358,21 @@ export class CustomersComponent implements OnInit {
   }
 
   showPerticularSubscrition(i) {
+    console.log(this.calendarComponent)
+    
     this.viewPerticularSubscription = this.allSubscriptions[i]
-    console.log(this.viewPerticularSubscription)
+
+    if(this.allSubscriptions[i].frequencyDates){
+     
+      console.log(this.allSubscriptions[i].frequencyDates);
+      this.allEvents2.length=0;
+      var arr:any[]=[]
+      for(var index=0;index<this.allSubscriptions[i].frequencyDates.length;index++){
+        arr.push({title:'subscribed',start: this.allSubscriptions[i].frequencyDates[index].slice(0,10), color: '#4285F4'});
+         }
+         this.allEvents2=arr
+         console.log(arr,this.allEvents2)
+    }
   }
 
   showTicketProductConcern() {
@@ -390,8 +451,6 @@ export class CustomersComponent implements OnInit {
       reader.readAsText(file);
       reader.onload = (e) => {
         this.parsedCSV = reader.result;
-        // let csv = reader.result;
-        // this.extractData(csv)
       };
     }
   }
@@ -431,15 +490,6 @@ export class CustomersComponent implements OnInit {
       for (let i = 1; i < lines.length - 1; i++) {
         const obj = {};
         const currentline = lines[i].split(',');
-        // currentline[0] = String(currentline[0]);
-        // currentline[1] = String(currentline[1]);
-        // currentline[2] = String(currentline[2]);
-        // currentline[3] = String(currentline[3]);
-        // currentline[4] = String(currentline[4]);
-        // currentline[5] = String(currentline[5]);
-        // currentline[6] = String(currentline[6]);
-        // currentline[7] = String(currentline[7]);
-        // currentline[8] = String(currentline[8]);
         for (let j = 0; j < headers.length; j++) {
           obj[headers[j]] = currentline[j];
         }
@@ -490,6 +540,7 @@ export class CustomersComponent implements OnInit {
     }
     console.log(arr);
     this.subscriptionForm.value.startDate = subscriptionStatDate
+    this.subscriptionForm.value.frequencyDates=arr
     console.log(this.subscriptionForm.value)
     this.customerService.addSubscriptionn(this.subscriptionForm.value).subscribe((res:ResponseModel)=>{
       console.log(res.data)
@@ -514,5 +565,6 @@ export class CustomersComponent implements OnInit {
   showSubscriptionForm() {
     this.showSubform = true
     this.showSubscriptionButton = false;
+    this.subscriptionForm.reset()
   }
 }

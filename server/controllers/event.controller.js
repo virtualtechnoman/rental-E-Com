@@ -16,7 +16,7 @@ const eventCreateSchema = Joi.object({
     address: Joi.string().required(),
     organizer: Joi.string().required(),
     incharge: Joi.array().items(Joi.string().required()).required(),
-    created_by: Joi.string().required(),
+    phone: Joi.string().required(),
     marketingMaterial: Joi.array().items(MarketingMaterial).required(),
     cost: Joi.number().positive(),
     time: Joi.date().required(),

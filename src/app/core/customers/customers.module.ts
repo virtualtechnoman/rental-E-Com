@@ -8,13 +8,16 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { DistirbutorComponent } from './distirbutor/distirbutor.component';
 import { SectorComponent } from './sector/sector.component';
 import { OrderComponent } from './order/order.component';
+import { FullCalendarModule } from '@fullcalendar/angular'; // for FullCalendar!
+
 @NgModule({
   imports: [
     CommonModule,
     DataTablesModule,
     FormsModule,
     ReactiveFormsModule,
-    InputSwitchModule
+    InputSwitchModule,
+    FullCalendarModule
   ],
   declarations: [CustomersComponent, DistirbutorComponent, SectorComponent, OrderComponent],
   exports: [

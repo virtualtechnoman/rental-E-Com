@@ -1,0 +1,280 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="float-left">Lead Management</h2>
+      <a class="btn btn-secondary float-right text-white" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal3">Add New
+        Lead</a>
+      <!-- <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal2">Upload CSV</a> -->
+    </div>
+    <div class="card-body">
+      <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
+        [dtTrigger]="dtTrigger">
+        <thead>
+          <tr>
+            <th scope="col">S.No</th>
+            <th scope="col">Lead Name</th>
+            <th scope="col">LeadEmail</th>
+            <th scope="col"> Lead Contact</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let lead of allLeads; let i = index">
+            <td>{{i+1}}</td>
+            <td>{{lead?.full_name}}</td>
+            <td >{{lead?.email}}</td>
+            <td >{{lead?.contact}}</td>
+            <td>
+                <a style="cursor: pointer" (click)="viewLead(i)" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-eye"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header">
+        <h6 class="modal-title" id="exampleModalLabel3" *ngIf="!editing">Add New Lead</h6>
+        <!-- <h6 class="modal-title" id="exampleModalLabel3" *ngIf="editing">Edit State</h6> -->
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form [formGroup]="eventLeadForm" (ngSubmit)="onSubmit()">
+            <div class="form-row">
+              <div class="form-group ">
+                <div class="col">
+                  <label>Customer Name</label>
+                  <input type="text" formControlName="full_name" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.full_name.errors }" />
+                  <div *ngIf="submitted && f.full_name.errors" class="invalid-feedback">
+                      <div *ngIf="f.full_name.errors.required">Customer Name is required</div>
+                  </div>
+              </div>
+            </div>
+
+            <div class="form-group ">
+                <div class="col">
+                  <label>Email</label>
+                  <input type="email" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+                  <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                      <div *ngIf="f.email.errors.required">Email is required</div>
+                  </div>
+              </div>
+            </div>
+          </div>
+              <div class="form-row ">
+                  <div class="form-group col-md-4">
+                  <label>Primary Number</label>
+                  <input type="text" formControlName="contact" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.contact.errors }" />
+                  <div *ngIf="submitted && f.contact.errors" class="invalid-feedback">
+                      <div *ngIf="f.contact.errors.required">Number is required</div>
+                  </div>
+                  </div>
+
+                  <div class="form-group col-md-4">
+                      <label>Gender</label>
+                      <!-- <input type="text" formControlName="gender" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.gender.errors }" /> -->
+                      <select class="form-control" (change)="genderSelection($event)">
+                        <option selected disabled>Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                      </select>
+                      </div>
+              </div>
+              <div class="form-row">
+                  <div class="form-group col-md-4">
+                <label>City</label>
+                <select name="type" id="" class="form-control" formControlName="city" required
+                    [ngClass]="{ 'is-invalid': submitted && f.city.errors }">
+                    <option  selected disabled>Select City</option>
+                    <option  *ngFor="let city of allCity" [ngValue]="city._id">{{city.name}}</option>
+                  </select>
+                  <div *ngIf="submitted && f.city.errors" class="invalid-feedback">
+                    <div *ngIf="f.city.errors.required">City is required</div>
+                  </div>
+              </div>
+              <div class="form-group col-md-4">
+                  <label>Address</label>
+                  <input type="text" formControlName="address" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.address.errors }" />
+                    <div *ngIf="submitted && f.address.errors" class="invalid-feedback">
+                      <div *ngIf="f.address.errors.required">Address is required</div>
+                    </div>
+                </div>
+              </div>
+              <div class="form-row">
+                  <div class="form-group col-md-3">
+                      <label>Event</label>
+                   <select name="type" id="" class="form-control" formControlName="event" required
+                    [ngClass]="{ 'is-invalid': submitted && f.event.errors }">
+                    <option disabled selected>Select Event </option>
+                    <option  *ngFor="let event of allMainEvents" [ngValue]="event._id">{{event.name}}</option>
+                    </select>
+                        <div *ngIf="submitted && f.event.errors" class="invalid-feedback">
+                          <div *ngIf="f.event.errors.required">Event required</div>
+                        </div>
+                    </div>
+                  <div class="form-group col">
+                      <label>Comment</label>
+                      <div class="form-group green-border-focus">
+                          <!-- <label for="exampleFormControlTextarea5">Comments</label> -->
+                          <textarea class="form-control"  id="exampleFormControlTextarea5" rows="3" (change)="getComments($event)"></textarea>
+                      </div>
+                    </div>
+                    
+              </div>
+              <div class="form-row">
+                  <div class="form-group col-lg-6">
+                      <label for="exampleFormControlTextarea5">Preferred Time</label>
+                          <input type="datetime-local" class="form-control" formControlName="preferredTime" [ngClass]="{ 'is-invalid': submitted && f.preferredTime.errors }">
+                      
+                        <div *ngIf="submitted && f.preferredTime.errors" class="invalid-feedback">
+                          <div *ngIf="f.preferredTime.errors.required">Time required</div>
+                        </div>
+                    </div>
+                    <div class="form-group col">
+                            <label for="exampleFormControlTextarea5">Mode</label>
+                            <input type="text" class="form-control" formControlName="mode" [ngClass]="{ 'is-invalid': submitted && f.mode.errors }">
+                        
+                          <div *ngIf="submitted && f.mode.errors" class="invalid-feedback">
+                            <div *ngIf="f.mode.errors.required">Mode required</div>
+                          </div>
+                      </div>
+
+              </div>
+              <br>
+        <div class=" text-center">
+        <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+        </div>
+              <!-- <div class="form-group">
+                  <button type="submit" class="btn btn-primary">Save</button>
+                  <button data-dismiss="modal" class="btn btn-primary">Close</button>
+              </div> -->
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+  <!--View Example Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="viewArray">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Lead Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group ">
+                  <div class="col">
+                    <label>Customer Name</label>
+                    <input type="text" [(ngModel)]="viewArray.full_name" class="form-control" disabled required />
+                    
+                    </div>
+                </div>
+              <div class="form-group ">
+                  <div class="col">
+                    <label>Email</label>
+                    <input type="email" [(ngModel)]="viewArray.email" class="form-control" disabled required>
+                    
+                </div>
+              </div>
+            </div>
+            
+                <div class="form-row ">
+                    <div class="form-group col-md-4">
+                    <label>Primary Number</label>
+                    <input type="text" class="form-control" [(ngModel)]="viewArray.contact" disabled required>
+                    
+                    </div>
+  
+                    <div class="form-group col-md-4">
+                        <label>Gender</label>
+                        <input type="text" [(ngModel)]="viewArray.gender"  class="form-control" disabled required/>
+                        
+                        </div>
+                </div>
+                <div class="form-row" >
+                    <div class="form-group col-md-4" *ngIf="viewArray.city">
+                  <label>City</label>
+                  <input type="text" [(ngModel)]="viewArray.city.name"  class="form-control" disabled required/>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Address</label>
+                    <input type="text" disabled required class="form-control" [(ngModel)]="viewArray.address" >
+                     
+                  </div>
+                </div>
+                
+                <div class="form-row" >
+                    <div class="form-group col-md-3" *ngIf="viewArray.event">
+                        <label>Event</label>
+                        <input type="text" disabled required class="form-control" [(ngModel)]="viewArray.event.name" >
+                      </div>
+                      <div class="form-group col-lg-6" *ngIf="timeFormat">
+                          <label for="exampleFormControlTextarea5">Preferred Time</label>
+                              <input type="text" disabled required  [(ngModel)]="timeFormat" class="form-control" >
+                        </div>
+                        <div class="form-group col">
+                                <label for="exampleFormControlTextarea5">Mode</label>
+                                <input type="text" class="form-control" [(ngModel)]="viewArray.mode" disabled required>
+                          </div>
+                  
+                </div>
+                <table class="table table-bordered table-hover" *ngIf="showTable">
+                    <thead>
+                      <tr>
+                        <th>S no.</th>
+                        <th>Last Comment</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let comment of viewArray.comments;let i=index">
+                        <td>{{i+1}}</td>
+                        <td>{{comment}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                <div class="form-row" >
+                    <div class="form-group col">
+                        
+                        <form [formGroup]="CommentForm" (ngSubmit)="onSubmitComment()">
+                            <label>Comment</label>
+                        <div class="form-group green-border-focus">
+                            <textarea class="form-control" formControlName="comment" [ngClass]="{ 'is-invalid': submitted && f2.comment.errors }" id="exampleFormControlTextarea5" rows="3" ></textarea>
+                        </div>
+                      <div *ngIf="submitted && f2.comment.errors" class="invalid-feedback">
+                          <div *ngIf="f2.comment.errors.required">Comment required</div>
+                        </div>
+                      
+  
+                
+                <br>
+          <div class=" text-center">
+          <button type="submit" class="btn btn-primary tx-13 mx-1">Add Comment</button>
+          </div>
+        </form>
+      </div>
+      </div>
+        </div>
+
+
+
+
+
+
+
+                          
+        </div>
+      </div>
+    </div>

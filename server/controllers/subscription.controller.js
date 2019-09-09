@@ -12,7 +12,7 @@ const subscriptionCreateWebSchema = Joi.object({
     user:Joi.string().required(),
     startDate:Joi.date().required(),
     quantity:Joi.number().positive().required(),
-    frequencyDates:Joi.array().items(Joi.date()).required()
+    frequencyDates:Joi.array().items(Joi.date().required()).required()
 })
 const subscriptionUpdateSchema = Joi.object({
     product:Joi.string().required(),
