@@ -167,4 +167,8 @@ module.exports = (p=false)=>({
     GET_EVENT_LEADS_OWN:p,
     ADD_NEW_EVENT_LEAD:p,
     COMMENT_ON_EVENT_LEAD:p,
+    //Category Attribute Privileges
+    GET_CATEGORY_ATTRIBUTE:p,
+    ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE:p,
+    UPDATE_PRODUCT_CATEGORY_ATTRIBUTE:p,
 })
