@@ -17,6 +17,7 @@ export class ProductsService {
   url5='api/upload/brand';
   url6='api/upload/category';
   url7='api/upload/product';
+  url8='api/pcattribute';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   getAllProduct() {
@@ -124,6 +125,20 @@ export class ProductsService {
         'Content-Type':"jpeg,png"
       }
     })
+  }
+
+  // Attribute Api
+
+  getAllAttribute(id) {
+    return this.http.get(this.url8 + '/category/' + id, { headers: this.headers });
+  }
+
+  addAttribute(attribute) {
+    return this.http.post(this.url8 + '/', attribute, { headers: this.headers });
+  }
+
+  updateAttribute(attribute, id) {
+    return this.http.put(this.url8 + '/' + id,attribute, { headers: this.headers });
   }
 
 }

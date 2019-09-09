@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { EventService } from '../shared/event-type.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -32,6 +32,7 @@ export class EventLeadComponent implements OnInit {
   showTable:boolean=false;
   leadSelectedid:any;
   leadIndex:any;
+  @ViewChild('myInput') myInputVariable: ElementRef;
   constructor(private formBuilder: FormBuilder, private toastr: ToastrService, private eventService: EventService,private locationService:LocationManagerService) { 
     this.getAllLeads()
     this.getAllCity()
@@ -110,6 +111,7 @@ export class EventLeadComponent implements OnInit {
       this.allLeads.splice(this.leadIndex,1,res.data)
       jQuery('#exampleModal').modal('hide');
       this.toastr.success('Comment Added', 'Success!');
+      this.myInputVariable.nativeElement.value = "";
     })
   }
 
