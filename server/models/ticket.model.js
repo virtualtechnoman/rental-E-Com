@@ -93,7 +93,7 @@ const CloseSubscriptionRequest = mongoose.Schema({
         customerConcern: String,
         assignTo: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
         customer: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
-        created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
+        created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'user'},
         isUrgent: { type: Boolean, default: false },
         isSubscriptionClosed: { type: Boolean, default: false },
         callType: {

@@ -98,6 +98,7 @@ module.exports = (p=false)=>({
     GET_TICKET_OWN:p,
     GET_TICKETS_ALL:p,
     ADD_NEW_TICKET:p,
+    ADD_NEW_TICKET_CUSTOMER:p,
     DELETE_TICKET:p,
     CONCERN_FOLLOWUP:p,
     // ADD_NEW_MESSAGE_ON_TICKET_EXECUTIVE:p,

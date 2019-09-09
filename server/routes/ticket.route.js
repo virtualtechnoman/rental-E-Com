@@ -49,12 +49,28 @@ router.get("/all", authorizePrivilege("GET_TICKETS_ALL"), (req, res) => {
 
 // Add new ticket
 router.post("/", authorizePrivilege("ADD_NEW_TICKET"), (req, res) => {
-    let result = TicketController.verifyCreate(req.body);
+    let result = TicketController.verifyCreateWeb(req.body);
     if (!isEmpty(result.errors))
         return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
     result.data.ticket_number = "TKT" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     if(req.user.role._id != process.env.CUSTOMER_ROLE)
     result.data.created_by = req.user._id;
+    let newTicket = new Ticket(result.data)
+    newTicket.save().then(_tkt=>{
+        res.json({ status: 200, data: _tkt, errors: false, message: "Ticket Created Successfully!" });
+    }).catch(err=>{
+        console.log(err);
+        res.status(500).json({status:500, data:null, errors:true, message:"Error while creating new ticket"});
+    })
+})
+// Add new ticket
+router.post("/customer", authorizePrivilege("ADD_NEW_TICKET_CUSTOMER"), (req, res) => {
+    let result = TicketController.verifyCreate(req.body);
+    if (!isEmpty(result.errors))
+        return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
+    result.data.ticket_number = "TKT" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
+    // if(req.user.role._id != process.env.CUSTOMER_ROLE)
+    result.data.customer = req.user._id;
     let newTicket = new Ticket(result.data)
     newTicket.save().then(_tkt=>{
         res.json({ status: 200, data: _tkt, errors: false, message: "Ticket Created Successfully!" });

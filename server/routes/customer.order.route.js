@@ -127,7 +127,7 @@ router.post("/assigned", authorizePrivilege("GET_CUSTOMER_ORDER_ASSIGNED"), (req
                 $replaceRoot:{newRoot:"$orders"}
             }
         ]).exec().then(data => {
-            User.populate(data,[{path:"placed_by",select:"-password"},{path:"products.product", model:"product",populate:{path:"brand category"}}]).then(_ord=>{
+            User.populate(data,[{path:"placed_by",select:"-password"},{path:"products.product", model:"product",populate:{path:"brand category available_for", select:"-password"}}]).then(_ord=>{
                 res.json({ status: 200, data: _ord, errors: false, message: "All orders" });
             }).catch(err=>{
                 console.log(err);
@@ -160,7 +160,7 @@ router.post("/cancel/:id", authorizePrivilege("CANCEL_CUSTOMER_ORDER"), (req, re
                         res.json({ status: 200, data: doc, errors: false, message: "Order cancelled successfully!" });
                     }
                 }).populate({
-                    path: "products.product ",
+                    path: "placed_by products.product", select:"-apassword",
                     populate: {
                         path: "created_by category brand available_for", select: "-password"
                     }
@@ -170,6 +170,7 @@ router.post("/cancel/:id", authorizePrivilege("CANCEL_CUSTOMER_ORDER"), (req, re
 
     }
 })
+
 // Deliver a order
 router.post("/deliver/:id", authorizePrivilege("DELIVER_CUSTOMER_ORDER"), (req, res) => {
     if (!mongodb.ObjectId.isValid(req.params.id)) {
@@ -190,7 +191,7 @@ router.post("/deliver/:id", authorizePrivilege("DELIVER_CUSTOMER_ORDER"), (req, 
                         res.json({ status: 200, data: doc, errors: false, message: "Order delivered successfully!" });
                     }
                 }).populate({
-                    path: "products.product ",
+                    path: "placed_by products.product", select:"-apassword",
                     populate: {
                         path: "created_by category brand available_for", select: "-password"
                     }

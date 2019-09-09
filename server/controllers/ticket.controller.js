@@ -74,7 +74,7 @@ const CloseSubscriptionRequest = Joi.object({
     doctorAdvice: Joi.boolean(),
     lessConsumption: Joi.boolean()
 })
-const ticketCreateSchema = Joi.object({
+const ticketCreateSchemaWeb = Joi.object({
     customer: Joi.string().required(),
     customerConcern: Joi.string().required(),
     assignTo: Joi.string().required(),
@@ -101,12 +101,28 @@ const ticketCreateSchema = Joi.object({
         closeSubscriptionRequest: CloseSubscriptionRequest,
     })
 })
+const ticketCreateSchema = Joi.object({
+    customerConcern: Joi.string().required(),
+    products: Joi.object({
+        milk: Joi.boolean(),
+        ghee: Joi.boolean(),
+        butter: Joi.boolean(),
+        cheese: Joi.boolean()
+    }),
+    issues: Joi.object({
+        productConcern: ProductConcern,
+        serviceConcern: ServiceConcern,
+        closeSubscriptionRequest: CloseSubscriptionRequest,
+    })
+})
 
 
+function verifyCreateWeb(ticket) { return helper.validator(ticket, ticketCreateSchemaWeb) }
 function verifyCreate(ticket) { return helper.validator(ticket, ticketCreateSchema) }
 function verifyTicketFollowUp(ticket) { return helper.validator(ticket, ticketFollowUp) }
 
 module.exports = {
+    verifyCreateWeb,
     verifyCreate,
     verifyTicketFollowUp
 }
