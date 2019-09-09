@@ -102,35 +102,35 @@ router.put("/:id", authorizePrivilege("UPDATE_PRODUCT_CATEGORY_ATTRIBUTE"), (req
 // })
 
 //DELETE A PRODUCT CATEGORY
-router.delete("/:id", authorizePrivilege("DELETE_PRODUCT_CATEGORY"), (req, res) => {
-    if (!mongodb.ObjectId.isValid(req.params.id)) {
-        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" });
-    }
-    else {
-        Attribute.findByIdAndDelete(req.params.id, (err, doc) => {
-            if (err) {
-                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while deleting the category" })
-            }
-            if (doc) {
-                res.json({ status: 200, data: doc, errors: false, message: "Category deleted successfully!" });
-            }
-        })
-    }
-})
+// router.delete("/:id", authorizePrivilege("DELETE_PRODUCT_CATEGORY"), (req, res) => {
+//     if (!mongodb.ObjectId.isValid(req.params.id)) {
+//         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" });
+//     }
+//     else {
+//         Attribute.findByIdAndDelete(req.params.id, (err, doc) => {
+//             if (err) {
+//                 return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while deleting the category" })
+//             }
+//             if (doc) {
+//                 res.json({ status: 200, data: doc, errors: false, message: "Category deleted successfully!" });
+//             }
+//         })
+//     }
+// })
 
-// GET SPECIFIC PRODUCT CATEGORY
-router.get("/id/:id", authorizePrivilege("GET_PRODUCT_CATEGORY"), (req, res) => {
-    if (mongodb.ObjectId.isValid(req.params.id)) {
-        Attribute.findById(req.params.id).exec().then(doc => {
-            res.json({ status: 200, data: doc, errors: false, message: "Category" });
-        }).catch(e => {
-            console.log(e);
-            res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting the category" })
-        });
-    } else {
-        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" });
-    }
-});
+// // GET SPECIFIC PRODUCT CATEGORY
+// router.get("/id/:id", authorizePrivilege("GET_PRODUCT_CATEGORY"), (req, res) => {
+//     if (mongodb.ObjectId.isValid(req.params.id)) {
+//         Attribute.findById(req.params.id).exec().then(doc => {
+//             res.json({ status: 200, data: doc, errors: false, message: "Category" });
+//         }).catch(e => {
+//             console.log(e);
+//             res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting the category" })
+//         });
+//     } else {
+//         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" });
+//     }
+// });
 module.exports = router;
 
 
