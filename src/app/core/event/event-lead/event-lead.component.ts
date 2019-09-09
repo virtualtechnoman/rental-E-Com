@@ -108,7 +108,7 @@ export class EventLeadComponent implements OnInit {
     this.eventService.updateCommentsLead(this.CommentForm.value,this.leadSelectedid).subscribe((res:ResponseModel)=>{
       console.log(res.data)
       this.allLeads.splice(this.leadIndex,1,res.data)
-      jQuery('#modal3').modal('hide');
+      jQuery('#exampleModal').modal('hide');
       this.toastr.success('Comment Added', 'Success!');
     })
   }
@@ -116,7 +116,7 @@ export class EventLeadComponent implements OnInit {
   addLead(lead) {
     this.eventService.addLead(lead).subscribe((res: ResponseModel) => {
       console.log(res.data)
-      jQuery('#exampleModal').modal('hide');
+      jQuery('#modal3').modal('hide');
       this.toastr.success('Lead Added', 'Success!');
       this.allLeads.push(res.data)
       this.resetForm();
