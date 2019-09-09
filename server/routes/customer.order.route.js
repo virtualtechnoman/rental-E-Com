@@ -127,7 +127,7 @@ router.post("/assigned", authorizePrivilege("GET_CUSTOMER_ORDER_ASSIGNED"), (req
                 $replaceRoot:{newRoot:"$orders"}
             }
         ]).exec().then(data => {
-            User.populate(data,[{path:"placed_by",select:"-password"},{path:"products.product", model:"product",populate:{path:"brand category available_for", select:"-password"}}]).then(_ord=>{
+            User.populate(data,[{path:"placed_by",select:"-password"},{path:"products.product", model:"product",populate:{path:"brand category created_by available_for", select:"-password"}}]).then(_ord=>{
                 res.json({ status: 200, data: _ord, errors: false, message: "All orders" });
             }).catch(err=>{
                 console.log(err);
