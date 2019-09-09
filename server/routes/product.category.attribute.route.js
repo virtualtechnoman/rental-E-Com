@@ -68,7 +68,7 @@ router.put("/:id", authorizePrivilege("UPDATE_PRODUCT_CATEGORY_ATTRIBUTE"), (req
         if (!isEmpty(result.errors)) {
             return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
         }
-        Attribute.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
+        Attribute.findByIdAndUpdate(req.params.id, {$set:result.data}, { new: true }, (err, doc) => {
             if (err)
                 return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating attribute" });
             else {
