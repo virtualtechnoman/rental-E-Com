@@ -1,8 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+@import "../node_modules/angular-calendar/css/angular-calendar.css";
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import '~angular-tree-component/dist/angular-tree-component.css';
 @import '~@angular/material/theming';
 @import '~dragula/dist/dragula.css';
+@import '~@fullcalendar/core/main.css';
+@import '~@fullcalendar/daygrid/main.css';
+
 
 $custom-typography: mat-typography-config(
     $font-family: 'Exo'

@@ -11,6 +11,7 @@ import { EventService } from './shared/event-type.service';
 import { EventOrganizerComponent } from './event-organizer/event-organizer.component';
 import { MarketingMaterialComponent } from './marketing-material/marketing-material.component';
 import { EventMainComponent } from './event-main/event-main.component';
+import { EventLeadComponent } from './event-lead/event-lead.component';
 // import { DistirbutorComponent } from './distirbutor/distirbutor.component';
 // import { SectorComponent } from './sector/sector.component';
 
@@ -22,7 +23,7 @@ import { EventMainComponent } from './event-main/event-main.component';
     ReactiveFormsModule,
     InputSwitchModule
   ],
-  declarations: [EventTypeComponent, EventOrganizerComponent, MarketingMaterialComponent, EventMainComponent],
+  declarations: [EventTypeComponent, EventOrganizerComponent, MarketingMaterialComponent, EventMainComponent, EventLeadComponent],
   providers: [EventService],
   exports: [
     EventRoutingModule

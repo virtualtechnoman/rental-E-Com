@@ -16,26 +16,24 @@
             <th scope="col">S.No</th>
             <th scope="col">Event Name </th>
             <th scope="col">Event Type </th>
-            <th scope="col">Event City </th>
             <th scope="col">Organizer </th>
-            <th scope="col">Incharge </th>
+            <th scope="col">Event City </th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let event of allEvents; let i = index">
+          <tr *ngFor="let event of mainEvent; let i = index">
             <td>{{i+1}}</td>
-            <td>{{event.name}}</td>
-            <td>{{event.type}}</td>
-            <td>{{event.city}}</td>
-            <td>{{event.organizer}}</td>
-            <td>{{event.incharge}}</td>
+            <td>{{event?.name}}</td>
+            <td>{{event?.type?.name}}</td>
+            <td>{{event?.organizer?.name}}</td>
+            <td>{{event?.city}}</td>
             <td>
-              <a style="cursor: pointer" (click)="viewEventType(i)" data-toggle="modal" data-target="#exampleModal"><i
+              <a style="cursor: pointer" (click)="viewMainEvent(i)" data-toggle="modal" data-target="#exampleModal"><i
                   class="fas fa-eye"></i></a>
-              <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editEventType(i)"><i
-                  class="fas fa-edit mx-2"></i> </a>
-              <a style="cursor: pointer" (click)="deleteEvent(i)"><i class="fas fa-trash-alt"></i></a>
+              <!-- <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editEventType(i)"><i
+                  class="fas fa-edit mx-2"></i> </a> -->
+              <!-- <a style="cursor: pointer" (click)="deleteEvent(i)"><i class="fas fa-trash-alt"></i></a> -->
             </td>
           </tr>
         </tbody>
@@ -106,8 +104,8 @@
                 <div class="col-sm-8">
                   <select name="organizer" id="" class="form-control" formControlName="organizer" required
                     [ngClass]="{ 'is-invalid': submitted && f.organizer.errors }">
-                    <option value="" [selected]>Select Event Type</option>
-                    <option value="" *ngFor="let type of allEventOrganizer" value="{{type._id}}">{{type.full_name}}
+                    <option selected disabled>Select Event Type</option>
+                    <option  *ngFor="let organizer of allEventOrganizer" [ngValue]="organizer._id">{{organizer.name}}
                     </option>
                   </select>
                   <div *ngIf="submitted && f.organizer.errors" class="invalid-feedback">
@@ -125,47 +123,94 @@
                   </div>
                 </div>
               </div>
-              <div class="form-group row">
-                <label for="inputEmail3" class="col-sm-4 col-form-label">Person In Charge</label>
-                <div class="col-sm-8">
-                  <select name="incharge" id="" class="form-control" formControlName="incharge" required
-                    [ngClass]="{ 'is-invalid': submitted && f.incharge.errors }">
-                    <option value="" [selected]>Select Incharge Type</option>
-                    <option value="" *ngFor="let type of allInCharge" value="{{type._id}}">{{type.full_name}}</option>
-                  </select>
-                  <div *ngIf="submitted && f.incharge.errors" class="invalid-feedback">
-                    <div *ngIf="f.incharge.errors.required">Event Incharge is required</div>
+
+              <div class="form-row">
+                  <button type="button" class="btn btn-primary text-center" style="margin-top: -10px" (click)="addIncharge()">Add Incharge</button>
+                  <br>
+                  
+                  <div formArrayName="incharge">
+                      <div *ngFor="let in of InchargeForm.controls; let i=index" 
+                            [formGroupName]="i">
+                            <div class="row">
+                            <div class="col">
+                                <div>
+                                  <label for="period">Incharge</label>
+                                  <select name="material" formControlName="incharge" class="form-control ">
+                                    <option selected disabled>Select Incharge</option>
+                                    <option [ngValue]="incharge._id" *ngFor="let incharge of allInCharge;let i=index">{{incharge.full_name}}
+                                    </option>
+                                  </select>
+                                </div>
+                           </div>
+                          <div class="col-sm-2">
+                              <label for="">Remove</label>
+                             <button class="btn btn-primary" (click)="deleteIncharge(i)">-</button>
+                          </div>
+                      </div>
+                    </div>
                   </div>
+                <div *ngIf="submitted && f.marketingMaterial.errors" class="invalid-feedback">
+                  <div *ngIf="f.marketingMaterial.errors.required">Event Marketing Material is required</div>
                 </div>
               </div>
+
+              <div class="form-row">
+                      <button type="button" class="btn btn-primary text-center" style="margin-top: -10px" (click)="addMaterial()">Add Marketing Material</button>
+                      <br>
+                      
+                      <div formArrayName="marketingMaterial">
+                          <div *ngFor="let marketingmaterial of MaterialForms.controls; let i=index" 
+                                [formGroupName]="i">
+                                <div class="row">
+                                <div class="col">
+                                    <div>
+                                      <label for="period">Marketing Material</label>
+                                      <select name="material" formControlName="material" class="form-control ">
+                                        <option selected disabled>Select Marketing Material</option>
+                                        <option [ngValue]="material._id" *ngFor="let material of allMarketingMaterial;let i=index">{{material.name}}
+                                        </option>
+                                      </select>
+                                    </div>
+                               </div>
+                               <div class="col">
+                                      <label for="period">Quantity</label>
+                                      <input type="number" name="from" id="from" class="form-control" formControlName="quantity">
+                               </div>
+                              <div class="col-sm-2">
+                                  <label for="">Remove</label>
+                                 <button class="btn btn-primary" (click)="deleteMaterial(i)">-</button>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                    <div *ngIf="submitted && f.marketingMaterial.errors" class="invalid-feedback">
+                      <div *ngIf="f.marketingMaterial.errors.required">Event Marketing Material is required</div>
+                    </div>
+                  </div>
             </div>
             <div class="divider-text divider-vertical" data-text="and"></div>
 
             <div class="col">
               <div class="form-group row">
-                <label for="inputEmail3" class="col-sm-4 col-form-label">Event Time</label>
-                <div class="col-sm-8">
-                  <input type="date" name="time" class="form-control" formControlName="time" required
-                    [ngClass]="{ 'is-invalid': submitted && f.time.errors }">
-                  <div *ngIf="submitted && f.time.errors" class="invalid-feedback">
-                    <div *ngIf="f.time.errors.required">Event Time is required</div>
+                  <label for="inputEmail3" class="col-sm-2 col-form-label">Event Time & Date</label>
+                  <div class="col-sm-10">
+                    <input type="datetime-local" formControlName="time" name="time" class="form-control" required >
                   </div>
                 </div>
-              </div>
               <div class="form-group row">
                 <label for="inputEmail3" class="col-sm-4 col-form-label">Target Leads</label>
                 <div class="col-sm-8">
-                  <input type="text" name="targetLeads" class="form-control" formControlName="targetLeads" required
+                  <input type="number" name="targetLeads" class="form-control" formControlName="targetLeads" required
                     [ngClass]="{ 'is-invalid': submitted && f.targetLeads.errors }">
                   <div *ngIf="submitted && f.targetLeads.errors" class="invalid-feedback">
-                    <div *ngIf="f.targetLeads.errors.required">Event TargetLeads is required</div>
+                    <div *ngIf="f.targetLeads.errors.required">Event Target Leads is required</div>
                   </div>
                 </div>
               </div>
               <div class="form-group row">
                 <label for="inputEmail3" class="col-sm-4 col-form-label">Target Conversion</label>
                 <div class="col-sm-8">
-                  <input type="text" name="targetConversion" class="form-control" formControlName="targetConversion"
+                  <input type="number" name="targetConversion" class="form-control" formControlName="targetConversion"
                     required [ngClass]="{ 'is-invalid': submitted && f.targetConversion.errors }">
                   <div *ngIf="submitted && f.targetConversion.errors" class="invalid-feedback">
                     <div *ngIf="f.targetConversion.errors.required">Event Target Conversion is required</div>
@@ -177,8 +222,8 @@
                 <div class="col-sm-8">
                   <select name="farm" id="" class="form-control" formControlName="farm" required
                     [ngClass]="{ 'is-invalid': submitted && f.farm.errors }">
-                    <option value="" [selected]>Select Farm</option>
-                    <option value="" *ngFor="let farm of allInCharge" value="{{farm._id}}">{{farm.full_name}}</option>
+                    <option  selected disabled>Select Farm</option>
+                    <option  *ngFor="let farm of allFarms" [ngValue]="farm._id">{{farm.full_name}}</option>
                   </select>
                   <div *ngIf="submitted && f.farm.errors" class="invalid-feedback">
                     <div *ngIf="f.farm.errors.required">Farm Name is required</div>
@@ -186,28 +231,71 @@
                 </div>
               </div>
               <div class="form-group row">
-                <label for="inputEmail3" class="col-sm-4 col-form-label">Makerting Material</label>
-                <div class="col-sm-8">
-                  <input type="text" name="marketingMaterial" class="form-control" formControlName="marketingMaterial"
-                    required [ngClass]="{ 'is-invalid': submitted && f.marketingMaterial.errors }">
-                  <div *ngIf="submitted && f.marketingMaterial.errors" class="invalid-feedback">
-                    <div *ngIf="f.marketingMaterial.errors.required">Event Marketing Material is required</div>
+                  <label for="inputEmail3" class="col-sm-4 col-form-label">Event Cost</label>
+                  <div class="col-sm-8">
+                    <input type="number" name="cost" class="form-control" formControlName="cost" required
+                      [ngClass]="{ 'is-invalid': submitted && f.cost.errors }">
+                    <div *ngIf="submitted && f.cost.errors" class="invalid-feedback">
+                      <div *ngIf="f.cost.errors.required">Event Cost is required</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="inputEmail3" class="col-sm-4 col-form-label">Event Cost</label>
-                <div class="col-sm-8">
-                  <input type="text" name="cost" class="form-control" formControlName="cost" required
-                    [ngClass]="{ 'is-invalid': submitted && f.cost.errors }">
-                  <div *ngIf="submitted && f.cost.errors" class="invalid-feedback">
-                    <div *ngIf="f.cost.errors.required">Event Cost is required</div>
+
+              <div class="form-row">
+                  <button type="button" class="btn btn-primary text-center" style="margin-top: -10px" (click)="addProducts()">Add Products</button>
+                  <br>
+                  
+                  <div formArrayName="products">
+                      <div *ngFor="let product of productsForms.controls; let i=index" 
+                            [formGroupName]="i">
+                            <div class="row">
+                            <div class="col">
+                                <div>
+                                  <label for="period">Product</label>
+                                  <select name="material" formControlName="product" class="form-control ">
+                                    <option selected disabled>Select Product</option>
+                                    <option [ngValue]="product._id" *ngFor="let product of allproducts;let i=index">{{product.name}}
+                                    </option>
+                                  </select>
+                                </div>
+                           </div>
+                           <div class="col">
+                                  <label for="period">Quantity</label>
+                                  <input type="number" name="from" id="from" class="form-control" formControlName="quantity">
+                           </div>
+                          <div class="col-sm-2">
+                              <label for="">Remove</label>
+                             <button class="btn btn-primary" (click)="deleteProducts(i)">-</button>
+                          </div>
+                      </div>
+                    </div>
                   </div>
+                <div *ngIf="submitted && f.products.errors" class="invalid-feedback">
+                  <div *ngIf="f.products.errors.required">Product is required</div>
                 </div>
               </div>
-              <div class="form-group row">
-                <button class="btn btn-success">Submit</button>
-                <button class="btn btn-danger">Cancel</button>
+              
+             <br>
+             <br>
+             <span class="border border-info">
+                <div class="form-group row">
+                    <label for="inputEmail3" class="col-sm-4 col-form-label">Hub</label>
+                    <div class="col-sm-8">
+                      <select name="incharge" id="" class="form-control" formControlName="hub" required
+                        [ngClass]="{ 'is-invalid': submitted && f.hub.errors }">
+                        <option  selected disabled>Select Incharge Type</option>
+                        <option  *ngFor="let hub of allHubs" [ngValue]="hub._id">{{hub.full_name}}</option>
+                      </select>
+                      <div *ngIf="submitted && f.hub.errors" class="invalid-feedback">
+                        <div *ngIf="f.hub.errors.required">Hub is required</div>
+                      </div>
+                    </div>
+                  </div>
+
+             </span>
+
+              <div class=" text-center">
+                <button type="submit" class="btn btn-success tx-13 mx-1">Submit</button>
               </div>
             </div>
           </div>
@@ -218,28 +306,155 @@
 </div>
 
 
-<!-- View Example Modal -->
-<!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-  aria-hidden="true" *ngIf="viewArray">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Event Type Details</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-
-        <div class="form-group">
-          <label> Name</label>
-          <input type="text" class="form-control" [(ngModel)]="viewArray.name" disabled />
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="viewArray">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Event Details</h5>
+          <h6 class="modal-title" id="exampleModalLabel" style="margin-left: 400px;margin-top: 6px" *ngIf="status">Event Status: {{status}}</h6>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="col">
+                  <div class="form-group row" *ngIf="viewArray.type">
+                    <label for="inputEmail3" class="col-sm-4 col-form-label">Event Type</label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control" [(ngModel)]="viewArray.type.name" required disabled>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="inputEmail3" class="col-sm-4 col-form-label">Event Name</label>
+                    <div class="col-sm-8">
+                      <input type="text" name="name" class="form-control" [(ngModel)]="viewArray.name" disabled required>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="inputEmail3" class="col-sm-4 col-form-label">Event City</label>
+                    <div class="col-sm-8">
+                      <input type="text" name="city" class="form-control" [(ngModel)]="viewArray.city" required disabled>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="inputEmail3" class="col-sm-4 col-form-label">Event Address</label>
+                    <div class="col-sm-8">
+                      <input type="text" name="address" class="form-control" [(ngModel)]="viewArray.address" required disabled>
+                    </div>
+                  </div>
+                  <div class="form-group row" *ngIf="viewArray.organizer">
+                    <label for="inputEmail3" class="col-sm-4 col-form-label">Event Organiser</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" [(ngModel)]="viewArray.organizer.name" required disabled>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="inputEmail3" class="col-sm-4 col-form-label">Event Phone</label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control" [(ngModel)]="viewArray.phone" required disabled>
+                    </div>
+                  </div>
+    
+                  <div class="form-row">
+                      <!-- <label>Incharge Selected</label> -->
+                      <div *ngFor="let incharge of viewArray.incharge;let i=index">
+                        <div class="row">
+                            <div class="col">
+                                <label for="period">Incharge</label>
+                                <input type="text" class="form-control" [(ngModel)]="viewArray.incharge[i].full_name" required disabled>
+                            </div>
+                        </div>
 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                  </div>
+    
+                  <div class="form-row">
+                    <!-- <label>Marketing Material</label>   -->
+                    <div *ngFor="let material of viewArray.marketingMaterial;let i=index">
+                        <div class="row">
+                            <div class="col">
+                                <label for="period">Material</label>
+                                <input type="text" class="form-control" [(ngModel)]="viewArray.marketingMaterial[i].material.name" required disabled>
+                            </div>
+                            <div class="col">
+                                <label for="period">Quantity</label>
+                                <input type="text" class="form-control" [(ngModel)]="viewArray.marketingMaterial[i].quantity" required disabled>
+                            </div>
+                        </div>
+
+                      </div>      
+                  </div>
+                </div>
+                <div class="divider-text divider-vertical" data-text="and"></div>
+    
+                <div class="col">
+                  <div class="form-group row" *ngIf="timeFormat">
+                      <label for="inputEmail3" class="col-sm-2 col-form-label">Event Time & Date</label>
+                      <div class="col-sm-10">
+                        <input type="text" [(ngModel)]="timeFormat" name="time" class="form-control" required disabled>
+                      </div>
+                    </div>
+                  <div class="form-group row">
+                    <label for="inputEmail3" class="col-sm-4 col-form-label">Target Leads</label>
+                    <div class="col-sm-8">
+                      <input type="number" name="targetLeads" [(ngModel)]="viewArray.targetLeads" class="form-control" required disabled>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="inputEmail3" class="col-sm-4 col-form-label">Target Conversion</label>
+                    <div class="col-sm-8">
+                      <input type="number" name="targetConversion" [(ngModel)]="viewArray.targetConversion" class="form-control" disabled required>
+                    </div>
+                  </div>
+                  <div class="form-group row" *ngIf="viewArray.farm">
+                    <label for="inputEmail3" class="col-sm-4 col-form-label">Farm Selected</label>
+                    <div class="col-sm-8">
+                      <input type="text" class="form-control" [(ngModel)]="viewArray.farm.full_name" required disabled>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                      <label for="inputEmail3" class="col-sm-4 col-form-label">Event Cost</label>
+                      <div class="col-sm-8">
+                        <input type="number" name="cost" class="form-control" [(ngModel)]="viewArray.cost" required disabled>
+                      </div>
+                    </div>
+    
+                  <div class="form-row">
+                      <!-- <label>Products</label> -->
+                      <div *ngFor="let product of viewArray.products;let i=index">
+                          <div class="row">
+                              <div class="col">
+                                  <label for="period">Product</label>
+                                  <input type="text" class="form-control" [(ngModel)]="viewArray.products[i].product.name" required disabled>
+                              </div>
+                              <div class="col">
+                                  <label for="period">Quantity</label>
+                                  <input type="text" class="form-control" [(ngModel)]="viewArray.products[i].quantity" required disabled>
+                              </div>
+                          </div>
+  
+                        </div> 
+                  </div>
+                  
+                 <br>
+                 <br>
+                 <span class="border border-info" *ngIf="viewArray.hub">
+                    <div class="form-group row">
+                        <label for="inputEmail3" class="col-sm-4 col-form-label">Hub</label>
+                        <div class="col-sm-8">
+                          <input type="text" class="form-control" [(ngModel)]="viewArray.hub.full_name" disabled required>
+                        </div>
+                      </div>
+    
+                 </span>
+    
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-success tx-13 mx-1" *ngIf="!viewArray.cancelled" (click)="cancelEvent()">Cancel Event</button>
+                  </div>
+                </div>
+              </div>
+        </div>
       </div>
     </div>
   </div>
-</div> -->

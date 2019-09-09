@@ -16,6 +16,8 @@ export class EventService {
     url = '/api/event/type';
     url2 = 'api/event/organizer';
     url3 = 'api/mktmat';
+    url4= "/api/event";
+    url5= "/api/event/lead";
     // States
     getAllEvent() {
         return this.http.get(this.url + '/', { headers: this.headers });
@@ -68,4 +70,38 @@ export class EventService {
     updateMarketingMaterial(material, id) {
         return this.http.put(this.url3 + '/' + id, material, { headers: this.headers });
     }
+
+    // Main Event
+
+    getAllMainEvent() {
+        return this.http.get(this.url4+ '/all', { headers: this.headers });
+    }
+
+    addMainEvent(event) {
+        return this.http.post(this.url4 + '/', event, { headers: this.headers });
+    }
+
+    
+    // Cancel Main Event
+
+    updateStatusMainEvent(id) {
+        return this.http.put(this.url4 + '/cancel/' + id, {} , { headers: this.headers });
+    }
+
+    // Lead Api
+
+    getAllLeads() {
+        return this.http.get(this.url5+ '/', { headers: this.headers });
+    }
+
+    addLead(lead) {
+        return this.http.post(this.url5 + '/', lead, { headers: this.headers });
+    }
+
+    // Get Lead Comments Array
+
+    updateCommentsLead(comment,id) {
+        return this.http.put(this.url5 + '/comment/' + id, comment, { headers: this.headers });
+    }
+
 } 

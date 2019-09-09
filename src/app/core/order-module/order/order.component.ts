@@ -705,16 +705,19 @@ export class OrderComponent implements OnInit {
       this.orderSelected.products[i].accepted=Number(this.acceptedValueForm.value.accepted[i])
     }
   }
+
+  get acceptedForms() {
+    return this.acceptedValueForm.get('accepted') as FormArray;
+    
+  }
+
   get productsForms() {
     
     return this.orderPlacedForm.get('products') as FormArray;
     
   }
 
-  get acceptedForms() {
-    return this.acceptedValueForm.get('accepted') as FormArray;
-    
-  }
+
   addProducts() {
 
     const product = this.fb.group({ 
@@ -725,6 +728,12 @@ export class OrderComponent implements OnInit {
     this.productsForms.push(product);
   }
 
+
+  
+  deleteProducts(i) {
+    this.productsForms.removeAt(i)
+  }
+
   addAcceptedQuantity(){
     const accepted=this.fb.group({
       accepted:[]
@@ -732,9 +741,6 @@ export class OrderComponent implements OnInit {
     this.acceptedForms.push(accepted)
   }
   
-  deleteProducts(i) {
-    this.productsForms.removeAt(i)
-  }
   get f() { return this.orderPlacedForm.controls; }
   get f2() { return this.returnOrderPlacedForm.controls; }
 

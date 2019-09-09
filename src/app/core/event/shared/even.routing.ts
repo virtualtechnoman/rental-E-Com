@@ -8,6 +8,7 @@ import { EventTypeComponent } from '../event-type/event-type.component';
 import { EventOrganizerComponent } from '../event-organizer/event-organizer.component';
 import { MarketingMaterialComponent } from '../marketing-material/marketing-material.component';
 import { EventMainComponent } from '../event-main/event-main.component';
+import { EventLeadComponent } from '../event-lead/event-lead.component';
 // import { DistirbutorComponent } from '../distirbutor/distirbutor.component';
 // import { SectorComponent } from '../sector/sector.component';
 const routes: Routes = [
@@ -25,6 +26,10 @@ const routes: Routes = [
   },
   {
     path: 'eventmain', children: [{ path: '', component: EventMainComponent }],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'lead', children: [{ path: '', component: EventLeadComponent }],
     canActivate: [AuthGuard]
   }
 ];

@@ -33,6 +33,11 @@ import { SupportModule } from './core/Support/support.module';
 import { RouteModule } from './core/route/route.module';
 import { SubscriptionModule } from './core/customersubscription/subscription.module';
 import { EventModule } from './core/event/event.module';
+import { CalendarModule, DateAdapter } from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+import { EventSesrvice } from './event.service';
+import { FullCalendarModule } from '@fullcalendar/angular'; // for FullCalendar!
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -57,21 +62,21 @@ import { EventModule } from './core/event/event.module';
     OrderModuleModule,
     ProductsModule,
     TruckModule,
-    // core Modules
     UserModule,
-    // ngPrime
     InputSwitchModule,
     ToastrModule.forRoot(),
     LocationManagerModule,
     SupportModule,
     RouteModule,
     SubscriptionModule,
-    EventModule
+    EventModule,
+    FullCalendarModule
   ],
   providers: [
     LoginAuthGraud,
     LoginGaurd,
     ToastrService,
+    EventSesrvice,
     {
     provide: HTTP_INTERCEPTORS,
     useClass: AuthHeaderInterceptor,

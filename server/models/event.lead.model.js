@@ -7,9 +7,10 @@ module.exports = mongoose.model("event_lead", new mongoose.Schema({
     gender: { type: String, required: true },
     city: { type: mongoose.Schema.Types.ObjectId, ref: 'city', required: true },
     address: { type: String, required: true },
-    comments: { type: String},
+    comments: [{ type: String}],
     mode: { type: String},
     event: { type: mongoose.Schema.Types.ObjectId, ref: 'event', required: true },
+    preferredTime: { type: Date, required: true },
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
 }, {
         versionKey: false
