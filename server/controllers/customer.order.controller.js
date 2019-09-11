@@ -19,18 +19,27 @@ const customerOrderUpdateSchema = Joi.object({
     }).optional(),
     // notes: Joi.optional().allow(''),
     // status: Joi.boolean().required()
-    status:Joi.string().optional()
+    status: Joi.string().optional()
 })
 const getCustomerOrderByDateForDboySchema = Joi.object({
-    date:Joi.date().required()
+    date: Joi.date().required()
+})
+const CancelOrderByDBoyReasonSchema = Joi.object({
+    doorNotOpen: Joi.boolean().required(),
+    notAcceptedByCustomer: Joi.boolean().required(),
+    noMilkAvailable: Joi.boolean().required(),
+    other: Joi.boolean().required(),
+    reason: Joi.string().required().allow("")
 })
 
 module.exports = {
     verifyCreate,
     verifyUpdate,
-    verifyDateForDboy
+    verifyDateForDboy,
+    verifyCancelByDboy
 }
 
 function verifyCreate(order) { return helper.validator(order, customerOrderCreateSchema) }
 function verifyUpdate(order) { return helper.validator(order, customerOrderUpdateSchema) }
 function verifyDateForDboy(order) { return helper.validator(order, getCustomerOrderByDateForDboySchema) }
+function verifyCancelByDboy(order) { return helper.validator(order, CancelOrderByDBoyReasonSchema) }

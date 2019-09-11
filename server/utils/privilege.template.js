@@ -171,4 +171,11 @@ module.exports = (p=false)=>({
     GET_CATEGORY_ATTRIBUTE:p,
     ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE:p,
     UPDATE_PRODUCT_CATEGORY_ATTRIBUTE:p,
+    //Payment Privileges
+    ADD_NEW_PAYMENT:p,
+    GET_ALL_PAYMENTS:p,
+    //Notification Privileges
+    ADD_NEW_NOTIFICATION:p,
+    GET_NOTIFICATIONS:p,
+    GET_ALL_NOTIFICATIONS:p,
 })

@@ -93,7 +93,7 @@ router.delete("/:id", authorizePrivilege("DELETE_CUSTOMER_ORDER"), (req, res) =>
 // Cancel a order
 router.post("/assigned", authorizePrivilege("GET_CUSTOMER_ORDER_ASSIGNED"), (req, res) => {
     let result = CustomerOrderController.verifyDateForDboy(req.body);
-    if(!isEmpty(result.errors)){
+    if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
     }
     Route.findOne({ delivery_boy: req.user._id }).exec().then(_route => {
@@ -111,25 +111,25 @@ router.post("/assigned", authorizePrivilege("GET_CUSTOMER_ORDER_ASSIGNED"), (req
                 $lookup:
                 {
                     from: "customer_orders",
-                    let:{"customers":"$id"},
+                    let: { "customers": "$id" },
                     pipeline: [
                         {
-                            $match: { $expr:{$in:["$placed_by","$$customers"]}, order_date:{$gte:moment(req.body.date).startOf('day').toDate(),$lte:moment(req.body.date).endOf('day').toDate()} }
+                            $match: { $expr: { $in: ["$placed_by", "$$customers"] }, order_date: { $gte: moment(req.body.date).startOf('day').toDate(), $lte: moment(req.body.date).endOf('day').toDate() } }
                         }
                     ],
                     as: "orders"
                 }
             },
             {
-                $unwind:"$orders"
+                $unwind: "$orders"
             },
             {
-                $replaceRoot:{newRoot:"$orders"}
+                $replaceRoot: { newRoot: "$orders" }
             }
         ]).exec().then(data => {
-            User.populate(data,[{path:"placed_by",select:"-password"},{path:"products.product", model:"product",populate:{path:"brand category created_by available_for", select:"-password"}}]).then(_ord=>{
+            User.populate(data, [{ path: "placed_by", select: "-password" }, { path: "products.product", model: "product", populate: { path: "brand category created_by available_for", select: "-password" } }]).then(_ord => {
                 res.json({ status: 200, data: _ord, errors: false, message: "All orders" });
-            }).catch(err=>{
+            }).catch(err => {
                 console.log(err);
                 res.status(500).json({ status: 500, data: null, errors: true, message: "Error while populating the order" });
             })
@@ -146,27 +146,32 @@ router.post("/cancel/:id", authorizePrivilege("CANCEL_CUSTOMER_ORDER"), (req, re
         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid Order id" });
     }
     else {
-        CustomerOrder.findById(req.params.id).exec().then(_cord => {
-            if (_cord.isCancelled) {
-                return res.status(400).json({ status: 400, data: null, errors: true, message: "Order already cancelled" });
-            } else if (_cord.isDelivered) {
-                return res.status(400).json({ status: 400, data: null, errors: true, message: "Delivered Order cannot be cancelled" });
-            } else {
-                CustomerOrder.findByIdAndUpdate(req.params.id, { $set: { status: "Cancelled", isCancelled: true } }, { new: true }, (err, doc) => {
-                    if (err) {
-                        return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while cancelling the order" })
-                    }
-                    if (doc) {
-                        res.json({ status: 200, data: doc, errors: false, message: "Order cancelled successfully!" });
-                    }
-                }).populate({
-                    path: "placed_by products.product", select:"-apassword",
-                    populate: {
-                        path: "created_by category brand available_for", select: "-password"
-                    }
-                })
-            }
-        })
+        let result = CustomerOrderController.verifyCancelByDboy(req.body);
+        if (isEmpty(result.errors)) {
+            CustomerOrder.findById(req.params.id).exec().then(_cord => {
+                if (_cord.isCancelled) {
+                    return res.status(400).json({ status: 400, data: null, errors: true, message: "Order already cancelled" });
+                } else if (_cord.isDelivered) {
+                    return res.status(400).json({ status: 400, data: null, errors: true, message: "Delivered Order cannot be cancelled" });
+                } else {
+                    CustomerOrder.findByIdAndUpdate(req.params.id, { $set: { status: "Cancelled",cancellationReason:result.data, isCancelled: true } }, { new: true }, (err, doc) => {
+                        if (err) {
+                            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while cancelling the order" });
+                        }
+                        if (doc) {
+                            res.json({ status: 200, data: doc, errors: false, message: "Order cancelled successfully!" });
+                        }
+                    }).populate({
+                        path: "placed_by products.product", select: "-apassword",
+                        populate: {
+                            path: "created_by category brand available_for", select: "-password"
+                        }
+                    })
+                }
+            })
+        }else{
+            return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
+        }
 
     }
 })
@@ -191,7 +196,7 @@ router.post("/deliver/:id", authorizePrivilege("DELIVER_CUSTOMER_ORDER"), (req, 
                         res.json({ status: 200, data: doc, errors: false, message: "Order delivered successfully!" });
                     }
                 }).populate({
-                    path: "placed_by products.product", select:"-apassword",
+                    path: "placed_by products.product", select: "-apassword",
                     populate: {
                         path: "created_by category brand available_for", select: "-password"
                     }
