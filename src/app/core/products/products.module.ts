@@ -8,6 +8,7 @@ import { DataTablesModule } from 'angular-datatables';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { CategoryComponent } from './category/category.component';
 import { BrandComponent } from './brand/brand.component';
+import { CategoryAttributesComponent } from './category-attributes/category-attributes.component';
 
 @NgModule({
   imports: [
@@ -18,7 +19,7 @@ import { BrandComponent } from './brand/brand.component';
     ProductsRoutingModule,
     InputSwitchModule
   ],
-  declarations: [ProductsComponent, CategoryComponent, BrandComponent],
+  declarations: [ProductsComponent, CategoryComponent, BrandComponent, CategoryAttributesComponent],
   exports:[
     ProductsRoutingModule
   ],

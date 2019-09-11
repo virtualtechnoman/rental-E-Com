@@ -251,7 +251,7 @@
                         <form [formGroup]="CommentForm" (ngSubmit)="onSubmitComment()">
                             <label>Comment</label>
                         <div class="form-group green-border-focus">
-                            <textarea class="form-control" formControlName="comment" [ngClass]="{ 'is-invalid': submitted && f2.comment.errors }" id="exampleFormControlTextarea5" rows="3" ></textarea>
+                            <textarea #myInput class="form-control" formControlName="comment" [ngClass]="{ 'is-invalid': submitted && f2.comment.errors }" id="exampleFormControlTextarea5" rows="3" ></textarea>
                         </div>
                       <div *ngIf="submitted && f2.comment.errors" class="invalid-feedback">
                           <div *ngIf="f2.comment.errors.required">Comment required</div>

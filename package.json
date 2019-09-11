@@ -34,6 +34,7 @@
     "@fullcalendar/angular": "^4.3.1",
     "@fullcalendar/core": "^4.3.1",
     "@fullcalendar/daygrid": "^4.3.0",
+    "@fullcalendar/interaction": "^4.3.0",
     "@ibm/plex": "^1.2.3",
     "@types/fullcalendar": "^3.8.0",
     "@types/node": "10.3.6",

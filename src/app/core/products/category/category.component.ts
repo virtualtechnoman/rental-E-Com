@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { CategoryModel } from '../shared/product.model';
 import { Subject } from 'rxjs';
 import { ProductsService } from '../shared/products.service';
@@ -31,6 +31,12 @@ export class CategoryComponent implements OnInit {
   editShowImage:boolean=false
   editImage: any;
   mastImage: any;
+  attributeForm: FormGroup;
+  allAttributes:any[]=[];
+  showAttributeFor:boolean=false;
+  categorySelectedId:any;
+  specificCategoryAttributes:any[]=[]
+  showSpecificCategoryAttributesLength:boolean=false;
   constructor(private formBuilder: FormBuilder, private productService: ProductsService, private toastr: ToastrService) {
     this.initForm();
   }
@@ -63,9 +69,14 @@ export class CategoryComponent implements OnInit {
       is_active: ['', Validators.required],
       image:['']
     });
+    this.attributeForm=this.formBuilder.group({
+      category:[''],
+      name:['',Validators.required]
+    })
   }
 
   get f() { return this.categoryForm.controls; }
+  get f2() { return this.attributeForm.controls; }
 
   selectFile(event:any){
     this.fileSelected=event.target.files[0];
@@ -130,7 +141,16 @@ export class CategoryComponent implements OnInit {
   }
 
   viewCategory(i) {
+    // this.specificCategoryAttributes.length=0
     this.viewArray = this.allCategory[i];
+    this.categorySelectedId=this.allCategory[i]._id
+    if(this.allCategory[i]._id)
+    this.productService.getAllAttributeSpecificCategory(this.allCategory[i]._id).subscribe((res:ResponseModel)=>{
+      console.log(res.data)
+      if(res.data)
+      this.specificCategoryAttributes=res.data[0]
+
+  })
     if(this.viewArray.image){
       this.showImage=true;
     this.image= this.imageUrl + this.viewArray.image
@@ -202,6 +222,44 @@ export class CategoryComponent implements OnInit {
     }else{
       this.editShowImage=false
     }
+  }
+
+  get attributesForm() {
+    return this.attributeForm.get('name') as FormArray
+  }
+  
+  addAttribute() {
+  
+    const attibute = this.formBuilder.group({ 
+      name: []
+    })
+  
+    this.attributesForm.push(attibute);
+  }
+  
+  deleteAttribute(i) {
+    this.attributesForm.removeAt(i)
+  }
+
+  submitAttributeForm(){
+    
+    if (this.attributeForm.invalid) {
+      return;
+    }
+    this.attributeForm.value.category=this.categorySelectedId
+    console.log(this.attributeForm.value)
+    this.productService.addAttribute(this.attributeForm.value).subscribe((res:ResponseModel)=>{
+      this.toastr.success('Attribute added!', 'Success!');
+      this.allAttributes.push(res.data)
+      console.log(res.data)
+      this.attributeForm.reset()
+      jQuery('#attributesModal').modal('hide')
+    })
+  }
+
+  disableViewCategory(){
+    jQuery('#exampleModal').modal('hide')
+    
   }
 
   resetForm() {

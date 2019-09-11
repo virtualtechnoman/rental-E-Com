@@ -28,6 +28,8 @@
           <tr *ngFor="let product of allproducts; let i = index">
             <td>{{i+1}}</td>
             <td *ngIf="product.image"><img src="{{productImagesArray[i]}}" alt="" width="25px" class="img-thumbnail"></td>
+            <td *ngIf="!product.image"></td>
+
             <td>{{product?.name | titlecase}}</td>
             <td>{{product?.category?.name | titlecase}}</td>
             <td>{{product?.brand?.name | titlecase}}</td>
@@ -107,7 +109,7 @@
             <div class="form-group col-md-4">
               <label for="inputEmail4">Category</label>
               <select class="form-control" formControlName="category" required
-                [ngClass]="{ 'is-invalid': submitted && f.category.errors }">
+                [ngClass]="{ 'is-invalid': submitted && f.category.errors }" (change)="getCategoryAttributes($event)">
                 <option selected disabled>Select Category</option>
                 <option [ngValue]="category._id" *ngFor="let category of allCategories;let i=index">{{category.name}}
                 </option>
@@ -142,6 +144,37 @@
               </div>
             </div>
           </div>
+          <div class="col" *ngIf="specificCategoryAttributes && !editing">
+            <div *ngFor="let attributename of specificCategoryAttributes.name;let i=index">
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <label>Attribute Name</label>
+                    <div class="form-control " aria-disabled="true">{{attributename}}</div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Attribute Value</label>
+                    <input  type="text" class="form-control" [(ngModel)]="AttributeValueForm.value.values[i]" [ngModelOptions]="{standalone: true}">
+                </div>
+              
+            </div>
+            </div>
+          </div>
+          <div class="col" *ngIf=" editing && editAttributesArray">
+              <div *ngFor="let attributename of editAttributesArray;let i=index">
+                <div class="row" *ngIf="editAttributesArray">
+                  <div class="form-group col-md-4">
+                    <label>Attribute Name</label>
+                    <input  type="text" class="form-control" aria-disabled="true" [(ngModel)]="editAttributesArray[i].name" [ngModelOptions]="{standalone: true}">
+                      <!-- <div class="form-control " aria-disabled="true">{{attributename}}</div> -->
+                  </div>
+                  <div class="form-group col-md-4">
+                      <label>Attribute Value</label>
+                      <input  type="text" class="form-control" [(ngModel)]="editAttributesArray[i].value" [ngModelOptions]="{standalone: true}">
+                  </div>
+                
+              </div>
+              </div>
+            </div>
           <div class="form-row">
             <div class="form-row text-center">
                 <label>&nbsp;Available For &nbsp;&nbsp;&nbsp;&nbsp;</label>

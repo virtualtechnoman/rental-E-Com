@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 
 module.exports = mongoose.model("product_category_attribute", new mongoose.Schema({
-    name: { type: String, required: true },
+    name: [String],
     category: { type: mongoose.Schema.Types.ObjectId, ref:"product_category"},
-    values: [String]
+    // values: [String]
 }, {
         versionKey: false
     }))

@@ -27,12 +27,12 @@
             <td>{{event?.name}}</td>
             <td>{{event?.type?.name}}</td>
             <td>{{event?.organizer?.name}}</td>
-            <td>{{event?.city}}</td>
+            <td>{{event?.city?.name}}</td>
             <td>
               <a style="cursor: pointer" (click)="viewMainEvent(i)" data-toggle="modal" data-target="#exampleModal"><i
                   class="fas fa-eye"></i></a>
-              <!-- <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editEventType(i)"><i
-                  class="fas fa-edit mx-2"></i> </a> -->
+              <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editMainEvent(i)"><i
+                  class="fas fa-edit mx-2"></i> </a>
               <!-- <a style="cursor: pointer" (click)="deleteEvent(i)"><i class="fas fa-trash-alt"></i></a> -->
             </td>
           </tr>
@@ -80,14 +80,19 @@
                 </div>
               </div>
               <div class="form-group row">
-                <label for="inputEmail3" class="col-sm-4 col-form-label">Event City</label>
-                <div class="col-sm-8">
-                  <input type="text" name="city" class="form-control" formControlName="city" required
-                    [ngClass]="{ 'is-invalid': submitted && f.city.errors }">
-                  <div *ngIf="submitted && f.city.errors" class="invalid-feedback">
-                    <div *ngIf="f.city.errors.required">Event city is required</div>
-                  </div>
-                </div>
+                 
+                      <label for="inputEmail4" class="col-sm-4 col-form-label">Select City</label>
+                      <div class="col-sm-8">
+                      <select class="form-control" formControlName="city" required
+                        [ngClass]="{ 'is-invalid': submitted && f.city.errors }">
+                        <option selected disabled>Select City</option>
+                        <option [ngValue]="city._id" *ngFor="let city of allCities;let i=index">{{city.name}}
+                        </option>
+                      </select>
+                      <div *ngIf="submitted && f.city.errors" class="invalid-feedback">
+                        <div *ngIf="f.city.errors.required">City Name is required</div>
+                      </div>
+                    </div>
               </div>
               <div class="form-group row">
                 <label for="inputEmail3" class="col-sm-4 col-form-label">Event Address</label>
@@ -123,11 +128,9 @@
                   </div>
                 </div>
               </div>
-
               <div class="form-row">
                   <button type="button" class="btn btn-primary text-center" style="margin-top: -10px" (click)="addIncharge()">Add Incharge</button>
                   <br>
-                  
                   <div formArrayName="incharge">
                       <div *ngFor="let in of InchargeForm.controls; let i=index" 
                             [formGroupName]="i">
@@ -153,11 +156,9 @@
                   <div *ngIf="f.marketingMaterial.errors.required">Event Marketing Material is required</div>
                 </div>
               </div>
-
               <div class="form-row">
                       <button type="button" class="btn btn-primary text-center" style="margin-top: -10px" (click)="addMaterial()">Add Marketing Material</button>
                       <br>
-                      
                       <div formArrayName="marketingMaterial">
                           <div *ngFor="let marketingmaterial of MaterialForms.controls; let i=index" 
                                 [formGroupName]="i">
@@ -189,7 +190,6 @@
                   </div>
             </div>
             <div class="divider-text divider-vertical" data-text="and"></div>
-
             <div class="col">
               <div class="form-group row">
                   <label for="inputEmail3" class="col-sm-2 col-form-label">Event Time & Date</label>
@@ -240,11 +240,9 @@
                     </div>
                   </div>
                 </div>
-
               <div class="form-row">
                   <button type="button" class="btn btn-primary text-center" style="margin-top: -10px" (click)="addProducts()">Add Products</button>
                   <br>
-                  
                   <div formArrayName="products">
                       <div *ngFor="let product of productsForms.controls; let i=index" 
                             [formGroupName]="i">
@@ -274,7 +272,6 @@
                   <div *ngIf="f.products.errors.required">Product is required</div>
                 </div>
               </div>
-              
              <br>
              <br>
              <span class="border border-info">
@@ -291,9 +288,7 @@
                       </div>
                     </div>
                   </div>
-
              </span>
-
               <div class=" text-center">
                 <button type="submit" class="btn btn-success tx-13 mx-1">Submit</button>
               </div>
@@ -304,8 +299,6 @@
     </div>
   </div>
 </div>
-
-
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" *ngIf="viewArray">
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
@@ -331,10 +324,10 @@
                       <input type="text" name="name" class="form-control" [(ngModel)]="viewArray.name" disabled required>
                     </div>
                   </div>
-                  <div class="form-group row">
+                  <div class="form-group row" *ngIf="viewArray.city">
                     <label for="inputEmail3" class="col-sm-4 col-form-label">Event City</label>
                     <div class="col-sm-8">
-                      <input type="text" name="city" class="form-control" [(ngModel)]="viewArray.city" required disabled>
+                      <input type="text" name="city" class="form-control" [(ngModel)]="viewArray.city.name" required disabled>
                     </div>
                   </div>
                   <div class="form-group row">

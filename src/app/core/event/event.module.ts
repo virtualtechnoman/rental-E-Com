@@ -12,6 +12,8 @@ import { EventOrganizerComponent } from './event-organizer/event-organizer.compo
 import { MarketingMaterialComponent } from './marketing-material/marketing-material.component';
 import { EventMainComponent } from './event-main/event-main.component';
 import { EventLeadComponent } from './event-lead/event-lead.component';
+import { EventCalenderComponent } from './event-calender/event-calender.component';
+import { FullCalendarModule } from '@fullcalendar/angular'; // for FullCalendar!
 // import { DistirbutorComponent } from './distirbutor/distirbutor.component';
 // import { SectorComponent } from './sector/sector.component';
 
@@ -21,9 +23,15 @@ import { EventLeadComponent } from './event-lead/event-lead.component';
     DataTablesModule,
     FormsModule,
     ReactiveFormsModule,
-    InputSwitchModule
+    InputSwitchModule,
+    FullCalendarModule
   ],
-  declarations: [EventTypeComponent, EventOrganizerComponent, MarketingMaterialComponent, EventMainComponent, EventLeadComponent],
+  declarations: [EventTypeComponent, 
+    EventOrganizerComponent, 
+    MarketingMaterialComponent,
+     EventMainComponent,
+      EventLeadComponent,
+       EventCalenderComponent],
   providers: [EventService],
   exports: [
     EventRoutingModule
