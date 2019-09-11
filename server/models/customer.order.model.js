@@ -8,6 +8,16 @@ const Product = mongoose.Schema({
         _id:false,
         versionKey: false
     })
+const cancel = mongoose.Schema({
+        doorNotOpen:Boolean,
+        notAcceptedByCustomer:Boolean,
+        noMilkAvailable:Boolean,
+        other:Boolean,
+        reason:String
+},{
+    versionKey:false,
+    _id:false
+})
 module.exports = mongoose.model("customer_order", new mongoose.Schema({
     order_id: { type: String, required: true },
     placed_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
@@ -16,6 +26,7 @@ module.exports = mongoose.model("customer_order", new mongoose.Schema({
     amount:Number,
     isDelivered:{type:Boolean, default:false},
     isCancelled:{type:Boolean, default:false},
+    cancellationReason:cancel,
     status: { type: String },
     order_date: { type: Date, default: Date.now }
 }, {
