@@ -26,8 +26,10 @@ export class EventCalenderComponent implements OnInit {
   options: OptionsInput;
   eventsModel: any;
   mainEvent:any[]=[];
+  mainEvent2:any[]=[];
   allEvents:any[]=[]
   allEvents2:any[]=[];
+  allEvents3:any[]=[];
   allCities:any[]=[];
   allEventOrganizer: UserModel[] = [];
   allEventType: any[] = [];
@@ -115,6 +117,9 @@ export class EventCalenderComponent implements OnInit {
   }
 
   getAllMainEvents(){
+    this.allEvents.length=0
+    this.allEvents2.length=0
+    this.allEvents3.length=0
     this.eventService.getAllMainEvent().subscribe((res: ResponseModel) => {
       console.log(res);
       if (res.error) {
@@ -137,7 +142,7 @@ export class EventCalenderComponent implements OnInit {
           this.totalLeads=sumLead
           this.totalConversions=sumConversion
           this.allEvents2=this.allEvents
-          console.log(this.totalLeads,this.totalConversions,this.totalEventsMonth)
+          this.allEvents3=this.allEvents2
         }
       }
     });
@@ -455,6 +460,57 @@ export class EventCalenderComponent implements OnInit {
       })
     }
   }
+
+  getAllEventsNavBar(){
+    this.allEvents.length=0
+    this.allEvents2.length=0
+    this.allEvents2=this.allEvents3
+    console.log(this.allEvents2);
+    
+  }
+
+  getAllEventsByCity(event){
+    this.allEvents.length=0
+    this.allEvents2.length=0
+    console.log(this.options)
+    this.eventService.getAllMainEventByCity(this.allCities[event.target.selectedIndex-1]._id).subscribe((res: ResponseModel) => {
+      console.log(res);
+      if (res.error) {
+        console.log('error');
+      } else {
+        if(res.data)
+        for(var i=0;i<res.data.length;i++){
+          this.allEvents.push({title:res.data[i].name,start: res.data[i].time.slice(0,10), color: '#4285F4'})
+        }
+        this.allEvents2 = this.allEvents;
+        console.log(this.allEvents2);
+        console.log(res);
+        
+      }
+    });
+
+  }
+
+  getAllEventsByEventType(event){
+    this.allEvents.length=0
+    this.allEvents2.length=0
+    console.log(event.target.selectedIndex);
+    this.eventService.getAllMainEventByEventType(this.allEventType[event.target.selectedIndex-1]._id).subscribe((res: ResponseModel) => {
+      console.log(res);
+      if (res.error) {
+        console.log('error');
+      } else {
+        if(res.data)
+        for(var i=0;i<res.data.length;i++){
+          this.allEvents.push({title:res.data[i].name,start: res.data[i].time.slice(0,10), color: '#4285F4'})
+        }
+        this.allEvents2 = this.allEvents;
+        console.log(this.allEvents2);
+      }
+    });
+    
+  }
+
 }
 
 

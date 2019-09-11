@@ -1,4 +1,24 @@
-    <div class="card-deck">
+<div class="row">
+  <div class="form-group ">
+<a class="btn btn-secondary text-white float-right mx-1" (click)="getAllEventsNavBar()">All Events</a>
+</div>
+<div class="form-group col-md-4">
+<select class="form-control float-right mx-1" (change)="getAllEventsByCity($event)" required >
+    <option  selected disabled>Select City</option>
+    <option  *ngFor="let city of allCities;let i=index">{{city.name}}
+    </option>
+ </select>
+</div>
+<div class="form-group col-md-4">
+  <select name="type" id="" class="form-control float-right mx-1" (change)="getAllEventsByEventType($event)"  required >
+  <option class="dropdown-item" selected disabled>Select Event Type</option>
+  <option class="dropdown-item" *ngFor="let type of allEventType;let i=index" >{{type.name}}</option>
+</select>
+</div>
+</div>
+<br>
+<br>
+   <div class="card-deck">
         <div class="card text-center" *ngIf="totalEventsMonth">
         <div class="card-body">
           <h4 class="card-title">Total Events This Month</h4>
@@ -24,8 +44,7 @@
 *ngIf="options && allEvents2"
 #fullcalendar
 [editable]="true"
-[events]="allEvents2"
-[events]="events2"
+[(events)]="allEvents2"
 [header]="options.header"
 (dateClick)="dateClick($event)"
 (eventDragStop)="eventDragStop($event)"
