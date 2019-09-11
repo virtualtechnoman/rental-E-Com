@@ -71,6 +71,7 @@ export class CategoryAttributesComponent implements OnInit {
       this.toastr.success('Attribute added!', 'Success!');
       this.allAttributes.push(res.data)
       console.log(res.data)
+      jQuery('#modal3').modal('hide')
     })
   }
 

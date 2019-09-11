@@ -129,7 +129,7 @@ export class ProductsService {
 
   // Attribute Api
 
-  getAllAttribute(id) {
+  getAllAttributeSpecificCategory(id) {
     return this.http.get(this.url8 + '/category/' + id, { headers: this.headers });
   }
 

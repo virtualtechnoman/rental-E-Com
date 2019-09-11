@@ -9,6 +9,7 @@ import { EventOrganizerComponent } from '../event-organizer/event-organizer.comp
 import { MarketingMaterialComponent } from '../marketing-material/marketing-material.component';
 import { EventMainComponent } from '../event-main/event-main.component';
 import { EventLeadComponent } from '../event-lead/event-lead.component';
+import { EventCalenderComponent } from '../event-calender/event-calender.component';
 // import { DistirbutorComponent } from '../distirbutor/distirbutor.component';
 // import { SectorComponent } from '../sector/sector.component';
 const routes: Routes = [
@@ -30,6 +31,10 @@ const routes: Routes = [
   },
   {
     path: 'lead', children: [{ path: '', component: EventLeadComponent }],
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'eventcalender', children: [{ path: '', component: EventCalenderComponent }],
     canActivate: [AuthGuard]
   }
 ];

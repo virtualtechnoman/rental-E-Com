@@ -1,6 +1,14 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const attr = mongoose.Schema({
+    name:String,
+    value:String
+},
+{
+    _id:false,
+    versionKey:false
+})
 // const avlbl = mongoose.Schema({
 //     hub
 // })
@@ -9,6 +17,7 @@ const ProductSchema = new Schema({
     name: { type: String, required: true },
     product_id: { type: String, required: true , unique:true},
     category: { type: mongoose.Schema.Types.ObjectId, ref:"product_category", required: true },
+    attributes: [attr],
     is_active: { type: Boolean, default:true, required: true },
     farm_price: { type: Number, required: false },
     selling_price: { type: Number, required: true },

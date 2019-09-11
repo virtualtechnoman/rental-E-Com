@@ -130,6 +130,26 @@
           <p-inputSwitch class="form-control" [(ngModel)]="viewArray.is_active" disabled></p-inputSwitch>
           <!-- <input type="text"  class="form-control" [(ngModel)]="viewArray.city" disabled /> -->
         </div>
+
+
+        <table class="table table-bordered" *ngIf="specificCategoryAttributes">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Category Attribute Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let attributename of specificCategoryAttributes.name;let i=index">
+                <th scope="row">{{i+1}}</th>
+                <td>{{attributename}}</td>
+              </tr>
+            </tbody>
+          </table>
+
+        <div class="form-group">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#attributesModal" (click)="disableViewCategory()">Add Attributes</button>
+          </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -137,3 +157,35 @@
     </div>
   </div>
 </div>
+
+<!-- Attributes Modal -->
+<div class="modal fade" id="attributesModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+      <div class="modal-content tx-14">
+        <div class="modal-header text-center">
+          <!-- <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="editing">Edit Category</h6> -->
+          <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="!editing">Add Category Attribute</h6>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="attributeForm" (ngSubmit)="submitAttributeForm()">
+              <div class="form-group col">
+                  <label for="inputPassword4">Attribute Name</label>
+                  <input type="text" class="form-control" id="inputPassword4" 
+                    formControlName="name" required [ngClass]="{ 'is-invalid': submitted && f2.name.errors }">
+                  <div *ngIf="submitted && f2.name.errors" class="invalid-feedback">
+                    <div *ngIf="f2.name.errors.required">Attribute Name is required</div>
+                  </div>
+                </div>
+                <div class=" text-center">
+                    <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+                    </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  

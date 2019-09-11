@@ -9,13 +9,14 @@ import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { ProductsService } from '../../products/shared/products.service';
 import * as moment from 'moment';
+import { LocationManagerService } from '../../location-manager/shared/location-manager.service';
 @Component({
   selector: 'app-event-main',
   templateUrl: './event-main.component.html',
   styleUrls: ['./event-main.component.scss']
 })
 export class EventMainComponent implements OnInit {
-
+  allCities:any[]=[];
   allEvents: any[] = [];
   allEventOrganizer: UserModel[] = [];
   allEventType: any[] = [];
@@ -40,12 +41,19 @@ export class EventMainComponent implements OnInit {
   mainEventId:any;
   mainEventIndex:any;
   status:any;
+  cuurentEventEdit:any;
+  currentIndexEdit:number;
+  currentEventIdEdit:any;
+  editAddInchargeArray:any=[];
+  editAddProductsArray:any=[];
+  editMarketingMaterialArray:any=[];
   constructor(private formBuilder: FormBuilder,
     private eventService: EventService,
     private orderService: OrderService,
     private userService: UserService,
     private toasterService: ToastrService,
-    private productService:ProductsService) {
+    private productService:ProductsService,
+    private locationService:LocationManagerService) {
     this.initForm();
   }
 
@@ -58,6 +66,7 @@ export class EventMainComponent implements OnInit {
     this.getHubs();
     this.getAllMarketingMaterial();
     this.getAllMainEvents();
+    this.getCity();
     this.dtOptions = {
       pagingType: 'full_numbers',
       lengthMenu: [
@@ -177,7 +186,14 @@ export class EventMainComponent implements OnInit {
     });
   }
 
-
+  getCity(){
+    this.locationService.getAllCity().subscribe((res:ResponseModel)=>{
+      this.allCities=res.data
+      console.log(this.allCities)
+      this.dtTrigger.next();
+    })
+  }
+  
 
   getAllEventOrganizer() {
     this.eventService.getAllEventOrganizer().subscribe((res: ResponseModel) => {
@@ -238,6 +254,66 @@ export class EventMainComponent implements OnInit {
     });
   }
 
+  editMainEvent(i){
+    this.editing=true;
+    this.cuurentEventEdit=this.mainEvent[i]
+    this.currentEventIdEdit=this.mainEvent[i]._id
+    this.currentIndexEdit=i;
+    this.productsForms.controls=[]
+    this.MaterialForms.controls=[]
+    this.InchargeForm.controls=[]
+    this.eventForm.reset();
+    if(this.mainEvent[i].products)
+    for(var index=0;index<this.mainEvent[i].products.length;index++){
+      const product = this.formBuilder.group({ 
+        product:this.mainEvent[i].products[index].product._id,
+        quantity:this.mainEvent[i].products[index].quantity
+      })
+      this.productsForms.push(product)
+    }
+    for(var index=0;index<this.mainEvent[i].marketingMaterial.length;index++){
+      const material = this.formBuilder.group({ 
+        material:this.mainEvent[i].marketingMaterial[index].material._id,
+        quantity:this.mainEvent[i].marketingMaterial[index].quantity
+      })
+      this.MaterialForms.push(material)
+    }
+    for(var index=0;index<this.mainEvent[i].incharge.length;index++){
+      const incharge = this.formBuilder.group({ 
+        incharge:this.mainEvent[i].incharge[index]._id
+      })
+      this.InchargeForm.push(incharge)
+    }
+    if(this.mainEvent[i].marketingMaterial)
+    
+    this.eventForm.value.marketingMaterial=this.mainEvent[i].marketingMaterial
+    if(this.mainEvent[i].incharge)
+    this.eventForm.value.incharge=this.mainEvent[i].incharge
+    this.editMarketingMaterialArray=this.mainEvent[i].marketingMaterial
+    this.editAddProductsArray=this.mainEvent[i].products
+    this.editAddInchargeArray=this.mainEvent[i].incharge
+    this.setFormValue()
+  }
+
+  setFormValue(){
+    const event=this.mainEvent[this.currentIndexEdit]
+    console.log(event)
+    if(event)
+    this.eventForm.controls['name'].setValue(event.name)
+    this.eventForm.controls['type'].setValue(event.type._id)
+    this.eventForm.controls['address'].setValue(event.address)
+    this.eventForm.controls['organizer'].setValue(event.organizer._id)
+    this.eventForm.controls['targetLeads'].setValue(event.targetLeads)
+    this.eventForm.controls['targetLeads'].setValue(event.targetLeads)
+    this.eventForm.controls['targetConversion'].setValue(event.targetConversion)
+    this.eventForm.controls['farm'].setValue(event.farm._id)
+    this.eventForm.controls['phone'].setValue(event.phone)
+    this.eventForm.controls['cost'].setValue(event.cost)
+    this.eventForm.controls['hub'].setValue(event.hub._id)
+    this.eventForm.controls['city'].setValue(event.city._id)
+    this.eventForm.controls['time'].setValue(event.time.toLocaleString())
+  }
+
   resetForm() {
     this.editing = false;
     this.submitted = false;
@@ -247,14 +323,15 @@ export class EventMainComponent implements OnInit {
   get f() { return this.eventForm.controls; }
 
   onSubmit() {
-    if(this.eventForm.value.incharge.length>0)
-    for(var i=0;i<this.eventForm.value.incharge.length;i++){
-      this.eventForm.value.incharge[i]=this.eventForm.value.incharge[i].incharge
-    }
+    
     console.log(this.eventForm.value)
     this.submitted = true;
     if (this.eventForm.invalid) {
       return;
+    }
+    if(this.eventForm.value.incharge.length>0)
+    for(var i=0;i<this.eventForm.value.incharge.length;i++){
+      this.eventForm.value.incharge[i]=this.eventForm.value.incharge[i].incharge
     }
     if (this.editing) {
       this.updateEvent(this.eventForm.value);
@@ -275,13 +352,15 @@ export class EventMainComponent implements OnInit {
   }
 
   updateEvent(event) {
-    const id = this.allEvents[this.currentIndex]._id;
-    if (id) {
-      this.eventService.updateEvent(event, id).subscribe((res: ResponseModel) => {
+    console.log(event)
+    // const id = this.allEvents[this.currentIndexEdit]._id;
+    if (this.currentEventIdEdit) {
+      this.eventService.updateMainEvent(event, this.currentEventIdEdit).subscribe((res: ResponseModel) => {
         jQuery('#modal3').modal('hide');
         this.toasterService.info('State Updated Successfully!', 'Updated!!');
         this.resetForm();
-        this.allEvents.splice(this.currentIndex, 1, res.data);
+        console.log(res.data)
+        this.mainEvent.splice(this.currentIndexEdit, 1, res.data);
         this.currentEventId = null;
         this.editing = false;
       });

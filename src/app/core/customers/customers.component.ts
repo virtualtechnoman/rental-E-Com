@@ -69,11 +69,9 @@ export class CustomersComponent implements OnInit {
   displayEvent: any;
   events = null;
   allEvents2:any[]=[]
-
-
-  
-  @ViewChild('calendar') calendarComponent: FullCalendarComponent;
   allEvents: any[]=[];
+  @ViewChild('calendar') calendarComponent: FullCalendarComponent;
+  
 
   constructor(protected eventService: EventSesrvice,private productService: ProductsService, private customerService: CustomersService, private supportService: SupportService, private formBuilder: FormBuilder, private toastr: ToastrService, private authService: AuthService) {
     this.currentcustomer = new CustomerClass();

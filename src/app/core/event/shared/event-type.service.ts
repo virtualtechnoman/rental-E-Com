@@ -81,6 +81,10 @@ export class EventService {
         return this.http.post(this.url4 + '/', event, { headers: this.headers });
     }
 
+    updateMainEvent(event,id){
+        return this.http.put(this.url4 + '/id/' + id, event, { headers: this.headers });
+    }
+
     
     // Cancel Main Event
 

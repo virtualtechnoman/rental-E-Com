@@ -68,13 +68,13 @@
           </div>
 
           <div class="form-row">
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label>Name</label>
               <input type="text" class="form-control" formControlName="name">
             </div>
 
-            <br>
-            <div class="col-md-6">
+            
+            <div class="col-md-5">
               <div formArrayName="values">
                 <div *ngFor="let atribute of attributesForm.controls; let i=index" [formGroupName]="i">
                   <div class="row">
@@ -95,8 +95,10 @@
             <!-- <div *ngIf="submitted && f.marketingMaterial.errors" class="invalid-feedback">
                 <div *ngIf="f.marketingMaterial.errors.required">Event Marketing Material is required</div>
               </div> -->
-              <div class="col-md-2">
-              <button type="button"  class="btn btn-primary" (click)="addAttribute()">Add Value</button>
+              <div class="col-md-3 offset-md-1">
+                <label>Values</label>
+              <button type="button"  class="btn btn-primary " (click)="addAttribute()">Add Value</button>
+            
             </div>
           </div>
 

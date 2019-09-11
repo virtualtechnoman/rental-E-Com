@@ -49,9 +49,7 @@ router.post('/', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE"), async
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
     }
-    let newAttribute = new Attribute(result.data);
-    newAttribute
-        .save()
+    Attribute.findOneAndUpdate({category:result.data.category},{$push:{name:result.data.name}},{upsert:true, new:true}).exec()
         .then(attribute => {
             res.json({ status: 200, data: attribute, errors: false, message: "Attribute added successfully" })
         })
