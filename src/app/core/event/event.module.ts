@@ -13,7 +13,8 @@ import { MarketingMaterialComponent } from './marketing-material/marketing-mater
 import { EventMainComponent } from './event-main/event-main.component';
 import { EventLeadComponent } from './event-lead/event-lead.component';
 import { EventCalenderComponent } from './event-calender/event-calender.component';
-import { FullCalendarModule } from '@fullcalendar/angular'; // for FullCalendar!
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { DashboardComponent } from './dashboard/dashboard.component'; // for FullCalendar!
 // import { DistirbutorComponent } from './distirbutor/distirbutor.component';
 // import { SectorComponent } from './sector/sector.component';
 
@@ -31,7 +32,8 @@ import { FullCalendarModule } from '@fullcalendar/angular'; // for FullCalendar!
     MarketingMaterialComponent,
      EventMainComponent,
       EventLeadComponent,
-       EventCalenderComponent],
+       EventCalenderComponent,
+       DashboardComponent],
   providers: [EventService],
   exports: [
     EventRoutingModule

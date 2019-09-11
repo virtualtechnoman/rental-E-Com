@@ -1,9 +1,31 @@
-
+    <div class="card-deck">
+        <div class="card text-center" *ngIf="totalEventsMonth">
+        <div class="card-body">
+          <h4 class="card-title">Total Events This Month</h4>
+          <h5 class="card-text text-center">{{totalEventsMonth}}</h5>
+        </div>
+      </div>
+      <div class="card text-center" *ngIf="totalLeads">
+            <div class="card-body">
+              <h4 class="card-title">Total Leads Expected This Month</h4>
+              <h5 class="card-text text-center">{{totalLeads}}</h5>
+            </div>
+          </div>
+          <div class="card text-center" *ngIf="totalConversions">
+                <div class="card-body">
+                  <h4 class="card-title">Total Expected Lead Conversion</h4>
+                  <h5 class="card-text text-center">{{totalConversions}}</h5>
+                </div>
+              </div>
+    </div>
+<br>
+<br>
 <full-calendar
 *ngIf="options && allEvents2"
 #fullcalendar
 [editable]="true"
 [events]="allEvents2"
+[events]="events2"
 [header]="options.header"
 (dateClick)="dateClick($event)"
 (eventDragStop)="eventDragStop($event)"
@@ -18,7 +40,8 @@
       <div class="modal-content tx-14">
         <div class="modal-header">
           <h6 class="modal-title" id="exampleModalLabel3" *ngIf="!editing">Add New Event</h6>
-          <h6 class="modal-title" id="exampleModalLabel3" *ngIf="editing">EditEvent</h6>
+          <h6 class="modal-title" id="exampleModalLabel3" *ngIf="editing">Edit Event</h6>
+          <h6 class="modal-title" id="exampleModalLabel" style="margin-left: 400px;margin-top: 6px" *ngIf="status">Event Status: {{status}}</h6>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -162,11 +185,17 @@
               </div>
               <div class="divider-text divider-vertical" data-text="and"></div>
               <div class="col">
-                <div class="form-group row" *ngIf="selectedDate">
+                <div class="form-group row" *ngIf="selectedDate && !editing">
                     <label for="inputEmail3" class="col-sm-2 col-form-label">Event Time & Date</label>
                     <div class="col-sm-10">
                       <input type="datetime-local" [(ngModel)]="selectedDate" 
                        formControlName="time" name="time" class="form-control" required >
+                    </div>
+                  </div>
+                  <div class="form-group row" *ngIf=" editing && selectedDateEdit">
+                    <label for="inputEmail3" class="col-sm-2 col-form-label">Event Time & Date</label>
+                    <div class="col-sm-10">
+                      <input type="datetime-local" name="time" class="form-control" formControlName="time"  [(ngModel)]="selectedDateEdit" required >
                     </div>
                   </div>
                 <div class="form-group row">
@@ -263,8 +292,14 @@
                </span>
                <br>
                 <div class=" text-center">
+                 <div *ngIf="editing && !cuurentEventEdit.cancelled">
                   <button type="submit" class="btn btn-success tx-13 mx-1">Submit</button>
-                  <button type="button" class="btn btn-success tx-13" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-success tx-13" (click)="cancelEvent()">Cancel Event</button>
+                </div>
+                <div *ngIf="!editing">
+                        <button type="submit" class="btn btn-success tx-13 mx-1">Submit</button>
+                        <button type="button" class="btn btn-success tx-13" data-dismiss="modal">Close</button>
+                </div>
                 </div>
               </div>
             </div>

@@ -35,6 +35,7 @@ export class EventMainComponent implements OnInit {
   selectedDate:any;
   selectedTime:any;
   mainEvent:any[]=[];
+  mainEvent2:any[]=[];
   allFormIncharge:any[]=[];
   viewArray:any[]=[];
   timeFormat:any;
@@ -47,6 +48,8 @@ export class EventMainComponent implements OnInit {
   editAddInchargeArray:any=[];
   editAddProductsArray:any=[];
   editMarketingMaterialArray:any=[];
+  selectedDateAddEvent:any;
+  selectedDateEdit: string;
   constructor(private formBuilder: FormBuilder,
     private eventService: EventService,
     private orderService: OrderService,
@@ -180,10 +183,44 @@ export class EventMainComponent implements OnInit {
         console.log('error');
       } else {
         this.mainEvent = res.data;
+        this.mainEvent2 = res.data;
         console.log(res);
         this.dtTrigger.next()
       }
     });
+  }
+
+  getAllEventsNavBar(){
+    this.mainEvent.length=0
+    this.mainEvent=this.mainEvent2
+  }
+
+  getAllEventsByCity(event){
+    console.log(event.target.selectedIndex)
+    this.eventService.getAllMainEventByCity(this.allCities[event.target.selectedIndex-1]._id).subscribe((res: ResponseModel) => {
+      console.log(res);
+      if (res.error) {
+        console.log('error');
+      } else {
+        this.mainEvent = res.data;
+        console.log(res);
+      }
+    });
+
+  }
+
+  getAllEventsByEventType(event){
+    console.log(event.target.selectedIndex);
+    this.eventService.getAllMainEventByEventType(this.allEventType[event.target.selectedIndex-1]._id).subscribe((res: ResponseModel) => {
+      console.log(res);
+      if (res.error) {
+        console.log('error');
+      } else {
+        this.mainEvent = res.data;
+        console.log(res);
+      }
+    });
+    
   }
 
   getCity(){
@@ -298,6 +335,14 @@ export class EventMainComponent implements OnInit {
   setFormValue(){
     const event=this.mainEvent[this.currentIndexEdit]
     console.log(event)
+    if(this.editing){
+      if(this.mainEvent[this.currentIndexEdit].cancelled==true){
+        this.status="Event Cancelled"
+      }
+      else{
+        this.status="Event On Time"
+      }
+    }
     if(event)
     this.eventForm.controls['name'].setValue(event.name)
     this.eventForm.controls['type'].setValue(event.type._id)
@@ -311,12 +356,18 @@ export class EventMainComponent implements OnInit {
     this.eventForm.controls['cost'].setValue(event.cost)
     this.eventForm.controls['hub'].setValue(event.hub._id)
     this.eventForm.controls['city'].setValue(event.city._id)
-    this.eventForm.controls['time'].setValue(event.time.toLocaleString())
+    var newdate= new Date(event.time)
+    this.selectedDateEdit=moment(newdate).format().slice(0, 16)
+    this.eventForm.controls['time'].setValue(this.selectedDateEdit)
   }
 
   resetForm() {
     this.editing = false;
     this.submitted = false;
+    this.status=null
+    this.productsForms.controls=[]
+    this.MaterialForms.controls=[]
+    this.InchargeForm.controls=[]
     this.eventForm.reset();
   }
 
@@ -344,8 +395,10 @@ export class EventMainComponent implements OnInit {
     console.log(event)
     this.eventService.addMainEvent(event).subscribe((res: ResponseModel) => {
       console.log(res.data)
+      var newdate= new Date(event.time)
+      this.selectedDateAddEvent=moment(newdate).format('LLL')
       jQuery('#modal3').modal('hide');
-      this.toasterService.success('Event Added', 'Success!');
+      this.toasterService.success('Successfully added new event named '+ res.data.name + 'on' + this.selectedDateAddEvent + '.' + 'Notifications for the same has been sent to ' + res.data.incharge[0].full_name + '.', 'Success');
       this.mainEvent.push(res.data);
       this.resetForm();
     });
@@ -390,6 +443,27 @@ export class EventMainComponent implements OnInit {
         this.toasterService.info('Event Cancelled Successfully!', 'Cancelled!!')
         jQuery('exampleModal').modal('hide')
       })
+    }
+  }
+
+  cancelEventSelected(){
+    if(this.currentEventIdEdit ){
+      this.eventService.updateStatusMainEvent(this.currentEventIdEdit).subscribe((res:ResponseModel)=>{
+        this.mainEvent.splice( this.currentIndexEdit, 1, res.data);
+        this.currentEventIdEdit = null;
+        this.editing = false;
+        this.toasterService.info('Event Cancelled Successfully!', 'Cancelled!!');
+        jQuery('#modal3').modal('hide');
+      })
+    }
+  }
+
+  deleteEvent(i){
+    if (confirm('You Sure you want to delete this Product')) {
+      this.eventService.deleteMainEvent(this.mainEvent[i]._id).toPromise().then(() => {
+        this.toasterService.warning('Event Deleted!', 'Deleted!');
+        this.mainEvent.splice(i, 1);
+      }).catch((err) => console.log(err));
     }
   }
 

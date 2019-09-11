@@ -17,6 +17,38 @@ router.get("/all", authorizePrivilege("GET_ALL_EVENTS"), (req, res) => {
         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting events" })
     })
 });
+// Get all events by city
+router.get("/all/bycity/:id", authorizePrivilege("GET_ALL_EVENTS"), (req, res) => {
+    if (mongodb.ObjectId.isValid(req.params.id)) {
+        Event.find({ city: req.params.id }).populate([{ path: "type city marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).lean().exec().then(docs => {
+            if (docs.length > 0)
+                res.json({ status: 200, data: docs, errors: false, message: "All events" });
+            else
+                res.json({ status: 200, data: docs, errors: true, message: "No event found" });
+        }).catch(err => {
+            console.log(err);
+            res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting events" })
+        })
+    } else {
+        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid city id" });
+    }
+});
+// Get all events by type
+router.get("/all/bytype/:id", authorizePrivilege("GET_ALL_EVENTS"), (req, res) => {
+    if (mongodb.ObjectId.isValid(req.params.id)) {
+        Event.find({type:req.params.id}).populate([{ path: "type city marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).lean().exec().then(docs => {
+            if (docs.length > 0)
+                res.json({ status: 200, data: docs, errors: false, message: "All events" });
+            else
+                res.json({ status: 200, data: docs, errors: true, message: "No event found" });
+        }).catch(err => {
+            console.log(err);
+            res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting events" })
+        })
+    } else {
+        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid event type id" });
+    }
+});
 // Get all event created by self
 router.get("/", authorizePrivilege("GET_ALL_EVENTS_OWN"), (req, res) => {
     Event.find({ created_by: req.user._id }).populate([{ path: "type city marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).lean().exec().then(docs => {
@@ -66,7 +98,7 @@ router.put("/id/:id", authorizePrivilege("UPDATE_EVENT"), (req, res) => {
                 return res.status(200).json({ status: 200, data: _event, errors: false, message: "Event Updated Successfully" });
             }).catch(err => {
                 console.log(err);
-               return  res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating event" })
+                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating event" })
             })
     }
     else {
@@ -81,7 +113,7 @@ router.put("/cancel/:id", authorizePrivilege("CANCEL_EVENT"), (req, res) => {
             if (_evnt.cancelled) {
                 return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Event Already Cancelled" });
             }
-            Event.findByIdAndUpdate(req.params.id, { cancelled: true }, { new: true }).populate([{ path: "type marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).exec()
+            Event.findByIdAndUpdate(req.params.id, { cancelled: true }, { new: true }).populate([{ path: "type city marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).exec()
                 .then(_ev => {
                     res.status(200).json({ status: 200, data: _ev, errors: false, message: "Event Cancelled Successfully" });
                 }).catch(err => {
@@ -95,21 +127,21 @@ router.put("/cancel/:id", authorizePrivilege("CANCEL_EVENT"), (req, res) => {
     }
 });
 
-//DELETE A event type
-// router.delete("/:id", authorizePrivilege("DELETE_EVENT_TYPE"), (req, res) => {
-//     if (!mongodb.ObjectId.isValid(req.params.id)) {
-//         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid event type id" });
-//     }
-//     else {
-//         Event.findByIdAndDelete(req.params.id, (err, doc) => {
-//             if (err) {
-//                 return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while deleting the event type" })
-//             }
-//             if (doc) {
-//                 res.json({ status: 200, data: doc, errors: false, message: "Event Type deleted successfully!" });
-//             }
-//         })
-//     }
-// });
+// DELETE A event type
+router.delete("/:id", authorizePrivilege("DELETE_EVENT"), (req, res) => {
+    if (!mongodb.ObjectId.isValid(req.params.id)) {
+        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid event id" });
+    }
+    else {
+        Event.findByIdAndDelete(req.params.id, (err, doc) => {
+            if (err) {
+                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while deleting the event " })
+            }
+            if (doc) {
+                res.json({ status: 200, data: doc, errors: false, message: "Event  deleted successfully!" });
+            }
+        })
+    }
+});
 
 module.exports = router;

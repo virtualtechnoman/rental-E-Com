@@ -10,6 +10,7 @@ import { MarketingMaterialComponent } from '../marketing-material/marketing-mate
 import { EventMainComponent } from '../event-main/event-main.component';
 import { EventLeadComponent } from '../event-lead/event-lead.component';
 import { EventCalenderComponent } from '../event-calender/event-calender.component';
+import { DashboardComponent } from '../dashboard/dashboard.component';
 // import { DistirbutorComponent } from '../distirbutor/distirbutor.component';
 // import { SectorComponent } from '../sector/sector.component';
 const routes: Routes = [
@@ -36,7 +37,12 @@ const routes: Routes = [
   {
     path: 'eventcalender', children: [{ path: '', component: EventCalenderComponent }],
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'eventdashboard', children: [{ path: '', component: DashboardComponent }],
+    canActivate: [AuthGuard]
   }
+
 ];
 
 @NgModule({
