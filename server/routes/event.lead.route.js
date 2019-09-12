@@ -36,6 +36,7 @@ router.post('/', authorizePrivilege("ADD_NEW_EVENT_LEAD"), async (req, res) => {
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
     }
+    result.data.comments = [{...result.data.comments,created_by:req.user._id}];
     result.data.created_by = req.user._id;
     // result.data.event_id = "LD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newLead = new EventLead(result.data);
@@ -57,8 +58,9 @@ router.put("/comment/:id", authorizePrivilege("COMMENT_ON_EVENT_LEAD"), (req, re
     if (mongodb.ObjectId.isValid(req.params.id)) {
         let result = EventLeadController.verifyComment(req.body)
         if (isEmpty(result.errors)) {
+            result.data.comment = {...result.data.comment,created_by:req.user._id};
             EventLead.findById(req.params.id).exec().then(_evnt => {
-                EventLead.findByIdAndUpdate(req.params.id, { $push: { comments: req.body.comment } }, { new: true }).populate([{ path: "type city organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).exec()
+                EventLead.findByIdAndUpdate(req.params.id, { $push: { comments: result.data.comment } }, { new: true }).populate([{ path: "type city organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).exec()
                     .then(_ev => {
                         res.status(200).json({ status: 200, data: _ev, errors: false, message: "Comment added successfully" });
                     }).catch(err => {
