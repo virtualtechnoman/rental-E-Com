@@ -1,12 +1,14 @@
 
 <div class="container-fluid">
   <div class="card">
-    <div class="card-header">
+    <div class="card-header" style="overflow-x: scroll">
       <h2 class="float-left">Event Main Management</h2>
       <a class="btn btn-secondary float-right mx-1 text-white" (click)="resetForm()" data-toggle="modal"
       data-target="#modal3">Add New
       Event </a>
-      <a class="btn btn-secondary text-white float-right mx-1" (click)="getAllEventsNavBar()">All Events</a>
+      <!-- <a class="btn btn-secondary text-white float-right mx-1" (click)="getAllEventsNavBar()">All Events</a> -->
+      <a  class="btn btn-secondary text-white float-right mx-1" routerLink="lead">Leads</a>
+
       
         <select class="form-control float-right mx-1" (change)="getAllEventsByCity($event)" required style="width: 20%">
             <option  selected disabled>Select City</option>
@@ -17,36 +19,55 @@
           <option class="dropdown-item" selected disabled>Select Event Type</option>
           <option class="dropdown-item" *ngFor="let type of allEventType;let i=index" >{{type.name}}</option>
         </select>
+
+        <!-- <a class="btn btn-secondary text-white float-right mx-1" routerlink="lead">Leads</a> -->
        
       <!-- <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
           data-target="#modal2">Upload CSV</a> -->
     </div>
-    <div class="card-body">
+    <div class="card-body" style="overflow-x: scroll">
       <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
-        [dtTrigger]="dtTrigger">
+        [dtTrigger]="dtTrigger" style="overflow-x: scroll">
         <thead>
           <tr>
-            <th scope="col">S.No</th>
-            <th scope="col">Event Name </th>
-            <th scope="col">Event Type </th>
-            <th scope="col">Organizer </th>
-            <th scope="col">Event City </th>
-            <th scope="col">Actions</th>
+            <th class="col">S.No</th>
+            <th class="col">Event Name </th>
+            <th class="col">Event Date </th>
+            <th class="col">Event Type</th>
+            <th class="col"> City </th>
+            <th class="col">Leads(Actual)</th>
+            <th class="col">Conversions(Actual)</th>
+            <th class="col">Event Status</th>
+            <th class="col">Budget Allocated</th>
+            <th class="col">Budget Used</th>
+            <th class="col">Customer On Spot Conversion</th>
+            <th class="col">Pending Calls</th>
+            <th class="col">Converted On Call</th>
+            <th class="col">Calls Completed</th>
+            <th class="col">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let event of mainEvent; let i = index">
             <td>{{i+1}}</td>
             <td>{{event?.name}}</td>
+            <td>{{event?.time |date: 'dd/mm/yy h:mm a'}}</td>
             <td>{{event?.type?.name}}</td>
-            <td>{{event?.organizer?.name}}</td>
             <td>{{event?.city?.name}}</td>
+            <td>{{event?.targetLeads}}</td>
+            <td>{{event?.targetConversion}}</td>
+            <td>{{event?.status}}</td>
+            <td>{{event?.cost}}</td>
+            <td></td>
+            <td></td>
+            <td>{{pendingCallsLeads[i]}}</td>
+            <td></td>
+            <td>{{convertedCallsLeads[i]}}</td>
             <td>
               <a style="cursor: pointer" (click)="viewMainEvent(i)" data-toggle="modal" data-target="#exampleModal"><i
                   class="fas fa-eye"></i></a>
               <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editMainEvent(i)"><i
                   class="fas fa-edit mx-2"></i> </a>
-              <!-- <a style="cursor: pointer" (click)="deleteEvent(i)"><i class="fas fa-trash-alt"></i></a> -->
             </td>
           </tr>
         </tbody>

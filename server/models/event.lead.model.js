@@ -20,6 +20,7 @@ module.exports = mongoose.model("event_lead", new mongoose.Schema({
     mode: { type: String},
     event: { type: mongoose.Schema.Types.ObjectId, ref: 'event', required: true },
     preferredTime: { type: Date, required: true },
+    callStatus: { type: String, default:"Pending" },
     status: { type: String, default:"Pending" },
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true }
 }, {

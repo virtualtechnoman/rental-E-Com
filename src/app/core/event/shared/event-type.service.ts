@@ -114,10 +114,14 @@ export class EventService {
         return this.http.post(this.url5 + '/', lead, { headers: this.headers });
     }
 
-    // Get Lead Comments Array
+    // Get Lead Comments Array & Update status
 
     updateCommentsLead(comment,id) {
         return this.http.put(this.url5 + '/comment/' + id, comment, { headers: this.headers });
+    }
+
+    updateLeadStatus(comment,id) {
+        return this.http.put(this.url5 + '/status/' + id, comment, { headers: this.headers });
     }
 
 } 

@@ -2,7 +2,7 @@ import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { EventService } from '../shared/event-type.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { Subject } from 'rxjs';
+import { Subject, observable } from 'rxjs';
 import { ResponseModel } from '../../../shared/shared.model';
 import { LocationManagerService } from '../../location-manager/shared/location-manager.service';
 import * as moment from 'moment';
@@ -15,6 +15,7 @@ import * as moment from 'moment';
 export class EventLeadComponent implements OnInit {
   eventLeadForm: FormGroup;
   CommentForm: FormGroup;
+  StatusForm: FormGroup;
   submitted = false;
   editing: Boolean = false;
   dtOptions: any = {};
@@ -33,6 +34,7 @@ export class EventLeadComponent implements OnInit {
   leadSelectedid:any;
   leadIndex:any;
   @ViewChild('myInput') myInputVariable: ElementRef;
+  @ViewChild('myInput2') myInputVariable2: ElementRef;
   constructor(private formBuilder: FormBuilder, private toastr: ToastrService, private eventService: EventService,private locationService:LocationManagerService) { 
     this.getAllLeads()
     this.getAllCity()
@@ -47,15 +49,23 @@ export class EventLeadComponent implements OnInit {
      gender:  [''],
      city:  ['', Validators.required],
      address:  ['', Validators.required],
-     comments:  this.formBuilder.array([]),
+     comment:  ['', Validators.required],
      mode:  ['', Validators.required],
      event: ['', Validators.required],
      preferredTime: ['', Validators.required],
-
+     status:['',Validators.required],
+     nextdate:['',Validators.required],
+     callStatus:['',Validators.required]
     });
     this.CommentForm=this.formBuilder.group({
       comment: ['', Validators.required],
-     
+      nextdate:['',Validators.required],
+      StatusForm:this.formBuilder.group({
+        status: [''],
+        callStatus: [''],
+
+      })
+  
     })
 
     this.dtOptions = {
@@ -85,9 +95,24 @@ export class EventLeadComponent implements OnInit {
 
   onSubmit() {
     this.submitted = true;
-    this.eventLeadForm.value.comments.push(this.commentEntered)
     this.eventLeadForm.value.gender=this.genderEntered
     console.log(this.eventLeadForm.value)
+
+    const lead=<any> new Object();
+    lead.comments={}
+    lead.address=this.eventLeadForm.value.address
+    lead.city=this.eventLeadForm.value.city
+    lead.contact=this.eventLeadForm.value.contact
+    lead.email=this.eventLeadForm.value.email
+    lead.event=this.eventLeadForm.value.event
+    lead.full_name=this.eventLeadForm.value.full_name
+    lead.gender=this.eventLeadForm.value.gender
+    lead.mode=this.eventLeadForm.value.mode
+    lead.preferredTime=this.eventLeadForm.value.preferredTime
+    lead.comments.comment=this.eventLeadForm.value.comment
+    lead.comments.nextDate=this.eventLeadForm.value.nextdate
+    lead.status=this.eventLeadForm.value.status
+    lead.callStatus=this.eventLeadForm.value.callStatus
     // stop here if form is invalid
     if (this.eventLeadForm.invalid) {
       return;
@@ -96,7 +121,7 @@ export class EventLeadComponent implements OnInit {
     if (this.editing) {
       // this.updateEventType(this.eventTypeForm.value)
     } else {
-      this.addLead(this.eventLeadForm.value)
+      this.addLead(lead)
     }
   }
 
@@ -105,17 +130,35 @@ export class EventLeadComponent implements OnInit {
     if (this.CommentForm.invalid) {
       return;
     }
+    const comments=<any> new Object();
+    comments.comments={}
+    comments.comments.comment=this.CommentForm.value.comment
+    comments.comments.nextDate=this.CommentForm.value.nextdate
+    comments.status=this.CommentForm.value.StatusForm.status
+    comments.callStatus=this.CommentForm.value.StatusForm.callStatus
+    console.log(comments)
     if(this.leadSelectedid)
-    this.eventService.updateCommentsLead(this.CommentForm.value,this.leadSelectedid).subscribe((res:ResponseModel)=>{
+    this.eventService.updateCommentsLead(comments,this.leadSelectedid).subscribe((res:ResponseModel)=>{
       console.log(res.data)
       this.allLeads.splice(this.leadIndex,1,res.data)
       jQuery('#exampleModal').modal('hide');
       this.toastr.success('Comment Added', 'Success!');
       this.myInputVariable.nativeElement.value = "";
+      this.CommentForm.reset();
+      
     })
+    // this.eventService.updateLeadStatus(this.CommentForm.value.StatusForm,this.leadSelectedid).subscribe((res:ResponseModel)=>{
+    //   console.log(res.data)
+    //   this.allLeads.splice(this.leadIndex,1,res.data)
+    //   jQuery('#exampleModal').modal('hide');
+    //   this.toastr.info('Status Updated', 'Updated!');
+    //   this.myInputVariable.nativeElement.value = "";
+    // })
   }
 
   addLead(lead) {
+    console.log(lead);
+    
     this.eventService.addLead(lead).subscribe((res: ResponseModel) => {
       console.log(res.data)
       jQuery('#modal3').modal('hide');
@@ -172,6 +215,8 @@ export class EventLeadComponent implements OnInit {
     else{
       this.showTable=false
     }
+    this.CommentForm.controls['StatusForm'].get('status').setValue(this.viewArray.status)
+    this.CommentForm.controls['StatusForm'].get('callStatus').setValue(this.viewArray.callStatus)
   }
 
   resetForm() {

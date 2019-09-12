@@ -7,15 +7,39 @@ const moment = require('moment');
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 // Get all events
 router.get("/all", authorizePrivilege("GET_ALL_EVENTS"), (req, res) => {
-    Event.find().populate([{ path: "type city marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).lean().exec().then(docs => {
-        if (docs.length > 0)
-            res.json({ status: 200, data: docs, errors: false, message: "All events" });
-        else
-            res.json({ status: 200, data: docs, errors: true, message: "No event found" });
+    Event.aggregate([
+        {
+            $lookup: {
+                from: "event_leads",
+                localField: "_id",
+                foreignField: "event",
+                as: "leads"
+            }
+        }
+    ]).exec().then(data => {
+        Event.populate(data, [{ path: "type city marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }], ((err, docs) => {
+            if (err) {
+                console.log(err);
+                res.status(500).json({ status: 500, data: null, errors: true, message: "Error while populating events" })
+            }
+            if (docs.length > 0)
+                res.json({ status: 200, data: docs, errors: false, message: "All events" });
+            else
+                res.json({ status: 200, data: docs, errors: true, message: "No event found" });
+        }));
     }).catch(err => {
         console.log(err);
         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting events" })
     })
+    // Event.find().populate([{ path: "type city marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).lean().exec().then(docs => {
+    //     if (docs.length > 0)
+    //         res.json({ status: 200, data: docs, errors: false, message: "All events" });
+    //     else
+    //         res.json({ status: 200, data: docs, errors: true, message: "No event found" });
+    // }).catch(err => {
+    //     console.log(err);
+    //     res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting events" })
+    // })
 });
 // Get all events by city
 router.get("/all/bycity/:id", authorizePrivilege("GET_ALL_EVENTS"), (req, res) => {
@@ -36,7 +60,7 @@ router.get("/all/bycity/:id", authorizePrivilege("GET_ALL_EVENTS"), (req, res) =
 // Get all events by type
 router.get("/all/bytype/:id", authorizePrivilege("GET_ALL_EVENTS"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
-        Event.find({type:req.params.id}).populate([{ path: "type city marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).lean().exec().then(docs => {
+        Event.find({ type: req.params.id }).populate([{ path: "type city marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).lean().exec().then(docs => {
             if (docs.length > 0)
                 res.json({ status: 200, data: docs, errors: false, message: "All events" });
             else

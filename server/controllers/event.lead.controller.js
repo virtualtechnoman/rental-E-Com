@@ -14,17 +14,26 @@ const eventLeadCreateSchema = Joi.object({
     }).required(),
     mode: Joi.string().required(),
     preferredTime: Joi.date().required(),
-    event: Joi.string().required()
+    event: Joi.string().required(),
+    status:Joi.string().required(),
+    callStatus:Joi.string().required()
 })
 const eventLeadCommentSchema = Joi.object({
-    comment: Joi.object({
+    callStatus: Joi.string().required(),
+    status: Joi.string().required(),
+    comments: Joi.object({
         comment: Joi.string().required(),
         nextDate: Joi.date().required()
     }).required()
 })
+// const eventLeadStatusChangeSchema = Joi.object({
+//     status: Joi.string().required()
+// })
 function verifyCreate(lead) { return helper.validator(lead, eventLeadCreateSchema) }
 function verifyComment(lead) { return helper.validator(lead, eventLeadCommentSchema) }
+// function verifyStatusUpdate(lead) { return helper.validator(lead, eventLeadStatusChangeSchema) }
 module.exports = {
     verifyCreate,
-    verifyComment
+    verifyComment,
+    // verifyStatusUpdate
 }

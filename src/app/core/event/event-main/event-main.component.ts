@@ -16,7 +16,7 @@ import { LocationManagerService } from '../../location-manager/shared/location-m
   styleUrls: ['./event-main.component.scss']
 })
 export class EventMainComponent implements OnInit {
-  allCities:any[]=[];
+  allCities: any[] = [];
   allEvents: any[] = [];
   allEventOrganizer: UserModel[] = [];
   allEventType: any[] = [];
@@ -30,33 +30,37 @@ export class EventMainComponent implements OnInit {
   eventForm: FormGroup;
   editing: Boolean = false;
   submitted: Boolean = false;
-  allproducts:any[]=[];
-  allHubs:any[]=[];
-  selectedDate:any;
-  selectedTime:any;
-  mainEvent:any[]=[];
-  mainEvent2:any[]=[];
-  allFormIncharge:any[]=[];
-  viewArray:any[]=[];
-  timeFormat:any;
-  mainEventId:any;
-  mainEventIndex:any;
-  status:any;
-  cuurentEventEdit:any;
-  currentIndexEdit:number;
-  currentEventIdEdit:any;
-  editAddInchargeArray:any=[];
-  editAddProductsArray:any=[];
-  editMarketingMaterialArray:any=[];
-  selectedDateAddEvent:any;
+  allproducts: any[] = [];
+  allHubs: any[] = [];
+  selectedDate: any;
+  selectedTime: any;
+  mainEvent: any[] = [];
+  mainEvent2: any[] = [];
+  allFormIncharge: any[] = [];
+  viewArray: any[] = [];
+  timeFormat: any;
+  mainEventId: any;
+  mainEventIndex: any;
+  status: any;
+  cuurentEventEdit: any;
+  currentIndexEdit: number;
+  currentEventIdEdit: any;
+  editAddInchargeArray: any = [];
+  editAddProductsArray: any = [];
+  editMarketingMaterialArray: any = [];
+  selectedDateAddEvent: any;
   selectedDateEdit: string;
+  pendingCallsLeads: any []= []
+  pendingCallsLeads2: any[] = []
+  convertedCallsLeads: any[]= []
+  convertedCallsLeads2: any[] = []
   constructor(private formBuilder: FormBuilder,
     private eventService: EventService,
     private orderService: OrderService,
     private userService: UserService,
     private toasterService: ToastrService,
-    private productService:ProductsService,
-    private locationService:LocationManagerService) {
+    private productService: ProductsService,
+    private locationService: LocationManagerService) {
     this.initForm();
   }
 
@@ -109,24 +113,24 @@ export class EventMainComponent implements OnInit {
       cost: ['', Validators.required],
       marketingMaterial: this.formBuilder.array([]),
       products: this.formBuilder.array([]),
-      status:['', Validators.required],
+      status: ['', Validators.required],
       hub: ['', Validators.required]
     });
   }
   get MaterialForms() {
     return this.eventForm.get('marketingMaterial') as FormArray
   }
-  
+
   addMaterial() {
-  
-    const material = this.formBuilder.group({ 
+
+    const material = this.formBuilder.group({
       material: [],
       quantity: []
     })
-  
+
     this.MaterialForms.push(material);
   }
-  
+
   deleteMaterial(i) {
     this.MaterialForms.removeAt(i)
   }
@@ -134,71 +138,101 @@ export class EventMainComponent implements OnInit {
   get InchargeForm() {
     return this.eventForm.get('incharge') as FormArray
   }
-  
+
   addIncharge() {
-  
-    const incharge = this.formBuilder.group({ 
+
+    const incharge = this.formBuilder.group({
       incharge: []
     })
     this.InchargeForm.push(incharge);
   }
-  
+
   deleteIncharge(i) {
     this.InchargeForm.removeAt(i)
   }
 
   get productsForms() {
-    
+
     return this.eventForm.get('products') as FormArray;
-    
+
   }
 
 
   addProducts() {
 
-    const product = this.formBuilder.group({ 
+    const product = this.formBuilder.group({
       product: [],
       quantity: []
     })
-  
+
     this.productsForms.push(product);
   }
 
 
-  
+
   deleteProducts(i) {
     this.productsForms.removeAt(i)
   }
 
   getProducts() {
     this.allproducts.length = 0;
-    this.productService.getAllProduct().subscribe((res:ResponseModel) => {
+    this.productService.getAllProduct().subscribe((res: ResponseModel) => {
       this.allproducts = res.data;
     });
   }
 
-  getAllMainEvents(){
+  getAllMainEvents() {
     this.eventService.getAllMainEvent().subscribe((res: ResponseModel) => {
       console.log(res);
       if (res.error) {
         console.log('error');
       } else {
+        
         this.mainEvent = res.data;
         this.mainEvent2 = res.data;
-        console.log(res);
-        this.dtTrigger.next()
+        if (res.data)
+        console.log(res.data);
+
+        for (var i = 0; i < res.data.length; i++) {
+          var leadscount = 0;
+          var convertedcount = 0;
+          if (res.data[i].leads) {
+            for (var j = 0; j < res.data[i].leads.length; j++) {
+              console.log(res.data[i].leads[j]);
+              if(res.data[i].leads[j])
+              if (res.data[i].leads[j].callStatus == 'pending') {
+                leadscount = leadscount + 1
+                console.log("pending");
+              }
+              else if (res.data[i].leads[j].callStatus == 'compleated') {
+                convertedcount = convertedcount + 1
+                console.log("compleated");
+              }
+            }
+            this.pendingCallsLeads[i]=leadscount
+            this.convertedCallsLeads[i]=convertedcount
+          }
+          else{
+            this.pendingCallsLeads[i]=0
+            this.convertedCallsLeads[i]=0
+          }
+
+        }
+        console.log(this.pendingCallsLeads, this.convertedCallsLeads);
       }
+
+      this.dtTrigger.next()
     });
   }
 
-  getAllEventsNavBar(){
-    this.mainEvent.length=0
-    this.mainEvent=this.mainEvent2
+  getAllEventsNavBar() {
+    this.mainEvent.length = 0
+    this.mainEvent = this.mainEvent2
   }
 
-  getAllEventsByCity(event){
+  getAllEventsByCity(event) {
     console.log(event.target.selectedIndex)
-    this.eventService.getAllMainEventByCity(this.allCities[event.target.selectedIndex-1]._id).subscribe((res: ResponseModel) => {
+    this.eventService.getAllMainEventByCity(this.allCities[event.target.selectedIndex - 1]._id).subscribe((res: ResponseModel) => {
       console.log(res);
       if (res.error) {
         console.log('error');
@@ -210,9 +244,9 @@ export class EventMainComponent implements OnInit {
 
   }
 
-  getAllEventsByEventType(event){
+  getAllEventsByEventType(event) {
     console.log(event.target.selectedIndex);
-    this.eventService.getAllMainEventByEventType(this.allEventType[event.target.selectedIndex-1]._id).subscribe((res: ResponseModel) => {
+    this.eventService.getAllMainEventByEventType(this.allEventType[event.target.selectedIndex - 1]._id).subscribe((res: ResponseModel) => {
       console.log(res);
       if (res.error) {
         console.log('error');
@@ -221,17 +255,17 @@ export class EventMainComponent implements OnInit {
         console.log(res);
       }
     });
-    
+
   }
 
-  getCity(){
-    this.locationService.getAllCity().subscribe((res:ResponseModel)=>{
-      this.allCities=res.data
+  getCity() {
+    this.locationService.getAllCity().subscribe((res: ResponseModel) => {
+      this.allCities = res.data
       console.log(this.allCities)
       this.dtTrigger.next();
     })
   }
-  
+
 
   getAllEventOrganizer() {
     this.eventService.getAllEventOrganizer().subscribe((res: ResponseModel) => {
@@ -245,8 +279,8 @@ export class EventMainComponent implements OnInit {
     });
   }
 
-  getHubs(){
-    this.productService.getAllHub().subscribe((res:ResponseModel) => {
+  getHubs() {
+    this.productService.getAllHub().subscribe((res: ResponseModel) => {
       this.allHubs = res.data;
     });
   }
@@ -292,60 +326,60 @@ export class EventMainComponent implements OnInit {
     });
   }
 
-  editMainEvent(i){
-    this.editing=true;
-    this.cuurentEventEdit=this.mainEvent[i]
-    this.currentEventIdEdit=this.mainEvent[i]._id
-    this.currentIndexEdit=i;
-    this.productsForms.controls=[]
-    this.MaterialForms.controls=[]
-    this.InchargeForm.controls=[]
+  editMainEvent(i) {
+    this.editing = true;
+    this.cuurentEventEdit = this.mainEvent[i]
+    this.currentEventIdEdit = this.mainEvent[i]._id
+    this.currentIndexEdit = i;
+    this.productsForms.controls = []
+    this.MaterialForms.controls = []
+    this.InchargeForm.controls = []
     this.eventForm.reset();
-    if(this.mainEvent[i].products)
-    for(var index=0;index<this.mainEvent[i].products.length;index++){
-      const product = this.formBuilder.group({ 
-        product:this.mainEvent[i].products[index].product._id,
-        quantity:this.mainEvent[i].products[index].quantity
-      })
-      this.productsForms.push(product)
-    }
-    for(var index=0;index<this.mainEvent[i].marketingMaterial.length;index++){
-      const material = this.formBuilder.group({ 
-        material:this.mainEvent[i].marketingMaterial[index].material._id,
-        quantity:this.mainEvent[i].marketingMaterial[index].quantity
+    if (this.mainEvent[i].products)
+      for (var index = 0; index < this.mainEvent[i].products.length; index++) {
+        const product = this.formBuilder.group({
+          product: this.mainEvent[i].products[index].product._id,
+          quantity: this.mainEvent[i].products[index].quantity
+        })
+        this.productsForms.push(product)
+      }
+    for (var index = 0; index < this.mainEvent[i].marketingMaterial.length; index++) {
+      const material = this.formBuilder.group({
+        material: this.mainEvent[i].marketingMaterial[index].material._id,
+        quantity: this.mainEvent[i].marketingMaterial[index].quantity
       })
       this.MaterialForms.push(material)
     }
-    for(var index=0;index<this.mainEvent[i].incharge.length;index++){
-      const incharge = this.formBuilder.group({ 
-        incharge:this.mainEvent[i].incharge[index]._id
+    for (var index = 0; index < this.mainEvent[i].incharge.length; index++) {
+      const incharge = this.formBuilder.group({
+        incharge: this.mainEvent[i].incharge[index]._id
       })
       this.InchargeForm.push(incharge)
     }
-    if(this.mainEvent[i].marketingMaterial)
-    
-    this.eventForm.value.marketingMaterial=this.mainEvent[i].marketingMaterial
-    if(this.mainEvent[i].incharge)
-    this.eventForm.value.incharge=this.mainEvent[i].incharge
-    this.editMarketingMaterialArray=this.mainEvent[i].marketingMaterial
-    this.editAddProductsArray=this.mainEvent[i].products
-    this.editAddInchargeArray=this.mainEvent[i].incharge
+    if (this.mainEvent[i].marketingMaterial)
+
+      this.eventForm.value.marketingMaterial = this.mainEvent[i].marketingMaterial
+    if (this.mainEvent[i].incharge)
+      this.eventForm.value.incharge = this.mainEvent[i].incharge
+    this.editMarketingMaterialArray = this.mainEvent[i].marketingMaterial
+    this.editAddProductsArray = this.mainEvent[i].products
+    this.editAddInchargeArray = this.mainEvent[i].incharge
     this.setFormValue()
   }
 
-  setFormValue(){
-    const event=this.mainEvent[this.currentIndexEdit]
+  setFormValue() {
+    const event = this.mainEvent[this.currentIndexEdit]
     console.log(event)
-    if(this.editing){
-      if(this.mainEvent[this.currentIndexEdit].cancelled==true){
-        this.status="Event Cancelled"
+    if (this.editing) {
+      if (this.mainEvent[this.currentIndexEdit].cancelled == true) {
+        this.status = "Event Cancelled"
       }
-      else{
-        this.status="Event On Time"
+      else {
+        this.status = "Event On Time"
       }
     }
-    if(event)
-    this.eventForm.controls['name'].setValue(event.name)
+    if (event)
+      this.eventForm.controls['name'].setValue(event.name)
     this.eventForm.controls['type'].setValue(event.type._id)
     this.eventForm.controls['address'].setValue(event.address)
     this.eventForm.controls['organizer'].setValue(event.organizer._id)
@@ -357,8 +391,8 @@ export class EventMainComponent implements OnInit {
     this.eventForm.controls['cost'].setValue(event.cost)
     this.eventForm.controls['hub'].setValue(event.hub._id)
     this.eventForm.controls['city'].setValue(event.city._id)
-    var newdate= new Date(event.time)
-    this.selectedDateEdit=moment(newdate).format().slice(0, 16)
+    var newdate = new Date(event.time)
+    this.selectedDateEdit = moment(newdate).format().slice(0, 16)
     this.eventForm.controls['time'].setValue(this.selectedDateEdit)
     this.eventForm.controls['status'].setValue(event.status)
   }
@@ -366,26 +400,26 @@ export class EventMainComponent implements OnInit {
   resetForm() {
     this.editing = false;
     this.submitted = false;
-    this.status=null
-    this.productsForms.controls=[]
-    this.MaterialForms.controls=[]
-    this.InchargeForm.controls=[]
+    this.status = null
+    this.productsForms.controls = []
+    this.MaterialForms.controls = []
+    this.InchargeForm.controls = []
     this.eventForm.reset();
   }
 
   get f() { return this.eventForm.controls; }
 
   onSubmit() {
-    
+
     console.log(this.eventForm.value)
     this.submitted = true;
     if (this.eventForm.invalid) {
       return;
     }
-    if(this.eventForm.value.incharge.length>0)
-    for(var i=0;i<this.eventForm.value.incharge.length;i++){
-      this.eventForm.value.incharge[i]=this.eventForm.value.incharge[i].incharge
-    }
+    if (this.eventForm.value.incharge.length > 0)
+      for (var i = 0; i < this.eventForm.value.incharge.length; i++) {
+        this.eventForm.value.incharge[i] = this.eventForm.value.incharge[i].incharge
+      }
     if (this.editing) {
       this.updateEvent(this.eventForm.value);
     } else {
@@ -397,11 +431,13 @@ export class EventMainComponent implements OnInit {
     console.log(event)
     this.eventService.addMainEvent(event).subscribe((res: ResponseModel) => {
       console.log(res.data)
-      var newdate= new Date(event.time)
-      this.selectedDateAddEvent=moment(newdate).format('LLL')
+      var newdate = new Date(event.time)
+      this.selectedDateAddEvent = moment(newdate).format('LLL')
       jQuery('#modal3').modal('hide');
-      this.toasterService.success('Successfully added new event named '+ res.data.name + 'on' + this.selectedDateAddEvent + '.' + 'Notifications for the same has been sent to ' + res.data.incharge[0].full_name + '.', 'Success');
+      this.toasterService.success('Successfully added new event named ' + res.data.name + 'on' + this.selectedDateAddEvent + '.' + 'Notifications for the same has been sent to ' + res.data.incharge[0].full_name + '.', 'Success');
       this.mainEvent.push(res.data);
+      this.pendingCallsLeads.push(0)
+      this.convertedCallsLeads.push(0)
       this.resetForm();
     });
   }
@@ -422,36 +458,36 @@ export class EventMainComponent implements OnInit {
     }
   }
 
-  viewMainEvent(i){
-    this.viewArray=this.mainEvent[i]
-    this.mainEventId=this.mainEvent[i]._id
-    this.mainEventIndex=i
+  viewMainEvent(i) {
+    this.viewArray = this.mainEvent[i]
+    this.mainEventId = this.mainEvent[i]._id
+    this.mainEventIndex = i
     console.log(this.viewArray)
-    this.timeFormat=moment(this.mainEvent[i].time).format('LLL');
+    this.timeFormat = moment(this.mainEvent[i].time).format('LLL');
     console.log(this.timeFormat)
-    if(this.mainEvent[i].cancelled==true){
-      this.status="Event Cancelled"
+    if (this.mainEvent[i].cancelled == true) {
+      this.status = "Event Cancelled"
     }
-    else{
-      this.status="Event On Time"
+    else {
+      this.status = "Event On Time"
     }
   }
-  cancelEvent(){
-    if(this.mainEventId){
-      this.eventService.updateStatusMainEvent(this.mainEventId).subscribe((res:ResponseModel)=>{
-        this.mainEvent.splice(this.mainEventIndex,1,res.data)
-        this.mainEventIndex=null;
-        this.mainEventId=null;
+  cancelEvent() {
+    if (this.mainEventId) {
+      this.eventService.updateStatusMainEvent(this.mainEventId).subscribe((res: ResponseModel) => {
+        this.mainEvent.splice(this.mainEventIndex, 1, res.data)
+        this.mainEventIndex = null;
+        this.mainEventId = null;
         this.toasterService.info('Event Cancelled Successfully!', 'Cancelled!!')
         jQuery('exampleModal').modal('hide')
       })
     }
   }
 
-  cancelEventSelected(){
-    if(this.currentEventIdEdit ){
-      this.eventService.updateStatusMainEvent(this.currentEventIdEdit).subscribe((res:ResponseModel)=>{
-        this.mainEvent.splice( this.currentIndexEdit, 1, res.data);
+  cancelEventSelected() {
+    if (this.currentEventIdEdit) {
+      this.eventService.updateStatusMainEvent(this.currentEventIdEdit).subscribe((res: ResponseModel) => {
+        this.mainEvent.splice(this.currentIndexEdit, 1, res.data);
         this.currentEventIdEdit = null;
         this.editing = false;
         this.toasterService.info('Event Cancelled Successfully!', 'Cancelled!!');
@@ -460,7 +496,7 @@ export class EventMainComponent implements OnInit {
     }
   }
 
-  deleteEvent(i){
+  deleteEvent(i) {
     if (confirm('You Sure you want to delete this Product')) {
       this.eventService.deleteMainEvent(this.mainEvent[i]._id).toPromise().then(() => {
         this.toasterService.warning('Event Deleted!', 'Deleted!');

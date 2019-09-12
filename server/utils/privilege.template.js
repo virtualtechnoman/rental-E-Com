@@ -167,6 +167,7 @@ module.exports = (p=false)=>({
     //Event Lead Privilege
     GET_ALL_EVENT_LEADS:p,
     GET_EVENT_LEADS_OWN:p,
+    CHANGE_STATUS_ON_EVENT_LEAD:p,
     ADD_NEW_EVENT_LEAD:p,
     COMMENT_ON_EVENT_LEAD:p,
     //Category Attribute Privileges

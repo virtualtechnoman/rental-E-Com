@@ -41,7 +41,7 @@ router.post('/', authorizePrivilege("ADD_NEW_EVENT_LEAD"), async (req, res) => {
     // result.data.event_id = "LD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newLead = new EventLead(result.data);
     newLead.save().then(_ev => {
-        _ev.populate([{ path: "city event created_by" }]).execPopulate().then(_evLead => {
+        _ev.populate([{ path: "city event created_by comments.created_by", select:"-password" }]).execPopulate().then(_evLead => {
             res.json({ status: 200, data: _evLead, errors: false, message: "Event Lead added successfully" })
         }).catch(err => {
             console.log(err);
@@ -59,23 +59,45 @@ router.put("/comment/:id", authorizePrivilege("COMMENT_ON_EVENT_LEAD"), (req, re
         let result = EventLeadController.verifyComment(req.body)
         if (isEmpty(result.errors)) {
             result.data.comment = {...result.data.comment,created_by:req.user._id};
-            EventLead.findById(req.params.id).exec().then(_evnt => {
-                EventLead.findByIdAndUpdate(req.params.id, { $push: { comments: result.data.comment } }, { new: true }).populate([{ path: "type city organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).exec()
+            // EventLead.findById(req.params.id).exec().then(_evnt => {
+                EventLead.findByIdAndUpdate(req.params.id, { $push: { comments: result.data.comments }, $set: {status:result.data.status,callStatus:result.data.callStatus} }, { new: true }).populate([{ path: "city event created_by comments.created_by", select:"-password" }]).exec()
                     .then(_ev => {
                         res.status(200).json({ status: 200, data: _ev, errors: false, message: "Comment added successfully" });
                     }).catch(err => {
                         console.log(err);
                         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while adding comment" })
                     })
-            })
+            // })
         }else{
-            res.status(400).json({ status: 400, data: null, errors: true, message: "Fields required" })
+            res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
         }
     }
     else {
         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid event lead id" });
     }
 });
+//status change on event lead
+// router.put("/status/:id", authorizePrivilege("CHANGE_STATUS_ON_EVENT_LEAD"), (req, res) => {
+//     if (mongodb.ObjectId.isValid(req.params.id)) {
+//         let result = EventLeadController.verifyStatusUpdate(req.body)
+//         if (isEmpty(result.errors)) {
+//             // EventLead.findById(req.params.id).exec().then(_evnt => {
+//                 EventLead.findByIdAndUpdate(req.params.id, { $set: result.data }, { new: true }).populate([{ path: "city event created_by comments.created_by", select:"-password" }]).exec()
+//                     .then(_ev => {
+//                         res.status(200).json({ status: 200, data: _ev, errors: false, message: "Status updated successfully" });
+//                     }).catch(err => {
+//                         console.log(err);
+//                         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating status" })
+//                     })
+//             // })
+//         }else{
+//             res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
+//         }
+//     }
+//     else {
+//         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid event lead id" });
+//     }
+// });
 //Update a event type
 // router.put("/cancel/:id", authorizePrivilege("CANCEL_EVENT"), (req, res) => {
 //     if (mongodb.ObjectId.isValid(req.params.id)) {

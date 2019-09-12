@@ -1,6 +1,6 @@
 <div class="container-fluid">
   <div class="card">
-    <div class="card-header">
+    <div class="card-header" style="overflow-x: scroll">
       <h2 class="float-left">Lead Management</h2>
       <a class="btn btn-secondary float-right text-white" (click)="resetForm()" data-toggle="modal"
         data-target="#modal3">Add New
@@ -8,26 +8,41 @@
       <!-- <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
         data-target="#modal2">Upload CSV</a> -->
     </div>
-    <div class="card-body">
+    <div class="card-body" style="overflow-x: scroll">
       <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
-        [dtTrigger]="dtTrigger">
+        [dtTrigger]="dtTrigger" style="overflow-x: scroll">
         <thead>
           <tr>
-            <th scope="col">S.No</th>
-            <th scope="col">Lead Name</th>
-            <th scope="col">LeadEmail</th>
-            <th scope="col"> Lead Contact</th>
-            <th scope="col">Actions</th>
+            <th >S.No</th>
+            <th >Event Name</th>
+            <th >City</th>
+            <th > Date</th>
+            <th > Mobile</th>
+            <th > Address</th>
+            <th > Comments</th>
+            <th > Call Status</th>
+            <th > Last Scheduled Date</th>
+            <th > Schedule Next Call  </th>
+            <th > Status Of Customer </th>
+            <th >Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let lead of allLeads; let i = index">
             <td>{{i+1}}</td>
-            <td>{{lead?.full_name}}</td>
-            <td >{{lead?.email}}</td>
+            <td>{{lead?.event?.name}}</td>
+            <td >{{lead?.city?.name}}</td>
+            <td >{{lead?.event?.time | date: 'dd/mm/yy h:mm a'}}</td>
             <td >{{lead?.contact}}</td>
+            <td >{{lead?.address}}</td>
+            <td >{{allLeads[i]?.comments[0].comment}}</td>
+            <td >{{lead?.callStatus}}</td>
+            <td >Scheduled on {{allLeads[i]?.comments[allLeads[i].comments.length-1].at | date: 'dd/mm/yy h:mm a'}} for  {{allLeads[i]?.comments[allLeads[i].comments.length-1].nextDate | date: 'dd/mm/yy h:mm a'}}</td>
+            <td ></td>
+            <td >{{lead?.status}}</td>
             <td>
-                <a style="cursor: pointer" (click)="viewLead(i)" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-eye"></i></a>
+
+                <a style="cursor: pointer" (click)="viewLead(i)" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-phone-volume"></i></a>
             </td>
           </tr>
         </tbody>
@@ -124,12 +139,23 @@
                       <label>Comment</label>
                       <div class="form-group green-border-focus">
                           <!-- <label for="exampleFormControlTextarea5">Comments</label> -->
-                          <textarea class="form-control"  id="exampleFormControlTextarea5" rows="3" (change)="getComments($event)"></textarea>
+                          <textarea class="form-control" formControlName="comment" [ngClass]="{ 'is-invalid': submitted && f.comment.errors }"  id="exampleFormControlTextarea5" rows="3" ></textarea>
                       </div>
+                      <div *ngIf="submitted && f.comment.errors" class="invalid-feedback">
+                          <div *ngIf="f.comment.errors.required">Comment required</div>
+                        </div>
                     </div>
                     
               </div>
               <div class="form-row">
+                  <div class="form-group col-lg-6">
+                      <label for="exampleFormControlTextarea5">Follow Up Date</label>
+                          <input type="date" class="form-control" formControlName="nextdate" [ngClass]="{ 'is-invalid': submitted && f.nextdate.errors }">
+                      
+                        <div *ngIf="submitted && f.nextdate.errors" class="invalid-feedback">
+                          <div *ngIf="f.nextdate.errors.required">Follow up date required</div>
+                        </div>
+                    </div>
                   <div class="form-group col-lg-6">
                       <label for="exampleFormControlTextarea5">Preferred Time</label>
                           <input type="datetime-local" class="form-control" formControlName="preferredTime" [ngClass]="{ 'is-invalid': submitted && f.preferredTime.errors }">
@@ -138,31 +164,49 @@
                           <div *ngIf="f.preferredTime.errors.required">Time required</div>
                         </div>
                     </div>
-                    <div class="form-group col">
-                            <label for="exampleFormControlTextarea5">Mode</label>
-                            <input type="text" class="form-control" formControlName="mode" [ngClass]="{ 'is-invalid': submitted && f.mode.errors }">
-                        
-                          <div *ngIf="submitted && f.mode.errors" class="invalid-feedback">
-                            <div *ngIf="f.mode.errors.required">Mode required</div>
-                          </div>
-                      </div>
+
 
               </div>
-              <!-- <div class="form-group row">
-                  <label for="inputEmail3" class="col-sm-4 col-form-label">Status</label>
-                  <div class="col-sm-8">
-                    <select name="incharge" id="" class="form-control" formControlName="status" required [(ngModel)]="eventForm.value.status"
+              <!-- converted / dont require / no delivry in area -->
+                  <div class="form-row">
+                  <div class="form-group col-md-4">
+                      <label for="exampleFormControlTextarea5">Lead Status</label>
+                      <select name="incharge" id="" class="form-control" formControlName="status" required
+                       [(ngModel)]="eventLeadForm.value.status"
                       [ngClass]="{ 'is-invalid': submitted && f.status.errors }">
-                      <option  selected disabled>Select Event Status</option>
-                      <option  value="compleated">Compleated</option>
-                      <option  value="live">Live</option>
-                      <option  value="pending calls">Pending Calls</option>
+                      <option  selected disabled>Select Event Lead Status</option>
+                      <option  value="converted">Converted</option>
+                      <option  value="dont require">Dont Require</option>
+                      <option  value="no delivry in area">No delivery In Area</option>
                     </select>
                     <div *ngIf="submitted && f.status.errors" class="invalid-feedback">
                       <div *ngIf="f.status.errors.required">Status is required</div>
                     </div>
                   </div>
-                </div> -->
+                      <div class="form-group col-md-d">
+                          <label for="exampleFormControlTextarea5">Calling Status</label>
+                          <select name="incharge" id="" class="form-control" formControlName="callStatus" required
+                           [(ngModel)]="eventLeadForm.value.callStatus"
+                          [ngClass]="{ 'is-invalid': submitted && f.callStatus.errors }">
+                          <option  selected disabled>Lead Calling Status</option>
+                          <option  value="scheduled">Scheduled</option>
+                          <option  value="compleated">Compleated</option>
+                          <option  value="pending">Pending</option>
+                        </select>
+                        <div *ngIf="submitted && f.callStatus.errors" class="invalid-feedback">
+                          <div *ngIf="f.callStatus.errors.required">Calling Status is required</div>
+                        </div>
+                      </div>
+                  <div class="form-group col-md-d">
+                      <label for="exampleFormControlTextarea5">Mode</label>
+                      <input type="text" class="form-control" formControlName="mode" [ngClass]="{ 'is-invalid': submitted && f.mode.errors }">
+                  
+                    <div *ngIf="submitted && f.mode.errors" class="invalid-feedback">
+                      <div *ngIf="f.mode.errors.required">Mode required</div>
+                    </div>
+                </div>
+                
+                  </div>
               <br>
         <div class=" text-center">
         <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
@@ -250,20 +294,25 @@
                     <thead>
                       <tr>
                         <th>S no.</th>
-                        <th>Last Comment</th>
+                        <th>Last Comments</th>
+                        <th>Last Comments Created Date</th>
+                        <th>Follow Up Date</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr *ngFor="let comment of viewArray.comments;let i=index">
                         <td>{{i+1}}</td>
-                        <td>{{comment}}</td>
+                        <td>{{comment?.comment}}</td>
+                        <td>{{comment?.at | date: 'dd/mm/yy h:mm a'}}</td>
+                        <td>{{comment?.nextDate | date: 'dd/mm/yy '}}</td>
                       </tr>
                     </tbody>
                   </table>
-                <div class="form-row" >
-                    <div class="form-group col">
+                <div class="" >
+                    <div class=" col">
                         
                         <form [formGroup]="CommentForm" (ngSubmit)="onSubmitComment()">
+                            <div class="">
                             <label>Comment</label>
                         <div class="form-group green-border-focus">
                             <textarea #myInput class="form-control" formControlName="comment" [ngClass]="{ 'is-invalid': submitted && f2.comment.errors }" id="exampleFormControlTextarea5" rows="3" ></textarea>
@@ -271,7 +320,46 @@
                       <div *ngIf="submitted && f2.comment.errors" class="invalid-feedback">
                           <div *ngIf="f2.comment.errors.required">Comment required</div>
                         </div>
-                      
+                      </div>
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <label for="exampleFormControlTextarea5">Follow Up Date</label>
+                                    <input #myInput2  type="date" class="form-control" formControlName="nextdate" [ngClass]="{ 'is-invalid': submitted && f.nextdate.errors }">
+                                
+                                  <div *ngIf="submitted && f.nextdate.errors" class="invalid-feedback">
+                                    <div *ngIf="f.nextdate.errors.required">Follow up date required</div>
+                                  </div>
+                              </div>
+                              <div  class="form-group col-md-4">
+                                  
+                                      <div formGroupName="StatusForm" class="form-group ">
+                                      <label for="exampleFormControlTextarea5">Lead Status</label>
+                                      <select name="incharge" id="" class="form-control" formControlName="status" required [(ngModel)]="CommentForm.value.StatusForm.status"> 
+                                      <option  selected disabled>Select Event Lead Status</option>
+                                      <option  value="converted">Converted</option>
+                                      <option  value="dont require">Dont Require</option>
+                                      <option  value="no delivry in area">No delivery In Area</option>
+                                    </select>
+                                  </div>
+                                      
+                                    
+                                </div>
+                                <div  class="form-group col-md-4">
+                                  
+                                    <div formGroupName="StatusForm" class="form-group ">
+                                      <label for="exampleFormControlTextarea5">Calling Status</label>
+                                      <select name="incharge" id="" class="form-control" formControlName="callStatus" required [(ngModel)]="CommentForm.value.StatusForm.callStatus"> 
+                                    
+                                    <option  selected disabled>Lead Calling Status</option>
+                                    <option  value="scheduled">Scheduled</option>
+                                    <option  value="compleated">Compleated</option>
+                                   <option  value="pending">Pending</option>
+                                  </select>
+                                </div>
+                                    
+                                  
+                              </div>
+                      </div>
   
                 
                 <br>
@@ -279,9 +367,13 @@
           <button type="submit" class="btn btn-primary tx-13 mx-1">Add Comment</button>
           </div>
         </form>
+
+
+
+
       </div>
       </div>
-        </div>
+      </div>
 
 
 
