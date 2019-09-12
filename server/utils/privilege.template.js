@@ -163,6 +163,7 @@ module.exports = (p=false)=>({
     ADD_NEW_EVENT:p,
     CANCEL_EVENT:p,
     UPDATE_EVENT:p,
+    DELETE_EVENT:p,
     //Event Lead Privilege
     GET_ALL_EVENT_LEADS:p,
     GET_EVENT_LEADS_OWN:p,
