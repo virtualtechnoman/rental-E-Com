@@ -24,7 +24,8 @@ const eventCreateSchema = Joi.object({
     targetConversion: Joi.number(),
     farm: Joi.string().required(),
     products:Joi.array().items(Product).required(),
-    hub: Joi.string().required()
+    hub: Joi.string().required(),
+    status: Joi.string().required()
 })
 function verifyCreate(event) { return helper.validator(event, eventCreateSchema) }
 module.exports = {

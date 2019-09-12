@@ -109,6 +109,7 @@ export class EventMainComponent implements OnInit {
       cost: ['', Validators.required],
       marketingMaterial: this.formBuilder.array([]),
       products: this.formBuilder.array([]),
+      status:['', Validators.required],
       hub: ['', Validators.required]
     });
   }
@@ -359,6 +360,7 @@ export class EventMainComponent implements OnInit {
     var newdate= new Date(event.time)
     this.selectedDateEdit=moment(newdate).format().slice(0, 16)
     this.eventForm.controls['time'].setValue(this.selectedDateEdit)
+    this.eventForm.controls['status'].setValue(event.status)
   }
 
   resetForm() {
