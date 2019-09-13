@@ -85,6 +85,14 @@ export class EventService {
         return this.http.get(this.url4+ '/all/bytype/' + id, { headers: this.headers });
     }
 
+    getAllMainEventByCallingStatus(id_status){
+        return this.http.post(this.url5+ '/all/bycstatus/', id_status, { headers: this.headers });
+    }
+
+    getAllMainEventByLeadStatus(id_status){
+        return this.http.post(this.url5+ '/all/bystatus/', id_status, { headers: this.headers });
+    }
+
     addMainEvent(event) {
         return this.http.post(this.url4 + '/', event, { headers: this.headers });
     }

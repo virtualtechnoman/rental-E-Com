@@ -26,14 +26,15 @@ const eventLeadCommentSchema = Joi.object({
         nextDate: Joi.date().required()
     }).required()
 })
-// const eventLeadStatusChangeSchema = Joi.object({
-//     status: Joi.string().required()
-// })
+const eventLeadFilterByEvnt_and_StatusSchema = Joi.object({
+    status: Joi.string().required(),
+    event: Joi.string().required(),
+})
 function verifyCreate(lead) { return helper.validator(lead, eventLeadCreateSchema) }
 function verifyComment(lead) { return helper.validator(lead, eventLeadCommentSchema) }
-// function verifyStatusUpdate(lead) { return helper.validator(lead, eventLeadStatusChangeSchema) }
+function verifyForFilterByEvnt_and_Status(lead) { return helper.validator(lead, eventLeadFilterByEvnt_and_StatusSchema) }
 module.exports = {
     verifyCreate,
     verifyComment,
-    // verifyStatusUpdate
+    verifyForFilterByEvnt_and_Status
 }

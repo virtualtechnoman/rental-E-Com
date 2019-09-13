@@ -9,6 +9,7 @@ const MarketingMaterial = Joi.object({
     material:Joi.string().required(),
     quantity:Joi.number().required()
 })
+
 const eventCreateSchema = Joi.object({
     type: Joi.string().required(),
     name: Joi.string().required(),
@@ -27,6 +28,8 @@ const eventCreateSchema = Joi.object({
     hub: Joi.string().required(),
     status: Joi.string().required()
 })
+
+
 function verifyCreate(event) { return helper.validator(event, eventCreateSchema) }
 module.exports = {
     verifyCreate

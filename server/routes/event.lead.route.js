@@ -30,6 +30,36 @@ router.get("/", authorizePrivilege("GET_EVENT_LEADS_OWN"), (req, res) => {
     })
 });
 
+//get leads by call status and event id
+router.post("/all/:type/", authorizePrivilege("COMMENT_ON_EVENT_LEAD"), (req, res) => { 
+        let result = EventLeadController.verifyForFilterByEvnt_and_Status(req.body)
+        if (isEmpty(result.errors)) {
+            result.data.comment = {...result.data.comment,created_by:req.user._id};
+            let query = {};
+            switch(req.params.type){
+                case "bycstatus":
+                        query.event = result.data.event;
+                        query.callStatus = result.data.status;
+                    break;
+                case "bystatus":
+                        query.event = result.data.event;
+                        query.status = result.data.status;
+                break;
+            }
+            // EventLead.findById(req.params.id).exec().then(_evnt => {
+                EventLead.find(query).populate([{ path: "city event created_by comments.created_by", select:"-password" }]).exec()
+                    .then(_ev => {
+                        res.status(200).json({ status: 200, data: _ev, errors: false, message: "Comment added successfully" });
+                    }).catch(err => {
+                        console.log(err);
+                        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while adding comment" })
+                    })
+            // })
+        }else{
+            res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
+        }
+});
+
 //Add new event lead
 router.post('/', authorizePrivilege("ADD_NEW_EVENT_LEAD"), async (req, res) => {
     let result = EventLeadController.verifyCreate(req.body);
@@ -76,6 +106,7 @@ router.put("/comment/:id", authorizePrivilege("COMMENT_ON_EVENT_LEAD"), (req, re
         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid event lead id" });
     }
 });
+
 //status change on event lead
 // router.put("/status/:id", authorizePrivilege("CHANGE_STATUS_ON_EVENT_LEAD"), (req, res) => {
 //     if (mongodb.ObjectId.isValid(req.params.id)) {

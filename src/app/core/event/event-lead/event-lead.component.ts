@@ -6,6 +6,7 @@ import { Subject, observable } from 'rxjs';
 import { ResponseModel } from '../../../shared/shared.model';
 import { LocationManagerService } from '../../location-manager/shared/location-manager.service';
 import * as moment from 'moment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-event-lead',
@@ -35,7 +36,7 @@ export class EventLeadComponent implements OnInit {
   leadIndex:any;
   @ViewChild('myInput') myInputVariable: ElementRef;
   @ViewChild('myInput2') myInputVariable2: ElementRef;
-  constructor(private formBuilder: FormBuilder, private toastr: ToastrService, private eventService: EventService,private locationService:LocationManagerService) { 
+  constructor(private router:Router,private formBuilder: FormBuilder, private toastr: ToastrService, private eventService: EventService,private locationService:LocationManagerService) { 
     this.getAllLeads()
     this.getAllCity()
     this.getAllEvents()
@@ -63,9 +64,7 @@ export class EventLeadComponent implements OnInit {
       StatusForm:this.formBuilder.group({
         status: [''],
         callStatus: [''],
-
       })
-  
     })
 
     this.dtOptions = {
@@ -147,13 +146,6 @@ export class EventLeadComponent implements OnInit {
       this.CommentForm.reset();
       
     })
-    // this.eventService.updateLeadStatus(this.CommentForm.value.StatusForm,this.leadSelectedid).subscribe((res:ResponseModel)=>{
-    //   console.log(res.data)
-    //   this.allLeads.splice(this.leadIndex,1,res.data)
-    //   jQuery('#exampleModal').modal('hide');
-    //   this.toastr.info('Status Updated', 'Updated!');
-    //   this.myInputVariable.nativeElement.value = "";
-    // })
   }
 
   addLead(lead) {
@@ -224,6 +216,10 @@ export class EventLeadComponent implements OnInit {
     this.submitted = false;
     this.eventLeadForm.reset();
     // this.initForm();
+  }
+
+  navigateToEvent(){
+    this.router.navigate(['/eventmain'])
   }
 
 }

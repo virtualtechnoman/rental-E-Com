@@ -42,8 +42,9 @@ router.get("/all", authorizePrivilege("GET_ALL_EVENTS"), (req, res) => {
     // })
 });
 // Get all events by city
-router.get("/all/bycity/:id", authorizePrivilege("GET_ALL_EVENTS"), (req, res) => {
+router.get("/all/bycity/:id", authorizePrivilege("GET_ALL_EVENTS"), (req , res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
+        console.log(res)
         Event.find({ city: req.params.id }).populate([{ path: "type city marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).lean().exec().then(docs => {
             if (docs.length > 0)
                 res.json({ status: 200, data: docs, errors: false, message: "All events" });
@@ -73,6 +74,7 @@ router.get("/all/bytype/:id", authorizePrivilege("GET_ALL_EVENTS"), (req, res) =
         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid event type id" });
     }
 });
+
 // Get all event created by self
 router.get("/", authorizePrivilege("GET_ALL_EVENTS_OWN"), (req, res) => {
     Event.find({ created_by: req.user._id }).populate([{ path: "type city marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).lean().exec().then(docs => {

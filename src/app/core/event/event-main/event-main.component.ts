@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { UserModel } from '../../user/shared/user.model';
 import { EventService } from '../shared/event-type.service';
@@ -10,6 +10,7 @@ import { Subject } from 'rxjs';
 import { ProductsService } from '../../products/shared/products.service';
 import * as moment from 'moment';
 import { LocationManagerService } from '../../location-manager/shared/location-manager.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-event-main',
   templateUrl: './event-main.component.html',
@@ -28,6 +29,7 @@ export class EventMainComponent implements OnInit {
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
   eventForm: FormGroup;
+  CommentForm: FormGroup;
   editing: Boolean = false;
   submitted: Boolean = false;
   allproducts: any[] = [];
@@ -53,13 +55,33 @@ export class EventMainComponent implements OnInit {
   pendingCallsLeads: any []= []
   pendingCallsLeads2: any[] = []
   convertedCallsLeads: any[]= []
-  convertedCallsLeads2: any[] = []
+  convertedCallsLeads2: any[] = [];
+  leadStatus:any;
+  callingStatus:any;
+  callingStatusLeads:any[]=[]
+  showCallingStatusLeads:boolean=false;
+  showLeadStatusLeads:boolean=false;
+  leadStatusLeads:any[]=[];
+  leadViewingByLeadStatus:any=[]
+  leadSelectedid: any;
+  leadIndex: any;
+  showTable:boolean=false
+  showleadViewingByLeadStatus:boolean=false
+  leadViewingByLeadCallStatus:any=[]
+  showleadViewingByLeadCommentStatus:boolean=false;
+  callPendindView:any;
+  leadslength:any;
+  conversionLeangth:any;
+  pendingLength:any;
+  @ViewChild('myInput') myInputVariable: ElementRef;
+  @ViewChild('myInput2') myInputVariable2: ElementRef;
   constructor(private formBuilder: FormBuilder,
     private eventService: EventService,
     private orderService: OrderService,
     private userService: UserService,
     private toasterService: ToastrService,
     private productService: ProductsService,
+    private router:Router,
     private locationService: LocationManagerService) {
     this.initForm();
   }
@@ -95,6 +117,14 @@ export class EventMainComponent implements OnInit {
         'excel',
       ]
     };
+    this.CommentForm=this.formBuilder.group({
+      comment: ['', Validators.required],
+      nextdate:['',Validators.required],
+      StatusForm:this.formBuilder.group({
+        status: [''],
+        callStatus: [''],
+      })
+    })
   }
 
   initForm() {
@@ -220,7 +250,6 @@ export class EventMainComponent implements OnInit {
         }
         console.log(this.pendingCallsLeads, this.convertedCallsLeads);
       }
-
       this.dtTrigger.next()
     });
   }
@@ -459,6 +488,13 @@ export class EventMainComponent implements OnInit {
   }
 
   viewMainEvent(i) {
+    this.leadslength=0;
+    this.conversionLeangth=0;
+    this.pendingLength=0;
+    var leadscount=0;
+    var leadscountbystatus=0;
+    var totalleads=0;
+    
     this.viewArray = this.mainEvent[i]
     this.mainEventId = this.mainEvent[i]._id
     this.mainEventIndex = i
@@ -471,6 +507,32 @@ export class EventMainComponent implements OnInit {
     else {
       this.status = "Event On Time"
     }
+    if (this.mainEvent[i])
+    console.log(this.viewArray);
+
+    // for (var index = 0; index < this.mainEvent[i].length; index++) {
+      
+      if (this.mainEvent[i].leads) {
+        for (var j = 0; j < this.mainEvent[i].leads.length; j++) {
+          console.log(this.mainEvent[i].leads[j]);
+          if(this.mainEvent[i].leads[j])
+          totalleads=totalleads+1
+          if (this.mainEvent[i].leads[j].callStatus == 'pending') {
+            leadscount = leadscount + 1
+            console.log("pending");
+          }
+          if (this.mainEvent[i].leads[j].status == 'converted') {
+            leadscountbystatus = leadscountbystatus + 1
+            console.log("leadconverted");
+          }
+        }
+        
+      }
+    // }
+    this.leadslength=totalleads
+    this.conversionLeangth=leadscountbystatus
+    this.pendingLength=leadscount
+    console.log(totalleads,leadscountbystatus,leadscount)
   }
   cancelEvent() {
     if (this.mainEventId) {
@@ -505,4 +567,118 @@ export class EventMainComponent implements OnInit {
     }
   }
 
+  getEventsByLeadStatus(){
+    console.log(this.leadStatus)
+    this.leadStatusLeads.length=0
+    this.callingStatusLeads.length=0
+    this.showCallingStatusLeads=false
+    if(this.viewArray)
+    this.eventService.getAllMainEventByLeadStatus({event:this.mainEvent[this.mainEventIndex]._id,status:this.leadStatus}).subscribe((res: ResponseModel) => {
+      if(res.data){
+      this.showLeadStatusLeads=true
+      this.leadStatusLeads=res.data
+      console.log(res.data);
+      }
+      else{
+        this.showLeadStatusLeads=false
+      }
+    })
+  }
+
+  getEventsByLeadCallingStatus(){
+    this.callingStatusLeads.length=0
+    this.leadStatusLeads.length=0
+    this.showLeadStatusLeads=false
+    console.log(this.callingStatus)
+    if(this.viewArray)
+    this.eventService.getAllMainEventByCallingStatus({event:this.mainEvent[this.mainEventIndex]._id,status:this.callingStatus}).subscribe((res: ResponseModel) => {
+      if(res.data){
+      this.showCallingStatusLeads=true
+      this.callingStatusLeads=res.data
+      console.log(res.data);
+      }
+      else{
+        this.showCallingStatusLeads=false
+      }
+    })
+  }
+  viewLeadleadStatusLeads(i){
+    if(this.leadViewingByLeadStatus){
+      this.leadViewingByLeadStatus=null;
+      this.showleadViewingByLeadStatus=false
+      }
+      if(this.leadViewingByLeadCallStatus){
+        this.leadViewingByLeadCallStatus=null
+        this.showleadViewingByLeadCommentStatus=false
+      }
+    if(this.showLeadStatusLeads)
+    this.leadViewingByLeadStatus=this.leadStatusLeads[i]
+    console.log(this.leadViewingByLeadStatus)
+    this.timeFormat=moment(this.leadStatusLeads[i].preferredTime).format('LLL');
+    this.leadSelectedid=this.leadStatusLeads[i]._id
+    this.leadIndex=i;
+    if(this.leadViewingByLeadStatus.comments.length>0){
+      this.showleadViewingByLeadStatus=true
+    }
+    else{
+      this.showleadViewingByLeadStatus=false
+    }
+    jQuery('#leadsDetailsModal').modal('show')
+    this.CommentForm.controls['StatusForm'].get('status').setValue(this.leadViewingByLeadStatus.status)
+    this.CommentForm.controls['StatusForm'].get('callStatus').setValue(this.leadViewingByLeadStatus.callStatus)
+  }
+  viewLeadcallingStatusLeads(i){
+    if(this.leadViewingByLeadStatus){
+      this.leadViewingByLeadStatus=null;
+      this.showleadViewingByLeadStatus=false
+      }
+      if(this.leadViewingByLeadCallStatus){
+        this.leadViewingByLeadCallStatus=null
+        this.showleadViewingByLeadCommentStatus=false
+      }
+    if(this.callingStatusLeads)
+    this.leadViewingByLeadCallStatus=this.callingStatusLeads[i]
+    console.log(this.leadViewingByLeadCallStatus)
+    this.timeFormat=moment( this.leadViewingByLeadCallStatus).format('LLL');
+    this.leadSelectedid=this.callingStatusLeads[i]._id
+    this.leadIndex=i;
+    if(this.leadViewingByLeadCallStatus.comments.length>0){
+      this.showleadViewingByLeadCommentStatus=true
+    }
+    else{
+      this.showleadViewingByLeadCommentStatus=false
+    }
+    jQuery('#leadsDetailsModal').modal('show')
+    this.CommentForm.controls['StatusForm'].get('status').setValue(this.leadViewingByLeadCallStatus.status)
+    this.CommentForm.controls['StatusForm'].get('callStatus').setValue(this.leadViewingByLeadCallStatus.callStatus)
+  }
+  onSubmitComment(){
+    console.log(this.CommentForm.value)
+    if (this.CommentForm.invalid) {
+      return;
+    }
+    const comments=<any> new Object();
+    comments.comments={}
+    comments.comments.comment=this.CommentForm.value.comment
+    comments.comments.nextDate=this.CommentForm.value.nextdate
+    comments.status=this.CommentForm.value.StatusForm.status
+    comments.callStatus=this.CommentForm.value.StatusForm.callStatus
+    console.log(comments)
+    if(this.leadSelectedid)
+    this.eventService.updateCommentsLead(comments,this.leadSelectedid).subscribe((res:ResponseModel)=>{
+      console.log(res.data)
+      this.leadStatusLeads.splice(this.leadIndex,1,res.data)
+      jQuery('#leadsDetailsModal').modal('hide');
+      this.toasterService.success('Comment Added', 'Success!');
+      this.myInputVariable.nativeElement.value = "";
+      this.CommentForm.reset();
+      this.leadSelectedid=null
+      this.leadIndex=null
+      this.timeFormat=null;
+    })
+  }
+
+  navigateToLead(){
+    this.router.navigate(['/lead'])
+  }
 }
