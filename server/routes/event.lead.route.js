@@ -17,6 +17,21 @@ router.get("/all", authorizePrivilege("GET_ALL_EVENT_LEADS"), (req, res) => {
         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting event leads" })
     })
 });
+// Get all event leads
+router.get("/all/byevent/:id", authorizePrivilege("GET_ALL_EVENT_LEADS"), (req, res) => {
+    if (mongodb.ObjectId.isValid(req.params.id)) {
+        EventLead.find({ event: req.params.id }).populate([{ path: "city event created_by" }]).lean().exec().then(docs => {
+            if (docs.length > 0)
+                res.json({ status: 200, data: docs, errors: false, message: "All event leads" });
+            else
+                res.json({ status: 200, data: docs, errors: true, message: "No event leads found" });
+        }).catch(err => {
+            console.log(err);
+            res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting event leads" })
+        })
+    }else
+    res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid event id" });
+});
 // Get all event leads created by self
 router.get("/", authorizePrivilege("GET_EVENT_LEADS_OWN"), (req, res) => {
     EventLead.find({ created_by: req.user._id }).populate([{ path: "city event" }]).lean().exec().then(docs => {
@@ -31,33 +46,33 @@ router.get("/", authorizePrivilege("GET_EVENT_LEADS_OWN"), (req, res) => {
 });
 
 //get leads by call status and event id
-router.post("/all/:type/", authorizePrivilege("COMMENT_ON_EVENT_LEAD"), (req, res) => { 
-        let result = EventLeadController.verifyForFilterByEvnt_and_Status(req.body)
-        if (isEmpty(result.errors)) {
-            result.data.comment = {...result.data.comment,created_by:req.user._id};
-            let query = {};
-            switch(req.params.type){
-                case "bycstatus":
-                        query.event = result.data.event;
-                        query.callStatus = result.data.status;
-                    break;
-                case "bystatus":
-                        query.event = result.data.event;
-                        query.status = result.data.status;
+router.post("/all/:type/", authorizePrivilege("COMMENT_ON_EVENT_LEAD"), (req, res) => {
+    let result = EventLeadController.verifyForFilterByEvnt_and_Status(req.body)
+    if (isEmpty(result.errors)) {
+        result.data.comment = { ...result.data.comment, created_by: req.user._id };
+        let query = {};
+        switch (req.params.type) {
+            case "bycstatus":
+                query.event = result.data.event;
+                query.callStatus = result.data.status;
                 break;
-            }
-            // EventLead.findById(req.params.id).exec().then(_evnt => {
-                EventLead.find(query).populate([{ path: "city event created_by comments.created_by", select:"-password" }]).exec()
-                    .then(_ev => {
-                        res.status(200).json({ status: 200, data: _ev, errors: false, message: "Comment added successfully" });
-                    }).catch(err => {
-                        console.log(err);
-                        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while adding comment" })
-                    })
-            // })
-        }else{
-            res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
+            case "bystatus":
+                query.event = result.data.event;
+                query.status = result.data.status;
+                break;
         }
+        // EventLead.findById(req.params.id).exec().then(_evnt => {
+        EventLead.find(query).populate([{ path: "city event created_by comments.created_by", select: "-password" }]).exec()
+            .then(_ev => {
+                res.status(200).json({ status: 200, data: _ev, errors: false, message: "Comment added successfully" });
+            }).catch(err => {
+                console.log(err);
+                res.status(500).json({ status: 500, data: null, errors: true, message: "Error while adding comment" })
+            })
+        // })
+    } else {
+        res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
+    }
 });
 
 //Add new event lead
@@ -66,12 +81,12 @@ router.post('/', authorizePrivilege("ADD_NEW_EVENT_LEAD"), async (req, res) => {
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
     }
-    result.data.comments = [{...result.data.comments,created_by:req.user._id}];
+    result.data.comments = [{ ...result.data.comments, created_by: req.user._id }];
     result.data.created_by = req.user._id;
     // result.data.event_id = "LD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newLead = new EventLead(result.data);
     newLead.save().then(_ev => {
-        _ev.populate([{ path: "city event created_by comments.created_by", select:"-password" }]).execPopulate().then(_evLead => {
+        _ev.populate([{ path: "city event created_by comments.created_by", select: "-password" }]).execPopulate().then(_evLead => {
             res.json({ status: 200, data: _evLead, errors: false, message: "Event Lead added successfully" })
         }).catch(err => {
             console.log(err);
@@ -88,17 +103,17 @@ router.put("/comment/:id", authorizePrivilege("COMMENT_ON_EVENT_LEAD"), (req, re
     if (mongodb.ObjectId.isValid(req.params.id)) {
         let result = EventLeadController.verifyComment(req.body)
         if (isEmpty(result.errors)) {
-            result.data.comment = {...result.data.comment,created_by:req.user._id};
+            result.data.comment = { ...result.data.comment, created_by: req.user._id };
             // EventLead.findById(req.params.id).exec().then(_evnt => {
-                EventLead.findByIdAndUpdate(req.params.id, { $push: { comments: result.data.comments }, $set: {status:result.data.status,callStatus:result.data.callStatus} }, { new: true }).populate([{ path: "city event created_by comments.created_by", select:"-password" }]).exec()
-                    .then(_ev => {
-                        res.status(200).json({ status: 200, data: _ev, errors: false, message: "Comment added successfully" });
-                    }).catch(err => {
-                        console.log(err);
-                        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while adding comment" })
-                    })
+            EventLead.findByIdAndUpdate(req.params.id, { $push: { comments: result.data.comments }, $set: { status: result.data.status, callStatus: result.data.callStatus } }, { new: true }).populate([{ path: "city event created_by comments.created_by", select: "-password" }]).exec()
+                .then(_ev => {
+                    res.status(200).json({ status: 200, data: _ev, errors: false, message: "Comment added successfully" });
+                }).catch(err => {
+                    console.log(err);
+                    res.status(500).json({ status: 500, data: null, errors: true, message: "Error while adding comment" })
+                })
             // })
-        }else{
+        } else {
             res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
         }
     }

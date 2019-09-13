@@ -73,6 +73,9 @@ export class EventMainComponent implements OnInit {
   leadslength:any;
   conversionLeangth:any;
   pendingLength:any;
+  specificEventRecords:any[]=[]
+  viewSpecificEventRecords:any[]=[]
+  showSpecificEventRecords:boolean=false
   @ViewChild('myInput') myInputVariable: ElementRef;
   @ViewChild('myInput2') myInputVariable2: ElementRef;
   constructor(private formBuilder: FormBuilder,
@@ -494,7 +497,16 @@ export class EventMainComponent implements OnInit {
     var leadscount=0;
     var leadscountbystatus=0;
     var totalleads=0;
-    
+    this.eventService.getAllLeadsMainEventbyId(this.mainEvent[i]._id).subscribe((res:ResponseModel)=>{
+      console.log(res.data)
+      this.specificEventRecords=res.data
+      if(res.data){
+        this.showSpecificEventRecords=true
+      }
+      else{
+        this.showSpecificEventRecords=false
+      }
+    })
     this.viewArray = this.mainEvent[i]
     this.mainEventId = this.mainEvent[i]._id
     this.mainEventIndex = i
@@ -603,6 +615,10 @@ export class EventMainComponent implements OnInit {
     })
   }
   viewLeadleadStatusLeads(i){
+    if(this.viewSpecificEventRecords){
+    this.viewSpecificEventRecords=null
+    this.showleadViewingByLeadStatus=false
+    }
     if(this.leadViewingByLeadStatus){
       this.leadViewingByLeadStatus=null;
       this.showleadViewingByLeadStatus=false
@@ -628,6 +644,10 @@ export class EventMainComponent implements OnInit {
     this.CommentForm.controls['StatusForm'].get('callStatus').setValue(this.leadViewingByLeadStatus.callStatus)
   }
   viewLeadcallingStatusLeads(i){
+    if(this.viewSpecificEventRecords){
+      this.viewSpecificEventRecords=null
+      this.showleadViewingByLeadStatus=false
+      }
     if(this.leadViewingByLeadStatus){
       this.leadViewingByLeadStatus=null;
       this.showleadViewingByLeadStatus=false
@@ -676,6 +696,35 @@ export class EventMainComponent implements OnInit {
       this.leadIndex=null
       this.timeFormat=null;
     })
+  }
+
+  viewSpecificLeads(i){
+    if(this.viewSpecificEventRecords){
+      this.viewSpecificEventRecords=null
+      this.showleadViewingByLeadStatus=false
+      }
+    if(this.leadViewingByLeadStatus){
+      this.leadViewingByLeadStatus=null;
+      this.showleadViewingByLeadStatus=false
+      }
+      if(this.leadViewingByLeadCallStatus){
+        this.leadViewingByLeadCallStatus=null
+        this.showleadViewingByLeadCommentStatus=false
+      }
+    this.viewSpecificEventRecords=this.specificEventRecords[i]
+    console.log(this.viewSpecificEventRecords)
+    this.timeFormat=moment( this.viewSpecificEventRecords).format('LLL');
+    this.leadSelectedid=this.specificEventRecords[i]._id
+    this.leadIndex=i;
+    if(this.specificEventRecords[i].comments.length>0){
+      this.showSpecificEventRecords=true
+    }
+    else{
+      this.showSpecificEventRecords=false
+    }
+    jQuery('#leadsDetailsModal').modal('show')
+    this.CommentForm.controls['StatusForm'].get('status').setValue(this.specificEventRecords[i].status)
+    this.CommentForm.controls['StatusForm'].get('callStatus').setValue(this.specificEventRecords[i].callStatus)
   }
 
   navigateToLead(){

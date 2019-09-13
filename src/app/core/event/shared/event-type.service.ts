@@ -77,6 +77,10 @@ export class EventService {
         return this.http.get(this.url4+ '/all', { headers: this.headers });
     }
 
+    getAllLeadsMainEventbyId(id) {
+        return this.http.get(this.url5+ '/all/byevent/' +id, { headers: this.headers });
+    }
+
     getAllMainEventByCity(id){
         return this.http.get(this.url4+ '/all/bycity/' + id, { headers: this.headers });
     }
