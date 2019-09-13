@@ -617,7 +617,7 @@ export class EventMainComponent implements OnInit {
   viewLeadleadStatusLeads(i){
     if(this.viewSpecificEventRecords){
     this.viewSpecificEventRecords=null
-    this.showleadViewingByLeadStatus=false
+    this.showSpecificEventRecords=false
     }
     if(this.leadViewingByLeadStatus){
       this.leadViewingByLeadStatus=null;
@@ -646,7 +646,7 @@ export class EventMainComponent implements OnInit {
   viewLeadcallingStatusLeads(i){
     if(this.viewSpecificEventRecords){
       this.viewSpecificEventRecords=null
-      this.showleadViewingByLeadStatus=false
+      this.showSpecificEventRecords=false
       }
     if(this.leadViewingByLeadStatus){
       this.leadViewingByLeadStatus=null;
@@ -701,7 +701,7 @@ export class EventMainComponent implements OnInit {
   viewSpecificLeads(i){
     if(this.viewSpecificEventRecords){
       this.viewSpecificEventRecords=null
-      this.showleadViewingByLeadStatus=false
+      this.showSpecificEventRecords=false
       }
     if(this.leadViewingByLeadStatus){
       this.leadViewingByLeadStatus=null;
