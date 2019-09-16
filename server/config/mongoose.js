@@ -10,7 +10,8 @@ mongoose.set('useFindAndModify', false);
 // Connect to MongoDB
 mongoose
   // .connect(mongoUri, { useNewUrlParser: true, useCreateIndex: true })
-  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/binsar", { useNewUrlParser: true, useCreateIndex: true })
+  // .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/binsar", { useNewUrlParser: true, useCreateIndex: true })
+  .connect(process.env.MONGODB_URI || "mongodb://heroku_rwxztsfk:tu82s81k7mo3f77olfvd39vn25@ds349587.mlab.com:49587/heroku_rwxztsfk", { useNewUrlParser: true, useCreateIndex: true })
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err));
 
