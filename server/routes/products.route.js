@@ -9,7 +9,7 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 //GET ALL PRODUCTS CREATED BY SELFF
 router.get("/", authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
-    Product.find({ created_by: req.user._id }).populate("created_by available_for", "-password").populate("category brand").exec().then(docs => {
+    Product.find({ created_by: req.user._id }).populate("created_by ", "-password").populate("category brand").exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All products" });
         else

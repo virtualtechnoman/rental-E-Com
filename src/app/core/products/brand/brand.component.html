@@ -4,8 +4,6 @@
       <h2 class="float-left">Brand Management</h2>
       <a class="btn btn-secondary text-white float-right" (click)="resetForm()" data-toggle="modal"
         data-target="#modal3">Add New Brand</a>
-      <!-- <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
-          data-target="#modal2">Upload CSV</a> -->
     </div>
     <div class="card-body">
       <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
@@ -38,7 +36,7 @@
 </div>
 
 <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header text-center">
         <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="editing">Edit Brand</h6>
@@ -51,7 +49,7 @@
         <form [formGroup]="brandForm" (ngSubmit)="onSubmit()">
           <div class="divider-text">Give Brand a Name</div>
           <div class="form-row">
-            
+
             <input type="text" class="form-control" placeholder="Brand Name Here " formControlName="name" required
               [ngClass]="{ 'is-invalid': submitted && f.name.errors }">
             <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
@@ -60,7 +58,7 @@
           </div>
           <div class="divider-text">Give Brand Address</div>
           <div class="form-row">
-            
+
             <input type="text" class="form-control" placeholder="Address Here " formControlName="address" required
               [ngClass]="{ 'is-invalid': submitted && f.address.errors }">
             <div *ngIf="submitted && f.address.errors" class="invalid-feedback">
@@ -69,33 +67,35 @@
           </div>
           <div class="divider-text">Contact Information</div>
           <div class="form-row">
-            
-            <input type="text" class="form-control" placeholder="Contact No. Here " formControlName="contact" required
-              [ngClass]="{ 'is-invalid': submitted && f.contact.errors }">
+
+            <input type="text" class="form-control" maxlength="10" placeholder="Contact No. Here "
+              formControlName="contact" required [ngClass]="{ 'is-invalid': submitted && f.contact.errors }">
             <div *ngIf="submitted && f.contact.errors" class="invalid-feedback">
               <div *ngIf="f.contact.errors.required">Contact No. Is Required</div>
             </div>
           </div>
           <div class="divider-text">Brand Logo</div>
           <div class="form-row" *ngIf="editShowImage">
-              <div class="form-group">
+            <div class="form-group">
               <label>Brand Image</label>
-              <div class="col-sm-3 col-md-2 col-lg text-center" >
-              <div class="avatar avatar-xxl avatar-online"><img src="{{editImage}}" class="rounded-circle" alt=""></div>
+              <div class="col-sm-3 col-md-2 col-lg text-center">
+                <div class="avatar avatar-xxl avatar-online"><img src="{{editImage}}" class="rounded-circle" alt="">
+                </div>
               </div>
-              </div>
+            </div>
           </div>
-         
+
           <div class="form-row offset-md-6">
-              <div class="form-group custom-file">
-                <label class="custom-file-label" for="customFile">Select Brand Image</label>
-                <input type="file" formControlName="logo" (change)="selectFile($event)" class="custom-file-input" id="customFile">
-              </div>
-           </div>
+            <div class="form-group custom-file">
+              <label class="custom-file-label" for="customFile">Select Brand Image</label>
+              <input type="file" formControlName="logo" (change)="selectFile($event)" class="custom-file-input"
+                id="customFile">
+            </div>
+          </div>
           <br>
           <div class=" text-center">
-          <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-          <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+            <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
           </div>
           <!-- <div class="text-center">
             <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
@@ -118,12 +118,12 @@
         </button>
       </div>
       <div class="modal-body">
-          <div class="form-group" *ngIf="showImage">
-              <label>Brand Image</label>
-        <div class="col-sm-3 col-md-2 col-lg text-center" >
-          <div class="avatar avatar-xxl avatar-online"><img src="{{image}}" class="rounded-circle" alt=""></div>
-        </div>
+        <div class="form-group" *ngIf="showImage">
+          <label>Brand Image</label>
+          <div class="col-sm-3 col-md-2 col-lg text-center">
+            <div class="avatar avatar-xxl avatar-online"><img src="{{image}}" class="rounded-circle" alt=""></div>
           </div>
+        </div>
         <div class="form-group">
           <label>Brand Name</label>
           <input type="text" class="form-control" [(ngModel)]="viewArray.name" disabled />

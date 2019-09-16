@@ -14,7 +14,7 @@ const newProductSchema = Joi.object({
     selling_price: Joi.number().required(),
     brand: Joi.string().required(),
     details: Joi.string().optional().allow(''),
-    available_for: Joi.array().items(Joi.string().required()).required()
+    available_for: Joi.array().items(Joi.string().optional()).optional()
 })
 
 const updateProductSchema = Joi.object({
