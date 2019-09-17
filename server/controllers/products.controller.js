@@ -9,7 +9,7 @@ const newProductSchema = Joi.object({
         name:Joi.string(),
         value:Joi.string().allow('')
     }).required()).required(),
-    farm_price: Joi.number().required(),
+    farm_price: Joi.number().optional(),
     is_active: Joi.boolean().required(),
     selling_price: Joi.number().required(),
     brand: Joi.string().required(),

@@ -18,7 +18,7 @@ const routes: Routes = [
   },
   { path: 'distirbutor', children: [{ path: '', component: DistirbutorComponent }], canActivate: [AuthGuard] 
   },
-  { path: 'sector', component: SectorComponent, canActivate: [AuthGuard] 
+  { path: 'sector', component: SectorComponent, canActivate: [AuthGuard]
   }
 
 ];

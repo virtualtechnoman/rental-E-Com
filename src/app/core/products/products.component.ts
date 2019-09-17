@@ -1,12 +1,12 @@
 import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { ProductsService } from './shared/products.service';
 import { FormBuilder, FormGroup, FormControlName, Validators } from '@angular/forms';
-import { ProductModel, CategoryModel, category } from './shared/product.model';
+import { ProductModel, CategoryModel } from './shared/product.model';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { ResponseModel } from '../../shared/shared.model';
-import * as _ from "lodash";
+import * as _ from 'lodash';
 import value from '*.json';
 
 @Component({
@@ -15,12 +15,12 @@ import value from '*.json';
   styleUrls: ['./products.component.scss']
 })
 export class ProductsComponent implements OnInit {
-  @ViewChildren("checkboxes") checkboxes: QueryList<ElementRef>;
-  @ViewChildren("selectallcheckboxes") selectallcheckboxes: QueryList<ElementRef>;
-  @ViewChildren("selectallcheckboxes") selectallcheckboxes2: any;
-  @ViewChildren("checkboxes") checkboxes2: any;
+  @ViewChildren('checkboxes') checkboxes: QueryList<ElementRef>;
+  @ViewChildren('selectallcheckboxes') selectallcheckboxes: QueryList<ElementRef>;
+  @ViewChildren('selectallcheckboxes') selectallcheckboxes2: any;
+  @ViewChildren('checkboxes') checkboxes2: any;
   fileSelected: any;
-  imageUrl = "https://binsar.s3.ap-south-1.amazonaws.com/"
+  imageUrl = 'https://binsar.s3.ap-south-1.amazonaws.com/'
   jQuery: any;
   allproducts: any[] = [];
   allCategories: CategoryModel[] = [];
@@ -31,7 +31,7 @@ export class ProductsComponent implements OnInit {
   currentIndex: number;
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
-  editing: Boolean = false;;
+  editing: Boolean = false;
   productForm: FormGroup;
   AttributeValueForm: FormGroup;
   CSV: File = null;
@@ -49,16 +49,16 @@ export class ProductsComponent implements OnInit {
   masterArray: any[] = [];
   keyProductImage: any;
   urlProductImage: any;
-  showImage: boolean = false;
+  showImage: Boolean = false;
   image: any;
-  editShowImage: boolean = false
+  editShowImage: Boolean = false;
   editImage: any;
   mastImage: any;
   productImagesArray: any[] = []
   specificCategoryAttributes: any[] = []
   specificCategoryAttributesLength: any;
   specificCategoryAttributesName: any = [];
-  editAttributesArray:any=[]
+  editAttributesArray: any = []
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService
   ) {
@@ -71,17 +71,17 @@ export class ProductsComponent implements OnInit {
     this.getallBrand();
     this.getAllHub();
     this.dtOptions = {
-      pagingType: "full_numbers",
+      pagingType: 'full_numbers',
       lengthMenu: [
         [10, 15, 25, -1],
         [10, 15, 25, 'All']
       ],
       destroy: true,
       retrive: true,
-      dom: '<"html5buttons"B>lTfgitp',
+      dom: "<'html5buttons'B>lTfgitp",
       language: {
-        search: "_INPUT_",
-        searchPlaceholder: "Search records",
+        search: '_INPUT_',
+        searchPlaceholder: 'Search records',
       },
       // dom: 'Bfrtip',
       buttons: [
@@ -96,7 +96,7 @@ export class ProductsComponent implements OnInit {
       brand: ['', Validators.required],
       category: ['', Validators.required],
       details: [''],
-      farm_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
+      // farm_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
       attributes: this.formBuilder.array([]),
       is_active: [false],
       name: ['', Validators.required],
@@ -120,69 +120,69 @@ export class ProductsComponent implements OnInit {
 
   submit() {
     console.log(this.specificCategoryAttributesName)
-    var attributes:any[] = []
+    var attributes: any[] = []
     if (this.specificCategoryAttributesLength) {
       for (var index = 0; index < this.specificCategoryAttributesLength; index++) {
         if (!this.AttributeValueForm.value.values[index]) {
-          this.AttributeValueForm.value.values[index] = ""
+          this.AttributeValueForm.value.values[index] = ''
         }
-        attributes[index]={ name: this.specificCategoryAttributesName[index], value: this.AttributeValueForm.value.values[index]}
+        attributes[index] = { name: this.specificCategoryAttributesName[index], value: this.AttributeValueForm.value.values[index] }
       }
     }
-    if(attributes){
-    this.productForm.value.attributes=attributes
+    if (attributes) {
+      this.productForm.value.attributes = attributes
     }
-    
-    
+
+
     console.log(this.productForm.value)
     this.submitted = true;
     if (this.productForm.invalid) {
       return;
     }
 
-    if(this.editing){
-        this.productForm.value.available_for.length=0;
-      for(var i=0;i<this.checkboxes2._results.length;i++){
-        if(this.checkboxes2._results[i].nativeElement.checked==true){
-            this.productForm.value.available_for.push(this.allHub[i]._id)
+    if (this.editing) {
+      this.productForm.value.available_for.length = 0;
+      for (var i = 0; i < this.checkboxes2._results.length; i++) {
+        if (this.checkboxes2._results[i].nativeElement.checked == true) {
+          this.productForm.value.available_for.push(this.allHub[i]._id)
         }
       }
       // this.updateProduct(this.productForm.value);
-    }else{
-      for(var i=0;i<this.checkboxes2._results.length;i++){
-        if(this.checkboxes2._results[i].nativeElement.checked==true){
-            this.productForm.value.available_for.push(this.allHub[i]._id)
+    } else {
+      for (var i = 0; i < this.checkboxes2._results.length; i++) {
+        if (this.checkboxes2._results[i].nativeElement.checked == true) {
+          this.productForm.value.available_for.push(this.allHub[i]._id)
         }
       }
     }
-    if(this.fileSelected){
-      this.productService.getUrlProduct().subscribe((res:ResponseModel)=>{
+    if (this.fileSelected) {
+      this.productService.getUrlProduct().subscribe((res: ResponseModel) => {
         console.log(res.data)
-        this.keyProductImage=res.data.key;
-        this.urlProductImage=res.data.url;
+        this.keyProductImage = res.data.key;
+        this.urlProductImage = res.data.url;
 
-      if(this.urlProductImage){
-        this.productService.sendUrlProduct(this.urlProductImage,this.fileSelected).then(resp=>{
-          if(resp.status == 200 ){
-            this.productForm.value.image=this.keyProductImage;
+        if (this.urlProductImage) {
+          this.productService.sendUrlProduct(this.urlProductImage, this.fileSelected).then(resp => {
+            if (resp.status == 200) {
+              this.productForm.value.image = this.keyProductImage;
 
-           console.log(this.productForm.value)
-           if (this.editing) {
-            this.updateProduct(this.productForm.value);
-          } else {
-            this.addProduct(this.productForm.value);
-          }
-          }
-        })
-      }
+              console.log(this.productForm.value)
+              if (this.editing) {
+                this.updateProduct(this.productForm.value);
+              } else {
+                this.addProduct(this.productForm.value);
+              }
+            }
+          })
+        }
       })
-    }else{
+    } else {
       console.log(this.productForm.value)
       if (this.editing) {
-          if(!this.fileSelected){
-        this.productForm.value.image=this.mastImage
-          }
-        console.log(this.mastImage)
+        if (!this.fileSelected) {
+          this.productForm.value.image = this.mastImage;
+        }
+        console.log(this.mastImage);
         this.updateProduct(this.productForm.value);
 
       } else {
@@ -194,13 +194,14 @@ export class ProductsComponent implements OnInit {
 
   addProduct(product) {
     console.log(product);
-    if (product)
+    if (product) {
       this.productService.addProduct(product).subscribe((res: ResponseModel) => {
         jQuery('#modal3').modal('hide');
         this.toastr.success('Product Added!', 'Success!');
         this.allproducts.push(res.data);
         this.resetForm();
-      })
+      });
+    }
   }
 
   selectAllCheckboxes() {
@@ -223,11 +224,11 @@ export class ProductsComponent implements OnInit {
     this.currentproduct = this.allproducts[i];
     this.currentproductId = this.allproducts[i]._id;
     this.currentIndex = i;
-    if(this.allproducts[i].attributes){
-    this.editAttributesArray=this.allproducts[i].attributes
+    if (this.allproducts[i].attributes) {
+      this.editAttributesArray = this.allproducts[i].attributes;
     }
-    console.log(this.editAttributesArray)
-    this.masterArray.length = 0
+    console.log(this.editAttributesArray);
+    this.masterArray.length = 0;
     this.checkboxes.forEach((element) => {
       element.nativeElement.checked = false;
     });
@@ -235,19 +236,18 @@ export class ProductsComponent implements OnInit {
   }
 
   viewProduct(i) {
-    this.array3.length = 0
+    this.array3.length = 0;
     this.viewArray = this.allproducts[i];
     if (this.viewArray.image) {
       this.showImage = true;
-      this.image = this.imageUrl + this.viewArray.image
-      console.log(this.image)
-    }
-    else {
-      this.showImage = false
+      this.image = this.imageUrl + this.viewArray.image;
+      console.log(this.image);
+    } else {
+      this.showImage = false;
     }
     console.log(this.viewArray);
     for (let i = 0; i < this.viewArray.available_for.length; i++) {
-      this.array3.push(this.viewArray.available_for[i])
+      this.array3.push(this.viewArray.available_for[i]);
     }
     console.log(this.array3)
     if (this.array3.length > 0) {
@@ -258,10 +258,9 @@ export class ProductsComponent implements OnInit {
 
   getAllCategory() {
     this.productService.getAllCategory().subscribe((res: ResponseModel) => {
-      this.allCategories = res.data
-      console.log(res.data)
-      this.dtTrigger.next();
-    })
+      this.allCategories = res.data;
+      console.log(res.data);
+    });
   }
 
   deleteProduct(i) {
@@ -276,26 +275,18 @@ export class ProductsComponent implements OnInit {
   getProducts() {
     this.allproducts.length = 0;
     this.productService.getAllProduct().subscribe((res: ResponseModel) => {
-      console.log(res);
       this.allproducts = res.data;
-
-      console.log(this.allproducts);
+      this.dtTrigger.next();
       if (res.data) {
         for (var i = 0; i < res.data.length; i++) {
-          this.productImagesArray.push(this.imageUrl + res.data[i].image)
+          this.productImagesArray.push(this.imageUrl + res.data[i].image);
         }
       }
-      console.log(this.productImagesArray);
-
-      this.dtTrigger.next();
     });
   }
   getallBrand() {
     this.productService.getAllBrand().subscribe((res: ResponseModel) => {
-      console.log(res);
       this.allBrand = res.data;
-      console.log(this.allBrand);
-      this.dtTrigger.next();
     });
   }
 
@@ -303,23 +294,19 @@ export class ProductsComponent implements OnInit {
     this.productService.getAllHub().subscribe((res: ResponseModel) => {
       console.log(res);
       this.allHub = res.data;
-      console.log(this.allHub);
-      this.dtTrigger.next();
     });
   }
 
   updateProduct(product) {
     const id = this.allproducts[this.currentIndex]._id;
-    console.log(product, id);
-    if(this.editAttributesArray){
-    product.attributes=this.editAttributesArray
+    if (this.editAttributesArray) {
+      product.attributes = this.editAttributesArray
     }
     if (id) {
       this.productService.updateProduct(product, id).subscribe((res: ResponseModel) => {
         jQuery('#modal3').modal('hide');
         this.toastr.info('Product Updated Successfully!', 'Updated!!');
         this.resetForm();
-        console.log(res.data)
         this.allproducts.splice(this.currentIndex, 1, res.data)
         this.currentproductId = null;
         this.editing = false;
@@ -337,7 +324,7 @@ export class ProductsComponent implements OnInit {
       brand: ['', Validators.required],
       category: ['', Validators.required],
       details: [''],
-      farm_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
+      // farm_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
       // image: ['No Value', Validators.required],
       is_active: [true],
       name: ['', Validators.required],
@@ -368,7 +355,7 @@ export class ProductsComponent implements OnInit {
 
     this.productForm.controls['category'].setValue(product.category._id);
     this.productForm.controls['details'].setValue(product.details);
-    this.productForm.controls['farm_price'].setValue(product.farm_price);
+    // this.productForm.controls['farm_price'].setValue(product.farm_price);
     this.productForm.controls['is_active'].setValue(product.is_active);
     this.productForm.controls['name'].setValue(product.name);
     this.productForm.controls['selling_price'].setValue(product.selling_price);
@@ -400,17 +387,17 @@ export class ProductsComponent implements OnInit {
     this.uploading = true;
     const lines = this.parsedCSV.split(/\r\n|\n/);
     const result = [];
-    const headers: any[] = lines[0].split(",");
-    if (headers[0] == "brand" && headers[1] == "is_active" && headers[2] == "cif_price" && headers[3] == "business_unit"
-      && headers[4] == "business_unit_id" && headers[5] == "distirbutor"
-      && headers[6] == "form" && headers[7] == "notes" && headers[8] == "pack_size"
-      && headers[9] == "promoted" && headers[10] == "range" && headers[11] == "registered"
-      && headers[12] == "strength" && headers[13] == "therapy_line_id" && headers[14] == "therapy_line"
-      && headers[15] == "whole_price" && headers[16] == "sku_id"
+    const headers: any[] = lines[0].split(',');
+    if (headers[0] == 'brand' && headers[1] == 'is_active' && headers[2] == 'cif_price' && headers[3] == 'business_unit'
+      && headers[4] == 'business_unit_id' && headers[5] == 'distirbutor'
+      && headers[6] == 'form' && headers[7] == 'notes' && headers[8] == 'pack_size'
+      && headers[9] == 'promoted' && headers[10] == 'range' && headers[11] == 'registered'
+      && headers[12] == 'strength' && headers[13] == 'therapy_line_id' && headers[14] == 'therapy_line'
+      && headers[15] == 'whole_price' && headers[16] == 'sku_id'
     ) {
       for (var i = 1; i < lines.length - 1; i++) {
         const obj = {};
-        const currentline = lines[i].split(",");
+        const currentline = lines[i].split(',');
         for (var j = 0; j < headers.length; j++) {
           obj[headers[j]] = currentline[j];
         }
@@ -420,7 +407,7 @@ export class ProductsComponent implements OnInit {
         setTimeout(() => {
           this.uploading = false;
           this.toastr.success('Product added successfully', 'Upload Success');
-          jQuery("#modal2").modal("hide");
+          jQuery('#modal2').modal('hide');
           this.allproducts.push(res.data);
         }, 1000);
       });

@@ -1,4 +1,4 @@
-var current_time = new Date();
+const current_time = new Date();
 export class CustomerModel {
     _id: string;
     city_name: string;
@@ -25,23 +25,38 @@ export class CustomerTypeModel {
     customer_type: string;
     customer_id: string;
 }
-export class CustomerClass{
-    full_name:string;
-    mobile_number:string;
-    landmark:string;
-    street_address:string;
-    city:string;
-    dob:Date;
+export class CustomerClass {
+    full_name: string;
+    mobile_number: string;
+    landmark: string;
+    street_address: string;
+    city: string;
+    dob: Date;
 }
 
 export class DistirbutorModel {
     is_active: boolean;
     distirbutor_name: string;
-    distirbutor_id:string
+    distirbutor_id: string;
 }
 
 export class SectorModel {
     is_active: boolean;
     sector_name: string;
-    sector_id:string
+    sector_id: string;
+}
+
+export class CustomerOrder {
+    _id: String;
+    isDelivered: Boolean;
+    isCancelled: Boolean;
+    products: [{
+        product: String;
+        quantity: Number;
+    }];
+    placed_by: String;
+    order_id: String;
+    amount: Number;
+    status: String;
+    order_date: Date;
 }

@@ -68,12 +68,12 @@ export class CustomersComponent implements OnInit {
   eventsModel: any;
   displayEvent: any;
   events = null;
-  allEvents2:any[]=[]
-  allEvents: any[]=[];
+  allEvents2: any[] = []
+  allEvents: any[] = [];
   @ViewChild('calendar') calendarComponent: FullCalendarComponent;
-  
 
-  constructor(protected eventService: EventSesrvice,private productService: ProductsService, private customerService: CustomersService, private supportService: SupportService, private formBuilder: FormBuilder, private toastr: ToastrService, private authService: AuthService) {
+
+  constructor(protected eventService: EventSesrvice, private productService: ProductsService, private customerService: CustomersService, private supportService: SupportService, private formBuilder: FormBuilder, private toastr: ToastrService, private authService: AuthService) {
     this.currentcustomer = new CustomerClass();
     this.registerCustomer = new CustomerClass();
     this.initForm();
@@ -160,7 +160,7 @@ export class CustomersComponent implements OnInit {
   get f2() { return this.followUpForm.controls; }
   get f3() { return this.subscriptionForm.controls; }
 
-  
+
 
   onSubmitFollowUpForm() {
     console.log(this.followUpForm.value)
@@ -247,10 +247,14 @@ export class CustomersComponent implements OnInit {
   get_customers() {
     this.allcustomers.length = 0;
     this.customerService.getAllCustomers().subscribe((res: ResponseModel) => {
-      console.log(res);
-      this.allcustomers.push(res.data);
-      console.log('All Customers', this.allcustomers);
-      this.dtTrigger.next();
+      if (res.error) {
+        this.toastr.warning('Customer Not Found!', 'Error!');
+      } else {
+        console.log(res);
+        this.allcustomers.push(res.data);
+        console.log('All Customers', this.allcustomers);
+        this.dtTrigger.next();
+      }
     });
   }
 
@@ -258,7 +262,7 @@ export class CustomersComponent implements OnInit {
     console.log(customer)
     console.log(this.allcustomers[0][this.current_customer_index]._id, customer)
     this.customerService.updateCustomer(this.allcustomers[0][this.current_customer_index]._id, customer).subscribe(res => {
-      console.log(res)
+      console.log(res);
       this.toastr.info('Customer Updated Successfully!', 'Updated!');
       jQuery('#modal3').modal('hide');
       this.allcustomers[0].splice(this.current_customer_index, 1, res);
@@ -357,19 +361,19 @@ export class CustomersComponent implements OnInit {
 
   showPerticularSubscrition(i) {
     console.log(this.calendarComponent)
-    
+
     this.viewPerticularSubscription = this.allSubscriptions[i]
 
-    if(this.allSubscriptions[i].frequencyDates){
-     
+    if (this.allSubscriptions[i].frequencyDates) {
+
       console.log(this.allSubscriptions[i].frequencyDates);
-      this.allEvents2.length=0;
-      var arr:any[]=[]
-      for(var index=0;index<this.allSubscriptions[i].frequencyDates.length;index++){
-        arr.push({title:'subscribed',start: this.allSubscriptions[i].frequencyDates[index].slice(0,10), color: '#4285F4'});
-         }
-         this.allEvents2=arr
-         console.log(arr,this.allEvents2)
+      this.allEvents2.length = 0;
+      var arr: any[] = []
+      for (var index = 0; index < this.allSubscriptions[i].frequencyDates.length; index++) {
+        arr.push({ title: 'subscribed', start: this.allSubscriptions[i].frequencyDates[index].slice(0, 10), color: '#4285F4' });
+      }
+      this.allEvents2 = arr
+      console.log(arr, this.allEvents2)
     }
   }
 
@@ -524,26 +528,26 @@ export class CustomersComponent implements OnInit {
     let arr = [];
     let totalDays = 60;
     let days = 0;
-    switch(this.selectedEvent){
+    switch (this.selectedEvent) {
       case 'daily': days = 1;
-      break;
+        break;
       case 'alternate': days = 2;
-      break;
+        break;
       case 'in3days': days = 3;
-      break;
+        break;
     }
-    for (let i = 0; i < totalDays/days; i++) {
+    for (let i = 0; i < totalDays / days; i++) {
       arr.push(subscriptionStatDate);
       subscriptionStatDate = moment(subscriptionStatDate).add(days, 'days').toDate()
     }
     console.log(arr);
     this.subscriptionForm.value.startDate = subscriptionStatDate
-    this.subscriptionForm.value.frequencyDates=arr
+    this.subscriptionForm.value.frequencyDates = arr
     console.log(this.subscriptionForm.value)
-    this.customerService.addSubscriptionn(this.subscriptionForm.value).subscribe((res:ResponseModel)=>{
+    this.customerService.addSubscriptionn(this.subscriptionForm.value).subscribe((res: ResponseModel) => {
       console.log(res.data)
       this.allSubscriptions.push(res.data)
-      this.showSubform=false;
+      this.showSubform = false;
     })
   }
 
