@@ -10,7 +10,6 @@ const router = express.Router();
 module.exports = router;
 
 router.post('/register', async (req, res) => {
-  console.log("REGISTER")
   if (req.headers.token) {
     if (typeof req.headers.token == "string" && req.headers.token.trim() !== "") {
       try {
@@ -34,7 +33,6 @@ router.post('/register', async (req, res) => {
       res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid token" })
     }
   } else {
-    console.log("BODY IS ", req.body);
     result = await UserController.verifyRegister(req.body);
     if (!isEmpty(result.errors)) {
       console.log("HAS ERRORS");
@@ -120,8 +118,6 @@ router.post('/login', async (req, res) => {
     }
     if (req.body.email && req.body.password) {
       let email = req.body.email.trim();
-      console.log("BODY IS ", req.body);
-      console.log("Email IS ", email);
       User.findOne({ email: email }, (err, user) => {
         // console.log(user)
         if (err) {

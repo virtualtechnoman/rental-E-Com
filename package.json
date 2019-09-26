@@ -11,6 +11,7 @@
     "serve": "nodemon server ng serve",
     "start": "node server",
     "build": "ng build --prod",
+    "dev": "concurrently \"mongod\" \"ng serve --proxy-config proxy.conf.json --open\" \"tsc -w -p server\" \"nodemon dist/server/index.js\"",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",

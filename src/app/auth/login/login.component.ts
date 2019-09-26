@@ -12,7 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private authService: AuthService, private router: Router, private formBuilder: FormBuilder, private toaster:ToastrService) { }
+  constructor(private authService: AuthService, private router: Router, private formBuilder: FormBuilder, private toaster: ToastrService) { }
 
   email: string;
   password: string;
@@ -23,9 +23,10 @@ export class LoginComponent implements OnInit {
   login(): void {
     this.authService.login(this.email, this.password)
       .subscribe((data) => {
-        if(data.error ){
-          this.toaster.error("Check Email or Password","Validation Error")
-        }else{
+        if (data.error) {
+          console.log(data.error)
+          this.toaster.error("Check Email or Password", "Validation Error")
+        } else {
           this.router.navigateByUrl('/home')
         }
       })
