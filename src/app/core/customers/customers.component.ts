@@ -20,7 +20,7 @@ import { EventSesrvice } from '../../event.service';
   styleUrls: ['./customers.component.scss']
 })
 export class CustomersComponent implements OnInit {
-  registerCustomer: CustomerClass
+  registerCustomer: CustomerClass;
   jQuery: any;
   allregisterCustomer: any[] = []
   allcustomers: any[] = [];
@@ -110,17 +110,32 @@ export class CustomersComponent implements OnInit {
       ],
       destroy: true,
       retrive: true,
-      dom: '<"html5buttons"B>lTfgitp',
+      // dom: '<"html5buttons"B>lTfgitp',
       language: {
         search: '_INPUT_',
         searchPlaceholder: 'Search records',
       },
-      // dom: 'Bfrtip',
+      initComplete: function (settings, json) {
+        $('.button').removeClass('dt-button');
+      },
+      dom: "l <'col-sm-12 col-md-6'B> f r t i p",
+      // dom:"B<'#colvis row'><'row'><'row'<'col-md-6'l><'col-md-6'f>r>t<'row'<'col-md-4'i>><'row'p>",
       buttons: [
-        // 'colvis',
-        'copy',
-        'print',
-        'excel',
+        {
+          text: 'Excel',
+          extend: 'excel',
+          className: 'table-button btn btn-sm button btn-danger '
+        },
+        {
+          extend: 'print',
+          text: 'Print',
+          className: 'table-button btn-sm button btn btn-danger '
+        },
+        {
+          extend: 'pdf',
+          text: 'PDF',
+          className: 'table-button btn-sm button btn btn-danger '
+        }
       ]
     };
     this.get_customers();
@@ -146,7 +161,7 @@ export class CustomersComponent implements OnInit {
 
   }
   dayClick(model: any) {
-    console.log(this.calendarComponent)
+    console.log(this.calendarComponent);
     console.log(model);
   }
 
@@ -163,14 +178,14 @@ export class CustomersComponent implements OnInit {
 
 
   onSubmitFollowUpForm() {
-    console.log(this.followUpForm.value)
-    this.supportService.sendTicketFollowUp(this.custometTickets[this.currentTicketIndex]._id, this.followUpForm.value).subscribe((res: ResponseModel) => {
-      this.custometTickets.splice(this.currentTicketIndex, 1, res.data)
-      this.toastr.info('Follow up is successfull!', 'Succcess!!');
-      jQuery('#ticketModal').modal('hide');
-      console.log(res.data)
-      this.followUpForm.reset();
-    })
+    this.supportService.sendTicketFollowUp(this.custometTickets[this.currentTicketIndex]._id,
+      this.followUpForm.value).subscribe((res: ResponseModel) => {
+        this.custometTickets.splice(this.currentTicketIndex, 1, res.data)
+        this.toastr.info('Follow up is successfull!', 'Succcess!!');
+        jQuery('#ticketModal').modal('hide');
+        console.log(res.data);
+        this.followUpForm.reset();
+      });
   }
 
   onSubmit() {
@@ -247,8 +262,11 @@ export class CustomersComponent implements OnInit {
   get_customers() {
     this.allcustomers.length = 0;
     this.customerService.getAllCustomers().subscribe((res: ResponseModel) => {
+      console.log(res)
       if (res.error) {
-        this.toastr.warning('Customer Not Found!', 'Error!');
+        if (res.status === 403) {
+          this.toastr.warning('ACCESS DENIED', 'Error!');
+        }
       } else {
         console.log(res);
         this.allcustomers.push(res.data);

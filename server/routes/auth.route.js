@@ -80,11 +80,12 @@ router.post('/register', async (req, res) => {
     })
   }
 });
+
 router.post('/login', async (req, res) => {
-  // console.log("LOGIN ROUTE")
+  console.log("LOGIN ROUTE")
   if (req.headers.token != undefined) {
     if (typeof req.headers.token == "string" && req.headers.token.trim() !== "") {
-      // console.log("HAS TOKEN");
+      console.log("HAS TOKEN");
       jwt.verify(req.headers.token, process.env.JWT_SECRET, (err, payload) => {
         if (err) {
           console.log(err);
@@ -158,6 +159,8 @@ router.post('/login', async (req, res) => {
     }
   }
 });
+
+
 router.post('/register2', async (req, res) => {
   console.log("REGISTER2")
   if (req.headers.token) {
@@ -206,6 +209,8 @@ router.post('/register2', async (req, res) => {
       })
   }
 });
+
+
 router.post('/verifyotp/:type', async (req, res) => {
   if (req.headers.token) {
     if (typeof req.headers.token == "string" && req.headers.token.trim() !== "") {
@@ -305,6 +310,8 @@ router.post('/verifyotp/:type', async (req, res) => {
     })
   }
 });
+
+
 router.get('/me', async (req, res) => {
   if (req.headers.token) {
     if (typeof req.headers.token == "string" && req.headers.token.trim() !== "") {

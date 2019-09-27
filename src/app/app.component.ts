@@ -17,19 +17,16 @@ export class AppComponent implements OnInit, OnChanges {
   private userSubscription: Subscription;
   public user: any;
   public loggedin: boolean;
-  array: any = []
+  array: any = [];
   constructor(
     public authService: AuthService,
     private router: Router,
     private domSanitizer: DomSanitizer,
     private matIconRegistry: MatIconRegistry,
   ) {
-    // console.log
     this.array = this.authService.userData;
-    console.log('hiii', this.array);
     this.registerSvgIcons();
-    this.getData();
-    this.user = localStorage.getItem('user')
+    this.user = localStorage.getItem('user');
   }
 
   ngOnChanges() {
@@ -38,40 +35,20 @@ export class AppComponent implements OnInit, OnChanges {
     } else {
       this.loggedin = false;
     }
-  }
-
-  public ngOnInit() {
-    this.authService.me().subscribe(data => {
-      // console.log(data);
-      if(this.user){
-      this.user = data;
-      console.log(this.user.full_name)
-      localStorage.setItem('user', this.user.full_name)
-      }
-
-      // this.get(data.user.id);
-    });
-    // update this.user after login/register/logout
-    this.userSubscription = this.authService.$userSource.subscribe((user) => {
+    this.authService.$userSource.subscribe((user) => {
       console.log(user);
       this.user = user;
       this.loggedin = true;
     });
-    // this.getData();
   }
 
-  getData() {
-    this.authService.me().subscribe(res => {
-      console.log(res);
+  public ngOnInit() {
+    this.authService.$userSource.subscribe((user) => {
+      console.log(user);
+      this.user = user;
+      this.loggedin = true;
     });
   }
-  // get(id) {
-  //   this.userService.getUser(id).subscribe((res: UserModel) => {
-  //     this.me = res;
-  //     console.log(this.me)
-  //   })
-  // }
-
 
   logout(): void {
     this.loggedin = !this.loggedin;
@@ -83,6 +60,7 @@ export class AppComponent implements OnInit, OnChanges {
     this.router.navigate([link]);
   }
 
+  // tslint:disable-next-line: use-life-cycle-interface
   ngOnDestroy() {
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();
@@ -124,7 +102,7 @@ export class AppComponent implements OnInit, OnChanges {
       'trolleybus',
       'water-transportation',
     ].forEach((icon) => {
-      this.matIconRegistry.addSvgIcon(icon, this.domSanitizer.bypassSecurityTrustResourceUrl(`assets/icons/${icon}.svg`))
+      this.matIconRegistry.addSvgIcon(icon, this.domSanitizer.bypassSecurityTrustResourceUrl(`assets/icons/${icon}.svg`));
     });
   }
 

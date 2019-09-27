@@ -45,34 +45,38 @@ router.post('/', (req, res) => {
 router.post('/genall', (req, res) => {
     let all_roles = ["Super Admin", "Farm", "Hub", "Customer", "Driver", "Sales", "Support", "Delivery Boy"];
     let priv = privileges(true);
-    let all=[];
+    let all = [];
     for (let role of all_roles) {
-        all.push(userRole.findOneAndUpdate({name:role},{privileges:priv},{new:true,upsert:true}))
+        all.push(userRole.findOneAndUpdate({ name: role }, { privileges: priv }, { new: true, upsert: true }))
     }
-    Promise.all(all).then(data=>{
-        res.json({status:200,data:null,errors:false,message:"All roles generated successfully"})
-    }).catch(e=>{
+    Promise.all(all).then(data => {
+        res.json({ status: 200, data: null, errors: false, message: "All roles generated successfully" })
+    }).catch(e => {
         console.log(e);
-        res.status(500).json({status:500,data:null,errors:true,message:"An error occured while generating roles"})
+        res.status(500).json({ status: 500, data: null, errors: true, message: "An error occured while generating roles" })
     })
 });
 
 
 //Update a role
 router.put("/:id", (req, res) => {
-    if (mongodb.ObjectId.isValid(req.body.id)) {
+    console.log(req.params.id);
+    if (mongodb.ObjectId.isValid(req.params.id)) {
         let result = UserRoleController.verifyUpdate(req.body);
+        console.log(req.body)
         if (!isEmpty(result.errors)) {
+            console.log(result.errors);
             return res.status(400).json({ status: 400, message: "Fields required", errors: result.errors, data: null });
         }
         else {
-            userRole.findByIdAndUpdate(req.body.id, result.data, { new: true }, (err, doc) => {
+            userRole.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
                 if (err) {
                     console.log(err);
-                    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating the role" })
+                    return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating the role" })
                 }
                 if (doc) {
-                    res.status(200).json({ status: 200, errors: false, data: doc, message: "Role updated successfully" })
+
+                    return res.status(200).json({ status: 200, errors: false, data: doc, message: "Role updated successfully" })
                 }
             })
         }

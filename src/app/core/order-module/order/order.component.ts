@@ -185,7 +185,6 @@ export class OrderComponent implements OnInit {
     this.billedValueFormReturnOrder=this.fb.group({
       billed:this.fb.array([])
     })
-
     this.dtOptions = {
       pagingType: 'full_numbers',
       lengthMenu: [
@@ -194,17 +193,31 @@ export class OrderComponent implements OnInit {
       ],
       destroy: true,
       retrive: true,
-      dom: '<\'html5buttons\'B>lTfgitp\'',
+      // dom: '<\'html5buttons\'B>lTfgitp\'',
       language: {
         search: '_INPUT_',
         searchPlaceholder: 'Search records',
+      }, initComplete: function (settings, json) {
+        $('.button').removeClass('dt-button');
       },
-      // dom: 'Bfrtip',
+      dom: "l <'bottom'B> f r t i p",
+      // dom:"B<'#colvis row'><'row'><'row'<'col-md-6'l><'col-md-6'f>r>t<'row'<'col-md-4'i>><'row'p>",
       buttons: [
-        // 'colvis',
-        'copy',
-        'print',
-        'excel',
+        {
+          text: 'Excel',
+          extend: 'excel',
+          className: 'table-button btn btn-sm button btn-danger '
+        },
+        {
+          extend: 'print',
+          text: 'Print',
+          className: 'table-button btn-sm button btn btn-danger '
+        },
+        {
+          extend: 'pdf',
+          text: 'PDF',
+          className: 'table-button btn-sm button btn btn-danger '
+        }
       ]
     };
   }

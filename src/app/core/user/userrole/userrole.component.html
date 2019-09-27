@@ -2,8 +2,9 @@
   <div class="card">
     <div class="card-header">
       <h2 class="float-left">User Role Management</h2>
-      <!-- <a class="btn btn-secondary  float-right text-white" data-toggle="modal" data-target="#userRoleModal">Add User
-        Role</a> -->
+      <a class="btn btn-secondary  float-right text-white" (click)="resetForm()" data-toggle="modal"
+        data-target="#userRoleModal">Add User
+        Role</a>
     </div>
     <div class="card-body">
       <table id="example1" class="table table-bordered table-hover  table-striped " datatable [dtOptions]="dtOptions"
@@ -17,7 +18,7 @@
         <tbody>
           <tr *ngFor="let user of allUserRoles; let i= index">
             <td>{{i+1}}</td>
-            <td>{{user.name}}</td>
+            <td>{{user?.name}}</td>
             <!-- <td>{{user.isAdmin}}</td> -->
             <td>
               <i class="fas fa-edit mx-1" data-toggle="modal" data-target="#userRoleModal"
@@ -61,7 +62,8 @@
                   <label for="inputPrice3" class=" col-form-label">Is Admin</label>
                 </div>
                 <div class="col-md-8">
-                  <p-inputSwitch class="form-control text-center" formControlName="isAdmin" required></p-inputSwitch>
+                  <p-inputSwitch class="form-control text-center" formControlName="isAdmin" required
+                    [(ngModel)]="isAdmin"></p-inputSwitch>
                 </div>
               </div>
             </div>
@@ -79,6 +81,7 @@
                       <th scope="col">Add </th>
                       <th scope="col">Edit </th>
                       <th scope="col">Delete </th>
+                      <th scope="col">Cancel </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -101,6 +104,7 @@
                         <p-inputSwitch class="text-center" formControlName="DELETE_USER">
                         </p-inputSwitch>
                       </th>
+                      <th></th>
                     </tr>
                     <tr>
                       <th scope="col">Product</th>
@@ -124,6 +128,7 @@
                         <p-inputSwitch class="text-center" formControlName="DELETE_PRODUCT">
                         </p-inputSwitch>
                       </th>
+                      <th></th>
                     </tr>
                     <tr>
                       <th scope="col">Order</th>
@@ -145,8 +150,77 @@
                         <p-inputSwitch class="text-center" formControlName="DELETE_ORDER">
                         </p-inputSwitch>
                       </th>
+                      <th></th>
                     </tr>
                     <tr>
+                      <th scope="col">Customers</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_CUSTOMERS">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_CUSTOMER">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="UPDATE_CUSTOMER">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_CUSTOMER">
+                        </p-inputSwitch>
+                      </th>
+                      <th></th>
+                    </tr>
+                    <tr>
+                      <th scope="col">Brand</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_BRANDS">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_BRAND">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="UPDATE_BRAND">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_BRAND">
+                        </p-inputSwitch>
+                      </th>
+                      <th></th>
+                    </tr>
+                    <tr>
+                      <th scope="col">Category</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_PRODUCT_CATEGORY">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_PRODUCT_CATEGORY">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_PRODUCT_CATEGORY">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="UPDATE_PRODUCT_CATEGORY">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_PRODUCT_CATEGORY">
+                        </p-inputSwitch>
+                      </th>
+                      <th></th>
+                    </tr>
+                    <!-- <tr>
                       <th scope="col">Return Order</th>
                       <th scope="col" formGroupName="privileges">
                         <p-inputSwitch class="text-center" formControlName="GET_ALL_RETURN_ORDERS">
@@ -166,8 +240,9 @@
                         <p-inputSwitch class="text-center" formControlName="DELETE_RETURN_ORDER">
                         </p-inputSwitch>
                       </th>
-                    </tr>
-                    <tr>
+                      <th></th>
+                    </tr> -->
+                    <!-- <tr>
                       <th scope="col">Challan</th>
                       <th scope="col" formGroupName="privileges">
                         <p-inputSwitch class="text-center" formControlName="GET_ALL_CHALLAN">
@@ -187,8 +262,9 @@
                         <p-inputSwitch class="text-center" formControlName="DELETE_CHALLAN">
                         </p-inputSwitch>
                       </th>
-                    </tr>
-                    <tr>
+                      <th></th>
+                    </tr> -->
+                    <!-- <tr>
                       <th scope="col">Driver</th>
                       <th scope="col" formGroupName="privileges">
                         <p-inputSwitch class="text-center" formControlName="GET_ALL_DRIVERS">
@@ -208,8 +284,9 @@
                         <p-inputSwitch class="text-center" formControlName="DELETE_DRIVER">
                         </p-inputSwitch>
                       </th>
-                    </tr>
-                    <tr>
+                      <th></th>
+                    </tr> -->
+                    <!-- <tr>
                       <th scope="col">Vehicles</th>
                       <th scope="col" formGroupName="privileges">
                         <p-inputSwitch class="text-center" formControlName="GET_ALL_VEHICLES">
@@ -229,185 +306,344 @@
                         <p-inputSwitch class="text-center" formControlName="DELETE_VEHICLE">
                         </p-inputSwitch>
                       </th>
+                      <th></th>
+                    </tr> -->
+                    <!-- <tr>
+                      <th scope="col">Event</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_EVENTS">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col">
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_EVENT">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="UPDATE_EVENT">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_EVENT">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="CANCEL_EVENT">
+                        </p-inputSwitch>
+                      </th>
+                    </tr> -->
+                    <!-- <tr>
+                      <th scope="col">Event Leads</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_EVENT_LEADS">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col">
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_EVENT_LEAD">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                            <p-inputSwitch class="text-center" formControlName="UPDATE_VEHICLE">
+                            </p-inputSwitch>
+                          </th>
+                          <th scope="col" formGroupName="privileges">
+                            <p-inputSwitch class="text-center" formControlName="DELETE_VEHICLE">
+                            </p-inputSwitch>
+                          </th>
+                      <th></th>
+                      <th></th>
                     </tr>
+                    <tr>
+                      <th scope="col">Event Types</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_EVENT_TYPES">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col">
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_EVENT_TYPE">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="UPDATE_EVENT_TYPE">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_EVENT_TYPE">
+                        </p-inputSwitch>
+                      </th>
+                      <th></th>
+                    </tr>
+                    <tr>
+                      <th scope="col">Event Organizers</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_EVENT_ORGANIZERS">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col">
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_EVENT_ORGANIZER">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="UPDATE_EVENT_ORGANIZER">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_EVENT_ORGANIZER">
+                        </p-inputSwitch>
+                      </th>
+                      <th></th>
+                    </tr>
+                    <tr>
+                      <th scope="col">Marketing Material</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_MARKETING_MATERIALS">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col">
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_MARKETING_MATERIAL">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="UPDATE_MARKETING_MATERIAL">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_MARKETING_MATERIAL">
+                        </p-inputSwitch>
+                      </th>
+                      <th></th>
+                    </tr>
+                    <tr>
+                      <th scope="col">Event Mode</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_EVENT_MODES">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col">
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_EVENT_MODES">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="UPDATE_EVENT_MODES">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_EVENT_MODES">
+                        </p-inputSwitch>
+                      </th>
+                      <th></th>
+                    </tr>
+                    <tr>
+                      <th scope="col">Event Lead Source</th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="GET_ALL_EVENT_LEAD_SOURCES">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col">
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="ADD_NEW_EVENT_LEAD_SOURCES">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="UPDATE_EVENT_LEAD_SOURCES">
+                        </p-inputSwitch>
+                      </th>
+                      <th scope="col" formGroupName="privileges">
+                        <p-inputSwitch class="text-center" formControlName="DELETE_EVENT_LEAD_SOURCES">
+                        </p-inputSwitch>
+                      </th>
+                      <th></th>
+                    </tr> -->
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
           <!-- <div class="form-row">
-            <div class="card">
-              <div class="card-header text-center ">Customers</div>
-              <div class="card-body">
-                <div class="form-row">
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Customer Type</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_customer_type">
-                      </p-inputSwitch>
+              <div class="card">
+                <div class="card-header text-center ">Customers</div>
+                <div class="card-body">
+                  <div class="form-row">
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Customer Type</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_customer_type">
+                        </p-inputSwitch>
+                      </div>
                     </div>
-                  </div>
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Customer
-                      Management</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_customer">
-                      </p-inputSwitch>
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Customer
+                        Management</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_customer">
+                        </p-inputSwitch>
+                      </div>
                     </div>
-                  </div>
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Distirbutor</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_distirbutor">
-                      </p-inputSwitch>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="card">
-              <div class="card-header text-center ">Territory</div>
-              <div class="card-body">
-                <div class="form-row">
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Country</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_country"></p-inputSwitch>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Region</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_region"></p-inputSwitch>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">City</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_city"></p-inputSwitch>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">District</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_district">
-                      </p-inputSwitch>
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Distirbutor</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_distirbutor">
+                        </p-inputSwitch>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="form-row">
-            <div class="card">
-              <div class="card-header text-center ">Portfolio</div>
-              <div class="card-body">
-                <div class="form-row">
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Therapy</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_therapy"></p-inputSwitch>
+            <div class="form-row">
+              <div class="card">
+                <div class="card-header text-center ">Territory</div>
+                <div class="card-body">
+                  <div class="form-row">
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Country</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_country"></p-inputSwitch>
+                      </div>
                     </div>
-                  </div>
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Products</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_products">
-                      </p-inputSwitch>
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Region</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_region"></p-inputSwitch>
+                      </div>
                     </div>
-                  </div>
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Inventory</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_inventory">
-                      </p-inputSwitch>
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">City</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_city"></p-inputSwitch>
+                      </div>
                     </div>
-                  </div>
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Buisness Unit</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_bu"></p-inputSwitch>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="card">
-              <div class="card-header text-center ">Incentive</div>
-              <div class="card-body">
-                <div class="form-row">
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Incentive Period</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_incentive_period">
-                      </p-inputSwitch>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">ProIncentive Share</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_incentive_share">
-                      </p-inputSwitch>
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">District</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_district">
+                        </p-inputSwitch>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="form-row">
-            <div class="card">
-              <div class="card-header text-center ">Target</div>
-              <div class="card-body">
-                <div class="form-row">
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Target Setting</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_target_setting">
-                      </p-inputSwitch>
+            <div class="form-row">
+              <div class="card">
+                <div class="card-header text-center ">Portfolio</div>
+                <div class="card-body">
+                  <div class="form-row">
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Therapy</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_therapy"></p-inputSwitch>
+                      </div>
                     </div>
-                  </div>
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Target Forecasting</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_target_forecasting">
-                      </p-inputSwitch>
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Products</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_products">
+                        </p-inputSwitch>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="card">
-              <div class="card-header text-center ">Others</div>
-              <div class="card-body">
-                <div class="form-row">
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">G2N</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_g2n"></p-inputSwitch>
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Inventory</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_inventory">
+                        </p-inputSwitch>
+                      </div>
                     </div>
-                  </div>
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Sales</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_sales"></p-inputSwitch>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <label for="inputPrice3" class="col-sm-8 col-form-label">Reports</label>
-                    <div class="col-sm-8">
-                      <p-inputSwitch class="form-control" formControlName="can_access_reports"></p-inputSwitch>
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Buisness Unit</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_bu"></p-inputSwitch>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div> -->
+            <div class="form-row">
+              <div class="card">
+                <div class="card-header text-center ">Incentive</div>
+                <div class="card-body">
+                  <div class="form-row">
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Incentive Period</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_incentive_period">
+                        </p-inputSwitch>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">ProIncentive Share</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_incentive_share">
+                        </p-inputSwitch>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="card">
+                <div class="card-header text-center ">Target</div>
+                <div class="card-body">
+                  <div class="form-row">
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Target Setting</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_target_setting">
+                        </p-inputSwitch>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Target Forecasting</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_target_forecasting">
+                        </p-inputSwitch>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="card">
+                <div class="card-header text-center ">Others</div>
+                <div class="card-body">
+                  <div class="form-row">
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">G2N</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_g2n"></p-inputSwitch>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Sales</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_sales"></p-inputSwitch>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="inputPrice3" class="col-sm-8 col-form-label">Reports</label>
+                      <div class="col-sm-8">
+                        <p-inputSwitch class="form-control" formControlName="can_access_reports"></p-inputSwitch>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div> -->
         </div>
         <div class="modal-footer text-center">
           <a class="btn btn-secondary" data-dismiss="modal">Close</a>

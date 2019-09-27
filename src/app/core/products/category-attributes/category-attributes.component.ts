@@ -20,59 +20,55 @@ export class CategoryAttributesComponent implements OnInit {
   allAttributes: any[] = [];
   viewArray: any = [];
   fileSelected: any;
-  keyCategoryImage:any;
-  urlCategoryImage:any;
-  showImage:boolean=false;
-  image:any;
-  editShowImage:boolean=false
+  keyCategoryImage: any;
+  urlCategoryImage: any;
+  showImage: Boolean = false;
+  image: any;
+  editShowImage: Boolean = false;
   editImage: any;
   mastImage: any;
   constructor(private formBuilder: FormBuilder, private productService: ProductsService, private toastr: ToastrService) {
     this.getCategory();
-   }
+  }
 
   ngOnInit() {
-    this.attributeForm=this.formBuilder.group({
-      category:['',Validators.required],
-      name:['',Validators.required],
-      values:this.formBuilder.array([])
-    })
+    this.attributeForm = this.formBuilder.group({
+      category: ['', Validators.required],
+      name: ['', Validators.required],
+      values: this.formBuilder.array([])
+    });
   }
 
   get attributesForm() {
-    return this.attributeForm.get('values') as FormArray
+    return this.attributeForm.get('values') as FormArray;
   }
-  
+
   addAttribute() {
-  
-    const attibute = this.formBuilder.group({ 
+
+    const attibute = this.formBuilder.group({
       attibute: []
     })
-  
+
     this.attributesForm.push(attibute);
   }
-  
+
   deleteAttribute(i) {
-    this.attributesForm.removeAt(i)
+    this.attributesForm.removeAt(i);
   }
-  
+
   get f() { return this.attributeForm.controls; }
 
-  submit(){
-    
-    if (this.attributeForm.invalid) {
-      return;
+  submit() {
+    if (this.attributeForm.invalid) { return; }
+    for (var i = 0; i < this.attributeForm.value.values.length; i++) {
+      this.attributeForm.value.values[i] = this.attributeForm.value.values[i].attibute;
     }
-    for(var i=0;i<this.attributeForm.value.values.length;i++){
-      this.attributeForm.value.values[i]=this.attributeForm.value.values[i].attibute
-    }
-    console.log(this.attributeForm.value)
-    this.productService.addAttribute(this.attributeForm.value).subscribe((res:ResponseModel)=>{
+    this.productService.addAttribute(this.attributeForm.value).subscribe((res: ResponseModel) => {
       this.toastr.success('Attribute added!', 'Success!');
-      this.allAttributes.push(res.data)
-      console.log(res.data)
-      jQuery('#modal3').modal('hide')
-    })
+      this.allAttributes.push(res.data);
+      console.log(res.data);
+      jQuery('#modal3').modal('hide');
+    });
   }
 
   getCategory() {
@@ -83,9 +79,9 @@ export class CategoryAttributesComponent implements OnInit {
     });
   }
 
-  resetForm(){
-    this.submitted=false
-    this.editing=false
+  resetForm() {
+    this.submitted = false;
+    this.editing = false;
     this.attributeForm.reset();
   }
 
