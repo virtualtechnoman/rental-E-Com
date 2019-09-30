@@ -73,26 +73,27 @@ export class CustomersComponent implements OnInit {
   @ViewChild('calendar') calendarComponent: FullCalendarComponent;
 
 
-  constructor(protected eventService: EventSesrvice, private productService: ProductsService, private customerService: CustomersService, private supportService: SupportService, private formBuilder: FormBuilder, private toastr: ToastrService, private authService: AuthService) {
+  constructor(protected eventService: EventSesrvice, private productService: ProductsService,
+    private customerService: CustomersService, private supportService: SupportService,
+    private formBuilder: FormBuilder, private toastr: ToastrService, private authService: AuthService) {
     this.currentcustomer = new CustomerClass();
     this.registerCustomer = new CustomerClass();
     this.initForm();
   }
 
   ngOnInit() {
-
-    this.getProducts()
+    this.getProducts();
     this.subscriptionForm = this.formBuilder.group({
       user: [''],
       product: [''],
       quantity: [''],
       frequencyDates: this.formBuilder.array([]),
       startDate: ['']
-    })
+    });
     this.followUpForm = this.formBuilder.group({
       followUpComments: [''],
       actionTaken: ['']
-    })
+    });
     this.registerForm = this.formBuilder.group({
       full_name: ['', Validators.required],
       mobile_number: ['', Validators.required],
@@ -169,13 +170,9 @@ export class CustomersComponent implements OnInit {
     console.log(model);
   }
 
-
-
   get f() { return this.registerForm.controls; }
   get f2() { return this.followUpForm.controls; }
   get f3() { return this.subscriptionForm.controls; }
-
-
 
   onSubmitFollowUpForm() {
     this.supportService.sendTicketFollowUp(this.custometTickets[this.currentTicketIndex]._id,
@@ -192,9 +189,7 @@ export class CustomersComponent implements OnInit {
     this.submitted = true;
     console.log(this.registerForm)
     // stop here if form is invalid
-    if (this.registerForm.invalid) {
-      return;
-    }
+    if (this.registerForm.invalid) { return; }
     this.registerCustomer = this.registerForm.value;
     if (this.editing) {
       this.updateCustomer(this.registerCustomer);
@@ -210,9 +205,7 @@ export class CustomersComponent implements OnInit {
     if (this.customerForm.get('district').value == null) {
       this.customerForm.removeControl('district');
     }
-    if (this.customerForm.invalid) {
-      return;
-    }
+    if (this.customerForm.invalid) { return; }
     this.currentcustomer = this.customerForm.value;
     if (this.editing) {
       this.updateCustomer(this.currentcustomer);
@@ -222,18 +215,18 @@ export class CustomersComponent implements OnInit {
     }
   }
   closeModal() {
-    this.registerForm.reset()
+    this.registerForm.reset();
   }
 
   addCustomer(customer) {
     console.log(customer);
     this.customerService.addCustomer(customer).subscribe((res: ResponseModel) => {
-      console.log(res)
+      console.log(res);
       jQuery('#modal3').modal('hide');
       this.toastr.success('Customer Added', 'Success!');
-      this.allcustomers.push(res)
-      console.log(this.allcustomers)
-      this.allregisterCustomer.push(res)
+      this.allcustomers.push(res);
+      console.log(this.allcustomers);
+      this.allregisterCustomer.push(res);
       this.resetForm();
       window.location.reload();
     });
@@ -242,7 +235,7 @@ export class CustomersComponent implements OnInit {
   editCustomer(i) {
     console.log(i)
     // console.log(this.allcustomers)
-    console.log(this.allcustomers[0][i])
+    console.log(this.allcustomers[0][i]);
     this.editing = true;
     this.currentcustomer = this.allcustomers[0][i];
     this.currentcustomerId = this.allcustomers[0][i]._id;
@@ -262,7 +255,7 @@ export class CustomersComponent implements OnInit {
   get_customers() {
     this.allcustomers.length = 0;
     this.customerService.getAllCustomers().subscribe((res: ResponseModel) => {
-      console.log(res)
+      console.log(res);
       if (res.error) {
         if (res.status === 403) {
           this.toastr.warning('ACCESS DENIED', 'Error!');
@@ -277,8 +270,8 @@ export class CustomersComponent implements OnInit {
   }
 
   updateCustomer(customer) {
-    console.log(customer)
-    console.log(this.allcustomers[0][this.current_customer_index]._id, customer)
+    console.log(customer);
+    console.log(this.allcustomers[0][this.current_customer_index]._id, customer);
     this.customerService.updateCustomer(this.allcustomers[0][this.current_customer_index]._id, customer).subscribe(res => {
       console.log(res);
       this.toastr.info('Customer Updated Successfully!', 'Updated!');
@@ -290,36 +283,35 @@ export class CustomersComponent implements OnInit {
   }
 
   viewCustomer(i) {
-    this.viewArray = this.allcustomers[0][i]
-    console.log(this.viewArray)
+    this.viewArray = this.allcustomers[0][i];
+    console.log(this.viewArray);
     if (this.viewArray) {
       if (this.viewArray.profile_picture) {
-        this.image = this.imageURL + this.viewArray.profile_picture
-        this.showProfileImage = true
-      }
-      else {
+        this.image = this.imageURL + this.viewArray.profile_picture;
+        this.showProfileImage = true;
+      } else {
         this.showProfileImage = false;
       }
     }
     if (this.viewArray) {
 
       this.customerService.getSpecificCustomerOrder(this.viewArray._id).subscribe((res: ResponseModel) => {
-        this.orderHistory.length = 0
-        console.log(res.data)
-        this.orderHistory = res.data
-      })
+        this.orderHistory.length = 0;
+        console.log(res.data);
+        this.orderHistory = res.data;
+      });
 
       this.customerService.getSpecificCustomerTickets(this.viewArray._id).subscribe((res: ResponseModel) => {
         this.custometTickets.length = 0;
-        console.log(res.data)
-        this.custometTickets = res.data
-      })
+        console.log(res.data);
+        this.custometTickets = res.data;
+      });
 
       this.customerService.getAllSubscriptionspecificCustomer(this.viewArray._id).subscribe((res: ResponseModel) => {
-        this.allSubscriptions.length = 0
-        console.log(res.data)
-        this.allSubscriptions = res.data
-      })
+        this.allSubscriptions.length = 0;
+        console.log(res.data);
+        this.allSubscriptions = res.data;
+      });
     }
   }
 
@@ -338,7 +330,7 @@ export class CustomersComponent implements OnInit {
       this.ticketInformation = this.custometTickets[i]
       console.log(this.ticketInformation)
       if (this.ticketInformation.callType.inbound == true) {
-        this.callType = "inbound"
+        this.callType = "inbound";
       }
       else {
         this.callType = "inbound"

@@ -82,7 +82,7 @@ router.delete('/:id', authorizePrivilege("DELETE_CUSTOMER"), (req, res) => {
 });
 
 
-router.put("/picture",authorizePrivilege("UPDATE_CUSTOMER"), upload.single('profile_picture'),(req,res)=>{
+router.put("/picture", authorizePrivilege("UPDATE_CUSTOMER"), upload.single('profile_picture'), (req, res) => {
     if (req.file) {
         if (req.file.mimetype != 'image/jpeg' || req.file.mimetype != 'image/png') {
             let k = `profile-pictures/${req.user._id}/${uuid()}.${req.file.originalname.split('.').pop()}`;
@@ -95,7 +95,7 @@ router.put("/picture",authorizePrivilege("UPDATE_CUSTOMER"), upload.single('prof
                     console.log(err);
                     return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating profile picture" });
                 } else {
-                    User.findByIdAndUpdate(req.user._id, { $set: {profile_picture:k} }, { new: true }, (err, doc) => {
+                    User.findByIdAndUpdate(req.user._id, { $set: { profile_picture: k } }, { new: true }, (err, doc) => {
                         if (err) {
                             return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating profile picture" });
                         }
@@ -111,8 +111,8 @@ router.put("/picture",authorizePrivilege("UPDATE_CUSTOMER"), upload.single('prof
                     }).populate({ path: "area", populate: { path: "city", populate: { path: "state" } } });
                 }
             })
-        }else{
-            res.status(400).json({status:400,message:"No file selected",data:null,errors:true})
+        } else {
+            res.status(400).json({ status: 400, message: "No file selected", data: null, errors: true })
         }
     }
 })
@@ -132,22 +132,22 @@ router.put('/id/:id', authorizePrivilege("UPDATE_CUSTOMER"), (req, res) => {
                 return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields required" })
             }
         }
-        
-            User.findByIdAndUpdate(req.params.id, { $set: result.data }, { new: true }, (err, doc) => {
-                if (err) {
-                    console.log(err);
-                    return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating Customer data" });
-                }
+
+        User.findByIdAndUpdate(req.params.id, { $set: result.data }, { new: true }, (err, doc) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating Customer data" });
+            }
+            else {
+                if (!doc)
+                    return res.status(200).json({ status: 200, errors: true, data: doc, message: "No Customer Found" });
                 else {
-                    if (!doc)
-                        return res.status(200).json({ status: 200, errors: true, data: doc, message: "No Customer Found" });
-                    else {
-                        doc = doc.toObject();
-                        delete doc.password;
-                        res.status(200).json({ status: 200, errors: false, data: doc, message: "Updated Customer" });
-                    }
+                    doc = doc.toObject();
+                    delete doc.password;
+                    res.status(200).json({ status: 200, errors: false, data: doc, message: "Updated Customer" });
                 }
-            }).populate({ path: "area", populate: { path: "city", populate: { path: "state" } } });
+            }
+        }).populate({ path: "area", populate: { path: "city", populate: { path: "state" } } });
     } else {
         return res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid user id" });
     }

@@ -20,7 +20,7 @@ export class ProductsComponent implements OnInit {
   @ViewChildren('selectallcheckboxes') selectallcheckboxes2: any;
   @ViewChildren('checkboxes') checkboxes2: any;
   fileSelected: any;
-  imageUrl = 'https://binsar.s3.ap-south-1.amazonaws.com/'
+  imageUrl = 'https://sgsmarketing.s3.ap-south-1.amazonaws.com/'
   jQuery: any;
   allproducts: any[] = [];
   allCategories: CategoryModel[] = [];
@@ -133,8 +133,8 @@ export class ProductsComponent implements OnInit {
   }
 
   submit() {
-    console.log(this.specificCategoryAttributesName)
-    var attributes: any[] = []
+    console.log(this.specificCategoryAttributesName);
+    const attributes: any[] = [];
     if (this.specificCategoryAttributesLength) {
       for (var index = 0; index < this.specificCategoryAttributesLength; index++) {
         if (!this.AttributeValueForm.value.values[index]) {
@@ -177,10 +177,10 @@ export class ProductsComponent implements OnInit {
 
         if (this.urlProductImage) {
           this.productService.sendUrlProduct(this.urlProductImage, this.fileSelected).then(resp => {
-            if (resp.status == 200) {
+            if (resp.status === 200) {
               this.productForm.value.image = this.keyProductImage;
 
-              console.log(this.productForm.value)
+              console.log(this.productForm.value);
               if (this.editing) {
                 this.updateProduct(this.productForm.value);
               } else {
@@ -191,7 +191,7 @@ export class ProductsComponent implements OnInit {
         }
       })
     } else {
-      console.log(this.productForm.value)
+      console.log(this.productForm.value);
       if (this.editing) {
         if (!this.fileSelected) {
           this.productForm.value.image = this.mastImage;
@@ -219,7 +219,7 @@ export class ProductsComponent implements OnInit {
   }
 
   selectAllCheckboxes() {
-    if (this.selectallcheckboxes2._results[0].nativeElement.checked == true) {
+    if (this.selectallcheckboxes2._results[0].nativeElement.checked === true) {
       this.checkboxes.forEach((element) => {
         element.nativeElement.checked = true;
       });
