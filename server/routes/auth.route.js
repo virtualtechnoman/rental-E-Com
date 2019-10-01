@@ -104,7 +104,7 @@ router.post('/login', async (req, res) => {
             } else {
               return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while validating your token details" })
             }
-          })
+          }).populate('role')
           // next();
         }
       })
@@ -155,7 +155,7 @@ router.post('/login', async (req, res) => {
         } else {
           res.status(404).json({ status: 404, data: null, errors: true, message: "User not exist" });
         }
-      })
+      }).populate('role')
     }
   }
 });

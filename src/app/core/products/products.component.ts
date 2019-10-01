@@ -59,6 +59,8 @@ export class ProductsComponent implements OnInit {
   specificCategoryAttributesLength: any;
   specificCategoryAttributesName: any = [];
   editAttributesArray: any = [];
+  newStock: Number;
+  pattern = "^[0-9]*$";
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService
   ) {
@@ -349,24 +351,21 @@ export class ProductsComponent implements OnInit {
 
   setFormValue() {
 
-    var available: any = this.currentproduct.available_for;
-    console.log(available)
+    const available: any = this.currentproduct.available_for;
+    console.log(available);
     for (let i = 0; i < available.length; i++) {
-      let a = available[i]._id
-      for (var j = 0; j < this.allHub.length; j++) {
-        if (a == this.allHub[j]._id) {
-          console.log(j)
+      const a = available[i]._id;
+      for (let j = 0; j < this.allHub.length; j++) {
+        if (a === this.allHub[j]._id) {
           this.checkboxes2._results[j].nativeElement.checked = true;
         }
       }
     }
-    for (var i = 0; i < this.checkboxes2._results.length; i++) {
-      console.log(this.checkboxes2._results[i].nativeElement.checked)
+    for (let i = 0; i < this.checkboxes2._results.length; i++) {
+      console.log(this.checkboxes2._results[i].nativeElement.checked);
     }
     const product: any = this.allproducts[this.currentIndex];
-    console.log(product)
     this.productForm.controls['brand'].setValue(product.brand._id);
-
     this.productForm.controls['category'].setValue(product.category._id);
     this.productForm.controls['details'].setValue(product.details);
     // this.productForm.controls['farm_price'].setValue(product.farm_price);
@@ -375,12 +374,12 @@ export class ProductsComponent implements OnInit {
     this.productForm.controls['selling_price'].setValue(product.selling_price);
     if (product.image) {
       this.editShowImage = true;
-      this.mastImage = product.image
-      this.editImage = this.imageUrl + product.image
+      this.mastImage = product.image;
+      this.editImage = this.imageUrl + product.image;
       // this.VehicleForm.controls['image'].setValue(image);
-      console.log(this.editImage)
+      console.log(this.editImage);
     } else {
-      this.editShowImage = false
+      this.editShowImage = false;
     }
 
   }
@@ -393,7 +392,7 @@ export class ProductsComponent implements OnInit {
         this.parsedCSV = reader.result;
         // let csv = reader.result;
         // this.extractData(csv)
-      }
+      };
     }
   }
 
@@ -402,17 +401,17 @@ export class ProductsComponent implements OnInit {
     const lines = this.parsedCSV.split(/\r\n|\n/);
     const result = [];
     const headers: any[] = lines[0].split(',');
-    if (headers[0] == 'brand' && headers[1] == 'is_active' && headers[2] == 'cif_price' && headers[3] == 'business_unit'
-      && headers[4] == 'business_unit_id' && headers[5] == 'distirbutor'
-      && headers[6] == 'form' && headers[7] == 'notes' && headers[8] == 'pack_size'
-      && headers[9] == 'promoted' && headers[10] == 'range' && headers[11] == 'registered'
-      && headers[12] == 'strength' && headers[13] == 'therapy_line_id' && headers[14] == 'therapy_line'
-      && headers[15] == 'whole_price' && headers[16] == 'sku_id'
+    if (headers[0] === 'brand' && headers[1] === 'is_active' && headers[2] === 'cif_price' && headers[3] === 'business_unit'
+      && headers[4] === 'business_unit_id' && headers[5] === 'distirbutor'
+      && headers[6] === 'form' && headers[7] === 'notes' && headers[8] === 'pack_size'
+      && headers[9] === 'promoted' && headers[10] === 'range' && headers[11] === 'registered'
+      && headers[12] === 'strength' && headers[13] === 'therapy_line_id' && headers[14] === 'therapy_line'
+      && headers[15] === 'whole_price' && headers[16] === 'sku_id'
     ) {
-      for (var i = 1; i < lines.length - 1; i++) {
+      for (let i = 1; i < lines.length - 1; i++) {
         const obj = {};
         const currentline = lines[i].split(',');
-        for (var j = 0; j < headers.length; j++) {
+        for (let j = 0; j < headers.length; j++) {
           obj[headers[j]] = currentline[j];
         }
         result.push(obj);
@@ -427,7 +426,7 @@ export class ProductsComponent implements OnInit {
       });
       // this.newproduct = result;
     } else {
-      this.toastr.error('Try Again', 'Upload Failed')
+      this.toastr.error('Try Again', 'Upload Failed');
       // this.reset();
     }
   }
@@ -436,7 +435,7 @@ export class ProductsComponent implements OnInit {
     this.editing = false;
     this.submitted = false;
     this.productForm.reset();
-    this.editShowImage = false
+    this.editShowImage = false;
     this.checkboxes.forEach((element) => {
       element.nativeElement.checked = false;
     });
@@ -446,17 +445,33 @@ export class ProductsComponent implements OnInit {
   }
 
   getCategoryAttributes(event) {
-    this.specificCategoryAttributes.length = 0
-    if (event.target.selectedIndex != 0) {
-      var id = this.allCategories[event.target.selectedIndex - 1]._id
-      if (id)
+    this.specificCategoryAttributes.length = 0;
+    if (event.target.selectedIndex !== 0) {
+      const id = this.allCategories[event.target.selectedIndex - 1]._id;
+      if (id) {
         this.productService.getAllAttributeSpecificCategory(id).subscribe((res: ResponseModel) => {
-          console.log(res.data)
-          if (res.data)
-            this.specificCategoryAttributes = res.data[0]
-          this.specificCategoryAttributesName = res.data[0].name
-          this.specificCategoryAttributesLength = res.data[0].name.length
-        })
+          console.log(res.data);
+          if (res.data) {
+            this.specificCategoryAttributes = res.data[0];
+            this.specificCategoryAttributesName = res.data[0].name;
+            this.specificCategoryAttributesLength = res.data[0].name.length;
+          }
+        });
+      }
     }
+  }
+
+  updateProductStock() {
+    this.productService.updateProductStock({ id: this.currentproduct._id, newStock: this.newStock }).subscribe((res: ResponseModel) => {
+      console.log(res);
+      if (res.error) {
+        this.toastr.warning('Error', 'Stock Not Updated');
+      } else {
+        this.allproducts.splice(this.currentIndex, 1, res.data);
+        this.toastr.success('Updated', 'Stock Updated');
+        jQuery('#stockModal').modal('hide');
+        this.newStock = 0;
+      }
+    });
   }
 }

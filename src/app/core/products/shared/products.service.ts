@@ -129,7 +129,6 @@ export class ProductsService {
   }
 
   // Attribute Api
-
   getAllAttributeSpecificCategory(id) {
     return this.http.get(this.url8 + '/category/' + id, { headers: this.headers });
   }
@@ -142,4 +141,8 @@ export class ProductsService {
     return this.http.put(this.url8 + '/' + id, attribute, { headers: this.headers });
   }
 
+  // UPDATE STOCK
+  updateProductStock(data) {
+    return this.http.put(this.url + '/stock', data, { headers: this.headers });
+  }
 }

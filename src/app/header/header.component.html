@@ -118,9 +118,8 @@
         <div class="avatar avatar-lg mg-b-15"><img
             src="http://www.mecgale.com/wp-content/uploads/2017/08/dummy-profile.png" class="rounded-circle" alt="">
         </div>
-        <h6 class="tx-semibold mg-b-5" *ngIf="authService.user">{{me?.first_name | titlecase}}
-          {{me?.last_name | titlecase}}</h6>
-        <p class="mg-b-25 tx-12 tx-color-03" *ngIf="authService.user">{{me?.position | titlecase}}</p>
+        <h6 class="tx-semibold mg-b-5" *ngIf="authService.user">{{me?.full_name | titlecase}} </h6>
+        <p class="mg-b-25 tx-12 tx-color-03" *ngIf="authService.user">{{me?.role.name | titlecase}}</p>
 
         <a routerLink="auth/editprofile" class="dropdown-item"><i data-feather="edit-3"></i> Edit Profile</a>
         <a routerLink="auth/profile" class="dropdown-item"><i data-feather="user"></i> View Profile</a>

@@ -1,17 +1,20 @@
 export class ProductModel {
     _id: String;
-    name: String;
-    product_id: String;
-    image: String;
-    category: String;
-    is_active: Boolean;
-    farm_price: Number;
-    selling_price: Number;
-    product_dms: String;
-    brand: String;
-    details: String;
-    created_by: String;
     available_for: String;
+    brand: String;
+    category: String;
+    created_by: String;
+    created_date: Date;
+    details: String;
+    farm_price: Number;
+    image: String;
+    is_active: Boolean;
+    is_available: Boolean;
+    name: String;
+    product_dms: String;
+    product_id: String;
+    selling_price: Number;
+    stock: Number;
 }
 export class CategoryModel {
     _id: string;

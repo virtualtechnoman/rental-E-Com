@@ -32,7 +32,7 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 
 // GET ALL ATTRIBUTES OF PRODUCT CATEGORY
 router.get("/category/:id", authorizePrivilege("GET_CATEGORY_ATTRIBUTE"), (req, res) => {
-    Attribute.find({category:req.params.id}).exec().then(docs => {
+    Attribute.find({ category: req.params.id }).exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All atrributes for given category" });
         else
@@ -49,7 +49,7 @@ router.post('/', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE"), async
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
     }
-    Attribute.findOneAndUpdate({category:result.data.category},{$push:{name:result.data.name}},{upsert:true, new:true}).exec()
+    Attribute.findOneAndUpdate({ category: result.data.category }, { $push: { name: result.data.name } }, { upsert: true, new: true }).exec()
         .then(attribute => {
             res.json({ status: 200, data: attribute, errors: false, message: "Attribute added successfully" })
         })
@@ -66,7 +66,7 @@ router.put("/:id", authorizePrivilege("UPDATE_PRODUCT_CATEGORY_ATTRIBUTE"), (req
         if (!isEmpty(result.errors)) {
             return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
         }
-        Attribute.findByIdAndUpdate(req.params.id, {$set:result.data}, { new: true }, (err, doc) => {
+        Attribute.findByIdAndUpdate(req.params.id, { $set: result.data }, { new: true }, (err, doc) => {
             if (err)
                 return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating attribute" });
             else {
