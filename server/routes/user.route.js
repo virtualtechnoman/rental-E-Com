@@ -231,7 +231,7 @@ router.put('/me/kyc', authorizePrivilege("UPDATE_USER_OWN"), upload.single("kyc"
         } else {
           let k = `kyc/${req.user._id}/${uuid()}.${req.file.originalname.split('.').pop()}`;
           S3.upload({
-            Bucket: 'binsar', Key: k, Body: req.file.buffer
+            Bucket: process.env.AWS_S3_BUCKET, Key: k, Body: req.file.buffer
           }, (err, data) => {
             if (err) {
               console.log(err);
