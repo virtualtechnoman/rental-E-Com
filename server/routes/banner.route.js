@@ -31,7 +31,7 @@ router.post('/', authorizePrivilege("ADD_NEW_BANNER"), upload.any(), async (req,
     for (let i = 0; i < req.files.length; i++) {
         let key = `banners/${uuid()}.${req.files[i].originalname.split('.').pop()}`;
         pr.push(S3.upload({
-            Bucket: 'binsar',
+            Bucket: 'sgsmarketing',
             Key: key,
             Body: req.files[i].buffer
         }).promise());
