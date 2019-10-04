@@ -33,6 +33,38 @@ router.get("/all", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" })
     })
 })
+// GET ALL PRODUCTS
+router.get("/bycategory/:id", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
+    if (mongodb.ObjectId.isValid(req.params.id)) {
+        Product.find({ category: req.params.id }).populate("created_by available_for", "-password").populate("category brand").exec().then(docs => {
+            if (docs.length > 0)
+                return res.json({ status: 200, data: docs, errors: false, message: "All products" });
+            else
+                res.json({ status: 200, data: docs, errors: true, message: "No products found" });
+        }).catch(err => {
+            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" });
+        })
+    }
+    else{
+        return res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" })
+    }
+})
+// GET ALL PRODUCTS
+router.get("/bybrand/:id", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
+    if (mongodb.ObjectId.isValid(req.params.id)) {
+        Product.find({ brand: req.params.id }).populate("created_by available_for", "-password").populate("category brand").exec().then(docs => {
+            if (docs.length > 0)
+                return res.json({ status: 200, data: docs, errors: false, message: "All products" });
+            else
+                res.json({ status: 200, data: docs, errors: true, message: "No products found" });
+        }).catch(err => {
+            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" });
+        })
+    }
+    else{
+        return res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid brand id" })
+    }
+})
 
 // GET CUSTOMER PRODUCTS
 router.get("/customer", authorizePrivilege("GET_ALL_CUSTOMER_PRODUCTS"), (req, res) => {
