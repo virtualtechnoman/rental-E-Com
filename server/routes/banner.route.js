@@ -25,13 +25,13 @@ router.get("/", authorizePrivilege("GET_ALL_BANNERS"), (req, res) => {
 //Add new area
 router.post('/', authorizePrivilege("ADD_NEW_BANNER"), upload.any(), async (req, res) => {
     if (!req.files.length) {
-        return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Select at least one image" });
+        return res.status(400).json({ status: 400, data: null, errors: true, message: "Select at least one image" });
     }
     let pr = [], obj = [];
     for (let i = 0; i < req.files.length; i++) {
         let key = `banners/${uuid()}.${req.files[i].originalname.split('.').pop()}`;
         pr.push(S3.upload({
-            Bucket: 'binsar',
+            Bucket: process.env.AWS_S3_BUCKET,
             Key: key,
             Body: req.files[i].buffer
         }).promise());

@@ -87,7 +87,7 @@ router.put("/picture", authorizePrivilege("UPDATE_CUSTOMER"), upload.single('pro
         if (req.file.mimetype != 'image/jpeg' || req.file.mimetype != 'image/png') {
             let k = `profile-pictures/${req.user._id}/${uuid()}.${req.file.originalname.split('.').pop()}`;
             S3.upload({
-                Bucket: 'binsar',
+                Bucket: process.env.AWS_S3_BUCKET,
                 Key: k,
                 Body: req.file.buffer
             }, (err, data) => {

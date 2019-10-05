@@ -11,7 +11,7 @@ const S3 = new AWS.S3({
 router.get("/brand", authorizePrivilege("UPDATE_BRAND"), (req, res) => {
     let k = `brands/${uuid()}.jpeg`;
     S3.getSignedUrl('putObject', {
-        Bucket: 'sgsmarketing',
+        Bucket: process.env.AWS_S3_BUCKET,
         ContentType: 'jpeg',
         Key: k
     }, (err, url) => {
@@ -25,7 +25,7 @@ router.get("/brand", authorizePrivilege("UPDATE_BRAND"), (req, res) => {
 router.get("/product", authorizePrivilege("UPDATE_PRODUCT"), (req, res) => {
     let k = `products/${uuid()}.jpeg`;
     S3.getSignedUrl('putObject', {
-        Bucket: 'sgsmarketing',
+        Bucket: process.env.AWS_S3_BUCKET,
         ContentType: 'jpeg',
         Key: k
     }, (err, url) => {
@@ -39,7 +39,7 @@ router.get("/product", authorizePrivilege("UPDATE_PRODUCT"), (req, res) => {
 router.get("/profile", authorizePrivilege("UPDATE_USER_OWN"), (req, res) => {
     let k = `profile-pictures/${req.user._id}/${uuid()}.jpeg`;
     S3.getSignedUrl('putObject', {
-        Bucket: 'sgsmarketing',
+        Bucket: process.env.AWS_S3_BUCKET,
         ContentType: 'jpeg',
         Key: k
     }, (err, url) => {
@@ -54,7 +54,7 @@ router.get("/profile", authorizePrivilege("UPDATE_USER_OWN"), (req, res) => {
 router.get("/profile/:id", authorizePrivilege("UPDATE_USER"), (req, res) => {
     let k = `profile-pictures/${req.params.id}/${uuid()}.jpeg`;
     S3.getSignedUrl('putObject', {
-        Bucket: 'sgsmarketing',
+        Bucket: process.env.AWS_S3_BUCKET,
         ContentType: 'jpeg',
         Key: k
     }, (err, url) => {
@@ -68,7 +68,7 @@ router.get("/profile/:id", authorizePrivilege("UPDATE_USER"), (req, res) => {
 router.get("/customer/profile", authorizePrivilege("UPDATE_CUSTOMER"), (req, res) => {
     let k = `profile-pictures/${req.user._id}/${uuid()}.jpeg`;
     S3.getSignedUrl('putObject', {
-        Bucket: 'sgsmarketing',
+        Bucket: process.env.AWS_S3_BUCKET,
         ContentType: 'jpeg',
         Key: k
     }, (err, url) => {
@@ -82,7 +82,7 @@ router.get("/customer/profile", authorizePrivilege("UPDATE_CUSTOMER"), (req, res
 router.get("/category", authorizePrivilege("UPDATE_PRODUCT_CATEGORY"), (req, res) => {
     let k = `category/${uuid()}.jpeg`;
     S3.getSignedUrl('putObject', {
-        Bucket: 'sgsmarketing',
+        Bucket: process.env.AWS_S3_BUCKET,
         ContentType: 'jpeg',
         Key: k
     }, (err, url) => {
@@ -96,7 +96,7 @@ router.get("/category", authorizePrivilege("UPDATE_PRODUCT_CATEGORY"), (req, res
 router.get("/vehicle", authorizePrivilege("UPDATE_VEHICLE"), (req, res) => {
     let k = `vehicles/${uuid()}.jpeg`;
     S3.getSignedUrl('putObject', {
-        Bucket: 'sgsmarketing',
+        Bucket: process.env.AWS_S3_BUCKET,
         ContentType: 'jpeg',
         Key: k
     }, (err, url) => {
@@ -110,7 +110,7 @@ router.get("/vehicle", authorizePrivilege("UPDATE_VEHICLE"), (req, res) => {
 router.get("/orderremark", authorizePrivilege("UPDATE_VEHICLE"), (req, res) => {
     let k = `order-remarks/${uuid()}.jpeg`;
     S3.getSignedUrl('putObject', {
-        Bucket: 'sgsmarketing',
+        Bucket: process.env.AWS_S3_BUCKET,
         ContentType: 'jpeg',
         Key: k
     }, (err, url) => {
@@ -124,7 +124,7 @@ router.get("/orderremark", authorizePrivilege("UPDATE_VEHICLE"), (req, res) => {
 router.post("/kyc", authorizePrivilege("UPDATE_VEHICLE"), (req, res) => {
     let k = `order-remarks/${uuid()}.jpeg`;
     S3.getSignedUrl('putObject', {
-        Bucket: 'sgsmarketing',
+        Bucket: process.env.AWS_S3_BUCKET,
         ContentType: 'jpeg',
         Key: k
     }, (err, url) => {
