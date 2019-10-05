@@ -26,12 +26,14 @@ export class CustomerTypeModel {
     customer_id: string;
 }
 export class CustomerClass {
+    _id: string;
     full_name: string;
     mobile_number: string;
     landmark: string;
     street_address: string;
     city: string;
     dob: Date;
+    is_active: Boolean;
 }
 
 export class DistirbutorModel {

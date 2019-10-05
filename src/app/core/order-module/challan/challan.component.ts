@@ -108,8 +108,8 @@ export class ChallanComponent implements OnInit {
   }
   getAllChallan() {
     this.orderService.getAllChallan().subscribe((res: ResponseModel) => {
-      if (res.error) {
-        this.toasterService.warning('Error', res.error);
+      if (res.errors) {
+        this.toasterService.warning('Error', res.errors);
       } else {
         this.allChallans = res.data;
         console.log(this.allChallans);

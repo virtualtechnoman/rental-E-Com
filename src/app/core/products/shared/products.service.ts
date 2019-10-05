@@ -42,23 +42,21 @@ export class ProductsService {
   }
 
   getAllCategory() {
-    return this.http.get(this.url2 + '/all', { headers: this.headers })
+    return this.http.get(this.url2 + '/all', { headers: this.headers });
   }
 
   addCategory(category) {
-    return this.http.post(this.url2 + '/', category, { headers: this.headers })
+    return this.http.post(this.url2 + '/', category, { headers: this.headers });
   }
 
   deleteCategory(id) {
-    return this.http.delete(this.url2 + '/' + id, { headers: this.headers })
+    return this.http.delete(this.url2 + '/' + id, { headers: this.headers });
   }
 
   updateCategory(category, id) {
     return this.http.put(this.url2 + '/' + id, category, { headers: this.headers });
   }
-
   // Brand API
-
   getAllBrand() {
     return this.http.get(this.url3 + '/', { headers: this.headers });
   }

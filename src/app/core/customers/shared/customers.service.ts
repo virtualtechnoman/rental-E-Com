@@ -148,4 +148,9 @@ export class CustomersService {
   getAllSubscriptionspecificCustomer(id) {
     return this.http.get(this.url10 + '/' + id, { headers: this.headers });
   }
+
+  changeCustomerStatus(data) {
+    console.log(data);
+    return this.http.put('/api/user/changeStatus', data, { headers: this.headers });
+  }
 }

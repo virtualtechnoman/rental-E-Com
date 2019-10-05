@@ -1099,8 +1099,8 @@ if(this.orderSelected){
 
   addOrder(order) {
     this.orderService.addOrder(order).subscribe((res: ResponseModel) => {
-      if (res.error) {
-        this.toastr.warning('Error', res.error);
+      if (res.errors) {
+        this.toastr.warning('Error', res.errors);
       } else {
         jQuery('#modal3').modal('hide');
         this.toastr.success('Order Added!', 'Success!');
@@ -1154,8 +1154,8 @@ if(this.orderSelected){
   getUsers() {
     this.allUsers.length = 0;
     this.userService.getAllUsers().subscribe((res: ResponseModel) => {
-      if (res.error) {
-        this.toastr.warning('Error', res.error);
+      if (res.errors) {
+        this.toastr.warning('Error', res.errors);
       } else {
         this.allUsers = res.data;
       }
@@ -1165,8 +1165,8 @@ if(this.orderSelected){
   getOrders() {
     this.allOrders.length = 0;
     this.orderService.getAllOrders().subscribe((res: ResponseModel) => {
-      if (res.error) {
-        this.toastr.warning('Error', res.error);
+      if (res.errors) {
+        this.toastr.warning('Error', res.errors);
       } else {
         this.allOrders = res.data;
         // console.log(res.data)

@@ -1,6 +1,6 @@
 export class ResponseModel {
     data: any;
-    error: any;
+    errors: any;
     status: any;
     message: string;
 }

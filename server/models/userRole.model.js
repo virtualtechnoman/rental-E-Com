@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 // Create Schema
 const User_Role_Schema = new Schema({
   name: { type: String, required: true, unique: true },
-  privileges: {type:Object, required:true}
+  privileges: { type: Object, required: true }
   // {
   //   //User Operations
   //   GET_ALL_USERS: false,
@@ -49,8 +49,8 @@ const User_Role_Schema = new Schema({
   //   ADD_NEW_DRIVER:false
   // }
 }, {
-    versionKey: false
-  });
+  versionKey: false
+});
 
 module.exports = mongoose.model('user_role', User_Role_Schema);
 

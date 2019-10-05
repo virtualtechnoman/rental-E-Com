@@ -1,20 +1,20 @@
 const mongoose = require('mongoose');
 
 const KYC = mongoose.Schema({
-  documentType:{type:String},
-  image:{type:String},
-  verified:{type:Boolean}
-},{
-  _id:false,
-  versionKey:false
+  documentType: { type: String },
+  image: { type: String },
+  verified: { type: Boolean }
+}, {
+  _id: false,
+  versionKey: false
 })
 
 const UserSchema = new mongoose.Schema({
   //for all =>
   user_id: { type: String, required: true, unique: true, },
-  full_name: { type: String, lowercase:true },
+  full_name: { type: String, lowercase: true },
   email: {
-    type: String, required: false, lowercase:true,
+    type: String, required: false, lowercase: true,
     // Regexp to validate emails with more strict rules as added in tests/users.js which also conforms mostly with RFC2822 guide lines
     match: [/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, 'Please enter a valid email'],
   },
@@ -42,10 +42,10 @@ const UserSchema = new mongoose.Schema({
   dl_number: { type: String },
   //for dboy =>
   kyc: KYC,
-  permanent_address:String,
-  vehicle_type:String
+  permanent_address: String,
+  vehicle_type: String
 }, {
-    versionKey: false
-  });
+  versionKey: false
+});
 
 module.exports = mongoose.model('user', UserSchema);

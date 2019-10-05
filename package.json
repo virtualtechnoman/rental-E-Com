@@ -128,6 +128,7 @@
     "select2": "^4.0.6-rc.1",
     "spectrum-colorpicker": "^1.8.0",
     "swagger-ui-express": "^3.0.9",
+    "sweetalert": "^2.1.2",
     "typeahead.js": "^0.11.1",
     "typicons.font": "^2.0.9",
     "uuid": "^3.3.3",
