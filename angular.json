@@ -26,7 +26,8 @@
               "node_modules/ngx-toastr/toastr.css",
               "node_modules/primeicons/primeicons.css",
               "node_modules/primeng/resources/themes/nova-light/theme.css",
-              "node_modules/primeng/resources/primeng.min.css"
+              "node_modules/primeng/resources/primeng.min.css",
+              "node_modules/sweetalert2/dist/sweetalert2.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
@@ -43,7 +44,8 @@
               "node_modules/parsleyjs/dist/parsley.min.js",
               "node_modules/feather-icons/dist/feather.min.js",
               "./src/assets/js/dashforge.js",
-              "./src/assets/js/dashforge.aside.js"
+              "./src/assets/js/dashforge.aside.js",
+              "node_modules/sweetalert2/dist/sweetalert2.js"
             ]
           },
           "configurations": {

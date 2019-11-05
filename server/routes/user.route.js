@@ -299,4 +299,18 @@ router.post("/", authorizePrivilege("ADD_NEW_USER"), (req, res) => {
 })
 
 
+router.put("/changeStatus/", (req, res) => {
+  console.log(req.body.is_active)
+  if (mongodb.ObjectID.isValid(req.body.id)) {
+    User.findByIdAndUpdate(req.body.id, { $set: { is_active: req.body.is_active } },{new:true}, (err, doc) => {
+      if (err)
+        return res.json({ status: 500, errors: true, data: null, message: "Error While updatin" });
+      if (doc)
+        return res.json({ status: 200, errors: false, data: doc, message: "Status Updated" });
+    })
+  }
+  else {
+    res.status(500).json({ status: 500, errors: true, data: null, message: "Invaid OID" });
+  }
+})
 module.exports = router;

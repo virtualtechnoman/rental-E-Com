@@ -122,7 +122,7 @@ export class EventCalenderComponent implements OnInit {
     this.allEvents3.length=0
     this.eventService.getAllMainEvent().subscribe((res: ResponseModel) => {
       console.log(res);
-      if (res.error) {
+      if (res.errors) {
         console.log('error');
       } else {
         this.mainEvent = res.data;
@@ -274,7 +274,7 @@ export class EventCalenderComponent implements OnInit {
   getAllEventOrganizer() {
     this.eventService.getAllEventOrganizer().subscribe((res: ResponseModel) => {
       console.log(res);
-      if (res.error) {
+      if (res.errors) {
         console.log('error');
       } else {
         this.allEventOrganizer = res.data;
@@ -291,7 +291,7 @@ export class EventCalenderComponent implements OnInit {
 
   getAllEventType() {
     this.eventService.getAllEvent().subscribe((res: ResponseModel) => {
-      if (res.error) {
+      if (res.errors) {
         console.log('error');
       } else {
         this.allEventType = res.data;
@@ -301,7 +301,7 @@ export class EventCalenderComponent implements OnInit {
 
   getAllEventInchareg() {
     this.userService.getAllUsers().subscribe((res: ResponseModel) => {
-      if (res.error) {
+      if (res.errors) {
         console.log('error');
       } else {
         this.allInCharge = res.data;
@@ -311,7 +311,7 @@ export class EventCalenderComponent implements OnInit {
 
   getAllMarketingMaterial() {
     this.eventService.getAllMarketingMaterial().subscribe((res: ResponseModel) => {
-      if (res.error) {
+      if (res.errors) {
         console.log('error');
       } else {
         this.allMarketingMaterial = res.data;
@@ -322,7 +322,7 @@ export class EventCalenderComponent implements OnInit {
 
   getAllFarms() {
     this.orderService.getAllFarms().subscribe((res: ResponseModel) => {
-      if (res.error) {
+      if (res.errors) {
         console.log('error');
       } else {
         this.allFarms = res.data;
@@ -475,7 +475,7 @@ export class EventCalenderComponent implements OnInit {
     console.log(this.options)
     this.eventService.getAllMainEventByCity(this.allCities[event.target.selectedIndex-1]._id).subscribe((res: ResponseModel) => {
       console.log(res);
-      if (res.error) {
+      if (res.errors) {
         console.log('error');
       } else {
         if(res.data)
@@ -497,7 +497,7 @@ export class EventCalenderComponent implements OnInit {
     console.log(event.target.selectedIndex);
     this.eventService.getAllMainEventByEventType(this.allEventType[event.target.selectedIndex-1]._id).subscribe((res: ResponseModel) => {
       console.log(res);
-      if (res.error) {
+      if (res.errors) {
         console.log('error');
       } else {
         if(res.data)

@@ -48,8 +48,8 @@ export class ReturnorderchallanComponent implements OnInit {
   getReturnOrders(){
       this.allReturnOrders.length = 0;
       this.orderService.getAllReturnOrdersChallans().subscribe((res: ResponseModel) => {
-        if (res.error) {
-          this.toastr.warning('Error', res.error);
+        if (res.errors) {
+          this.toastr.warning('Error', res.errors);
         } else {
           this.allReturnOrders = res.data;
           console.log(res.data)

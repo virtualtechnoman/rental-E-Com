@@ -464,7 +464,7 @@ export class ProductsComponent implements OnInit {
   updateProductStock() {
     this.productService.updateProductStock({ id: this.currentproduct._id, newStock: this.newStock }).subscribe((res: ResponseModel) => {
       console.log(res);
-      if (res.error) {
+      if (res.errors) {
         this.toastr.warning('Error', 'Stock Not Updated');
       } else {
         this.allproducts.splice(this.currentIndex, 1, res.data);

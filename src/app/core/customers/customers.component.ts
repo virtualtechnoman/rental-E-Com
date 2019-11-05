@@ -13,6 +13,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import { OptionsInput } from '@fullcalendar/core';
 import { EventSesrvice } from '../../event.service';
+import * as swal from 'sweetalert';
 
 @Component({
   selector: 'app-customers',
@@ -29,6 +30,7 @@ export class CustomersComponent implements OnInit {
   current_customer_index: number;
   customerForm: FormGroup;
   customer_type_form: FormGroup;
+  customerStatus: Boolean = false;
   CSV: File = null;
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
@@ -233,9 +235,6 @@ export class CustomersComponent implements OnInit {
   }
 
   editCustomer(i) {
-    console.log(i)
-    // console.log(this.allcustomers)
-    console.log(this.allcustomers[0][i]);
     this.editing = true;
     this.currentcustomer = this.allcustomers[0][i];
     this.currentcustomerId = this.allcustomers[0][i]._id;
@@ -256,7 +255,7 @@ export class CustomersComponent implements OnInit {
     this.allcustomers.length = 0;
     this.customerService.getAllCustomers().subscribe((res: ResponseModel) => {
       console.log(res);
-      if (res.error) {
+      if (res.errors) {
         if (res.status === 403) {
           this.toastr.warning('ACCESS DENIED', 'Error!');
         }
@@ -531,12 +530,12 @@ export class CustomersComponent implements OnInit {
 
   onSubmitSubscriptionForm() {
     if (this.viewArray) {
-      this.subscriptionForm.value.user = this.viewArray._id
+      this.subscriptionForm.value.user = this.viewArray._id;
     }
 
-    var subscriptionStatDate = moment(this.subscriptionForm.value.startDate).toDate()
-    let arr = [];
-    let totalDays = 60;
+    let subscriptionStatDate = moment(this.subscriptionForm.value.startDate).toDate();
+    const arr = [];
+    const totalDays = 60;
     let days = 0;
     switch (this.selectedEvent) {
       case 'daily': days = 1;
@@ -548,23 +547,23 @@ export class CustomersComponent implements OnInit {
     }
     for (let i = 0; i < totalDays / days; i++) {
       arr.push(subscriptionStatDate);
-      subscriptionStatDate = moment(subscriptionStatDate).add(days, 'days').toDate()
+      subscriptionStatDate = moment(subscriptionStatDate).add(days, 'days').toDate();
     }
     console.log(arr);
-    this.subscriptionForm.value.startDate = subscriptionStatDate
-    this.subscriptionForm.value.frequencyDates = arr
-    console.log(this.subscriptionForm.value)
+    this.subscriptionForm.value.startDate = subscriptionStatDate;
+    this.subscriptionForm.value.frequencyDates = arr;
+    console.log(this.subscriptionForm.value);
     this.customerService.addSubscriptionn(this.subscriptionForm.value).subscribe((res: ResponseModel) => {
       console.log(res.data)
-      this.allSubscriptions.push(res.data)
+      this.allSubscriptions.push(res.data);
       this.showSubform = false;
-    })
+    });
   }
 
 
 
   selectPlan(event) {
-    this.selectedEvent = event.target.value
+    this.selectedEvent = event.target.value;
   }
 
   getProducts() {
@@ -575,8 +574,28 @@ export class CustomersComponent implements OnInit {
   }
 
   showSubscriptionForm() {
-    this.showSubform = true
+    this.showSubform = true;
     this.showSubscriptionButton = false;
-    this.subscriptionForm.reset()
+    this.subscriptionForm.reset();
+  }
+
+  changeCustomerStatus(i) {
+    const r = confirm('Sure You Want to Change Its Status');
+    const status = !this.allcustomers[0][i].is_active;
+    console.log(status)
+    if (r === true) {
+      this.customerService.changeCustomerStatus({ id: this.allcustomers[0][i]._id, is_active: status })
+        .subscribe((res: ResponseModel) => {
+          console.log(res);
+          if (res.errors) {
+            this.toastr.error('Error While Changing Status', 'Error');
+          } else {
+            this.allcustomers[0].splice(i, 1, res.data);
+            this.toastr.success('Status Updated', 'Success');
+          }
+        });
+    } else {
+      console.log("You pressed Cancel!");
+    }
   }
 }

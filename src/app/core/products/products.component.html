@@ -34,7 +34,10 @@
             <td>{{product?.category?.name | titlecase}}</td>
             <td>{{product?.brand?.name | titlecase}}</td>
             <td>{{product?.selling_price | number}}</td>
-            <td>{{product?.stock | number}}</td>
+            <td>{{product?.stock | number}}
+                <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Add Stock"><i
+                    class="fas fas fa-plus" data-toggle="modal" data-target="#stockModal"
+                    (click)="editProduct(i)"></i></a></td>
             <td>{{product?.created_by?.full_name | titlecase}}</td>
             <td *ngIf="product.is_active">Active</td>
             <td *ngIf="!product.is_active">InActive</td>
@@ -45,9 +48,6 @@
                   class="fas fa-edit mx-2" data-toggle="tooltip" data-placement="top" title="Edit Product"></i></a>
               <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Delete Product"><i
                   class="fas fa-trash-alt" (click)="deleteProduct(i)"></i></a>
-              <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Add Stock"><i
-                  class="fas fas fa-plus" data-toggle="modal" data-target="#stockModal"
-                  (click)="editProduct(i)"></i></a>
             </td>
           </tr>
         </tbody>
