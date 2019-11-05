@@ -32,14 +32,22 @@ const CancelOrderByDBoyReasonSchema = Joi.object({
     reason: Joi.string().required().allow("")
 })
 
+const customerOrderAcceptSchema = Joi.object({
+    products: Joi.array().items({
+        product: Joi.string().required(),
+        accepted: Joi.number().positive().allow(0).required()
+    }).required()
+})
 module.exports = {
     verifyCreate,
     verifyUpdate,
     verifyDateForDboy,
-    verifyCancelByDboy
+    verifyCancelByDboy,
+    verifyAccept
 }
 
 function verifyCreate(order) { return helper.validator(order, customerOrderCreateSchema) }
+function verifyAccept(order) { return helper.validator(order, customerOrderAcceptSchema) }
 function verifyUpdate(order) { return helper.validator(order, customerOrderUpdateSchema) }
 function verifyDateForDboy(order) { return helper.validator(order, getCustomerOrderByDateForDboySchema) }
 function verifyCancelByDboy(order) { return helper.validator(order, CancelOrderByDBoyReasonSchema) }

@@ -90,6 +90,56 @@ router.delete("/:id", authorizePrivilege("DELETE_CUSTOMER_ORDER"), (req, res) =>
         })
     }
 })
+//Accept an order
+router.put("/accept/:id", authorizePrivilege("ACCEPT_CUSTOMER_ORDER"), (req, res) => {
+    if (mongodb.ObjectID.isValid(req.params.id)) {
+        CustomerOrder.findById(req.params.id).exec().then(_ord => {
+            if (_ord) {
+                // if (!_ord.declined) {
+                    if (!_ord.accepted) {
+                        let result = CustomerOrderController.verifyAccept(req.body);
+                        if (!isEmpty(result.errors))
+                            return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
+                        let upd = {}, arrfilter = [];
+                        result.data.products.forEach((ele, index) => {
+                            upd["products.$[e" + index + "].accepted"] = ele.accepted;
+                            let x = {};
+                            x["e" + index + ".product"] = ele.product;
+                            arrfilter.push(x);
+                        })
+                        // if (result.data["remarks.acceptOrder"]) {
+                        //     upd["remarks.acceptOrder"] = result.data["remarks.acceptOrder"];
+                        //     upd["remarks.acceptOrder"].acceptedBy = req.user._id;
+                        //     upd["remarks.acceptOrder"].at = Date.now();
+                        // } else
+                        //     upd["remarks.acceptOrder"] = { acceptedBy: req.user._id, at: Date.now() };
+                        upd.accepted = true;
+                        upd.status = "Order Accepted";
+                        CustomerOrder.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
+                            .populate({
+                                path: "products.product",
+                                populate: {
+                                    path: "created_by category brand available_for", select: "-password"
+                                }
+                            }).lean().exec()
+                            .then(d => {
+                                res.json({ status: 200, data: d, errors: false, message: "Order accepted successfully" });
+                            }).catch(e => {
+                                console.log(e);
+                                res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating accepted values" });
+                            })
+                    } else {
+                        return res.status(400).json({ status: 400, errors: true, data: null, message: "Order already accepted" });
+                    }
+                // } else {
+                //     return res.status(400).json({ status: 400, errors: true, data: null, message: "Order is declined, can't accept!" });
+                // }
+            } else {
+                return res.status(400).json({ status: 400, errors: true, data: null, message: "No order exist with the given id" });
+            }
+        })
+    }
+})
 // Cancel a order
 router.post("/assigned", authorizePrivilege("GET_CUSTOMER_ORDER_ASSIGNED"), (req, res) => {
     let result = CustomerOrderController.verifyDateForDboy(req.body);
