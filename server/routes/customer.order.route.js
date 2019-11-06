@@ -96,41 +96,35 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_CUSTOMER_ORDER"), (req, res
         CustomerOrder.findById(req.params.id).exec().then(_ord => {
             if (_ord) {
                 // if (!_ord.declined) {
-                    if (!_ord.accepted) {
-                        let result = CustomerOrderController.verifyAccept(req.body);
-                        if (!isEmpty(result.errors))
-                            return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
-                        let upd = {}, arrfilter = [];
-                        result.data.products.forEach((ele, index) => {
-                            upd["products.$[e" + index + "].accepted"] = ele.accepted;
-                            let x = {};
-                            x["e" + index + ".product"] = ele.product;
-                            arrfilter.push(x);
+                if (!_ord.accepted) {
+                    let result = CustomerOrderController.verifyAccept(req.body);
+                    if (!isEmpty(result.errors))
+                        return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
+                    let upd = {}, arrfilter = [];
+                    result.data.products.forEach((ele, index) => {
+                        upd["products.$[e" + index + "].accepted"] = ele.accepted;
+                        let x = {};
+                        x["e" + index + ".product"] = ele.product;
+                        arrfilter.push(x);
+                    })
+                    upd.accepted = true;
+                    upd.status = "Order Accepted";
+                    CustomerOrder.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
+                        .populate({
+                            path: "products.product",
+                            populate: {
+                                path: "created_by category brand available_for", select: "-password"
+                            }
+                        }).lean().exec()
+                        .then(d => {
+                            res.json({ status: 200, data: d, errors: false, message: "Order accepted successfully" });
+                        }).catch(e => {
+                            console.log(e);
+                            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating accepted values" });
                         })
-                        // if (result.data["remarks.acceptOrder"]) {
-                        //     upd["remarks.acceptOrder"] = result.data["remarks.acceptOrder"];
-                        //     upd["remarks.acceptOrder"].acceptedBy = req.user._id;
-                        //     upd["remarks.acceptOrder"].at = Date.now();
-                        // } else
-                        //     upd["remarks.acceptOrder"] = { acceptedBy: req.user._id, at: Date.now() };
-                        upd.accepted = true;
-                        upd.status = "Order Accepted";
-                        CustomerOrder.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                            .populate({
-                                path: "products.product",
-                                populate: {
-                                    path: "created_by category brand available_for", select: "-password"
-                                }
-                            }).lean().exec()
-                            .then(d => {
-                                res.json({ status: 200, data: d, errors: false, message: "Order accepted successfully" });
-                            }).catch(e => {
-                                console.log(e);
-                                res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating accepted values" });
-                            })
-                    } else {
-                        return res.status(400).json({ status: 400, errors: true, data: null, message: "Order already accepted" });
-                    }
+                } else {
+                    return res.status(400).json({ status: 400, errors: true, data: null, message: "Order already accepted" });
+                }
                 // } else {
                 //     return res.status(400).json({ status: 400, errors: true, data: null, message: "Order is declined, can't accept!" });
                 // }
@@ -204,7 +198,7 @@ router.post("/cancel/:id", authorizePrivilege("CANCEL_CUSTOMER_ORDER"), (req, re
                 } else if (_cord.isDelivered) {
                     return res.status(400).json({ status: 400, data: null, errors: true, message: "Delivered Order cannot be cancelled" });
                 } else {
-                    CustomerOrder.findByIdAndUpdate(req.params.id, { $set: { status: "Cancelled",cancellationReason:result.data, isCancelled: true } }, { new: true }, (err, doc) => {
+                    CustomerOrder.findByIdAndUpdate(req.params.id, { $set: { status: "Cancelled", cancellationReason: result.data, isCancelled: true } }, { new: true }, (err, doc) => {
                         if (err) {
                             return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while cancelling the order" });
                         }
@@ -219,7 +213,7 @@ router.post("/cancel/:id", authorizePrivilege("CANCEL_CUSTOMER_ORDER"), (req, re
                     })
                 }
             })
-        }else{
+        } else {
             return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
         }
 

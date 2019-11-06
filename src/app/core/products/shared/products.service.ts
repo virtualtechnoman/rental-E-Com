@@ -34,7 +34,7 @@ export class ProductsService {
   }
 
   updateProduct(product, id) {
-    return this.http.put(this.url + '/' + id, product, { headers: this.headers });
+    return this.http.put(this.url + '/id/' + id, product, { headers: this.headers });
   }
 
   importCustomer(csv) {

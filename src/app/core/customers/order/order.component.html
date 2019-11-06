@@ -42,18 +42,15 @@
 </div>
 
 
-
-
 <!--View Example Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
   aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-lg" role="document" *ngIf="selectedOrder">
     <div class="modal-content tx-14">
       <div class="modal-header">
         <div class="d-sm-flex align-items-center justify-content-between">
           <div>
             <h4 class="mg-b-5">Order Details</h4>
-            <!-- <p class="mg-b-0 tx-color-03">Due on {{orderSelected?.order_date | date : 'dd/MM/yy'}}</p> -->
           </div>
         </div>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -66,14 +63,14 @@
             <div class="row">
               <div class="col-sm-6">
                 <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Order From</label>
-                <h6 class="tx-15 mg-b-10">{{viewOrderArray?.placed_by?.full_name | titlecase}}</h6>
-                <p class="mg-b-0">{{viewOrderArray?.placed_by?.email}}</p>
-                <p class="mg-b-0">{{viewOrderArray?.placed_by?.mobile_number}}</p>
+                <h6 class="tx-15 mg-b-10">{{selectedOrder?.placed_by?.full_name | titlecase}}</h6>
+                <p class="mg-b-0">{{selectedOrder?.placed_by?.email}}</p>
+                <p class="mg-b-0">{{selectedOrder?.placed_by?.mobile_number}}</p>
               </div>
               <div class="col-sm-6 tx-right d-none d-md-block">
                 <label
-                  class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{viewOrderArray?.order_date | date : 'dd/MM/yy'}}</label>
-                <h4 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{viewOrderArray?.order_id}}</h4>
+                  class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{selectedOrder?.order_date | date : 'dd/MM/yy'}}</label>
+                <h4 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{selectedOrder?.order_id}}</h4>
               </div>
             </div>
             <div class="table-responsive mg-t-40">
@@ -83,13 +80,23 @@
                     <th class="wd-20p">Product</th>
                     <th class="wd-20p">Brand</th>
                     <th class="wd-20p">Quantity</th>
+                    <th class="wd-20p" *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">Accepted</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let product of viewOrderArray.products;let i=index">
+                  <tr *ngFor="let product of selectedOrder.products;let i=index">
                     <td class="tx-nowrap">{{product?.product?.name}}</td>
                     <td class="d-none d-sm-table-cell tx-color-03">{{product?.product?.brand?.name}}</td>
                     <td class="tx-nowrap">{{product.quantity}}</td>
+                    <td *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">
+                      <form [formGroup]="quantityForm">
+                        <div formArrayName="products">
+                          <div *ngFor="let itemrow of quantityFormGetter.controls; let i=index" [formGroupName]="i">
+                            <input type="text" class="form-control" formControlName="accepted">
+                          </div>
+                        </div>
+                      </form>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -97,26 +104,27 @@
             <div class="row justify-content-between">
               <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-40 mg-sm-t-0">
                 <h5><label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Status</label></h5>
-                <h5>{{viewOrderArray?.status}} </h5>
-              </div><!-- col -->
+                <h5>{{selectedOrder?.status}} </h5>
+              </div>
               <div class="col-sm-6 col-lg-4 order-1 order-sm-0">
                 <ul class="list-unstyled lh-7 pd-r-10">
                   <li class="d-flex justify-content-between">
                     <h5><b>Total Due</b></h5>
-                    <h5><b>₹{{viewOrderArray?.amount}}</b></h5>
+                    <h5><b>₹{{selectedOrder?.amount}}</b></h5>
                   </li>
                 </ul>
-
-                <!-- <button class="btn btn-block btn-primary">Pay Now</button> -->
-              </div><!-- col -->
+              </div>
             </div>
 
-          </div><!-- container -->
-        </div><!-- content -->
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-secondary tx-13" data-toggle="modal" data-target="#acceptOrderModal">Accept</button>
+        <button type="button" class="btn btn-secondary tx-13" (click)="acceptOrder()"
+          *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">Accept</button>
+        <button type="button" class="btn btn-secondary tx-13" (click)="acceptOrder()"
+          *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">Cancel</button>
       </div>
     </div>
   </div>
@@ -131,7 +139,6 @@
         <div class="d-sm-flex align-items-center justify-content-between">
           <div>
             <h4 class="mg-b-5">Accept Order</h4>
-            <!-- <p class="mg-b-0 tx-color-03">Due on {{orderSelected?.order_date | date : 'dd/MM/yy'}}</p> -->
           </div>
         </div>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -141,7 +148,6 @@
       <div class="modal-body">
         <div class="content tx-13">
           <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
-
           </div>
         </div>
       </div>

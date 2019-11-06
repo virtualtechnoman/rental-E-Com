@@ -135,6 +135,9 @@ export class CustomersService {
     return this.http.get(this.url9 + '/' + id, { headers: this.headers });
   }
 
+  acceptCustomerOrder(id, product) {
+    return this.http.put('api/corder/accept/' + id, product, { headers: this.headers });
+  }
   // add subscription
 
   addSubscriptionn(subscription) {
