@@ -6,32 +6,36 @@ const customerSelfUpdateSchema = Joi.object({
     full_name: Joi.string().optional(),
     landmark: Joi.string().optional(),
     street_address: Joi.string().optional(),
-    mobile_number:Joi.string().optional(),
+    mobile_number: Joi.string().optional(),
     // city : Joi.string().required(),
-    area : Joi.string().optional(),
-    dob : Joi.date().optional(),
-    anniversary: Joi.date().optional()
+    area: Joi.string().optional(),
+    dob: Joi.date().optional(),
+    anniversary: Joi.date().optional(),
+    shop_name: Joi.string().optional().allow(''),
+    retailer_number: Joi.string().optional().allow('')
 
 })
 const customerUpdateSchema = Joi.object({
     full_name: Joi.string().optional(),
     landmark: Joi.string().optional(),
-    mobile_number:Joi.string().optional(),
+    mobile_number: Joi.string().optional(),
     street_address: Joi.string().optional(),
     // city : Joi.string().optional(),
-    area : Joi.string().optional(),
-    dob : Joi.date().optional(),
+    area: Joi.string().optional(),
+    dob: Joi.date().optional(),
     anniversary: Joi.date().optional(),
-    role:Joi.string().optional()
+    role: Joi.string().optional(),
+    shop_name: Joi.string().optional().allow(''),
+    retailer_number: Joi.string().optional().allow('')
 })
 
 const customerCreateWeb = Joi.object({
-    full_name:Joi.string().required(),
+    full_name: Joi.string().required(),
     mobile_number: Joi.string().required(),
     landmark: Joi.string().required(),
     street_address: Joi.string().required(),
-    city : Joi.string().required(),
-    dob : Joi.date().required()
+    city: Joi.string().required(),
+    dob: Joi.date().required()
 })
 
 module.exports = {

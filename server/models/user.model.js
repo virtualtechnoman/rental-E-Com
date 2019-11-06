@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const KYC = mongoose.Schema({
   documentType: { type: String },
   image: { type: String },
@@ -40,6 +39,8 @@ const UserSchema = new mongoose.Schema({
   //for driver =>
   emergency_contact: { type: String },
   dl_number: { type: String },
+  shop_name: { type: String },
+  retailer_number: { type: String },
   //for dboy =>
   kyc: KYC,
   permanent_address: String,

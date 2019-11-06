@@ -45,7 +45,7 @@ router.get("/bycategory/:id", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res)
             return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" });
         })
     }
-    else{
+    else {
         return res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" })
     }
 })
@@ -61,7 +61,7 @@ router.get("/bybrand/:id", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) =>
             return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" });
         })
     }
-    else{
+    else {
         return res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid brand id" })
     }
 })

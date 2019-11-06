@@ -116,13 +116,11 @@ export class CustomersService {
   }
 
   // Costomer Orders
-
   getAllCustomersOrders() {
     return this.http.get(this.url6 + '/', { headers: this.headers });
   }
 
   // Get Customer With No Routes
-
   getAllCustomersWithNoRotes() {
     return this.http.get(this.url7 + '/', { headers: this.headers });
   }
