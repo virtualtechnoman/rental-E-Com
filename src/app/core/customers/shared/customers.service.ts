@@ -138,6 +138,11 @@ export class CustomersService {
   acceptCustomerOrder(id, product) {
     return this.http.put('api/corder/accept/' + id, product, { headers: this.headers });
   }
+
+
+  cancelCustomerOrder(id) {
+    return this.http.put('api/corder/cancel/' + id, {}, { headers: this.headers });
+  }
   // add subscription
 
   addSubscriptionn(subscription) {
@@ -145,7 +150,6 @@ export class CustomersService {
   }
 
   // get subscription of specific user
-
   getAllSubscriptionspecificCustomer(id) {
     return this.http.get(this.url10 + '/' + id, { headers: this.headers });
   }

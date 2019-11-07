@@ -131,4 +131,22 @@ export class OrderComponent implements OnInit {
       });
     console.log(this.quantityForm.value);
   }
+
+  
+  cancleOrder() {
+    const product = { products: this.quantityForm.value };
+    console.log(product);
+    this.customersService.cancelCustomerOrder(this.selectedOrder._id)
+      .subscribe((res: ResponseModel) => {
+        if (res.errors) {
+          console.log('Error');
+          this.toasterService.error('Order Not Cancelled', 'Error');
+        } else {
+          this.allCustomersOrders.splice(this.selectedOrderIndex, 1, res.data);
+          this.toasterService.success('Order Cancelled', 'Cancelled');
+          console.log('Cancelled');
+        }
+      });
+    console.log(this.quantityForm.value);
+  }
 }

@@ -110,12 +110,12 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_CUSTOMER_ORDER"), (req, res
                     upd.accepted = true;
                     upd.status = "Order Accepted";
                     CustomerOrder.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                        .populate({
+                        .populate([{
                             path: "products.product",
                             populate: {
                                 path: "created_by category brand available_for", select: "-password"
                             }
-                        }).lean().exec()
+                        }, { path: "placed_by", select: "-password" }]).lean().exec()
                         .then(d => {
                             res.json({ status: 200, data: d, errors: false, message: "Order accepted successfully" });
                         }).catch(e => {
@@ -190,15 +190,16 @@ router.post("/cancel/:id", authorizePrivilege("CANCEL_CUSTOMER_ORDER"), (req, re
         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid Order id" });
     }
     else {
-        let result = CustomerOrderController.verifyCancelByDboy(req.body);
-        if (isEmpty(result.errors)) {
-            CustomerOrder.findById(req.params.id).exec().then(_cord => {
+        // let result = CustomerOrderController.verifyCancelByDboy(req.body);
+        // if (isEmpty(result.errors)) {
+        CustomerOrder.findById(req.params.id).exec()
+            .then(_cord => {
                 if (_cord.isCancelled) {
                     return res.status(400).json({ status: 400, data: null, errors: true, message: "Order already cancelled" });
                 } else if (_cord.isDelivered) {
                     return res.status(400).json({ status: 400, data: null, errors: true, message: "Delivered Order cannot be cancelled" });
                 } else {
-                    CustomerOrder.findByIdAndUpdate(req.params.id, { $set: { status: "Cancelled", cancellationReason: result.data, isCancelled: true } }, { new: true }, (err, doc) => {
+                    CustomerOrder.findByIdAndUpdate(req.params.id, { $set: { status: "Cancelled", isCancelled: true } }, { new: true }, (err, doc) => {
                         if (err) {
                             return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while cancelling the order" });
                         }
@@ -213,9 +214,9 @@ router.post("/cancel/:id", authorizePrivilege("CANCEL_CUSTOMER_ORDER"), (req, re
                     })
                 }
             })
-        } else {
-            return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
-        }
+        // } else {
+        //     return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
+        // }
 
     }
 })

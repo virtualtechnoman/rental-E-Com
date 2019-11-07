@@ -27,7 +27,7 @@ module.exports = mongoose.model("customer_order", new mongoose.Schema({
     amount: Number,
     isDelivered: { type: Boolean, default: false },
     isCancelled: { type: Boolean, default: false },
-    cancellationReason: cancel,
+    // cancellationReason: cancel,
     accepted: { type: Boolean, default: false },
     status: { type: String },
     order_date: { type: Date, default: Date.now }
