@@ -119,25 +119,30 @@ export class OrderComponent implements OnInit {
   acceptOrder() {
     let orderStatus;
     const selectedProducts = this.allCustomersOrders[this.selectedOrderIndex].products;
-    const product = { products: this.quantityForm.value };
+    const product = this.quantityForm.value;
+    const product2 = product.products;
     console.log(product);
-    console.log(selectedProducts);
     for (let index = 0; index < selectedProducts.length; index++) {
-      if (selectedProducts[index].quantity === product[index].accepted) {
+      if (selectedProducts[index].quantity == product.products[index].accepted) {
         orderStatus = 'Fullfill';
-      } else if (selectedProducts[index].quantity !== product[index].accepted) {
+      } else if (selectedProducts[index].quantity !== product.products[index].accepted) {
         orderStatus = 'Partailly Fullfilled';
       }
     }
-    console.log(orderStatus);
-    this.customersService.acceptCustomerOrder(this.selectedOrder._id, this.quantityForm.value)
+    const body = {
+      products: product2,
+      orderStatus: orderStatus
+    };
+    this.customersService.acceptCustomerOrder(this.selectedOrder._id, body, orderStatus)
       .subscribe((res: ResponseModel) => {
         if (res.errors) {
           console.log('Error');
           this.toasterService.error('Order Not Accepted', 'Error');
+          jQuery('#exampleModal').modal('hide');
         } else {
           this.allCustomersOrders.splice(this.selectedOrderIndex, 1, res.data);
           this.toasterService.success('Order Accepted', 'Accepted');
+          jQuery('#exampleModal').modal('hide');
           console.log('Accepted');
         }
       });
@@ -155,6 +160,7 @@ export class OrderComponent implements OnInit {
         } else {
           this.allCustomersOrders.splice(this.selectedOrderIndex, 1, res.data);
           this.toasterService.success('Order Cancelled', 'Cancelled');
+          jQuery('#exampleModal').modal('hide');
           console.log('Cancelled');
         }
       });

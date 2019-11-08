@@ -36,7 +36,8 @@ const customerOrderAcceptSchema = Joi.object({
     products: Joi.array().items({
         product: Joi.string().required(),
         accepted: Joi.number().positive().allow(0).required()
-    }).required()
+    }).required(),
+    orderStatus:Joi.string().optional().allow('')
 })
 module.exports = {
     verifyCreate,

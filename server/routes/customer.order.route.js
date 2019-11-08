@@ -92,46 +92,50 @@ router.delete("/:id", authorizePrivilege("DELETE_CUSTOMER_ORDER"), (req, res) =>
 })
 //Accept an order
 router.put("/accept/:id", authorizePrivilege("ACCEPT_CUSTOMER_ORDER"), (req, res) => {
+    console.log(req.body);
     if (mongodb.ObjectID.isValid(req.params.id)) {
-        CustomerOrder.findById(req.params.id).exec().then(_ord => {
-            if (_ord) {
-                // if (!_ord.declined) {
-                if (!_ord.accepted) {
-                    let result = CustomerOrderController.verifyAccept(req.body);
-                    if (!isEmpty(result.errors))
-                        return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
-                    let upd = {}, arrfilter = [];
-                    result.data.products.forEach((ele, index) => {
-                        upd["products.$[e" + index + "].accepted"] = ele.accepted;
-                        let x = {};
-                        x["e" + index + ".product"] = ele.product;
-                        arrfilter.push(x);
-                    })
-                    upd.accepted = true;
-                    upd.status = "Order Accepted";
-                    CustomerOrder.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
-                        .populate([{
-                            path: "products.product",
-                            populate: {
-                                path: "created_by category brand available_for", select: "-password"
-                            }
-                        }, { path: "placed_by", select: "-password" }]).lean().exec()
-                        .then(d => {
-                            res.json({ status: 200, data: d, errors: false, message: "Order accepted successfully" });
-                        }).catch(e => {
-                            console.log(e);
-                            res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating accepted values" });
+        CustomerOrder.findById(req.params.id)
+            .exec()
+            .then(_ord => {
+                if (_ord) {
+                    // if (!_ord.declined) {
+                    if (!_ord.accepted) {
+                        let result = CustomerOrderController.verifyAccept(req.body);
+                        if (!isEmpty(result.errors)) {
+                            return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
+                        }
+                        let upd = {}, arrfilter = [];
+                        result.data.products.forEach((ele, index) => {
+                            upd["products.$[e" + index + "].accepted"] = ele.accepted;
+                            let x = {};
+                            x["e" + index + ".product"] = ele.product;
+                            arrfilter.push(x);
                         })
+                        upd.accepted = true;
+                        upd.status = req.body.orderStatus;
+                        CustomerOrder.findByIdAndUpdate(req.params.id, { $set: upd }, { upsert: false, arrayFilters: arrfilter, new: true })
+                            .populate([{
+                                path: "products.product",
+                                populate: {
+                                    path: "created_by category brand available_for", select: "-password"
+                                }
+                            }, { path: "placed_by", select: "-password" }]).lean().exec()
+                            .then(d => {
+                                res.json({ status: 200, data: d, errors: false, message: "Order accepted successfully" });
+                            }).catch(e => {
+                                console.log(e);
+                                res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating accepted values" });
+                            })
+                    } else {
+                        return res.status(400).json({ status: 400, errors: true, data: null, message: "Order already accepted" });
+                    }
+                    // } else {
+                    //     return res.status(400).json({ status: 400, errors: true, data: null, message: "Order is declined, can't accept!" });
+                    // }
                 } else {
-                    return res.status(400).json({ status: 400, errors: true, data: null, message: "Order already accepted" });
+                    return res.status(400).json({ status: 400, errors: true, data: null, message: "No order exist with the given id" });
                 }
-                // } else {
-                //     return res.status(400).json({ status: 400, errors: true, data: null, message: "Order is declined, can't accept!" });
-                // }
-            } else {
-                return res.status(400).json({ status: 400, errors: true, data: null, message: "No order exist with the given id" });
-            }
-        })
+            })
     }
 })
 // Cancel a order

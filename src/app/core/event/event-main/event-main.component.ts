@@ -464,8 +464,7 @@ export class EventMainComponent implements OnInit {
     this.eventService.addMainEvent(event).subscribe((res: ResponseModel) => {
       console.log(res.data)
       var newdate = new Date(event.time)
-      this.selectedDateAddEvent = moment(newdate).format('LLL')
-      jQuery('#modal3').modal('hide');
+      this.selectedDateAddEvent = moment(newdate).format('LLL');
       this.toasterService.success('Successfully added new event named ' + res.data.name + 'on' + this.selectedDateAddEvent + '.' + 'Notifications for the same has been sent to ' + res.data.incharge[0].full_name + '.', 'Success');
       this.mainEvent.push(res.data);
       this.pendingCallsLeads.push(0)

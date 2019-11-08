@@ -135,10 +135,9 @@ export class CustomersService {
     return this.http.get(this.url9 + '/' + id, { headers: this.headers });
   }
 
-  acceptCustomerOrder(id, product) {
-    return this.http.put('api/corder/accept/' + id, product, { headers: this.headers });
+  acceptCustomerOrder(id, products, orderStatus) {
+    return this.http.put('api/corder/accept/' + id, products, { headers: this.headers });
   }
-
 
   cancelCustomerOrder(id) {
     return this.http.put('api/corder/cancel/' + id, {}, { headers: this.headers });
