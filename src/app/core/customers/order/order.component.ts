@@ -4,7 +4,6 @@ import { CustomersService } from '../shared/customers.service';
 import { ResponseModel } from '../../../shared/shared.model';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import moment = require('moment');
 
 @Component({
   selector: 'app-order',
