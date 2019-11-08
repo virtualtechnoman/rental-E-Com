@@ -4,6 +4,7 @@ import { CustomersService } from '../shared/customers.service';
 import { ResponseModel } from '../../../shared/shared.model';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import moment = require('moment');
 
 @Component({
   selector: 'app-order',
@@ -16,6 +17,7 @@ export class OrderComponent implements OnInit {
   quantityForm: FormGroup;
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
+  orderStatus: any;
   selectedOrder: any;
   selectedOrderIndex: number;
   constructor(private customersService: CustomersService, private formBuilder: FormBuilder, private toasterService: ToastrService) {
@@ -39,7 +41,6 @@ export class OrderComponent implements OnInit {
     while (this.quantityFormGetter.length > 0) {
       this.quantityFormGetter.removeAt(0);
     }
-
     this.selectedOrder = this.allCustomersOrders[i];
     this.selectedOrderIndex = i;
     console.log(this.selectedOrder);
@@ -116,8 +117,19 @@ export class OrderComponent implements OnInit {
   }
 
   acceptOrder() {
+    let orderStatus;
+    const selectedProducts = this.allCustomersOrders[this.selectedOrderIndex].products;
     const product = { products: this.quantityForm.value };
     console.log(product);
+    console.log(selectedProducts);
+    for (let index = 0; index < selectedProducts.length; index++) {
+      if (selectedProducts[index].quantity === product[index].accepted) {
+        orderStatus = 'Fullfill';
+      } else if (selectedProducts[index].quantity !== product[index].accepted) {
+        orderStatus = 'Partailly Fullfilled';
+      }
+    }
+    console.log(orderStatus);
     this.customersService.acceptCustomerOrder(this.selectedOrder._id, this.quantityForm.value)
       .subscribe((res: ResponseModel) => {
         if (res.errors) {
@@ -132,7 +144,6 @@ export class OrderComponent implements OnInit {
     console.log(this.quantityForm.value);
   }
 
-  
   cancleOrder() {
     const product = { products: this.quantityForm.value };
     console.log(product);
