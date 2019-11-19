@@ -91,7 +91,7 @@
                     <td *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">
                       <form [formGroup]="quantityForm">
                         <div formArrayName="products">
-                          <div *ngFor="let itemrow of quantityFormGetter.controls; let i=index" [formGroupName]="i">
+                          <div [formGroupName]="i">
                             <input type="text" class="form-control" formControlName="accepted">
                           </div>
                         </div>
@@ -123,7 +123,7 @@
         <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-secondary tx-13" (click)="acceptOrder()"
           *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">Accept</button>
-        <button type="button" class="btn btn-secondary tx-13" (click)="acceptOrder()"
+        <button type="button" class="btn btn-secondary tx-13" (click)="cancleOrder()"
           *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">Cancel</button>
       </div>
     </div>
