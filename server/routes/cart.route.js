@@ -198,55 +198,57 @@ router.put("/:id", authorizePrivilege("UPDATE_QUANTITY_IN_CART"), (req, res) => 
 
 //Place Order
 router.post("/placeorder", authorizePrivilege("PLACE_ORDER"), (req, res) => {
-    Cart.findOne({ user: req.user._id }).exec().then(cart => {
-        Cart.aggregate([
-            { $match: { user: req.user._id } },
-            { $unwind: "$products" },
-            { $lookup: { "from": 'products', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
-            {
-                $project: {
-                    _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.selling_price", 0] }
+    Cart.findOne({ user: req.user._id })
+        .exec().then(cart => {
+            Cart.aggregate([
+                { $match: { user: req.user._id } },
+                { $unwind: "$products" },
+                { $lookup: { "from": 'products', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
+                {
+                    $project: {
+                        _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.selling_price", 0] }
+                    }
+                },
+                { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
+                { $project: { _id: 0, c_id: 1, products: 1, total: 1 } }
+            ], (err, doc) => {
+                if (err) {
+                    console.log(err);
+                    return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
                 }
-            },
-            { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
-            { $project: { _id: 0, c_id: 1, products: 1, total: 1 } }
-        ], (err, doc) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
-            }
-            if (doc.length) {
-                doc = doc[0];
-                if (doc.products.length) {
-                    let order = {};
-                    order.products = doc.products;
-                    order.placed_by = req.user._id;
-                    order.order_id = "C_ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
-                    console.log("DOC>TOTAL : ",doc.total);
-                    order.amount = doc.total;
-                    order.status = "Placed";
-                    let newOrder = new CustomerOrder(order);
-                    newOrder.save().then(order => {
-                        CustomerOrder.findById(order._id).populate([{path:"placed_by products.product placed_to",populate:{path:"created_by available_for brand category",select:"-password"}}]).exec().then(d => {
-                            cart.delete();
-                            return res.json({ status: 200, data: d, errors: false, message: "Order placed successfully" });
+                if (doc.length) {
+                    doc = doc[0];
+                    if (doc.products.length) {
+                        let order = {};
+                        order.placed_to = req.body.customer_id;
+                        order.products = doc.products;
+                        order.placed_by = req.user._id;
+                        order.order_id = "C_ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
+                        console.log("DOC>TOTAL : ", doc.total);
+                        order.amount = doc.total;
+                        order.status = "Placed";
+                        let newOrder = new CustomerOrder(order);
+                        newOrder.save().then(order => {
+                            CustomerOrder.findById(order._id).populate([{ path: "placed_by products.product", populate: { path: "created_by available_for brand category", select: "-password" } }]).exec().then(d => {
+                                cart.delete();
+                                return res.json({ status: 200, data: d, errors: false, message: "Order placed successfully" });
+                            })
+                        }).catch(e => {
+                            console.log(e);
+                            return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while placing the order" });
                         })
-                    }).catch(e => {
-                        console.log(e);
-                        return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while placing the order" });
-                    })
+                    }
+                    else
+                        return res.status(400).json({ status: 400, errors: true, data: null, message: "Your cart is empty" });
+                } else {
+                    return res.status(400).json({ status: 400, errors: true, data: doc, message: "No Orders" });
                 }
-                else
-                    return res.status(400).json({ status: 400, errors: true, data: null, message: "Your cart is empty" });
-            } else {
-                return res.status(400).json({ status: 400, errors: true, data: doc, message: "No Orders" });
-            }
+            })
+        }).catch(e => {
+            console.log(e);
+            res.status(500).json({ status: 500, data: null, errors: true, message: "Something went wrong" })
         })
-    }).catch(e=>{
-        console.log(e);
-        res.status(500).json({status:500, data:null, errors:true, message:"Something went wrong"})
-    })
-    
+
 
     // Cart.findOne({ user: req.user._id }).exec().then(doc => {
     //     if (doc) {

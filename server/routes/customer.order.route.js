@@ -90,6 +90,7 @@ router.delete("/:id", authorizePrivilege("DELETE_CUSTOMER_ORDER"), (req, res) =>
         })
     }
 })
+
 //Accept an order
 router.put("/accept/:id", authorizePrivilege("ACCEPT_CUSTOMER_ORDER"), (req, res) => {
     console.log(req.body);
@@ -138,6 +139,7 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_CUSTOMER_ORDER"), (req, res
             })
     }
 })
+
 // Cancel a order
 router.post("/assigned", authorizePrivilege("GET_CUSTOMER_ORDER_ASSIGNED"), (req, res) => {
     let result = CustomerOrderController.verifyDateForDboy(req.body);

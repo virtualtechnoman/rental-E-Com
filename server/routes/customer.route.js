@@ -56,8 +56,6 @@ router.get('/byroute/:id', authorizePrivilege("GET_ALL_CUSTOMERS"), async (req, 
     }
 })
 
-
-
 // DELETE a user
 router.delete('/:id', authorizePrivilege("DELETE_CUSTOMER"), (req, res) => {
     if (mongodb.ObjectID.isValid(req.params.id)) {
@@ -116,6 +114,7 @@ router.put("/picture", authorizePrivilege("UPDATE_CUSTOMER"), upload.single('pro
         }
     }
 })
+
 // UPDATE Profile 
 router.put('/id/:id', authorizePrivilege("UPDATE_CUSTOMER"), (req, res) => {
     let result;
