@@ -62,12 +62,18 @@
           <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
             <div class="row">
               <div class="col-sm-6">
-                <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Order From</label>
-                <h6 class="tx-15 mg-b-10">{{selectedOrder?.placed_by?.full_name | titlecase}}</h6>
-                <p class="mg-b-0">{{selectedOrder?.placed_by?.email}}</p>
-                <p class="mg-b-0">{{selectedOrder?.placed_by?.mobile_number}}</p>
+                <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Customer Details</label>
+                <h6 class="tx-15 mg-b-10">{{selectedOrder?.placed_to?.full_name | titlecase}}</h6>
+                <p class="mg-b-0">{{selectedOrder?.placed_to?.email}}</p>
+                <p class="mg-b-0">{{selectedOrder?.placed_to?.H_no_society}}</p>
+                <p class="mg-b-0">{{selectedOrder?.placed_to?.street_address  | titlecase}}</p>
+                <p class="mg-b-0">{{selectedOrder?.placed_to?.landmark  | titlecase}}</p>
               </div>
               <div class="col-sm-6 tx-right d-none d-md-block">
+                <label *ngIf="selectedOrder?.placed_by"
+                  class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Ordered By</label>
+                <h6 *ngIf="selectedOrder?.placed_by" class="tx-15 mg-b-10">
+                  {{selectedOrder?.placed_by?.full_name | titlecase}}</h6>
                 <label
                   class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{selectedOrder?.order_date | date : 'dd/MM/yy'}}</label>
                 <h4 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{selectedOrder?.order_id}}</h4>

@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { ProductsService } from '../shared/products.service';
 import { ResponseModel } from '../../../shared/shared.model';
 import { ToastrService } from 'ngx-toastr';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-brand',
@@ -11,30 +12,32 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./brand.component.scss']
 })
 export class BrandComponent implements OnInit {
-  imageUrl="https://binsar.s3.ap-south-1.amazonaws.com/"
-  brandForm:FormGroup;
+  imageUrl = "https://binsar.s3.ap-south-1.amazonaws.com/"
+  brandForm: FormGroup;
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
-  editing:boolean=false;
-  submitted:boolean=false;
-  allBrand:any[]=[];
-  viewArray:any=[];
-  currentBrand:any;
-  currentBrandId:any;
-  currentIndex:number
+  editing: boolean = false;
+  submitted: boolean = false;
+  allBrand: any[] = [];
+  viewArray: any = [];
+  currentBrand: any;
+  currentBrandId: any;
+  currentIndex: number
   fileSelected: any;
   keyProductImage: any;
   urlProductImage: any;
-  showImage:boolean=false;
-  image:any;
-  editShowImage:boolean=false
+  showImage: boolean = false;
+  image: any;
+  editShowImage: boolean = false;
   editImage: any;
   mastImage: any;
-  constructor(private formBuilder:FormBuilder,private productService:ProductsService, private toastr:ToastrService) {
+  constructor(private formBuilder: FormBuilder, private productService: ProductsService, private toastr: ToastrService,
+    private titleService: Title) {
+    this.titleService.setTitle('Brand Management');
 
     this.getAllBrand()
 
-   }
+  }
 
   ngOnInit() {
     this.dtOptions = {
@@ -76,15 +79,15 @@ export class BrandComponent implements OnInit {
     this.brandForm = this.formBuilder.group({
       name: ['', Validators.required],
       logo: [''],
-      contact:['', Validators.required],
-      address:['', Validators.required],
+      contact: ['', Validators.required],
+      address: ['', Validators.required],
     });
   }
 
   get f() { return this.brandForm.controls; }
 
-  selectFile(event:any){
-    this.fileSelected=event.target.files[0];
+  selectFile(event: any) {
+    this.fileSelected = event.target.files[0];
     console.log(this.fileSelected)
   }
 
@@ -95,45 +98,45 @@ export class BrandComponent implements OnInit {
       return;
     }
 
-    if(this.fileSelected){
-      this.productService.getUrl().subscribe((res:ResponseModel)=>{
+    if (this.fileSelected) {
+      this.productService.getUrl().subscribe((res: ResponseModel) => {
         console.log(res.data)
-        this.keyProductImage=res.data.key;
-        this.urlProductImage=res.data.url;
-          
-      if(this.urlProductImage){
-        this.productService.sendUrl(this.urlProductImage,this.fileSelected).then(resp=>{
-          if(resp.status == 200 ){
-            this.brandForm.value.logo=this.keyProductImage;
-            
-           console.log(this.brandForm.value)
-           if (this.editing) {
-            this.updateBrand(this.brandForm.value);
-          } else {
-            this.addBrand(this.brandForm.value);
-          }
-            // this.addVehicle(this.VehicleForm.value);
-          }
-        })
-      }
+        this.keyProductImage = res.data.key;
+        this.urlProductImage = res.data.url;
+
+        if (this.urlProductImage) {
+          this.productService.sendUrl(this.urlProductImage, this.fileSelected).then(resp => {
+            if (resp.status == 200) {
+              this.brandForm.value.logo = this.keyProductImage;
+
+              console.log(this.brandForm.value)
+              if (this.editing) {
+                this.updateBrand(this.brandForm.value);
+              } else {
+                this.addBrand(this.brandForm.value);
+              }
+              // this.addVehicle(this.VehicleForm.value);
+            }
+          })
+        }
       })
-    }else{
-      
+    } else {
+
       console.log(this.brandForm.value)
       if (this.editing) {
-          if(!this.fileSelected){
-        this.brandForm.value.logo=this.mastImage
-          }
+        if (!this.fileSelected) {
+          this.brandForm.value.logo = this.mastImage
+        }
         console.log(this.mastImage)
         this.updateBrand(this.brandForm.value);
-          
+
       } else {
         delete this.brandForm.value.logo;
         this.addBrand(this.brandForm.value);
       }
+    }
   }
-  }
-  addBrand(brand){
+  addBrand(brand) {
     console.log(brand)
     this.productService.addBrand(brand).subscribe((res: ResponseModel) => {
       jQuery('#modal3').modal('hide');
@@ -158,7 +161,7 @@ export class BrandComponent implements OnInit {
     });
   }
 
-  getAllBrand(){
+  getAllBrand() {
     this.allBrand.length = 0;
     this.productService.getAllBrand().subscribe((res: ResponseModel) => {
       console.log(res);
@@ -170,13 +173,13 @@ export class BrandComponent implements OnInit {
 
   viewBrand(i) {
     this.viewArray = this.allBrand[i];
-    if(this.viewArray.logo){
-      this.showImage=true;
-    this.image= this.imageUrl + this.viewArray.logo
-    console.log(this.image)
+    if (this.viewArray.logo) {
+      this.showImage = true;
+      this.image = this.imageUrl + this.viewArray.logo
+      console.log(this.image)
     }
-    else{
-      this.showImage=false
+    else {
+      this.showImage = false
     }
   }
 
@@ -202,21 +205,21 @@ export class BrandComponent implements OnInit {
     this.brandForm.controls['name'].setValue(brand.name);
     this.brandForm.controls['address'].setValue(brand.address);
     this.brandForm.controls['contact'].setValue(brand.contact);
-    if(brand.logo){
-      this.editShowImage=true;
-      this.mastImage=brand.logo
-      this.editImage= this.imageUrl + brand.logo
+    if (brand.logo) {
+      this.editShowImage = true;
+      this.mastImage = brand.logo
+      this.editImage = this.imageUrl + brand.logo
       // this.VehicleForm.controls['image'].setValue(image);
-    console.log(this.editImage)
-    }else{
-      this.editShowImage=false
+      console.log(this.editImage)
+    } else {
+      this.editShowImage = false
     }
   }
 
   resetForm() {
     this.editing = false;
     this.submitted = false;
-    this.editShowImage=false;
+    this.editShowImage = false;
     this.brandForm.reset();
   }
 }

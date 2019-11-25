@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 import * as moment from 'moment';
 import { ActivatedRoute } from '@angular/router';
 import { ResponseModel } from '../../shared/shared.model';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-user',
@@ -56,7 +57,9 @@ export class UserComponent implements OnInit {
   image: any;
   selectedGender: any;
   constructor(private userService: UserService, private formBuilder: FormBuilder,
-    private UserroleService: UserRoleService, private toastr: ToastrService, private activatedRoute: ActivatedRoute) {
+    private UserroleService: UserRoleService, private toastr: ToastrService, private activatedRoute: ActivatedRoute,
+    private titleService: Title) {
+    this.titleService.setTitle('User Management');
     this.initForm();
     this.getAllUsers();
     this.getUserRoles();
@@ -75,7 +78,7 @@ export class UserComponent implements OnInit {
       language: {
         search: '_INPUT_',
         searchPlaceholder: 'Search records',
-      }, 
+      },
       // initComplete: function (settings, json) {
       //   $('.button').removeClass('dt-button');
       // },

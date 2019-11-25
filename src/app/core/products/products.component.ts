@@ -8,6 +8,7 @@ import { AuthService } from '../../auth/auth.service';
 import { ResponseModel } from '../../shared/shared.model';
 import * as _ from 'lodash';
 import value from '*.json';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-products',
@@ -62,8 +63,9 @@ export class ProductsComponent implements OnInit {
   newStock: Number;
   pattern = "^[0-9]*$";
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
-    private authService: AuthService
-  ) {
+    private authService: AuthService,
+    private titleService: Title) {
+    this.titleService.setTitle('Product Management');
     this.initForm();
   }
 

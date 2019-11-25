@@ -5,6 +5,7 @@ import { ResponseModel } from '../../../shared/shared.model';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import * as  moment from 'moment';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-order',
@@ -20,7 +21,9 @@ export class OrderComponent implements OnInit {
   orderStatus: any;
   selectedOrder: any;
   selectedOrderIndex: number;
-  constructor(private customersService: CustomersService, private formBuilder: FormBuilder, private toasterService: ToastrService) {
+  constructor(private customersService: CustomersService, private formBuilder: FormBuilder, private toasterService: ToastrService,
+    private titleService: Title) {
+    this.titleService.setTitle('Order Management');
     this.getAllOrders();
   }
 

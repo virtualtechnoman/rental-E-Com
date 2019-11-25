@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { ProductsService } from '../shared/products.service';
 import { ResponseModel } from '../../../shared/shared.model';
 import { ToastrService } from 'ngx-toastr';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-category',
@@ -12,7 +13,7 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./category.component.scss']
 })
 export class CategoryComponent implements OnInit {
-  imageUrl="https://binsar.s3.ap-south-1.amazonaws.com/"
+  imageUrl = "https://binsar.s3.ap-south-1.amazonaws.com/"
   categoryForm: FormGroup;
   submitted = false;
   editing: Boolean = false;
@@ -24,20 +25,22 @@ export class CategoryComponent implements OnInit {
   allCategory: CategoryModel[] = [];
   viewArray: any = [];
   fileSelected: any;
-  keyCategoryImage:any;
-  urlCategoryImage:any;
-  showImage:boolean=false;
-  image:any;
-  editShowImage:boolean=false
+  keyCategoryImage: any;
+  urlCategoryImage: any;
+  showImage: boolean = false;
+  image: any;
+  editShowImage: boolean = false
   editImage: any;
   mastImage: any;
   attributeForm: FormGroup;
-  allAttributes:any[]=[];
-  showAttributeFor:boolean=false;
-  categorySelectedId:any;
-  specificCategoryAttributes:any[]=[]
-  showSpecificCategoryAttributesLength:boolean=false;
-  constructor(private formBuilder: FormBuilder, private productService: ProductsService, private toastr: ToastrService) {
+  allAttributes: any[] = [];
+  showAttributeFor: boolean = false;
+  categorySelectedId: any;
+  specificCategoryAttributes: any[] = []
+  showSpecificCategoryAttributesLength: boolean = false;
+  constructor(private formBuilder: FormBuilder, private productService: ProductsService, private toastr: ToastrService,
+    private titleService: Title) {
+    this.titleService.setTitle('Category Management');
     this.initForm();
   }
 
@@ -81,19 +84,19 @@ export class CategoryComponent implements OnInit {
     this.categoryForm = this.formBuilder.group({
       name: ['', Validators.required],
       is_active: ['', Validators.required],
-      image:['']
+      image: ['']
     });
-    this.attributeForm=this.formBuilder.group({
-      category:[''],
-      name:['',Validators.required]
+    this.attributeForm = this.formBuilder.group({
+      category: [''],
+      name: ['', Validators.required]
     })
   }
 
   get f() { return this.categoryForm.controls; }
   get f2() { return this.attributeForm.controls; }
 
-  selectFile(event:any){
-    this.fileSelected=event.target.files[0];
+  selectFile(event: any) {
+    this.fileSelected = event.target.files[0];
     console.log(this.fileSelected)
   }
 
@@ -104,44 +107,44 @@ export class CategoryComponent implements OnInit {
       return;
     }
     this.currentcategory = this.categoryForm.value;
-    
-    if(this.fileSelected){
-      this.productService.getUrlCategory().subscribe((res:ResponseModel)=>{
+
+    if (this.fileSelected) {
+      this.productService.getUrlCategory().subscribe((res: ResponseModel) => {
         console.log(res.data)
-        this.keyCategoryImage=res.data.key;
-        this.urlCategoryImage=res.data.url;
-          
-      if(this.urlCategoryImage){
-        this.productService.sendUrlCategory(this.urlCategoryImage,this.fileSelected).then(resp=>{
-          if(resp.status == 200 ){
-            this.categoryForm.value.image=this.keyCategoryImage;
-            
-           console.log(this.categoryForm.value)
-           if (this.editing) {
-            this.updateCategory(this.categoryForm.value);
-          } else {
-            this.addCategory(this.categoryForm.value);
-          }
-            // this.addVehicle(this.VehicleForm.value);
-          }
-        })
-      }
+        this.keyCategoryImage = res.data.key;
+        this.urlCategoryImage = res.data.url;
+
+        if (this.urlCategoryImage) {
+          this.productService.sendUrlCategory(this.urlCategoryImage, this.fileSelected).then(resp => {
+            if (resp.status == 200) {
+              this.categoryForm.value.image = this.keyCategoryImage;
+
+              console.log(this.categoryForm.value)
+              if (this.editing) {
+                this.updateCategory(this.categoryForm.value);
+              } else {
+                this.addCategory(this.categoryForm.value);
+              }
+              // this.addVehicle(this.VehicleForm.value);
+            }
+          })
+        }
       })
-    }else{
-      
+    } else {
+
       console.log(this.categoryForm.value)
       if (this.editing) {
-          if(!this.fileSelected){
-        this.categoryForm.value.image=this.mastImage
-          }
+        if (!this.fileSelected) {
+          this.categoryForm.value.image = this.mastImage
+        }
         console.log(this.mastImage)
         this.updateCategory(this.categoryForm.value);
-          
+
       } else {
         delete this.categoryForm.value.image;
         this.addCategory(this.categoryForm.value);
       }
-  }
+    }
   }
 
   addCategory(category) {
@@ -157,21 +160,21 @@ export class CategoryComponent implements OnInit {
   viewCategory(i) {
     // this.specificCategoryAttributes.length=0
     this.viewArray = this.allCategory[i];
-    this.categorySelectedId=this.allCategory[i]._id
-    if(this.allCategory[i]._id)
-    this.productService.getAllAttributeSpecificCategory(this.allCategory[i]._id).subscribe((res:ResponseModel)=>{
-      console.log(res.data)
-      if(res.data)
-      this.specificCategoryAttributes=res.data[0]
+    this.categorySelectedId = this.allCategory[i]._id
+    if (this.allCategory[i]._id)
+      this.productService.getAllAttributeSpecificCategory(this.allCategory[i]._id).subscribe((res: ResponseModel) => {
+        console.log(res.data)
+        if (res.data)
+          this.specificCategoryAttributes = res.data[0]
 
-  })
-    if(this.viewArray.image){
-      this.showImage=true;
-    this.image= this.imageUrl + this.viewArray.image
-    console.log(this.image)
+      })
+    if (this.viewArray.image) {
+      this.showImage = true;
+      this.image = this.imageUrl + this.viewArray.image
+      console.log(this.image)
     }
-    else{
-      this.showImage=false
+    else {
+      this.showImage = false
     }
   }
 
@@ -224,45 +227,45 @@ export class CategoryComponent implements OnInit {
   }
 
   setFormValue() {
-    const category:any= this.allCategory[this.currentIndex];
+    const category: any = this.allCategory[this.currentIndex];
     this.categoryForm.controls['name'].setValue(category.name);
     this.categoryForm.controls['is_active'].setValue(category.is_active);
-    if(category.image){
-      this.editShowImage=true;
-      this.mastImage=category.image
-      this.editImage= this.imageUrl + category.image
+    if (category.image) {
+      this.editShowImage = true;
+      this.mastImage = category.image
+      this.editImage = this.imageUrl + category.image
       // this.VehicleForm.controls['image'].setValue(image);
-    console.log(this.editImage)
-    }else{
-      this.editShowImage=false
+      console.log(this.editImage)
+    } else {
+      this.editShowImage = false
     }
   }
 
   get attributesForm() {
     return this.attributeForm.get('name') as FormArray
   }
-  
+
   addAttribute() {
-  
-    const attibute = this.formBuilder.group({ 
+
+    const attibute = this.formBuilder.group({
       name: []
     })
-  
+
     this.attributesForm.push(attibute);
   }
-  
+
   deleteAttribute(i) {
     this.attributesForm.removeAt(i)
   }
 
-  submitAttributeForm(){
-    
+  submitAttributeForm() {
+
     if (this.attributeForm.invalid) {
       return;
     }
-    this.attributeForm.value.category=this.categorySelectedId
+    this.attributeForm.value.category = this.categorySelectedId
     console.log(this.attributeForm.value)
-    this.productService.addAttribute(this.attributeForm.value).subscribe((res:ResponseModel)=>{
+    this.productService.addAttribute(this.attributeForm.value).subscribe((res: ResponseModel) => {
       this.toastr.success('Attribute added!', 'Success!');
       this.allAttributes.push(res.data)
       console.log(res.data)
@@ -271,15 +274,15 @@ export class CategoryComponent implements OnInit {
     })
   }
 
-  disableViewCategory(){
+  disableViewCategory() {
     jQuery('#exampleModal').modal('hide')
-    
+
   }
 
   resetForm() {
     this.editing = false;
     this.submitted = false;
-    this.editShowImage=false
+    this.editShowImage = false
     this.categoryForm.reset();
   }
 }

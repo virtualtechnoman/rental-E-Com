@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import * as $ from 'jquery';
 import { Subject } from 'rxjs';
 import { ResponseModel } from '../../../shared/shared.model';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-userrole',
@@ -26,7 +27,9 @@ export class UserroleComponent implements OnInit {
   constructor(
     private userRoleService: UserRoleService,
     private formBuilder: FormBuilder,
-    private toastr: ToastrService) {
+    private toastr: ToastrService,
+    private titleService: Title) {
+    this.titleService.setTitle('User Role Management');
 
   }
 
