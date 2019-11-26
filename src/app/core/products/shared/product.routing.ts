@@ -4,21 +4,30 @@ import { ProductsComponent } from '../products.component';
 import { AuthGuard } from '../../../auth/auth-guard.service';
 import { CategoryComponent } from '../category/category.component';
 import { BrandComponent } from '../brand/brand.component';
-import { CategoryAttributesComponent } from '../category-attributes/category-attributes.component';
+import { AttributesComponent } from '../attributes/attributes.component';
+import { TypesComponent } from '../types/types.component';
 
 const routes: Routes = [
-    { path: 'product', children: [{  path: '', component: ProductsComponent }],
+  {
+    path: 'product', children: [{ path: '', component: ProductsComponent }],
     canActivate: [AuthGuard]
-    },
-    { path: 'category', children: [{  path: '', component: CategoryComponent }],
+  },
+  {
+    path: 'category', children: [{ path: '', component: CategoryComponent }],
     canActivate: [AuthGuard]
-    },
-    { path: 'brand', children: [{  path: '', component: BrandComponent }],
+  },
+  {
+    path: 'brand', children: [{ path: '', component: BrandComponent }],
     canActivate: [AuthGuard]
-    },
-    { path: 'attributes', children: [{  path: '', component: CategoryAttributesComponent }],
+  },
+  {
+    path: 'attributes', children: [{ path: '', component: AttributesComponent }],
     canActivate: [AuthGuard]
-    }
+  },
+  {
+    path: 'producttype', children: [{ path: '', component: TypesComponent }],
+    canActivate: [AuthGuard]
+  }
 ];
 
 @NgModule({
@@ -26,4 +35,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 
-export class ProductsRoutingModule {}
+export class ProductsRoutingModule { }

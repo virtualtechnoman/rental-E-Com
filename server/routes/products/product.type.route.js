@@ -1,109 +1,81 @@
 const express = require('express');
 const router = express.Router();
-const Attribute = require('../models/product.category.attribute.model');
-const AttributeController = require('../controllers/product.category.attribute.controller');
-const isEmpty = require('../utils/is-empty');
+const ProductType = require('../../models/products/products.type.model');
+const ProductTypeController = require('../../controllers/product/product.type.model');
+const isEmpty = require('../../utils/is-empty');
 const mongodb = require('mongoose').Types;
-const authorizePrivilege = require("../middleware/authorizationMiddleware");
-
-//GET ALL CATEGORY CREATED BY SELF
-// router.get("/",authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
-//     ProductCategory.find({created_by:req.user._id}).populate("created_by","-password").exec().then(docs => {
-//         if (docs.length > 0)
-//             res.json({ status: 200, data: docs, errors: false, message: "All products" });
-//         else
-//             res.json({ status: 200, data: docs, errors: true, message: "No products found" });
-//     }).catch(err => {
-//         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" })
-//     })
-// })
+const authorizePrivilege = require("../../middleware/authorizationMiddleware");
 
 //  *************** GET APIS *********************** //
-
-// GET ALL PRODUCT CATEGORY
-router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_CATEGORY"), (req, res) => {
-    Attribute
+// GET ALL PRODUCT TYPE
+router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_TYPE"), (req, res) => {
+    ProductType
         .find()
         .exec()
         .then(docs => {
             if (docs.length > 0)
-                res.json({ status: 200, data: docs, errors: false, message: "All categories" });
+                res.json({ status: 200, data: docs, errors: false, message: "All PRODUCT TYPES" });
             else
-                res.json({ status: 200, data: docs, errors: true, message: "No categories found" });
+                res.json({ status: 200, data: docs, errors: false, message: "NO PRODUCT TYPE FOUND" });
         }).catch(err => {
-            res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting categories" })
+            res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE getting PRODUCT TYPE" })
         })
 })
 
-// GET ALL ATTRIBUTES OF PRODUCT CATEGORY
-router.get("/category/:id", authorizePrivilege("GET_CATEGORY_ATTRIBUTE"), (req, res) => {
-    Attribute.find({ category: req.params.id }).exec().then(docs => {
-        if (docs.length > 0)
-            res.json({ status: 200, data: docs, errors: false, message: "All atrributes for given category" });
-        else
-            res.json({ status: 200, data: docs, errors: true, message: "No attribute found for the given category" });
-    }).catch(err => {
-        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting attributes for category" })
-    })
+// GET SPECIFIC PRODUCT TYPE 
+router.get("/type/:id", authorizePrivilege("GET_ALL_PRODUCT_TYPE"), (req, res) => {
+    if (mongodb.ObjectId.isValid(req.params.id)) {
+        ProductType
+            .findById(req.params.id)
+            .exec()
+            .then(docs => {
+                if (docs.length > 0)
+                    res.json({ status: 200, data: docs, errors: false, message: "ALL PRODUCT TYPE " });
+                else
+                    res.json({ status: 200, data: docs, errors: true, message: "NO PRODUCT TYPE FOUND" });
+            }).catch(err => {
+                res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE FETCHING PRODUCT TYPE" });
+            })
+    } else {
+        res.status(500).json({ status: 404, data: null, errors: true, message: "INVALID ID" })
+    }
 })
 
 // ************************* POST API ***********************
 // ADD NEW PRODUCT CATEGORY
-router.post('/', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE"), async (req, res) => {
-    let result = AttributeController.verifyCreate(req.body);
+router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_TYPE"), async (req, res) => {
+    let result = ProductTypeController.verifyCreate(req.body);
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
     }
-    Attribute
-        .findOneAndUpdate(
-            { category: result.data.category },
-            { $push: { name: result.data.name } },
-            { upsert: true, new: true })
-        .exec()
-        .then(attribute => {
-            res.json({ status: 200, data: attribute, errors: false, message: "Attribute added successfully" })
-        })
-        .catch(err => {
-            console.log(err);
-            res.json({ status: 500, data: null, errors: true, message: "Error while creating new attribute" });
-        });
-});
-
-router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE"), async (req, res) => {
-    console.log('Body', req.body);
-    let result = AttributeController.verifyCreate(req.body);
-    console.log('Result', result);
-    if (!isEmpty(result.errors)) {
-        return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
-    }
-    let newAttribute = new Attribute(result.data);
-    newAttribute
+    let newProductType = new ProductType(result.data);
+    newProductType
         .save()
-        .then((_attribute) => {
-            res.json({ status: 200, data: _attribute, errors: false, message: "New Attribute added successfully" });
+        .then((_ProductType) => {
+            res.json({ status: 200, data: _ProductType, errors: false, message: "New ProductType added successfully" });
         }).catch(err => {
             console.log(err);
-            res.status(500).json({ status: 500, data: null, errors: true, message: "Attribute added but error occured while populating fields" });
+            res.status(500).json({ status: 500, data: null, errors: true, message: "ProductType added but error occured while populating fields" });
         })
 });
 
 //UPDATE A PRODUCT
-router.put("update/:id", authorizePrivilege("UPDATE_PRODUCT_CATEGORY_ATTRIBUTE"), (req, res) => {
+router.put("update/:id", authorizePrivilege("UPDATE_PRODUCT_TYPE"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
-        let result = AttributeController.verifyUpdate(req.body);
+        let result = ProductTypeController.verifyUpdate(req.body);
         if (!isEmpty(result.errors)) {
             return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
         }
-        Attribute.findByIdAndUpdate(req.params.id, { $set: result.data }, { new: true }, (err, doc) => {
+        ProductType.findByIdAndUpdate(req.params.id, { $set: result.data }, { new: true }, (err, doc) => {
             if (err)
-                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating attribute" });
+                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating ProductType" });
             else {
-                return res.status(200).json({ status: 200, data: doc, errors: false, message: "Attribute Updated Successfully" });
+                return res.status(200).json({ status: 200, data: doc, errors: false, message: "ProductType Updated Successfully" });
             }
         })
     }
     else {
-        res.json({ status: 200, data: null, errors: true, message: "Invalid attribute id" });
+        res.json({ status: 200, data: null, errors: true, message: "Invalid ProductType id" });
     }
 })
 
@@ -127,13 +99,13 @@ router.put("update/:id", authorizePrivilege("UPDATE_PRODUCT_CATEGORY_ATTRIBUTE")
 //         })
 // })
 
-// DELETE AN ATTRIBUTE
-router.delete("/delete/:id", authorizePrivilege("DELETE_PRODUCT_CATEGORY"), (req, res) => {
+// DELETE AN ProductType
+router.delete("/delete/:id", authorizePrivilege("DELETE_PRODUCT_TYPE"), (req, res) => {
     if (!mongodb.ObjectId.isValid(req.params.id)) {
         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" });
     }
     else {
-        Attribute.findByIdAndDelete(req.params.id, (err, doc) => {
+        ProductType.findByIdAndDelete(req.params.id, (err, doc) => {
             if (err) {
                 return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while deleting the category" })
             }
@@ -147,7 +119,7 @@ router.delete("/delete/:id", authorizePrivilege("DELETE_PRODUCT_CATEGORY"), (req
 // // GET SPECIFIC PRODUCT CATEGORY
 // router.get("/id/:id", authorizePrivilege("GET_PRODUCT_CATEGORY"), (req, res) => {
 //     if (mongodb.ObjectId.isValid(req.params.id)) {
-//         Attribute.findById(req.params.id).exec().then(doc => {
+//         ProductType.findById(req.params.id).exec().then(doc => {
 //             res.json({ status: 200, data: doc, errors: false, message: "Category" });
 //         }).catch(e => {
 //             console.log(e);
@@ -157,7 +129,6 @@ router.delete("/delete/:id", authorizePrivilege("DELETE_PRODUCT_CATEGORY"), (req
 //         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" });
 //     }
 // });
-module.exports = router;
 
 
 // router.post('/import', function (req, res, next) {
@@ -193,3 +164,6 @@ module.exports = router;
 //     });
 //     res.send({ res: "DONE" })
 // })
+
+
+module.exports = router;

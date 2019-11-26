@@ -87,6 +87,7 @@ export class CustomersComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.initDatatable();
     this.getProducts();
     this.subscriptionForm = this.formBuilder.group({
       user: [''],
@@ -108,6 +109,22 @@ export class CustomersComponent implements OnInit {
       dob: ['', Validators.required]
     });
 
+    this.get_customers();
+    this.options = {
+      editable: true,
+      header: {
+        left: 'prev,next today ',
+        center: 'title',
+        right: 'month,agendaWeek,agendaDay,listMonth'
+      },
+      defaultView: 'dayGridMonth',
+      plugins: [dayGridPlugin],
+      events: []
+    };
+  }
+
+  initDatatable() {
+    $('#mainTable').DataTable().clear().destroy();
     this.dtOptions = {
       pagingType: 'full_numbers',
       lengthMenu: [
@@ -144,19 +161,8 @@ export class CustomersComponent implements OnInit {
         }
       ]
     };
-    this.get_customers();
-    this.options = {
-      editable: true,
-      header: {
-        left: 'prev,next today ',
-        center: 'title',
-        right: 'month,agendaWeek,agendaDay,listMonth'
-      },
-      defaultView: 'dayGridMonth',
-      plugins: [dayGridPlugin],
-      events: []
-    };
   }
+  
   loadevents() {
     this.eventService.getEvents().subscribe(data => {
       this.events = data;

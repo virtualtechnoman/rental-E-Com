@@ -281,7 +281,7 @@ export class UserComponent implements OnInit {
   }
 
   getUserRoles() {
-    this.UserroleService.getAllUserRoles().subscribe((res: ResponseModel) => {
+    this.UserroleService.getAllUserRolesExceptCustomer().subscribe((res: ResponseModel) => {
       this.allUserRoles = res.data;
       console.log(this.allUserRoles);
     });

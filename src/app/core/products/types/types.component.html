@@ -1,0 +1,92 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="float-left">ProductTypes Management</h2>
+      <a class="btn btn-secondary text-white float-right" (click)="resetForm()" data-toggle="modal"
+        data-target="#AddFormModal">Add New ProductType</a>
+    </div>
+    <div class="card-body">
+      <table class="table table table-hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+        <thead>
+          <tr>
+            <th scope="col">S no.</th>
+            <th scope="col">ProductType Name</th>
+            <th scope="col">Values</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ProductType of allProductTypes; let i = index">
+            <!-- <td>{{i+1}}</td> -->
+            <td>
+              <input type="checkbox" (change)="checkboxChange(ProductType._id, $event.target.checked)"></td>
+            <td>{{ProductType.name | titlecase}}</td>
+            <td><span *ngFor="let att of ProductType.options">{{att.value}},</span></td>
+            <td>
+              <a style="cursor: pointer" (click)="viewProductType(i)" data-toggle="modal" data-target="#AddFormModal"><i
+                  class="fas fa-eye"></i></a>
+              <a style="cursor:pointer" data-toggle="modal" data-target="#AddFormModal" (click)="editProductType(i)"><i
+                  class="fas fa-edit mx-2"></i></a>
+              <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteProductType(i)"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- **************** ADD/UPDATE PRODUCTTYPE MODAL ****************** -->
+<div class="modal fade" id="AddFormModal" tabindex="-1" role="dialog" aria-labelledby="AddFormModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header text-center">
+        <h6 class="modal-title  h4" id="exampleModalLabel3">
+          {{editing?'Edit Brand': 'Add New ProductType'}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="ProductTypeForm" (ngSubmit)="onSubmit()">
+          <div class="divider-text">Give ProductType a Name</div>
+          <div class="form-row">
+            <input type="text" class="form-control" placeholder="Brand Name Here " formControlName="name" required
+              [ngClass]="{ 'is-invalid': submitted && getProductTypeForm.name.errors }">
+            <div *ngIf="submitted && getProductTypeForm.name.errors" class="invalid-feedback">
+              <div *ngIf="getProductTypeForm.name.errors.required">ProductType Name Is Required</div>
+            </div>
+          </div>
+          <div class="form-row row">
+            <li *ngFor="let att of allAttributes; let i = index">
+              <input type="checkbox" (change)="checkboxChange(att._id, $event.target.checked)">
+              {{att.name | titlecase}}
+            </li>
+          </div>
+          <div class="divider-text">Add Properties </div>
+          <!-- <select2 [data]="allAttributes"></select2> -->
+
+          <!-- <div class="form-row" formArrayName="options"
+            *ngFor="let item of ProductTypeForm.get('options').controls; let i = index;">
+            <div class="row" [formGroupName]="i">
+              <div class="col-md-8">
+                <input formControlName="value" placeholder="Value Here" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <button type="button" class="fas fa-trash-alt"></button>
+              </div>
+            </div>
+          </div> -->
+          <div class="form-row">
+            <br>
+            <div class=" text-center">
+              <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+              <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

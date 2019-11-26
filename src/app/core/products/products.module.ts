@@ -8,7 +8,11 @@ import { DataTablesModule } from 'angular-datatables';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { CategoryComponent } from './category/category.component';
 import { BrandComponent } from './brand/brand.component';
-import { CategoryAttributesComponent } from './category-attributes/category-attributes.component';
+import { AttributesComponent } from './attributes/attributes.component';
+import { AttributesService } from './attributes/shared/attributes.service';
+import { TypesComponent } from './types/types.component';
+import { ProductTypeService } from './types/shared/product.types.service';
+import { Select2Module } from 'ng2-select2';
 
 @NgModule({
   imports: [
@@ -17,12 +21,13 @@ import { CategoryAttributesComponent } from './category-attributes/category-attr
     ReactiveFormsModule,
     DataTablesModule,
     ProductsRoutingModule,
-    InputSwitchModule
+    InputSwitchModule,
+    Select2Module
   ],
-  declarations: [ProductsComponent, CategoryComponent, BrandComponent, CategoryAttributesComponent],
-  exports:[
+  declarations: [ProductsComponent, CategoryComponent, BrandComponent, AttributesComponent, TypesComponent],
+  exports: [
     ProductsRoutingModule
   ],
-  providers:[ProductsService]
+  providers: [ProductsService, AttributesService, ProductTypeService]
 })
 export class ProductsModule { }
