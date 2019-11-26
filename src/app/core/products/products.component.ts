@@ -21,7 +21,7 @@ export class ProductsComponent implements OnInit {
   @ViewChildren('selectallcheckboxes') selectallcheckboxes2: any;
   @ViewChildren('checkboxes') checkboxes2: any;
   fileSelected: any;
-  imageUrl = 'https://sgsmarketing.s3.ap-south-1.amazonaws.com/'
+  imageUrl = 'https://sgsmarketing.s3.ap-south-1.amazonaws.com/';
   jQuery: any;
   allproducts: any[] = [];
   allCategories: CategoryModel[] = [];
@@ -56,12 +56,13 @@ export class ProductsComponent implements OnInit {
   editImage: any;
   mastImage: any;
   productImagesArray: any[] = [];
+  selectIndex: Number = 0;
   specificCategoryAttributes: any[] = [];
   specificCategoryAttributesLength: any;
   specificCategoryAttributesName: any = [];
   editAttributesArray: any = [];
   newStock: Number;
-  pattern = "^[0-9]*$";
+  pattern = '^[0-9]*$';
   constructor(private productService: ProductsService, private formBuilder: FormBuilder, private toastr: ToastrService,
     private authService: AuthService,
     private titleService: Title) {
@@ -89,7 +90,7 @@ export class ProductsComponent implements OnInit {
       }, initComplete: function (settings, json) {
         $('.button').removeClass('dt-button');
       },
-      dom: "l  f r t i p",
+      dom: 'l  f r t i p',
       // dom:"B<'#colvis row'><'row'><'row'<'col-md-6'l><'col-md-6'f>r>t<'row'<'col-md-4'i>><'row'p>",
       // buttons: [
       //   {
@@ -122,10 +123,8 @@ export class ProductsComponent implements OnInit {
       image: ['']
     });
     this.AttributeValueForm = this.formBuilder.group({
-      values: this.formBuilder.array([
-      ])
-    })
-    console.log(this.AttributeValueForm.value)
+      values: this.formBuilder.array([])
+    });
   }
 
 
@@ -133,7 +132,6 @@ export class ProductsComponent implements OnInit {
 
   selectFile(event: any) {
     this.fileSelected = event.target.files[0];
-    console.log(this.fileSelected)
   }
 
   submit() {
@@ -142,17 +140,15 @@ export class ProductsComponent implements OnInit {
     if (this.specificCategoryAttributesLength) {
       for (var index = 0; index < this.specificCategoryAttributesLength; index++) {
         if (!this.AttributeValueForm.value.values[index]) {
-          this.AttributeValueForm.value.values[index] = ''
+          this.AttributeValueForm.value.values[index] = '';
         }
-        attributes[index] = { name: this.specificCategoryAttributesName[index], value: this.AttributeValueForm.value.values[index] }
+        attributes[index] = { name: this.specificCategoryAttributesName[index], value: this.AttributeValueForm.value.values[index] };
       }
     }
     if (attributes) {
-      this.productForm.value.attributes = attributes
+      this.productForm.value.attributes = attributes;
     }
-
-
-    console.log(this.productForm.value)
+    console.log(this.productForm.value);
     this.submitted = true;
     if (this.productForm.invalid) {
       return;
@@ -161,15 +157,15 @@ export class ProductsComponent implements OnInit {
     if (this.editing) {
       this.productForm.value.available_for.length = 0;
       for (var i = 0; i < this.checkboxes2._results.length; i++) {
-        if (this.checkboxes2._results[i].nativeElement.checked == true) {
-          this.productForm.value.available_for.push(this.allHub[i]._id)
+        if (this.checkboxes2._results[i].nativeElement.checked === true) {
+          this.productForm.value.available_for.push(this.allHub[i]._id);
         }
       }
       // this.updateProduct(this.productForm.value);
     } else {
       for (var i = 0; i < this.checkboxes2._results.length; i++) {
-        if (this.checkboxes2._results[i].nativeElement.checked == true) {
-          this.productForm.value.available_for.push(this.allHub[i]._id)
+        if (this.checkboxes2._results[i].nativeElement.checked === true) {
+          this.productForm.value.available_for.push(this.allHub[i]._id);
         }
       }
     }
@@ -180,20 +176,19 @@ export class ProductsComponent implements OnInit {
         this.urlProductImage = res.data.url;
 
         if (this.urlProductImage) {
-          this.productService.sendUrlProduct(this.urlProductImage, this.fileSelected).then(resp => {
-            if (resp.status === 200) {
-              this.productForm.value.image = this.keyProductImage;
-
-              console.log(this.productForm.value);
-              if (this.editing) {
-                this.updateProduct(this.productForm.value);
-              } else {
-                this.addProduct(this.productForm.value);
+          this.productService.sendUrlProduct(this.urlProductImage, this.fileSelected)
+            .then(resp => {
+              if (resp.status === 200) {
+                this.productForm.value.image = this.keyProductImage;
+                if (this.editing) {
+                  this.updateProduct(this.productForm.value);
+                } else {
+                  this.addProduct(this.productForm.value);
+                }
               }
-            }
-          })
+            });
         }
-      })
+      });
     } else {
       console.log(this.productForm.value);
       if (this.editing) {
@@ -214,10 +209,14 @@ export class ProductsComponent implements OnInit {
     console.log(product);
     if (product) {
       this.productService.addProduct(product).subscribe((res: ResponseModel) => {
-        jQuery('#modal3').modal('hide');
-        this.toastr.success('Product Added!', 'Success!');
-        this.allproducts.push(res.data);
-        this.resetForm();
+        if (res.errors) {
+          this.toastr.error('Error While Adding !', 'Error!');
+        } else {
+          jQuery('#modal3').modal('hide');
+          this.toastr.success('Product Added!', 'Success!');
+          this.allproducts.push(res.data);
+          this.resetForm();
+        }
       });
     }
   }
@@ -229,12 +228,11 @@ export class ProductsComponent implements OnInit {
       });
     }
 
-    if (this.selectallcheckboxes2._results[0].nativeElement.checked == false) {
+    if (this.selectallcheckboxes2._results[0].nativeElement.checked === false) {
       this.checkboxes.forEach((element) => {
         element.nativeElement.checked = false;
       });
     }
-
   }
 
   editProduct(i) {
@@ -245,7 +243,6 @@ export class ProductsComponent implements OnInit {
     if (this.allproducts[i].attributes) {
       this.editAttributesArray = this.allproducts[i].attributes;
     }
-    console.log(this.editAttributesArray);
     this.masterArray.length = 0;
     this.checkboxes.forEach((element) => {
       element.nativeElement.checked = false;
@@ -267,17 +264,20 @@ export class ProductsComponent implements OnInit {
     for (let i = 0; i < this.viewArray.available_for.length; i++) {
       this.array3.push(this.viewArray.available_for[i]);
     }
-    console.log(this.array3)
+    console.log(this.array3);
     if (this.array3.length > 0) {
-      jQuery('#exampleModal').modal('show')
+      jQuery('#exampleModal').modal('show');
     }
 
   }
 
   getAllCategory() {
     this.productService.getAllCategory().subscribe((res: ResponseModel) => {
-      this.allCategories = res.data;
-      console.log(res.data);
+      if (res.errors) {
+        this.toastr.error('Error While Fetching', 'Error');
+      } else {
+        this.allCategories = res.data;
+      }
     });
   }
 
@@ -318,14 +318,14 @@ export class ProductsComponent implements OnInit {
   updateProduct(product) {
     const id = this.allproducts[this.currentIndex]._id;
     if (this.editAttributesArray) {
-      product.attributes = this.editAttributesArray
+      product.attributes = this.editAttributesArray;
     }
     if (id) {
       this.productService.updateProduct(product, id).subscribe((res: ResponseModel) => {
         jQuery('#modal3').modal('hide');
         this.toastr.info('Product Updated Successfully!', 'Updated!!');
         this.resetForm();
-        this.allproducts.splice(this.currentIndex, 1, res.data)
+        this.allproducts.splice(this.currentIndex, 1, res.data);
         this.currentproductId = null;
         this.editing = false;
         this.masterArray.length = 0;

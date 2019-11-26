@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const helper = require('../utils/helper');
+const helper = require('../../utils/helper');
 
 const newProductSchema = Joi.object({
     image: Joi.string().optional().allow(''),

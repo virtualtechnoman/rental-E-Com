@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { AttributesService } from './shared/attributes.service';
 import { ResponseModel } from '../../../shared/shared.model';
 import { ToastrService } from 'ngx-toastr';
+import { ProductOptionService } from '../options/shared/product.types.service';
 
 @Component({
   selector: 'app-attributes',
@@ -19,6 +20,7 @@ export class AttributesComponent implements OnInit {
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
   editing: Boolean = false;
+  optionsForm: FormGroup;
   selectedID: String;
   selectedIndex: number;
   selectedAttribute: AttrubuteModel;
@@ -26,6 +28,7 @@ export class AttributesComponent implements OnInit {
 
   constructor(
     private attributeService: AttributesService,
+    private attributeOptionService: ProductOptionService,
     private formBuilder: FormBuilder,
     private titleSerive: Title,
     private toasterService: ToastrService
@@ -37,6 +40,7 @@ export class AttributesComponent implements OnInit {
   ngOnInit() {
     this.initDatatable();
     this.getAllAttributes();
+    this.initOptionsForm();
   }
 
   // *************** INTIALIZE FUNCTIONS *****************//
@@ -82,13 +86,23 @@ export class AttributesComponent implements OnInit {
   initAttributeForm() {
     this.attributeForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(40)]],
-      options: this.formBuilder.array([this.formBuilder.group({ value: '' })])
+      is_active: []
+    });
+  }
+
+  initOptionsForm() {
+    this.optionsForm = this.formBuilder.group({
+      parent: [],
+      value: ['', [Validators.required, Validators.maxLength(40)]]
     });
   }
 
   // *************** GET FUNCTIONS *****************//
   get getAttributeForm() {
     return this.attributeForm.controls;
+  }
+  get getAttributeOptionForm() {
+    return this.optionsForm.controls;
   }
   get getFormArray() {
     return this.attributeForm.get('options') as FormArray;
@@ -115,10 +129,23 @@ export class AttributesComponent implements OnInit {
         this.toasterService.error('Error While Adding', 'Refresh And Retry Again');
       } else {
         console.log(res.data);
-        jQuery('#modal3').modal('hide');
-        this.toasterService.success('Brand Added!', 'Success!');
+        jQuery('#AddFormModal').modal('hide');
+        this.toasterService.success('Attribute Added!', 'Success!');
         this.allAttributes.push(res.data);
         this.resetForm();
+      }
+    });
+  }
+
+  addAttributeOption() {
+    this.attributeOptionService.addProductOptions(this.optionsForm.value).subscribe((res: ResponseModel) => {
+      if (res.errors) {
+        this.toasterService.error('Error While Adding', 'Refresh And Retry Again');
+      } else {
+        console.log(res.data);
+        jQuery('#AddOptionFormModal').modal('hide');
+        this.toasterService.success('Option Added!', 'Success!');
+        this.resetOptionsForm();
       }
     });
   }
@@ -160,6 +187,18 @@ export class AttributesComponent implements OnInit {
       this.addAttribute();
     }
   }
+  onOptionFormSubmit() {
+    this.submitted = true;
+    console.log(this.selectedAttribute);
+    this.optionsForm.get('parent').setValue(this.selectedAttribute._id);
+    console.log(this.optionsForm.value);
+    if (this.optionsForm.invalid) {
+      return;
+    } else {
+      console.log(this.optionsForm.value);
+      this.addAttributeOption();
+    }
+  }
   // *************** CALCULATE FUNCTIONS *****************//
   viewAttribute(i) {
     this.selectedAttribute = this.allAttributes[i];
@@ -181,6 +220,12 @@ export class AttributesComponent implements OnInit {
   resetForm() {
     this.attributeForm.reset();
     this.initAttributeForm();
+    this.submitted = false;
+  }
+
+  resetOptionsForm() {
+    this.optionsForm.reset();
+    this.initOptionsForm();
     this.submitted = false;
   }
 

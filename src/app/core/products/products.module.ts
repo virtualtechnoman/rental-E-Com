@@ -13,6 +13,9 @@ import { AttributesService } from './attributes/shared/attributes.service';
 import { TypesComponent } from './types/types.component';
 import { ProductTypeService } from './types/shared/product.types.service';
 import { Select2Module } from 'ng2-select2';
+import { OptionsComponent } from './options/options.component';
+import { ProductOptionService } from './options/shared/product.types.service';
+import { ProductsCategoryService } from './category/shared/category.service';
 
 @NgModule({
   imports: [
@@ -24,10 +27,10 @@ import { Select2Module } from 'ng2-select2';
     InputSwitchModule,
     Select2Module
   ],
-  declarations: [ProductsComponent, CategoryComponent, BrandComponent, AttributesComponent, TypesComponent],
+  declarations: [ProductsComponent, CategoryComponent, BrandComponent, AttributesComponent, TypesComponent, OptionsComponent],
   exports: [
     ProductsRoutingModule
   ],
-  providers: [ProductsService, AttributesService, ProductTypeService]
+  providers: [ProductsService, AttributesService, ProductTypeService, ProductOptionService, ProductsCategoryService]
 })
 export class ProductsModule { }

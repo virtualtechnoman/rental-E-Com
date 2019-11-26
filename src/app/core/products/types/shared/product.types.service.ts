@@ -10,7 +10,7 @@ export class ProductTypeService {
         'Content-Type': 'application/json',
         'token': this.tokenService.getToken()
     });
-    productTypeURL = 'api/ptype';
+    productTypeURL = 'api/product/ptype';
     constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
     // *************** GET APIS *****************//

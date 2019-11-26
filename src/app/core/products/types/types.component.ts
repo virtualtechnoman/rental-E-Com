@@ -98,6 +98,7 @@ export class TypesComponent implements OnInit {
   initProductTypeForm() {
     this.ProductTypeForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(40)]],
+      is_active: ['', Validators.required],
       attributes: []
     });
   }
@@ -145,9 +146,8 @@ export class TypesComponent implements OnInit {
       if (res.errors) {
         this.toasterService.error('Error While Adding', 'Refresh And Retry Again');
       } else {
-        console.log(res.data);
-        jQuery('#modal3').modal('hide');
-        this.toasterService.success('Brand Added!', 'Success!');
+        jQuery('#AddFormModal').modal('hide');
+        this.toasterService.success('Product Type Added!', 'Success!');
         this.allProductTypes.push(res.data);
         this.resetForm();
       }
@@ -204,7 +204,7 @@ export class TypesComponent implements OnInit {
     this.selectedProductType = this.allProductTypes[i];
     this.selectedID = this.allProductTypes[i]._id;
     this.selectedIndex = i;
-    // this.setFormValue();
+    this.setFormValue();
   }
 
   checkboxChange(_id: string, isChecked: boolean) {
@@ -220,7 +220,9 @@ export class TypesComponent implements OnInit {
   }
   // *************** SET FUNCTIONS *****************//
   setFormValue() {
-
+    // this.ProductTypeForm.get('').setValue();
+    this.ProductTypeForm.get('name').setValue(this.selectedProductType.name);
+    this.ProductTypeForm.get('is_active').setValue(this.selectedProductType.is_active);
   }
   // *************** RESET FUNCTIONS *****************//
   resetForm() {

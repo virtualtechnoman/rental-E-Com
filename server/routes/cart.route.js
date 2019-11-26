@@ -7,7 +7,7 @@ const CustomerOrder = require("../models/customer.order.model");
 const moment = require('moment');
 const authorizePrivilege = require("../middleware/authorizationMiddleware");
 const router = express.Router();
-const Product = require("../models/Products.model");
+const Product = require("../models/products/Products.model");
 
 //GET own cart
 router.get("/", authorizePrivilege("GET_CART"), (req, res) => {

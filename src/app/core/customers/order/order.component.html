@@ -147,7 +147,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-secondary tx-13" (click)="acceptOrder()"
-          *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">Accept</button>
+          *ngIf="!(selectedOrder.accepted) || !(selectedOrder.isCancelled)">Accept</button>
         <button type="button" class="btn btn-secondary tx-13" (click)="cancleOrder()"
           *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">Cancel</button>
       </div>

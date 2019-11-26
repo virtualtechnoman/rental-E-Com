@@ -36,7 +36,8 @@ import { EventModule } from './core/event/event.module';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { EventSesrvice } from './event.service';
-import { FullCalendarModule } from '@fullcalendar/angular'; // for FullCalendar!
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { OptionsComponent } from './core/product/options/options.component'; // for FullCalendar!
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { FullCalendarModule } from '@fullcalendar/angular'; // for FullCalendar!
     HomeComponent,
     MaintainanceComponent,
     CoreComponent,
+    OptionsComponent,
   ],
   imports: [
     BrowserModule,

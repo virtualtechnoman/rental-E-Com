@@ -6,6 +6,8 @@ import { ProductsService } from '../shared/products.service';
 import { ResponseModel } from '../../../shared/shared.model';
 import { ToastrService } from 'ngx-toastr';
 import { Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { ProductsCategoryService } from './shared/category.service';
 
 @Component({
   selector: 'app-category',
@@ -13,168 +15,190 @@ import { Title } from '@angular/platform-browser';
   styleUrls: ['./category.component.scss']
 })
 export class CategoryComponent implements OnInit {
-  imageUrl = "https://binsar.s3.ap-south-1.amazonaws.com/"
-  categoryForm: FormGroup;
+  imageUrl = 'https://binsar.s3.ap-south-1.amazonaws.com/';
+  breadcrumArray: any[] = [];
   submitted = false;
+  categoryForm: FormGroup;
+  subCategoryForm: FormGroup;
   editing: Boolean = false;
-  currentcategory: CategoryModel;
+  currentcategory: any;
   dtOptions: any = {};
   currentcategoryId: String;
   currentIndex: number;
   dtTrigger: Subject<any> = new Subject();
-  allCategory: CategoryModel[] = [];
+  allCategory: any[] = [];
   viewArray: any = [];
   fileSelected: any;
   keyCategoryImage: any;
   urlCategoryImage: any;
-  showImage: boolean = false;
+  showImage: Boolean = false;
   image: any;
-  editShowImage: boolean = false
+  editShowImage: Boolean = false;
   editImage: any;
   mastImage: any;
   attributeForm: FormGroup;
   allAttributes: any[] = [];
-  showAttributeFor: boolean = false;
+  showAttributeFor: Boolean = false;
   categorySelectedId: any;
   specificCategoryAttributes: any[] = []
-  showSpecificCategoryAttributesLength: boolean = false;
-  constructor(private formBuilder: FormBuilder, private productService: ProductsService, private toastr: ToastrService,
-    private titleService: Title) {
+  showSpecificCategoryAttributesLength: Boolean = false;
+  deleteIndex: any;
+  constructor(private formBuilder: FormBuilder,
+    private productService: ProductsService,
+    private toastr: ToastrService,
+    private router: Router,
+    private titleService: Title,
+    private productsCategoryService: ProductsCategoryService,
+  ) {
     this.titleService.setTitle('Category Management');
     this.initForm();
   }
 
   ngOnInit() {
     this.getCategory();
+  }
+
+
+  get f() { return this.categoryForm.controls; }
+
+  initDatatable() {
+    $('#example').DataTable().clear().destroy();
     this.dtOptions = {
-      pagingType: "full_numbers",
+      pagingType: 'full_numbers',
       lengthMenu: [
         [10, 15, 25, -1],
         [10, 15, 25, 'All']
       ],
       destroy: true,
       retrive: true,
-      // dom: '<"html5buttons"B>lTfgitp',
       language: {
-        search: "_INPUT_",
-        searchPlaceholder: "Search records",
-      }, initComplete: function (settings, json) {
+        search: '_INPUT_',
+        searchPlaceholder: 'Search Category',
+      },
+      dom: "<'row'<'col-sm-12 col-md-5'l><'col-sm-12 col-md-3'B><'col-sm-12 col-md-4'f>>" +
+        "<'row'<'col-sm-12'tr>>" +
+        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+      initComplete: function (settings, json) {
         $('.button').removeClass('dt-button');
       },
-      dom: "l f r t i p",
-      // dom:"B<'#colvis row'><'row'><'row'<'col-md-6'l><'col-md-6'f>r>t<'row'<'col-md-4'i>><'row'p>",
-      // buttons: [
-      //   {
-      //     text: 'Excel',
-      //     extend: 'excel',
-      //     className: 'table-button btn btn-sm button btn-danger '
-      //   },
-      //   {
-      //     extend: 'print',
-      //     text: 'Print',
-      //     className: 'table-button btn-sm button btn btn-danger '
-      //   },
-      //   {
-      //     extend: 'pdf',
-      //     text: 'PDF',
-      //     className: 'table-button btn-sm button btn btn-danger '
-      //   }
-      // ]
+      buttons: [
+        {
+          extend: 'copyHtml5',
+          text: '<i class="far fa-copy"></i>',
+          className: ' color ',
+          titleAttr: 'Copy'
+        },
+        {
+          extend: 'excelHtml5',
+          text: '<i class="fas fa-file-excel"></i>',
+          className: 'color ',
+          titleAttr: 'Excel'
+        },
+        {
+          extend: 'csvHtml5',
+          text: '<i class="fas fa-file-csv"></i>',
+          className: 'color',
+          titleAttr: 'CSV'
+        },
+        {
+          extend: 'print',
+          text: '<i class="fas fa-print"></i>',
+          className: 'color',
+          titleAttr: 'Print'
+        }
+      ]
     };
-    this.categoryForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      is_active: ['', Validators.required],
-      image: ['']
-    });
-    this.attributeForm = this.formBuilder.group({
-      category: [''],
-      name: ['', Validators.required]
-    })
-  }
-
-  get f() { return this.categoryForm.controls; }
-  get f2() { return this.attributeForm.controls; }
-
-  selectFile(event: any) {
-    this.fileSelected = event.target.files[0];
-    console.log(this.fileSelected)
   }
 
   submit() {
     this.submitted = true;
-    console.log(this.categoryForm.value);
+    if (!(this.categorySelectedId) && !(this.editing)) {
+      this.categoryForm.get('type').setValue('category');
+      this.categoryForm.removeControl('parent');
+    } else {
+      this.categoryForm.get('type').setValue('subcategory');
+      this.categoryForm.get('parent').setValue(this.categorySelectedId);
+    }
     if (this.categoryForm.invalid) {
+      console.log('Invalid Form');
       return;
     }
-    this.currentcategory = this.categoryForm.value;
-
-    if (this.fileSelected) {
-      this.productService.getUrlCategory().subscribe((res: ResponseModel) => {
-        console.log(res.data)
-        this.keyCategoryImage = res.data.key;
-        this.urlCategoryImage = res.data.url;
-
-        if (this.urlCategoryImage) {
-          this.productService.sendUrlCategory(this.urlCategoryImage, this.fileSelected).then(resp => {
-            if (resp.status == 200) {
-              this.categoryForm.value.image = this.keyCategoryImage;
-
-              console.log(this.categoryForm.value)
-              if (this.editing) {
-                this.updateCategory(this.categoryForm.value);
-              } else {
-                this.addCategory(this.categoryForm.value);
-              }
-              // this.addVehicle(this.VehicleForm.value);
-            }
-          })
-        }
-      })
+    if (this.editing) {
+      this.updateCategory(this.categoryForm.value);
     } else {
-
-      console.log(this.categoryForm.value)
-      if (this.editing) {
-        if (!this.fileSelected) {
-          this.categoryForm.value.image = this.mastImage
-        }
-        console.log(this.mastImage)
-        this.updateCategory(this.categoryForm.value);
-
-      } else {
-        delete this.categoryForm.value.image;
-        this.addCategory(this.categoryForm.value);
-      }
+      this.addCategory(this.categoryForm.value);
     }
+  }
+
+  getCategory() {
+    this.initDatatable();
+    this.allCategory.length = 0;
+    this.productService.getAllCategory().subscribe((res: ResponseModel) => {
+      this.allCategory = res.data;
+      this.categorySelectedId = undefined;
+      this.dtTrigger.next();
+    });
+  }
+
+  getAllCategory(id, name) {
+    this.initDatatable();
+    this.breadcrumArray.push({ id: id, name: name });
+    this.allCategory.length = 0;
+    this.productsCategoryService.getAllCategorysub(id).subscribe((res: ResponseModel) => {
+      if (res.errors) {
+        this.toastr.error(res.message);
+      } else {
+        this.toastr.info(res.data.length + ' ' + 'Categories Found')
+        this.allCategory = res.data;
+        this.dtTrigger.next();
+      }
+    });
   }
 
   addCategory(category) {
-    console.log(category)
+    this.categoryForm.get('type').setValue('value');
+    this.categoryForm.removeControl('parent');
     this.productService.addCategory(category).subscribe((res: ResponseModel) => {
-      jQuery('#modal3').modal('hide');
-      this.toastr.success('Product Added!', 'Success!');
-      this.allCategory.push(res.data);
+      if (res.errors) {
+        this.toastr.error('Error While Adding', 'Error');
+      } else {
+        jQuery('#modal3').modal('hide');
+        if (!(this.categorySelectedId) && !(this.editing)) {
+          this.allCategory.push(res.data);
+          this.toastr.success('Category Added!', 'Success!');
+        } else {
+
+          this.toastr.success('Subcategory Added!', 'Success!');
+        }
+        jQuery('#example').modal('hide');
+      }
       this.resetForm();
-    })
+    });
+  }
+
+  addSubCategory(i) {
+    this.categorySelectedId = i;
+    this.categoryForm.get('parent').setValue(i);
+    this.categoryForm.get('type').setValue('subcategory');
+    this.editing = false;
   }
 
   viewCategory(i) {
-    // this.specificCategoryAttributes.length=0
     this.viewArray = this.allCategory[i];
-    this.categorySelectedId = this.allCategory[i]._id
-    if (this.allCategory[i]._id)
+    this.categorySelectedId = this.allCategory[i]._id;
+    if (this.allCategory[i]._id) {
       this.productService.getAllAttributeSpecificCategory(this.allCategory[i]._id).subscribe((res: ResponseModel) => {
-        console.log(res.data)
-        if (res.data)
-          this.specificCategoryAttributes = res.data[0]
-
-      })
+        if (res.data) {
+          this.specificCategoryAttributes = res.data[0];
+        }
+      });
+    }
     if (this.viewArray.image) {
       this.showImage = true;
-      this.image = this.imageUrl + this.viewArray.image
-      console.log(this.image)
-    }
-    else {
-      this.showImage = false
+      this.image = this.imageUrl + this.viewArray.image;
+      console.log(this.image);
+    } else {
+      this.showImage = false;
     }
   }
 
@@ -183,32 +207,25 @@ export class CategoryComponent implements OnInit {
     this.currentcategory = this.allCategory[i];
     this.currentcategoryId = this.allCategory[i]._id;
     this.currentIndex = i;
+    // this.router.navigate(['/subcategory/', this.currentcategoryId]);
     this.setFormValue();
   }
 
   deleteCategory(i) {
-    if (confirm('You Sure you want to delete this Product')) {
-      this.productService.deleteCategory(this.allCategory[i]._id).toPromise().then(() => {
-        this.toastr.warning('Products Deleted!', 'Deleted!');
-        this.allCategory.splice(i, 1);
-      }).catch((err) => console.log(err));
-    }
+    this.deleteIndex = i;
   }
 
-  getCategory() {
-    this.allCategory.length = 0;
-    this.productService.getAllCategory().subscribe((res: ResponseModel) => {
-      console.log(res);
-      this.allCategory = res.data;
-      console.log(this.allCategory);
-      this.dtTrigger.next();
-    });
+  yesDelete() {
+    this.productService.deleteCategory(this.allCategory[this.deleteIndex]._id).toPromise().then(() => {
+      this.toastr.warning('Products Deleted!', 'Deleted!');
+      this.allCategory.splice(this.deleteIndex, 1);
+      this.deleteIndex = null;
+      jQuery('#deleteCategoryModal').modal('hide');
+    }).catch((err) => console.log(err));
   }
 
   updateCategory(category) {
     const id = this.allCategory[this.currentIndex]._id;
-    // product._id = id;
-    console.log(category);
     this.productService.updateCategory(category, id).subscribe((res: ResponseModel) => {
       jQuery('#modal3').modal('hide');
       this.toastr.info('Category Updated Successfully!', 'Updated!!');
@@ -222,67 +239,43 @@ export class CategoryComponent implements OnInit {
   initForm() {
     this.categoryForm = this.formBuilder.group({
       name: ['', Validators.required],
-      is_active: [false]
+      parent: [''],
+      type: ['', Validators.required],
     });
   }
 
   setFormValue() {
     const category: any = this.allCategory[this.currentIndex];
     this.categoryForm.controls['name'].setValue(category.name);
-    this.categoryForm.controls['is_active'].setValue(category.is_active);
-    if (category.image) {
-      this.editShowImage = true;
-      this.mastImage = category.image
-      this.editImage = this.imageUrl + category.image
-      // this.VehicleForm.controls['image'].setValue(image);
-      console.log(this.editImage)
-    } else {
-      this.editShowImage = false
-    }
   }
 
   get attributesForm() {
-    return this.attributeForm.get('name') as FormArray
-  }
-
-  addAttribute() {
-
-    const attibute = this.formBuilder.group({
-      name: []
-    })
-
-    this.attributesForm.push(attibute);
-  }
-
-  deleteAttribute(i) {
-    this.attributesForm.removeAt(i)
-  }
-
-  submitAttributeForm() {
-
-    if (this.attributeForm.invalid) {
-      return;
-    }
-    this.attributeForm.value.category = this.categorySelectedId
-    console.log(this.attributeForm.value)
-    this.productService.addAttribute(this.attributeForm.value).subscribe((res: ResponseModel) => {
-      this.toastr.success('Attribute added!', 'Success!');
-      this.allAttributes.push(res.data)
-      console.log(res.data)
-      this.attributeForm.reset()
-      jQuery('#attributesModal').modal('hide')
-    })
-  }
-
-  disableViewCategory() {
-    jQuery('#exampleModal').modal('hide')
-
+    return this.attributeForm.get('name') as FormArray;
   }
 
   resetForm() {
     this.editing = false;
     this.submitted = false;
-    this.editShowImage = false
+    this.editShowImage = false;
+    this.categorySelectedId = null;
+    this.currentcategoryId = null;
+    this.currentIndex = null;
     this.categoryForm.reset();
+    this.initForm();
+  }
+
+  breadcrumFunction(i, id) {
+    this.initDatatable();
+    this.breadcrumArray.splice(i);
+    this.allCategory.length = 0;
+    this.productsCategoryService.getAllCategorysub(id).subscribe((res: ResponseModel) => {
+      if (res.errors) {
+        this.toastr.error(res.message);
+      } else {
+        this.toastr.info(res.data.length + ' ' + 'Categories Found')
+        this.allCategory = res.data;
+        this.dtTrigger.next();
+      }
+    });
   }
 }

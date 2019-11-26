@@ -97,6 +97,12 @@ module.exports = (p = false) => ({
     ADD_NEW_PRODUCT_TYPE: p,
     UPDATE_PRODUCT_TYPE: p,
     DELETE_PRODUCT_TYPE: p,
+    //Product Category Privilege
+    GET_ALL_PRODUCT_VARIENTS: p,
+    GET_PRODUCT_VARIENTS: p,
+    ADD_NEW_PRODUCT_VARIENTS: p,
+    UPDATE_PRODUCT_VARIENTS: p,
+    DELETE_PRODUCT_VARIENTS: p,
     //State Privilege
     GET_ALL_STATES: p,
     ADD_NEW_STATE: p,

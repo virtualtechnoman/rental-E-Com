@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const Product = require('../models/Products.model');
-const productCtrl = require('../controllers/products.controller');
-const isEmpty = require('../utils/is-empty');
+const Product = require('../../models/products/Products.model');
+const productCtrl = require('../../controllers/product/products.controller');
+const isEmpty = require('../../utils/is-empty');
 const mongodb = require('mongoose').Types;
 const moment = require('moment');
-const authorizePrivilege = require("../middleware/authorizationMiddleware");
+const authorizePrivilege = require("../../middleware/authorizationMiddleware");
 
 //GET ALL PRODUCTS CREATED BY SELFF
 router.get("/", authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {

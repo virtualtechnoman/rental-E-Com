@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const Attribute = require('../models/product.category.attribute.model');
-const AttributeController = require('../controllers/product.category.attribute.controller');
-const isEmpty = require('../utils/is-empty');
+const Attribute = require('../../models/products/product.category.attribute.model');
+const AttributeController = require('../../controllers/product/product.category.attribute.controller');
+const isEmpty = require('../../utils/is-empty');
 const mongodb = require('mongoose').Types;
-const authorizePrivilege = require("../middleware/authorizationMiddleware");
+const authorizePrivilege = require("../../middleware/authorizationMiddleware");
 
 //GET ALL CATEGORY CREATED BY SELF
 // router.get("/",authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {

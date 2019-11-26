@@ -11,7 +11,6 @@
           <tr>
             <th scope="col">S no.</th>
             <th scope="col">Attribute Name</th>
-            <th scope="col">Values</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
@@ -19,12 +18,13 @@
           <tr *ngFor="let attribute of allAttributes; let i = index">
             <td>{{i+1}}</td>
             <td>{{attribute.name | titlecase}}</td>
-            <td><span *ngFor="let att of attribute.options">{{att.value}},</span></td>
             <td>
               <a style="cursor: pointer" (click)="viewAttribute(i)" data-toggle="modal" data-target="#AddFormModal"><i
                   class="fas fa-eye"></i></a>
               <a style="cursor:pointer" data-toggle="modal" data-target="#AddFormModal" (click)="editAttribute(i)"><i
                   class="fas fa-edit mx-2"></i></a>
+              <a style="cursor:pointer" data-toggle="modal" data-target="#AddOptionFormModal"
+                (click)="editAttribute(i)"><i class="fas fa-edit mx-2"></i></a>
               <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteAttribute(i)"></i></a>
             </td>
           </tr>
@@ -40,8 +40,8 @@
   <div class="modal-dialog modal-dialog-centered modal-md" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header text-center">
-        <h6 class="modal-title  h4" id="exampleModalLabel3">
-          {{editing?'Edit Brand': 'Add New Attribute'}}</h6>
+        <h6 class="modal-title ml-auto font-weight-bold  h4" id="exampleModalLabel3">
+          {{editing?'Edit Attribute': 'Add New Attribute'}}</h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -56,20 +56,10 @@
               <div *ngIf="getAttributeForm.name.errors.required">Attribute Name Is Required</div>
             </div>
           </div>
-          <div class="divider-text">Add Properties
-            <button type="button" class="float-right btn btn-sm btn-primary" (click)="addOptionInForm()">Add
-              Properties</button>
-          </div>
-          <div class="form-row" formArrayName="options"
-            *ngFor="let item of attributeForm.get('options'); let i = index;">
-            <div class="row" [formGroupName]="i">
-              <div class="col-md-8">
-                <input formControlName="value" placeholder="Value Here" class="form-control">
-              </div>
-              <div class="col-md-4">
-                <button type="button" class="fas fa-trash-alt"></button>
-              </div>
-            </div>
+          <div class="divider-text">Is Product Type Active</div>
+          <div class="form-row ml-auto">
+            <p-inputSwitch class="text-center" formControlName="is_active">
+            </p-inputSwitch>
           </div>
           <div class="form-row">
             <br>
@@ -121,3 +111,38 @@
     </div>
   </div>
 </div> -->
+
+
+<div class="modal fade" id="AddOptionFormModal" tabindex="-1" role="dialog" aria-labelledby="AddOptionFormModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header text-center">
+        <h6 class="modal-title ml-auto h4" id="exampleModalLabel3">
+          Add New Attribute Option</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="optionsForm" (ngSubmit)="onOptionFormSubmit()">
+          <div class="divider-text">Give Attribute Option Value</div>
+          <div class="form-row">
+            <input type="text" class="form-control" placeholder="Attribute Value Here " formControlName="value" required
+              [ngClass]="{ 'is-invalid': submitted && getAttributeOptionForm.value.errors }">
+            <div *ngIf="submitted && getAttributeOptionForm.value.errors" class="invalid-feedback">
+              <div *ngIf="getAttributeOptionForm.value.errors.required">Attribute Option Value Is Required</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <br>
+            <div class="ml-auto text-center">
+              <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+              <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

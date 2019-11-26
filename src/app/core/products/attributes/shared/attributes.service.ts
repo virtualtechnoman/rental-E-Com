@@ -10,7 +10,7 @@ export class AttributesService {
         'Content-Type': 'application/json',
         'token': this.tokenService.getToken()
     });
-    attributesURL = 'api/pcattribute';
+    attributesURL = 'api/product/pcattribute';
     constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
     // *************** GET APIS *****************//
