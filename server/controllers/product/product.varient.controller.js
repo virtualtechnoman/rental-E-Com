@@ -3,12 +3,12 @@ const helper = require('../../utils/helper');
 
 const productVarientCreateSchema = Joi.object({
     product: Joi.string().required(),
-    attributes: Joi.array().required(),
+    attributes: Joi.any().required(),
     is_active: Joi.boolean().required()
 })
 const productVarientUpdateSchema = Joi.object({
     name: Joi.string().optional(),
-    attributes: Joi.array().optional().allow(''),
+    attributes: Joi.any().optional().allow(''),
     is_active: Joi.boolean().optional()
 })
 

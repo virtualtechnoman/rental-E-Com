@@ -51,7 +51,7 @@ export class TypesComponent implements OnInit {
 
   // *************** INTIALIZE FUNCTIONS *****************//
   initDatatable() {
-    // $('#').DataTable().clear().destroy();
+    $('#typeTable').DataTable().clear().destroy();
     this.dtOptions = {
       pagingType: 'full_numbers',
       lengthMenu: [
@@ -118,7 +118,6 @@ export class TypesComponent implements OnInit {
       } else {
         if (res.data.length > 0) {
           this.allAttributes = res.data;
-          console.log(this.allAttributes);
         } else {
           this.toasterService.warning('No Attributes No Found', 'Retry Again');
         }
@@ -126,12 +125,16 @@ export class TypesComponent implements OnInit {
     });
   }
   getAllProductTypes() {
+    this.allProductTypes.length = 0;
+    this.initDatatable();
     this.ProductTypeService.getAllProductType().subscribe((res: ResponseModel) => {
       if (res.errors) {
         this.toasterService.error('Retry Again', 'Error While Fetching Data');
       } else {
-        this.allProductTypes = res.data;
-        console.log(this.allProductTypes);
+        if (res.data.length > 0) {
+          this.allProductTypes = res.data;
+          this.dtTrigger.next();
+        }
       }
     });
   }

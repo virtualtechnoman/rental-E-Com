@@ -1,16 +1,16 @@
 <div class="container-fluid">
   <div class="card">
     <div class="card-header">
-      <h2 class="float-left">ProductTypes Management</h2>
-      <a class="btn btn-secondary text-white float-right" (click)="resetForm()" data-toggle="modal"
-        data-target="#AddFormModal">Add New ProductType</a>
+      <h2 class="float-left">Product Types Management</h2>
+      <a class="btn btn-primary text-white float-right" (click)="resetForm()" data-toggle="modal"
+        data-target="#AddFormModal">Add New Product Type</a>
     </div>
     <div class="card-body">
-      <table class="table table table-hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+      <table class="table table table-hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" id="typeTable">
         <thead>
           <tr>
             <th scope="col">S no.</th>
-            <th scope="col">ProductType Name</th>
+            <th scope="col">Product Type Name</th>
             <th scope="col">Status</th>
             <th scope="col">Values</th>
             <th scope="col">Actions</th>
@@ -43,25 +43,27 @@
     <div class="modal-content tx-14">
       <div class="modal-header text-center">
         <h6 class="modal-title ml-auto font-weight-bold  h4" id="exampleModalLabel3">
-          {{editing?'Edit Brand': 'Add New ProductType'}}</h6>
+          {{editing?'Edit Product Type': 'Add New Product Type'}}</h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <form [formGroup]="ProductTypeForm" (ngSubmit)="onSubmit()">
-          <div class="divider-text">Give ProductType a Name</div>
+          <div class="divider-text">Give Product Type a Name</div>
           <div class="form-row">
-            <input type="text" class="form-control" placeholder="Brand Name Here " formControlName="name" required
+            <input type="text" class="form-control" placeholder="Product Type Name Here " formControlName="name" required
               [ngClass]="{ 'is-invalid': submitted && getProductTypeForm.name.errors }">
             <div *ngIf="submitted && getProductTypeForm.name.errors" class="invalid-feedback">
-              <div *ngIf="getProductTypeForm.name.errors.required">ProductType Name Is Required</div>
+              <div *ngIf="getProductTypeForm.name.errors.required">Product Type Name Is Required</div>
             </div>
           </div>
           <div class="divider-text">Is Product Type Active</div>
-          <div class="form-row ml-auto">
-            <p-inputSwitch class="text-center" formControlName="is_active">
-            </p-inputSwitch>
+          <div class="form-row row">
+            <div class="offset-md-4">
+                <p-inputSwitch class="text-center" formControlName="is_active">
+                </p-inputSwitch>
+            </div>
           </div>
           <div class="divider-text">Add Properties </div>
           <div class="form-row row">
@@ -87,7 +89,7 @@
             <br>
             <div class=" text-center">
               <button type="submit" class="btn btn-primary mx-1">Save</button>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
             </div>
           </div>
         </form>

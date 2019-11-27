@@ -2,19 +2,20 @@
   <div class="card">
     <div class="card-header">
       <h2 class="float-left">Product Management</h2>
-      <a class="btn btn-secondary text-white float-right" (click)="resetForm()" data-toggle="modal"
+      <a class="btn btn-primary text-white float-right" (click)="resetForm()" data-toggle="modal"
         data-target="#modal3">Add New Product</a>
-      <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+      <a class="btn btn-primary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
         data-target="#modal2">Upload CSV</a>
     </div>
     <div class="card-body">
-      <table class="table table table-hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+      <table class="table table table-hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" id="typeTable">
         <thead>
           <tr>
             <!-- <th scope="col">S No.</th> -->
             <th scope="col">Image</th>
             <th scope="col">Name</th>
             <th scope="col">Category</th>
+            <th scope="col">Type</th>
             <th scope="col">Brand</th>
             <th scope="col">Selling Price</th>
             <th scope="col">Stock</th>
@@ -29,25 +30,28 @@
             <td *ngIf="product.image"><img src="{{productImagesArray[i]}}" alt="" width="25px" class="img-thumbnail">
             </td>
             <td *ngIf="!product.image"></td>
-
-            <td>{{product?.name | titlecase}}</td>
+            <td data-toggle="tooltip" data-placement="top" title="{{product.name}}">{{product?.name |  slice:0:20 |titlecase}}</td>
             <td>{{product?.category?.name | titlecase}}</td>
+            <td *ngIf="product.type">{{product?.type?.name | titlecase}}</td>
+            <td *ngIf="!product.type">-</td>
             <td>{{product?.brand?.name | titlecase}}</td>
-            <td>{{product?.selling_price | number}}</td>
+            <td *ngIf="product.selling_price">{{product?.selling_price | number}}</td>
+            <td *ngIf="product.base_price">{{product?.base_price | number}}</td>
             <td>{{product?.stock | number}}
                 <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Add Stock"><i
                     class="fas fas fa-plus" data-toggle="modal" data-target="#stockModal"
                     (click)="editProduct(i)"></i></a></td>
             <td>{{product?.created_by?.full_name | titlecase}}</td>
-            <td *ngIf="product.is_active">Active</td>
-            <td *ngIf="!product.is_active">InActive</td>
+            <td>{{product.is_active ? 'Active': 'Inactive'}}</td>
             <td>
               <a style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="View Product"
-                (click)="viewProduct(i)"><i class="fas fa-eye"></i></a>
+                (click)="viewProduct(i)"><i class="fas fa-eye mx-1"></i></a>
+                <a style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="Create Varient"
+                ><i class="fas fa-plus-square mx-1" data-toggle="modal" data-target="#varientModal"></i></a>
               <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editProduct(i)"><i
-                  class="fas fa-edit mx-2" data-toggle="tooltip" data-placement="top" title="Edit Product"></i></a>
+                  class="fas fa-edit mx-1"  data-toggle="tooltip" data-placement="top" title="Edit Product"></i></a>
               <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Delete Product"><i
-                  class="fas fa-trash-alt" (click)="deleteProduct(i)"></i></a>
+                  class="fas fa-trash-alt " (click)="deleteProduct(i)"></i></a>
             </td>
           </tr>
         </tbody>
@@ -56,12 +60,12 @@
   </div>
 </div>
 
+<!-- ****************** MAIN ADD/EDIT FORM MODAL ********************************** -->
 <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header text-center">
-        <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="editing">Edit Product</h6>
-        <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="!editing">Add New Product</h6>
+        <h6 class="modal-title ml-auto font-weight-bold  h4" id="exampleModalLabel3" >{{editing? 'Edit Product' : 'Add New Product'}} </h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -78,11 +82,11 @@
               </div>
             </div>
             <div class="form-group col-md-4">
-              <label for="inputEmail4">Brand</label>
+              <label for="brand">Brand</label>
               <!-- <input type="text" class="form-control" placeholder="Brand here " formControlName="brand" required
                 [ngClass]="{ 'is-invalid': submitted && f.brand.errors }"> -->
               <select class="form-control" formControlName="brand" required
-                [ngClass]="{ 'is-invalid': submitted && f.brand.errors }">
+                [ngClass]="{ 'is-invalid': submitted && f.brand.errors }" name="brand">
                 <option selected disabled>Select Brand</option>
                 <option [ngValue]="brand._id" *ngFor="let brand of allBrand;let i=index">{{brand.name}}
                 </option>
@@ -109,53 +113,32 @@
                 <option [ngValue]="category._id" *ngFor="let category of allCategories;let i=index">{{category.name}}
                 </option>
               </select>
-              <!-- <input type="text" class="form-control" placeholder="Category here " formControlName="category" required
-                [ngClass]="{ 'is-invalid': submitted && f.category.errors }"> -->
               <div *ngIf="submitted && f.category.errors" class="invalid-feedback">
                 <div *ngIf="f.category.errors.required">Category is required</div>
               </div>
             </div>
             <div class="form-group col-md-4">
-              <label for="inputEmail4">Selling Price</label>
-              <input type="number" class="form-control" placeholder="Selling Price here" formControlName="selling_price"
-                required [ngClass]="{ 'is-invalid': submitted && f.selling_price.errors }">
-              <div *ngIf="submitted && f.selling_price.errors" class="invalid-feedback">
-                <div *ngIf="f.selling_price.errors.required">Selling Price is required</div>
+              <label for="inputEmail4">Type</label>
+              <select class="form-control" formControlName="type" required
+                [ngClass]="{ 'is-invalid': submitted && f.type.errors }"  [(ngModel)]="productType" >
+                <option selected disabled>Select product Type</option>
+                <option [ngValue]="type._id" *ngFor="let type of allProductTypes;let i=index">{{type.name | titlecase}}
+                </option>
+              </select>
+              <div *ngIf="submitted && f.type.errors" class="invalid-feedback">
+                <div *ngIf="f.type.errors.required">Type is required</div>
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="inputEmail4">Base Price</label>
+              <input type="number" class="form-control" placeholder="Selling Price here" formControlName="base_price"
+                required [ngClass]="{ 'is-invalid': submitted && f.base_price.errors }">
+              <div *ngIf="submitted && f.base_price.errors" class="invalid-feedback">
+                <div *ngIf="f.base_price.errors.required">Base Price is required</div>
               </div>
               <div class="invalid-feedback"
-                *ngIf="f.selling_price.errors && (f.selling_price.dirty || f.selling_price.touched)">
-                <p *ngIf="f.selling_price.errors.pattern" class="text-danger">Number Only</p>
-              </div>
-            </div>
-          </div>
-          <div class="col" *ngIf="specificCategoryAttributes && !editing">
-            <div *ngFor="let attributename of specificCategoryAttributes.name;let i=index">
-              <div class="row">
-                <div class="form-group col-md-4">
-                  <label>Attribute Name</label>
-                  <div class="form-control " aria-disabled="true">{{attributename}}</div>
-                </div>
-                <div class="form-group col-md-4">
-                  <label>Attribute Value</label>
-                  <input type="text" class="form-control" [(ngModel)]="AttributeValueForm.value.values[i]"
-                    [ngModelOptions]="{standalone: true}">
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col" *ngIf=" editing && editAttributesArray">
-            <div *ngFor="let attributename of editAttributesArray;let i=index">
-              <div class="row" *ngIf="editAttributesArray">
-                <div class="form-group col-md-4">
-                  <label>Attribute Name</label>
-                  <input type="text" class="form-control" aria-disabled="true" [(ngModel)]="editAttributesArray[i].name"
-                    [ngModelOptions]="{standalone: true}">
-                </div>
-                <div class="form-group col-md-4">
-                  <label>Attribute Value</label>
-                  <input type="text" class="form-control" [(ngModel)]="editAttributesArray[i].value"
-                    [ngModelOptions]="{standalone: true}">
-                </div>
+                *ngIf="f.base_price.errors && (f.base_price.dirty || f.base_price.touched)">
+                <p *ngIf="f.base_price.errors.pattern" class="text-danger">Number Only</p>
               </div>
             </div>
           </div>
@@ -184,12 +167,12 @@
           </div>
           <br>
           <div class=" text-center">
-            <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-            <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary mx-1">Save</button>
+            <button type="button" class="btn btn-primary " data-dismiss="modal">Close</button>
           </div>
           <!-- <div class="text-center">
             <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-            <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary tx-13" data-dismiss="modal">Close</button>
           </div> -->
         </form>
       </div>
@@ -197,12 +180,12 @@
   </div>
 </div>
 
-
+<!-- ****************** CSV UPLOAD MODAL ********************************** -->
 <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header">
-        <h6 class="modal-title" id="exampleModalLabel2">Upload CSV</h6>
+        <h6 class="modal-title ml-auto font-weight-bold" id="exampleModalLabel2">Upload CSV</h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -216,7 +199,7 @@
             href="https://firebasestorage.googleapis.com/v0/b/dummy-f382e.appspot.com/o/Sample%20Files%2FProduct.csv?alt=media&token=f9a59723-59ab-4249-bd9e-95f25ecec97a"
             class="float-left text-left">Download Sample CSV</a>
         </div>
-        <button type="button" class="btn btn-secondary tx-13" [disabled]="uploading" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary tx-13" [disabled]="uploading" data-dismiss="modal">Close</button>
         <button class="btn btn-primary" type="button" disabled *ngIf="uploading">
           <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           Uploading...
@@ -227,12 +210,13 @@
   </div>
 </div>
 
+<!-- ****************** PRODUCT DETAIL MODAL ********************************** -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
   *ngIf="viewArray" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Product Details</h5>
+        <h5 class="modal-title ml-auto font-weight-bold" id="exampleModalLabel">Product Details</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -276,20 +260,20 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
 
 
-<!-- Modal -->
+<!-- ****************** ADD STOCK MODAL ********************************** -->
 <div class="modal fade" id="stockModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Stock</h5>
+        <h5 class="modal-title ml-auto font-weight-bold" id="exampleModalLabel">Add Stock</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -302,7 +286,34 @@
         <input type="number" class="form-control" [(ngModel)]="newStock" [pattern]="pattern">
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button (click)="updateProductStock()" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ****************** ADD VARIENT MODAL ********************************** -->
+<div class="modal fade" id="varientModal" tabindex="-1" role="dialog" aria-labelledby="varientModal"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title ml-auto font-weight-bold" id="varientModal">Create Varient</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="divider-text">Select Attributes</div>
+        <div class="row">
+          <select name="" id="">
+            <option value=""></option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
         <button (click)="updateProductStock()" class="btn btn-primary">Save changes</button>
       </div>
     </div>

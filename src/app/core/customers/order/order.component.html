@@ -2,10 +2,10 @@
   <div class="card">
     <div class="card-header">
       <h2 class="float-left">Customer Order Management</h2>
-      <!-- <a class="btn btn-secondary float-right text-white" (click)="resetForm()" data-toggle="modal"
+      <!-- <a class="btn btn-primary float-right text-white" (click)="resetForm()" data-toggle="modal"
         data-target="#modal3">Add New
         State</a> -->
-      <!-- <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+      <!-- <a class="btn btn-primary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
         data-target="#modal2">Upload CSV</a> -->
     </div>
     <div class="card-body">
@@ -145,10 +145,10 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-secondary tx-13" (click)="acceptOrder()"
+        <button type="button" class="btn btn-primary tx-13" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary tx-13" (click)="acceptOrder()"
           *ngIf="!(selectedOrder.accepted) || !(selectedOrder.isCancelled)">Accept</button>
-        <button type="button" class="btn btn-secondary tx-13" (click)="cancleOrder()"
+        <button type="button" class="btn btn-primary tx-13" (click)="cancleOrder()"
           *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">Cancel</button>
       </div>
     </div>
@@ -177,8 +177,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-secondary tx-13" data-toggle="modal" data-target="">Accept</button>
+        <button type="button" class="btn btn-primary tx-13" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary tx-13" data-toggle="modal" data-target="">Accept</button>
       </div>
     </div>
   </div>

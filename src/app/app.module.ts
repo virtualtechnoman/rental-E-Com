@@ -33,11 +33,8 @@ import { SupportModule } from './core/Support/support.module';
 import { RouteModule } from './core/route/route.module';
 import { SubscriptionModule } from './core/customersubscription/subscription.module';
 import { EventModule } from './core/event/event.module';
-import { CalendarModule, DateAdapter } from 'angular-calendar';
-import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { EventSesrvice } from './event.service';
 import { FullCalendarModule } from '@fullcalendar/angular';
-import { OptionsComponent } from './core/product/options/options.component'; // for FullCalendar!
 
 @NgModule({
   declarations: [
@@ -46,7 +43,6 @@ import { OptionsComponent } from './core/product/options/options.component'; // 
     HomeComponent,
     MaintainanceComponent,
     CoreComponent,
-    OptionsComponent,
   ],
   imports: [
     BrowserModule,

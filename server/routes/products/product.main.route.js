@@ -11,7 +11,7 @@ router.use('/pcategory', productCategoryRoutes);
 router.use('/products', productRoutes);
 router.use('/pcattribute', productCategoryAttributeRoutes);
 router.use('/ptype', productTypeRoute);
-router.use('/pbrand', brandRoutes);
+router.use('/brand', brandRoutes);
 router.use('/poptions', productOption);
 router.use('/pvarients', productVarients);
 

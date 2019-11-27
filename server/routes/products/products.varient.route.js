@@ -5,13 +5,13 @@ const ProductVarientController = require('../../controllers/product/product.vari
 const isEmpty = require('../../utils/is-empty');
 const mongodb = require('mongoose').VARIENTSs;
 const authorizePrivilege = require("../../middleware/authorizationMiddleware");
-
+9711596765
 //  *************** GET APIS *********************** //
 // GET ALL PRODUCT VARIENTS
 router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
     ProductVarient
         .find()
-        .populate('attributes')
+        .populate('attributes.value product')
         .exec()
         .then(docs => {
             if (docs.length > 0)
@@ -19,7 +19,8 @@ router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) =>
             else
                 res.json({ status: 200, data: docs, errors: false, message: "NO PRODUCT VARIENTS FOUND" });
         }).catch(err => {
-            res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE getting PRODUCT VARIENTS" })
+            console.log(err);
+            res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE GETTING PRODUCT VARIENTS" })
         })
 })
 
@@ -44,19 +45,20 @@ router.get("/VARIENTS/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req
 
 // ************************* POST API ***********************
 // ADD NEW PRODUCT CATEGORY
-router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_VARIENTS"), async (req, res) => {
+router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_VARIENTS"), async(req, res) => {
     let result = ProductVarientController.verifyCreate(req.body);
     if (!isEmpty(result.errors)) {
-        return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
+        return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "FIELDS REQUIRED" });
     }
     let newProductVARIENTS = new ProductVarient(result.data);
     newProductVARIENTS
         .save()
         .then((_ProductVARIENTS) => {
-            res.json({ status: 200, data: _ProductVARIENTS, errors: false, message: "New ProductVARIENTS added successfully" });
+            _ProductVARIENTS.populate({ path: "attributes" })
+            res.json({ status: 200, data: _ProductVARIENTS, errors: false, message: "NEW PRODUCTVARIENT ADDED SUCCESSFULLY " });
         }).catch(err => {
             console.log(err);
-            res.status(500).json({ status: 500, data: null, errors: true, message: "ProductVARIENTS added but error occured while populating fields" });
+            res.status(500).json({ status: 500, data: null, errors: true, message: "PRODUCTVARIENTS ADDED BUT ERROR OCCURED WHILE POPULATING FIELDS" });
         })
 });
 
@@ -74,8 +76,7 @@ router.put("update/:id", authorizePrivilege("UPDATE_PRODUCT_VARIENTS"), (req, re
                 return res.status(200).json({ status: 200, data: doc, errors: false, message: "ProductVARIENTS Updated Successfully" });
             }
         })
-    }
-    else {
+    } else {
         res.json({ status: 200, data: null, errors: true, message: "Invalid ProductVARIENTS id" });
     }
 })
@@ -84,8 +85,7 @@ router.put("update/:id", authorizePrivilege("UPDATE_PRODUCT_VARIENTS"), (req, re
 router.delete("/delete/:id", authorizePrivilege("DELETE_PRODUCT_VARIENTS"), (req, res) => {
     if (!mongodb.ObjectId.isValid(req.params.id)) {
         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" });
-    }
-    else {
+    } else {
         ProductVarient.findByIdAndDelete(req.params.id, (err, doc) => {
             if (err) {
                 return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while deleting the category" })

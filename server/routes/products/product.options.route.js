@@ -7,7 +7,7 @@ const mongodb = require('mongoose').Types;
 const authorizePrivilege = require("../../middleware/authorizationMiddleware");
 
 //  *************** GET APIS *********************** //
-// GET ALL PRODUCT TYPE
+// GET ALL PRODUCT OPTIONS
 router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_TYPE"), (req, res) => {
     ProductOptions
         .find()
@@ -23,7 +23,7 @@ router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_TYPE"), (req, res) => {
         })
 })
 
-// GET SPECIFIC PRODUCT TYPE 
+// GET SPECIFIC PRODUCT OPTIONS 
 router.get("/type/:id", authorizePrivilege("GET_ALL_PRODUCT_TYPE"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         ProductOptions
@@ -40,7 +40,32 @@ router.get("/type/:id", authorizePrivilege("GET_ALL_PRODUCT_TYPE"), (req, res) =
     } else {
         res.status(500).json({ status: 404, data: null, errors: true, message: "INVALID ID" })
     }
-})
+});
+
+// GET OPTIONS OF SPECIFIC ATTRBUTE 
+router.get("/attribute/:id", authorizePrivilege("GET_ALL_PRODUCT_TYPE"), (req, res) => {
+    ProductOptions.aggregate([
+        { $match: { parent: mongodb.ObjectId(req.params.id) } },
+        {
+            $group: {
+                "_id": req.params.id,
+                "attributes": { "$push": "$_id" }
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "attributes": "$_id",
+                // "posts": 1
+            }
+        }
+    ], (err, doc) => {
+        if (err) { console.log(err) }
+        else {
+            res.json({ status: 200, data: doc, errors: false, message: "ALL OPTIONS OF ATTRBUTE " });
+        }
+    })
+});
 
 // ************************* POST API ***********************
 // ADD NEW PRODUCT CATEGORY
@@ -53,10 +78,10 @@ router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_TYPE"), async (req, res)
     newProductOptions
         .save()
         .then((_ProductOptions) => {
-            res.json({ status: 200, data: _ProductOptions, errors: false, message: "New ProductOptions added successfully" });
+            res.json({ status: 200, data: _ProductOptions, errors: false, message: "NEW PRODUCTOPTIONS ADDED SUCCESSFULLY" });
         }).catch(err => {
             console.log(err);
-            res.status(500).json({ status: 500, data: null, errors: true, message: "ProductOptions added but error occured while populating fields" });
+            res.status(500).json({ status: 500, data: null, errors: true, message: "PRODUCTOPTIONS ADDED BUT ERROR OCCURED WHILE POPULATING FIELDS" });
         })
 });
 

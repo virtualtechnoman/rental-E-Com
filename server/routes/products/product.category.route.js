@@ -89,7 +89,9 @@ router.post('/', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY"), async (req, res
     newProductCategory
         .save()
         .then(product => {
-            product.populate("parent parent.parent").execPopulate().then(_d => {
+            product.populate("parent parent.parent")
+            .execPopulate()
+            .then(_d => {
                 res.json({ status: 200, data: _d, errors: false, message: "Category added successfully" })
             })
         })
