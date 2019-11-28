@@ -108,7 +108,7 @@
             <div class="form-group col-md-4">
               <label for="inputEmail4">Category</label>
               <select class="form-control" formControlName="category" required
-                [ngClass]="{ 'is-invalid': submitted && f.category.errors }" (change)="getCategoryAttributes($event)">
+                [ngClass]="{ 'is-invalid': submitted && f.category.errors }" >
                 <option selected disabled>Select Category</option>
                 <option [ngValue]="category._id" *ngFor="let category of allCategories;let i=index">{{category.name}}
                 </option>
@@ -191,7 +191,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <input type="file" id="file" class="for mx-1 float-right" (change)="uploadCSV($event.target.files)">
+        <input type="file" id="file" class="for mx-1 float-right" >
       </div>
       <div class="modal-footer">
         <div class="float-left text-left">
@@ -211,60 +211,7 @@
 </div>
 
 <!-- ****************** PRODUCT DETAIL MODAL ********************************** -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-  *ngIf="viewArray" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title ml-auto font-weight-bold" id="exampleModalLabel">Product Details</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group" *ngIf="showImage">
-          <label>Product Image</label>
-          <div class="col-sm-3 col-md-2 col-lg text-center">
-            <div class="avatar avatar-xxl avatar-online"><img src="{{image}}" class="rounded-circle" alt=""></div>
-          </div>
-        </div>
-        <div class="form-group" *ngIf="viewArray.brand">
-          <label> Brand</label>
-          <input type="text" class="form-control" [(ngModel)]="viewArray.brand.name" disabled />
-        </div>
-        <div class="form-group">
-          <label>Product Name</label>
-          <input type="text" class="form-control" [(ngModel)]="viewArray.name" disabled />
-        </div>
-        <div class="form-group" *ngIf="viewArray.category">
-          <label>Category</label>
-          <input type="text" class="form-control" [(ngModel)]="viewArray.category.name" disabled />
-        </div>
-        <div class="form-group">
-          <label>Selling Price</label>
-          <input type="number" class="form-control" [(ngModel)]="viewArray.selling_price" disabled />
-        </div>
-        <div class="form-group">
-          <label>Available For</label>
-          <div *ngFor="let avail of viewArray.available_for;let i=index">
-            <input type="text" class="form-control" [(ngModel)]="viewArray.available_for[i].full_name" disabled />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Extra Details</label>
-          <input type="text" class="form-control" [(ngModel)]="viewArray.details" disabled />
-        </div>
-        <div class="form-group">
-          <label>Status</label>
-          <p-inputSwitch class="form-control" [(ngModel)]="viewArray.is_active" disabled></p-inputSwitch>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 
 <!-- ****************** ADD STOCK MODAL ********************************** -->

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-options',
@@ -7,6 +8,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class OptionsComponent implements OnInit {
 
+  dtOptions: any = {};
+  dtTrigger: Subject<any> = new Subject();
   constructor() { }
 
   ngOnInit() {
