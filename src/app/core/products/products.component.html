@@ -263,7 +263,10 @@
           <ul *ngFor="let attribute of productAttributeArray; let i=index;" class="list-group text-center">
             <label for="" class="h3 text-center">{{attribute.name | titlecase}}</label>
             <div *ngFor="let option of attribute.product_option" class="list-group-item">
-              <input type="checkbox" (change)="checkboxChange(option._id, $event.target.checked)">
+              <!-- <input type="checkbox" (change)="checkboxChange(option._id, $event.target.checked)"> -->
+              <select name="" id="">
+                <option value="" *ngFor="let option of attribute.product_option">{{option.value | titlecase}}</option>
+              </select>
               {{option.value | titlecase}}
             </div>
           </ul>

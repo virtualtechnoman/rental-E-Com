@@ -58,6 +58,7 @@ export class ProductsComponent implements OnInit {
   productImagesArray: any[] = [];
   productOptionsArray: any[] = [];
   productType: ProductTypeModel;
+  productVarient: FormGroup;
   selectIndex: Number = 0;
   submitted: Boolean = false;
   uploading: Boolean = false;
@@ -140,8 +141,16 @@ export class ProductsComponent implements OnInit {
       options_id: this.formBuilder.array([])
     });
   }
-  // ************************** GET FUNCTIONS *****************************
+
+  initProductVarientForm() {
+    this.productVarient = this.formBuilder.group({
+      product: [''],
+      attributes: this.formBuilder.array([this.createAttribute()])
+    });
+  }
+  // ************************** GET FUNCTIONS *********************
   get f() { return this.productForm.controls; }
+  get getOptionsForm() { return this.getOptionsForm.controls as FormArray; }
 
   getAllCategory() {
     this.productService.getAllCategory().subscribe((res: ResponseModel) => {
@@ -191,14 +200,13 @@ export class ProductsComponent implements OnInit {
     this.currentproduct.type.attributes.forEach(element => {
       productAttributeIdArray.push(element._id);
     });
-    console.log(productAttributeIdArray);
     this.productOptionService.getAllOptionsOfAttributes(productAttributeIdArray).subscribe((res: ResponseModel) => {
-      console.log(res)
       if (res.errors) {
         this.toastr.error('Error While Fetching Product Attributes', 'Refresh and Retry')
       } else {
-        console.log(res.data)
         this.productAttributeArray = res.data;
+        const attributeCount = res.data.length;
+        this.generateFormControlForOptions(attributeCount);
       }
     });
   }
@@ -214,6 +222,9 @@ export class ProductsComponent implements OnInit {
         this.resetForm();
       }
     });
+  }
+  addOptions(): void {
+    this.getOptionsForm.push(this.createAttribute());
   }
   // ************************** UPDATE FUNCTIONS *****************************
   updateProduct(product) {
@@ -295,6 +306,9 @@ export class ProductsComponent implements OnInit {
     }
   }
 
+  saveVarient() {
+
+  }
   // ************************** RESET FUNCTIONS *****************************
   resetForm() {
     this.editing = false;
@@ -309,6 +323,11 @@ export class ProductsComponent implements OnInit {
     });
   }
 
+  emptyOptionFormAray() {
+    while (this.getOptionsForm.length !== 0) {
+      this.getOptionsForm.removeAt(0)
+    }
+  }
   // ************************** CALCULATION FUNCTIONS *****************************
 
   selectFile(event: any) {
@@ -326,7 +345,7 @@ export class ProductsComponent implements OnInit {
   viewProduct(i) {
     this.array3.length = 0;
     this.currentproduct = this.allproducts[i];
-    if (this.currentproduct.varients.length > 0) { this.varientEditing = true }
+    if (this.currentproduct.varients) { this.varientEditing = true }
     if (this.currentproduct.image) {
       this.showImage = true;
       this.image = this.imageUrl + this.currentproduct.image;
@@ -371,6 +390,17 @@ export class ProductsComponent implements OnInit {
     console.log(this.selectallcheckboxes);
   }
 
+  createAttribute(): FormGroup {
+    return this.formBuilder.group({
+      option: ''
+    });
+  }
+
+  generateFormControlForOptions(attributeCount) {
+    for (let index = 0; index < attributeCount; index++) {
+      this.addOptions()
+    }
+  }
 
 
 
