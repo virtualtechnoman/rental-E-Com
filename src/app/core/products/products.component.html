@@ -30,7 +30,8 @@
             <td *ngIf="product.image"><img src="{{productImagesArray[i]}}" alt="" width="25px" class="img-thumbnail">
             </td>
             <td *ngIf="!product.image"></td>
-            <td data-toggle="tooltip" data-placement="top" title="{{product.name}}">{{product?.name |  slice:0:20 |titlecase}}</td>
+            <td data-toggle="tooltip" data-placement="top" title="{{product.name}}">
+              {{product?.name |  slice:0:20 |titlecase}}</td>
             <td>{{product?.category?.name | titlecase}}</td>
             <td *ngIf="product.type">{{product?.type?.name | titlecase}}</td>
             <td *ngIf="!product.type">-</td>
@@ -38,18 +39,19 @@
             <td *ngIf="product.selling_price">{{product?.selling_price | number}}</td>
             <td *ngIf="product.base_price">{{product?.base_price | number}}</td>
             <td>{{product?.stock | number}}
-                <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Add Stock"><i
-                    class="fas fas fa-plus" data-toggle="modal" data-target="#stockModal"
-                    (click)="editProduct(i)"></i></a></td>
+              <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Add Stock"><i
+                  class="fas fas fa-plus" data-toggle="modal" data-target="#stockModal"
+                  (click)="editProduct(i)"></i></a></td>
             <td>{{product?.created_by?.full_name | titlecase}}</td>
             <td>{{product.is_active ? 'Active': 'Inactive'}}</td>
             <td>
               <a style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="View Product"
                 (click)="viewProduct(i)"><i class="fas fa-eye mx-1"></i></a>
-                <a style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="Create Varient"
-                ><i class="fas fa-plus-square mx-1" data-toggle="modal" data-target="#varientModal"></i></a>
+              <a style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="Create Varient"><i
+                  class="fas fa-plus-square mx-1" data-toggle="modal" (click)="viewProduct(i)"
+                  data-target="#varientModal"></i></a>
               <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editProduct(i)"><i
-                  class="fas fa-edit mx-1"  data-toggle="tooltip" data-placement="top" title="Edit Product"></i></a>
+                  class="fas fa-edit mx-1" data-toggle="tooltip" data-placement="top" title="Edit Product"></i></a>
               <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Delete Product"><i
                   class="fas fa-trash-alt " (click)="deleteProduct(i)"></i></a>
             </td>
@@ -65,7 +67,8 @@
   <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header text-center">
-        <h6 class="modal-title ml-auto font-weight-bold  h4" id="exampleModalLabel3" >{{editing? 'Edit Product' : 'Add New Product'}} </h6>
+        <h6 class="modal-title ml-auto font-weight-bold  h4" id="exampleModalLabel3">
+          {{editing? 'Edit Product' : 'Add New Product'}} </h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -108,7 +111,7 @@
             <div class="form-group col-md-4">
               <label for="inputEmail4">Category</label>
               <select class="form-control" formControlName="category" required
-                [ngClass]="{ 'is-invalid': submitted && f.category.errors }" >
+                [ngClass]="{ 'is-invalid': submitted && f.category.errors }">
                 <option selected disabled>Select Category</option>
                 <option [ngValue]="category._id" *ngFor="let category of allCategories;let i=index">{{category.name}}
                 </option>
@@ -120,7 +123,7 @@
             <div class="form-group col-md-4">
               <label for="inputEmail4">Type</label>
               <select class="form-control" formControlName="type" required
-                [ngClass]="{ 'is-invalid': submitted && f.type.errors }"  [(ngModel)]="productType" >
+                [ngClass]="{ 'is-invalid': submitted && f.type.errors }" [(ngModel)]="productType">
                 <option selected disabled>Select product Type</option>
                 <option [ngValue]="type._id" *ngFor="let type of allProductTypes;let i=index">{{type.name | titlecase}}
                 </option>
@@ -136,8 +139,7 @@
               <div *ngIf="submitted && f.base_price.errors" class="invalid-feedback">
                 <div *ngIf="f.base_price.errors.required">Base Price is required</div>
               </div>
-              <div class="invalid-feedback"
-                *ngIf="f.base_price.errors && (f.base_price.dirty || f.base_price.touched)">
+              <div class="invalid-feedback" *ngIf="f.base_price.errors && (f.base_price.dirty || f.base_price.touched)">
                 <p *ngIf="f.base_price.errors.pattern" class="text-danger">Number Only</p>
               </div>
             </div>
@@ -191,7 +193,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <input type="file" id="file" class="for mx-1 float-right" >
+        <input type="file" id="file" class="for mx-1 float-right">
       </div>
       <div class="modal-footer">
         <div class="float-left text-left">
@@ -241,22 +243,30 @@
 </div>
 
 <!-- ****************** ADD VARIENT MODAL ********************************** -->
-<div class="modal fade" id="varientModal" tabindex="-1" role="dialog" aria-labelledby="varientModal"
-  aria-hidden="true">
+<div class="modal fade" id="varientModal" tabindex="-1" role="dialog" aria-labelledby="varientModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title ml-auto font-weight-bold" id="varientModal">Create Varient</h5>
+        <h5 class="modal-title ml-auto font-weight-bold" id="varientModal">
+          {{varientEditing ? 'Edit Varient' : 'Create Varient'}}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-          <div class="divider-text">Select Attributes</div>
+        <div class="divider-text">Selected Product</div>
+        <div class="text-center">
+          <h3 class="font-weight-bold">{{currentproduct?.name | uppercase}}</h3>
+        </div>
+        <div class="divider-text">Select Attributes</div>
         <div class="row">
-          <select name="" id="">
-            <option value=""></option>
-          </select>
+          <ul *ngFor="let attribute of productAttributeArray; let i=index;" class="list-group text-center">
+            <label for="" class="h3 text-center">{{attribute.name | titlecase}}</label>
+            <div *ngFor="let option of attribute.product_option" class="list-group-item">
+              <input type="checkbox" (change)="checkboxChange(option._id, $event.target.checked)">
+              {{option.value | titlecase}}
+            </div>
+          </ul>
         </div>
       </div>
       <div class="modal-footer">

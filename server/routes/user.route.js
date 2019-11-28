@@ -65,6 +65,23 @@ router.get('/role/:role', authorizePrivilege("GET_USER_BY_ROLE"), async (req, re
   }
 });
 
+
+// //GET ALL CUSTOMERs
+router.get('/customer', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
+  User
+    .find({ role: process.env.CUSTOMER_ROLE })
+    .populate("role")
+    .then(_customers => {
+      if (_customers.length > 0) {
+        return res.json({ status: 200, message: "ALL CUSTOMERS", errors: false, data: _customers });
+      } else {
+        return res.json({ status: 200, message: "NO CUSTOMER FOUND", errors: false, data: _customers });
+      }
+    }).catch(err => {
+      res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
+    })
+})
+
 // DELETE a user
 router.delete('/:id', authorizePrivilege("DELETE_USER"), (req, res) => {
   if (mongodb.ObjectID.isValid(req.params.id)) {

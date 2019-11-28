@@ -17,6 +17,9 @@ export class ProductOptionService {
     getAllProductOptions(): Observable<Object> {
         return this.http.get(this.ProductOptionsURL + '/all', { headers: this.headers });
     }
+    getAllOptionsOfAttributes(ids): Observable<Object> {
+        return this.http.post(this.ProductOptionsURL + '/attribute', { attributes: ids }, { headers: this.headers });
+    }
     // *************** POST APIS *****************//
     addProductOptions(attributes): Observable<Object> {
         return this.http.post(this.ProductOptionsURL + '/add', attributes, { headers: this.headers });

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ProductOptions = require('../../models/products/product.options.model');
+const ProductAttributes = require('../../models/products/product.category.attribute.model');
 const ProductOptionsController = require('../../controllers/product/product.options.controller');
 const isEmpty = require('../../utils/is-empty');
 const mongodb = require('mongoose').Types;
@@ -43,24 +44,20 @@ router.get("/type/:id", authorizePrivilege("GET_ALL_PRODUCT_TYPE"), (req, res) =
 });
 
 // GET OPTIONS OF SPECIFIC ATTRBUTE 
-router.get("/attribute/:id", authorizePrivilege("GET_ALL_PRODUCT_TYPE"), (req, res) => {
-    ProductOptions.aggregate([
-        { $match: { parent: mongodb.ObjectId(req.params.id) } },
-        {
-            $group: {
-                "_id": req.params.id,
-                "attributes": { "$push": "$_id" }
-            }
-        },
-        {
-            "$project": {
-                "_id": 0,
-                "attributes": "$_id",
-                // "posts": 1
-            }
-        }
+router.post("/attribute", authorizePrivilege("GET_ALL_PRODUCT_TYPE"), (req, res) => {
+    let arr = req.body.attributes;
+    arr = arr && arr.length ? arr.map(e => mongodb.ObjectId(e)) : [];
+    ProductAttributes.aggregate([
+        { $match: { _id: { $in: arr } } },
+        // { $match: { parent: mongodb.ObjectId(req.params.id) } },
+        // {$group:{_id:null,}}
+        { $lookup: { from: "product_options", let: { att: "$_id" }, pipeline: [{ $match: { $expr: { $eq: ["$parent", "$$att"] } } }], as: "product_option" } },
+        // {$addFields:{data:["$name","$product_option"]}},
+        // {$group:{_id:null,data:{$push:"$data"}}},
+        // {$addFields:{data:{$arrayToObject:"$data"}}},
+        // {$replaceRoot:{newRoot:"$data"}}
     ], (err, doc) => {
-        if (err) { console.log(err) }
+        if (err) { console.log(err) } 
         else {
             res.json({ status: 200, data: doc, errors: false, message: "ALL OPTIONS OF ATTRBUTE " });
         }

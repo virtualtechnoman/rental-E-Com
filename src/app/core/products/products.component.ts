@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { ProductsService } from './shared/products.service';
-import { FormBuilder, FormGroup, FormControlName, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControlName, Validators, FormArray, FormControl } from '@angular/forms';
 import { ProductModel, CategoryModel } from './shared/product.model';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
@@ -12,6 +12,7 @@ import { Title } from '@angular/platform-browser';
 import { ProductTypeService } from './types/shared/product.types.service';
 import { ProductTypeModel } from './types/shared/product.types.model';
 import { AttributesService } from './attributes/shared/attributes.service';
+import { ProductOptionService } from './options/shared/product.types.service';
 
 @Component({
   selector: 'app-products',
@@ -29,15 +30,15 @@ export class ProductsComponent implements OnInit {
   allproducts: any[] = [];
   allCategories: CategoryModel[] = [];
   allProductTypes: ProductTypeModel[] = [];
+  checkboxesForm: FormGroup;
   currentproduct: ProductModel;
   currentproductId: String;
   currentIndex: number;
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
   editing: Boolean = false;
+  varientEditing: Boolean = false;
   productForm: FormGroup;
-  uploading: Boolean = false;
-  submitted: Boolean = false;
   allBrand: any[] = [];
   array: any[] = [];
   countArray: any[] = [];
@@ -51,11 +52,15 @@ export class ProductsComponent implements OnInit {
   editShowImage: Boolean = false;
   editImage: any;
   mastImage: any;
-  productImagesArray: any[] = [];
-  productType: ProductTypeModel ;
-  selectIndex: Number = 0;
   newStock: Number;
   pattern = '^[0-9]*$';
+  productAttributeArray: string[] = [];
+  productImagesArray: any[] = [];
+  productOptionsArray: any[] = [];
+  productType: ProductTypeModel;
+  selectIndex: Number = 0;
+  submitted: Boolean = false;
+  uploading: Boolean = false;
   constructor(
     private productService: ProductsService,
     private formBuilder: FormBuilder,
@@ -63,7 +68,8 @@ export class ProductsComponent implements OnInit {
     private authService: AuthService,
     private titleService: Title,
     private typeService: ProductTypeService,
-    private attributeService: AttributesService
+    private productAttributeService: AttributesService,
+    private productOptionService: ProductOptionService
   ) {
     this.titleService.setTitle('Product Management');
     this.initForm();
@@ -74,6 +80,7 @@ export class ProductsComponent implements OnInit {
     this.getAllCategory();
     this.getallBrand();
     this.getAllProductTypes();
+    this.initCheckboxesForm();
   }
   //  *********************** INIT FUNCTIONS ************************
   initDatatable() {
@@ -128,6 +135,11 @@ export class ProductsComponent implements OnInit {
     });
   }
 
+  initCheckboxesForm() {
+    this.checkboxesForm = this.formBuilder.group({
+      options_id: this.formBuilder.array([])
+    });
+  }
   // ************************** GET FUNCTIONS *****************************
   get f() { return this.productForm.controls; }
 
@@ -173,9 +185,23 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  // getAllProductAttributes() {
-  //   this.attributeService.getAllAttributes().subs
-  // }
+  getAllProductAttributes() {
+    this.productAttributeArray.length = 0;
+    const productAttributeIdArray: string[] = [];
+    this.currentproduct.type.attributes.forEach(element => {
+      productAttributeIdArray.push(element._id);
+    });
+    console.log(productAttributeIdArray);
+    this.productOptionService.getAllOptionsOfAttributes(productAttributeIdArray).subscribe((res: ResponseModel) => {
+      console.log(res)
+      if (res.errors) {
+        this.toastr.error('Error While Fetching Product Attributes', 'Refresh and Retry')
+      } else {
+        console.log(res.data)
+        this.productAttributeArray = res.data;
+      }
+    });
+  }
   // ************************** ADD FUNCTIONS *****************************  
   addProduct(product) {
     this.productService.addProduct(product).subscribe((res: ResponseModel) => {
@@ -300,6 +326,7 @@ export class ProductsComponent implements OnInit {
   viewProduct(i) {
     this.array3.length = 0;
     this.currentproduct = this.allproducts[i];
+    if (this.currentproduct.varients.length > 0) { this.varientEditing = true }
     if (this.currentproduct.image) {
       this.showImage = true;
       this.image = this.imageUrl + this.currentproduct.image;
@@ -310,7 +337,7 @@ export class ProductsComponent implements OnInit {
     if (this.array3.length > 0) {
       jQuery('#exampleModal').modal('show');
     }
-
+    this.getAllProductAttributes();
   }
 
   setFormValue() {
@@ -330,6 +357,18 @@ export class ProductsComponent implements OnInit {
       this.editShowImage = false;
     }
 
+  }
+
+  checkboxChange(_id: string, isChecked: boolean) {
+    const checkBoxArray = <FormArray>this.checkboxesForm.controls.options_id;
+    if (isChecked) {
+      checkBoxArray.push(new FormControl(_id));
+    } else {
+      const index = checkBoxArray.controls.findIndex(x => x.value === _id);
+      checkBoxArray.removeAt(index);
+    }
+    this.selectallcheckboxes = checkBoxArray.value;
+    console.log(this.selectallcheckboxes);
   }
 
 

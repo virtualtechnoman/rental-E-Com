@@ -17,6 +17,7 @@ export class AttributesService {
     getAllAttributes(): Observable<Object> {
         return this.http.get(this.attributesURL + '/all', { headers: this.headers });
     }
+
     // *************** POST APIS *****************//
     addAttributes(attributes): Observable<Object> {
         return this.http.post(this.attributesURL + '/add', attributes, { headers: this.headers });
