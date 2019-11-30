@@ -53,6 +53,7 @@ export class ProductsComponent implements OnInit {
   editImage: any;
   mastImage: any;
   newStock: Number;
+  optionArray: FormArray;
   pattern = '^[0-9]*$';
   productAttributeArray: string[] = [];
   productImagesArray: any[] = [];
@@ -82,6 +83,7 @@ export class ProductsComponent implements OnInit {
     this.getallBrand();
     this.getAllProductTypes();
     this.initCheckboxesForm();
+    this.initProductVarientForm();
   }
   //  *********************** INIT FUNCTIONS ************************
   initDatatable() {
@@ -145,12 +147,12 @@ export class ProductsComponent implements OnInit {
   initProductVarientForm() {
     this.productVarient = this.formBuilder.group({
       product: [''],
-      attributes: this.formBuilder.array([this.createAttribute()])
+      attributes: this.formBuilder.array([])
     });
   }
   // ************************** GET FUNCTIONS *********************
   get f() { return this.productForm.controls; }
-  get getOptionsForm() { return this.getOptionsForm.controls as FormArray; }
+  get getOptionsForm() { return this.productVarient.get('attributes')['controls'] as FormArray; }
 
   getAllCategory() {
     this.productService.getAllCategory().subscribe((res: ResponseModel) => {
@@ -161,11 +163,12 @@ export class ProductsComponent implements OnInit {
       }
     });
   }
+
   getProducts() {
     this.allproducts.length = 0;
     this.productService.getAllProduct().subscribe((res: ResponseModel) => {
       if (res.errors) {
-        this.toastr.error('Error While Fetcing Products', 'Refresh and Retry')
+        this.toastr.error('Error While Fetcing Products', 'Refresh and Retry');
       } else {
         this.allproducts = res.data;
         console.log(this.allproducts);
@@ -178,6 +181,7 @@ export class ProductsComponent implements OnInit {
       }
     });
   }
+
   getallBrand() {
     this.productService.getAllBrand().subscribe((res: ResponseModel) => {
       this.allBrand = res.data;
@@ -187,7 +191,7 @@ export class ProductsComponent implements OnInit {
   getAllProductTypes() {
     this.typeService.getAllProductType().subscribe((res: ResponseModel) => {
       if (res.errors) {
-        this.toastr.error('Error While Fetching Product Type', 'Refresh and Retry')
+        this.toastr.error('Error While Fetching Product Type', 'Refresh and Retry');
       } else {
         this.allProductTypes = res.data;
       }
@@ -202,7 +206,7 @@ export class ProductsComponent implements OnInit {
     });
     this.productOptionService.getAllOptionsOfAttributes(productAttributeIdArray).subscribe((res: ResponseModel) => {
       if (res.errors) {
-        this.toastr.error('Error While Fetching Product Attributes', 'Refresh and Retry')
+        this.toastr.error('Error While Fetching Product Attributes', 'Refresh and Retry');
       } else {
         this.productAttributeArray = res.data;
         const attributeCount = res.data.length;
@@ -210,7 +214,7 @@ export class ProductsComponent implements OnInit {
       }
     });
   }
-  // ************************** ADD FUNCTIONS *****************************  
+  // ************************** ADD FUNCTIONS *****************************
   addProduct(product) {
     this.productService.addProduct(product).subscribe((res: ResponseModel) => {
       if (res.errors) {
@@ -223,8 +227,10 @@ export class ProductsComponent implements OnInit {
       }
     });
   }
+
   addOptions(): void {
-    this.getOptionsForm.push(this.createAttribute());
+    this.optionArray = this.productVarient.get('attributes') as FormArray;
+    this.optionArray.push(this.createAttribute());
   }
   // ************************** UPDATE FUNCTIONS *****************************
   updateProduct(product) {
@@ -307,7 +313,7 @@ export class ProductsComponent implements OnInit {
   }
 
   saveVarient() {
-
+    console.log(this.productVarient.value);
   }
   // ************************** RESET FUNCTIONS *****************************
   resetForm() {
@@ -325,7 +331,7 @@ export class ProductsComponent implements OnInit {
 
   emptyOptionFormAray() {
     while (this.getOptionsForm.length !== 0) {
-      this.getOptionsForm.removeAt(0)
+      this.getOptionsForm.removeAt(0);
     }
   }
   // ************************** CALCULATION FUNCTIONS *****************************
@@ -345,7 +351,7 @@ export class ProductsComponent implements OnInit {
   viewProduct(i) {
     this.array3.length = 0;
     this.currentproduct = this.allproducts[i];
-    if (this.currentproduct.varients) { this.varientEditing = true }
+    if (this.currentproduct.varients) { this.varientEditing = true; }
     if (this.currentproduct.image) {
       this.showImage = true;
       this.image = this.imageUrl + this.currentproduct.image;
@@ -392,13 +398,15 @@ export class ProductsComponent implements OnInit {
 
   createAttribute(): FormGroup {
     return this.formBuilder.group({
-      option: ''
+      option: [''],
+      value: ['']
     });
   }
 
   generateFormControlForOptions(attributeCount) {
+    console.log(attributeCount);
     for (let index = 0; index < attributeCount; index++) {
-      this.addOptions()
+      this.addOptions();
     }
   }
 

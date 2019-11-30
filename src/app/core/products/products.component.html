@@ -260,21 +260,35 @@
         </div>
         <div class="divider-text">Select Attributes</div>
         <div class="row">
-          <ul *ngFor="let attribute of productAttributeArray; let i=index;" class="list-group text-center">
-            <label for="" class="h3 text-center">{{attribute.name | titlecase}}</label>
-            <div *ngFor="let option of attribute.product_option" class="list-group-item">
-              <!-- <input type="checkbox" (change)="checkboxChange(option._id, $event.target.checked)"> -->
+          <form [formGroup]="productVarient" (ngSubmit)="saveVarient()">
+            <ul formArrayName="attributes" *ngFor="let attribute of productAttributeArray; let i=index;"
+              class="list-group text-center">
+              <!-- <div formArrayName="attributes"
+                *ngFor="let item of productVarient.get('attributes')['controls']; let i = index;"> -->
+              <label for="" class="h3 text-center">{{attribute.name | titlecase}}</label>
               <select name="" id="">
                 <option value="" *ngFor="let option of attribute.product_option">{{option.value | titlecase}}</option>
               </select>
-              {{option.value | titlecase}}
-            </div>
+              <div [formGroupName]="i">
+                <input formControlName="option" placeholder="Item name">
+                <input formControlName="value" placeholder="Item description">
+              </div>
+              <!-- </div> -->
+            </ul>
+          </form>
+        </div>
+        <div class="row">
+          <ul *ngFor="let attribute of productAttributeArray; let i=index;" class="list-group text-center">
+            <label for="" class="h3 text-center">{{attribute.name | titlecase}}</label>
+            <select name="" id="">
+              <option value="" *ngFor="let option of attribute.product_option">{{option.value | titlecase}}</option>
+            </select>
           </ul>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-        <button (click)="updateProductStock()" class="btn btn-primary">Save changes</button>
+        <button type="button"  class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button type="submit" (click)="saveVarient()" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
