@@ -16,6 +16,7 @@ import { Select2Module } from 'ng2-select2';
 import { OptionsComponent } from './options/options.component';
 import { ProductOptionService } from './options/shared/product.types.service';
 import { ProductsCategoryService } from './category/shared/category.service';
+import { ProductVarientService } from './shared/product.varient.service';
 
 @NgModule({
   imports: [
@@ -31,6 +32,13 @@ import { ProductsCategoryService } from './category/shared/category.service';
   exports: [
     ProductsRoutingModule
   ],
-  providers: [ProductsService, AttributesService, ProductTypeService, ProductOptionService, ProductsCategoryService]
+  providers: [
+    ProductsService,
+    AttributesService,
+    ProductTypeService,
+    ProductOptionService,
+    ProductsCategoryService,
+    ProductVarientService
+  ]
 })
 export class ProductsModule { }

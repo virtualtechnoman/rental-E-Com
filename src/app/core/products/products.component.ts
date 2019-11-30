@@ -13,6 +13,7 @@ import { ProductTypeService } from './types/shared/product.types.service';
 import { ProductTypeModel } from './types/shared/product.types.model';
 import { AttributesService } from './attributes/shared/attributes.service';
 import { ProductOptionService } from './options/shared/product.types.service';
+import { ProductVarientService } from './shared/product.varient.service';
 
 @Component({
   selector: 'app-products',
@@ -63,6 +64,7 @@ export class ProductsComponent implements OnInit {
   selectIndex: Number = 0;
   submitted: Boolean = false;
   uploading: Boolean = false;
+  varientArray: any[] = [];
   constructor(
     private productService: ProductsService,
     private formBuilder: FormBuilder,
@@ -71,7 +73,8 @@ export class ProductsComponent implements OnInit {
     private titleService: Title,
     private typeService: ProductTypeService,
     private productAttributeService: AttributesService,
-    private productOptionService: ProductOptionService
+    private productOptionService: ProductOptionService,
+    private productVarientService: ProductVarientService
   ) {
     this.titleService.setTitle('Product Management');
     this.initForm();
@@ -198,7 +201,7 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  getAllProductAttributes() {
+  getAllProductAttbsributes() {
     this.productAttributeArray.length = 0;
     const productAttributeIdArray: string[] = [];
     this.currentproduct.type.attributes.forEach(element => {
@@ -209,8 +212,21 @@ export class ProductsComponent implements OnInit {
         this.toastr.error('Error While Fetching Product Attributes', 'Refresh and Retry');
       } else {
         this.productAttributeArray = res.data;
+        console.log('productAttributeArray', this.productAttributeArray);
         const attributeCount = res.data.length;
         this.generateFormControlForOptions(attributeCount);
+      }
+    });
+  }
+
+  getAllVarientsOfProduct() {
+    this.varientArray.length = 0;
+    this.productVarientService.getAllVarientsOfProduct(this.currentproduct._id).subscribe((res: ResponseModel) => {
+      if (res.errors) {
+        this.toastr.error('Unable to Fetch Varients', 'Refresh and Retry');
+      } else {
+        console.log(res.data);
+        this.varientArray = res.data;
       }
     });
   }
@@ -316,11 +332,21 @@ export class ProductsComponent implements OnInit {
     this.productVarient.value.product = this.currentproduct._id;
     const attribute = this.productVarient.value.attributes;
     for (let index = 0; index < attribute.length; index++) {
-      attribute[index].option = attribute[index].value.parent;
-      attribute[index].value = attribute[index].value._id;
+      attribute[index].attribute = attribute[index].option.parent;
+      attribute[index].option = attribute[index].option._id;
     }
-    console.log(attribute);
     console.log(this.productVarient.value);
+    this.productVarientService.addNewProductVarients(this.productVarient.value).subscribe((res: ResponseModel) => {
+      if (res.errors) {
+        this.toastr.error('Error While Adding Varient', 'Refresh And Retry');
+      } else {
+        this.toastr.success('Varient Added Successfully', 'Success');
+        console.log(res.data);
+        this.varientArray.push(res.data);
+        jQuery('#varientModal').modal('hide');
+        this.emptyOptionFormAray();
+      }
+    });
   }
   // ************************** RESET FUNCTIONS *****************************
   resetForm() {
@@ -369,7 +395,8 @@ export class ProductsComponent implements OnInit {
     if (this.array3.length > 0) {
       jQuery('#exampleModal').modal('show');
     }
-    this.getAllProductAttributes();
+    this.getAllProductAttbsributes();
+    this.getAllVarientsOfProduct();
   }
 
   setFormValue() {
@@ -406,7 +433,7 @@ export class ProductsComponent implements OnInit {
   createAttribute(): FormGroup {
     return this.formBuilder.group({
       option: [''],
-      value: ['']
+      attribute: ['']
     });
   }
 
@@ -416,9 +443,5 @@ export class ProductsComponent implements OnInit {
       this.addOptions();
     }
   }
-
-
-
-
 
 }

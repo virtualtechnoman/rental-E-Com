@@ -143,4 +143,5 @@ export class ProductsService {
   updateProductStock(data) {
     return this.http.put(this.url + '/stock', data, { headers: this.headers });
   }
+
 }
