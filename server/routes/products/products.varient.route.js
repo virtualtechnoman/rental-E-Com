@@ -45,7 +45,7 @@ router.get("/VARIENTS/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req
 
 // ************************* POST API ***********************
 // ADD NEW PRODUCT CATEGORY
-router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_VARIENTS"), async(req, res) => {
+router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_VARIENTS"), async (req, res) => {
     let result = ProductVarientController.verifyCreate(req.body);
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "FIELDS REQUIRED" });
@@ -54,11 +54,12 @@ router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_VARIENTS"), async(req, r
     newProductVARIENTS
         .save()
         .then((_ProductVARIENTS) => {
-            _ProductVARIENTS.populate({ path: "attributes" })
-            res.json({ status: 200, data: _ProductVARIENTS, errors: false, message: "NEW PRODUCTVARIENT ADDED SUCCESSFULLY " });
+            _ProductVARIENTS.populate({ path: "attributes" }).execPopulate().then(_data => {
+                res.json({ status: 200, data: _data, errors: false, message: "NEW PRODUCT VARIENT ADDED SUCCESSFULLY " });
+            })
         }).catch(err => {
             console.log(err);
-            res.status(500).json({ status: 500, data: null, errors: true, message: "PRODUCTVARIENTS ADDED BUT ERROR OCCURED WHILE POPULATING FIELDS" });
+            res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR OCCURED WHILE ADDING PRODUCT VARIENT" });
         })
 });
 
