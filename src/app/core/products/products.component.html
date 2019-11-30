@@ -265,29 +265,33 @@
               class="list-group text-center">
               <!-- <div formArrayName="attributes"
                 *ngFor="let item of productVarient.get('attributes')['controls']; let i = index;"> -->
-              <label for="" class="h3 text-center">{{attribute.name | titlecase}}</label>
-              <select name="" id="">
-                <option value="" *ngFor="let option of attribute.product_option">{{option.value | titlecase}}</option>
-              </select>
               <div [formGroupName]="i">
+                <label for="" class="h3 text-center">{{attribute.name | titlecase}}</label>
+                <select name="" class="form-control" id="" formControlName="value">
+                  <option [ngValue]="option" *ngFor="let option of attribute.product_option">
+                    {{option.value | titlecase}}</option>
+                </select>
+              </div>
+
+              <!-- <div [formGroupName]="i">
                 <input formControlName="option" placeholder="Item name">
                 <input formControlName="value" placeholder="Item description">
-              </div>
+              </div> -->
               <!-- </div> -->
             </ul>
           </form>
         </div>
-        <div class="row">
+        <!-- <div class="row">
           <ul *ngFor="let attribute of productAttributeArray; let i=index;" class="list-group text-center">
             <label for="" class="h3 text-center">{{attribute.name | titlecase}}</label>
             <select name="" id="">
               <option value="" *ngFor="let option of attribute.product_option">{{option.value | titlecase}}</option>
             </select>
           </ul>
-        </div>
+        </div> -->
       </div>
       <div class="modal-footer">
-        <button type="button"  class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
         <button type="submit" (click)="saveVarient()" class="btn btn-primary">Save changes</button>
       </div>
     </div>

@@ -313,6 +313,13 @@ export class ProductsComponent implements OnInit {
   }
 
   saveVarient() {
+    this.productVarient.value.product = this.currentproduct._id;
+    const attribute = this.productVarient.value.attributes;
+    for (let index = 0; index < attribute.length; index++) {
+      attribute[index].option = attribute[index].value.parent;
+      attribute[index].value = attribute[index].value._id;
+    }
+    console.log(attribute);
     console.log(this.productVarient.value);
   }
   // ************************** RESET FUNCTIONS *****************************
