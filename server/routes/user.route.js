@@ -22,72 +22,17 @@ const S3 = new AWS.S3({
 //GET all users
 router.get('/', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
   try {
-    const allUsers = await User.find({ _id: { $ne: req.user._id } }).populate("role route area").exec();
+    const allUsers = await User
+      .find({ _id: { $ne: req.user._id }, role: { $ne: process.env.CUSTOMER_ROLE } })
+      .populate("role ")
+      .exec();
     // console.log(allUsers);
-    res.json({ status: 200, message: "All users", errors: false, data: allUsers });
+    return res.json({ status: 200, message: "All users", errors: false, data: allUsers });
   }
   catch (err) {
-    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
+    return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
   }
 })
-//Get all hubs
-router.get('/hub', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
-  try {
-    const allUsers = await User.find({ role: process.env.HUB_ROLE }).populate("role route area").exec();
-    // console.log(allUsers);
-    res.json({ status: 200, message: "All hubs", errors: false, data: allUsers });
-  }
-  catch (err) {
-    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
-  }
-})
-//Get all drivers
-router.get('/driver', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
-  try {
-    const allUsers = await User.find({ role: process.env.DRIVER_ROLE }, "-password").populate("role route area").exec();
-    // console.log(allUsers);
-    res.json({ status: 200, message: "All Drivers", errors: false, data: allUsers });
-  }
-  catch (err) {
-    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
-  }
-})
-//Get all drivers
-router.get('/customer', authorizePrivilege("GET_ALL_CUSTOMERS"), async (req, res) => {
-  try {
-    const allUsers = await User.find({ role: process.env.CUSTOMER_ROLE }, "-password").populate("role route area").exec();
-    // console.log(allUsers);
-    res.json({ status: 200, message: "All Customers", errors: false, data: allUsers });
-  }
-  catch (err) {
-    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
-  }
-})
-
-//Get all dboy
-router.get('/dboy', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
-  try {
-    const allUsers = await User.find({ role: process.env.DELIVERY_BOY_ROLE }, "-password").populate("role route area").exec();
-    // console.log(allUsers);
-    res.json({ status: 200, message: "All Delivery Boys", errors: false, data: allUsers });
-  }
-  catch (err) {
-    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
-  }
-})
-
-//Get all farms
-router.get('/farm', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
-  try {
-    const allUsers = await User.find({ role: process.env.FARM_ROLE }, "-password").populate("role route area").exec();
-    // console.log(allUsers);
-    res.json({ status: 200, message: "All Drivers", errors: false, data: allUsers });
-  }
-  catch (err) {
-    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
-  }
-})
-
 
 // //GET all users
 router.get('/all', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
@@ -118,19 +63,23 @@ router.get('/role/:role', authorizePrivilege("GET_USER_BY_ROLE"), async (req, re
   } else {
     res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid role id" });
   }
-})
-// GET all tickets by user
-router.get('/ticket/:id', authorizePrivilege("GET_TICKETS_ALL"), (req, res) => {
-  if (mongodb.ObjectId.isValid(req.params.id)) {
-    Ticket.find({ customer: req.params.id }).populate([{ path: "created_by customer assignTo", select: "-password" }, { path: "responses.by", select: "-password" }]).exec().then(_tkts => {
-      res.status(200).json({ status: 200, errors: false, data: _tkts, message: "All tickets for the given user" })
+});
+
+
+// //GET ALL CUSTOMERs
+router.get('/customer', authorizePrivilege("GET_ALL_USERS"), async (req, res) => {
+  User
+    .find({ role: process.env.CUSTOMER_ROLE })
+    .populate("role")
+    .then(_customers => {
+      if (_customers.length > 0) {
+        return res.json({ status: 200, message: "ALL CUSTOMERS", errors: false, data: _customers });
+      } else {
+        return res.json({ status: 200, message: "NO CUSTOMER FOUND", errors: false, data: _customers });
+      }
     }).catch(err => {
-      console.log(err);
-      res.status(500).json({ status: 500, errors: true, data: null, message: "Error while getting tickets" });
+      res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching users" });
     })
-  } else {
-    res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid user id" });
-  }
 })
 
 // DELETE a user
@@ -221,45 +170,7 @@ router.put('/me', authorizePrivilege("UPDATE_USER_OWN"), (req, res) => {
   })
 })
 
-// KYC USER OWN
-router.put('/me/kyc', authorizePrivilege("UPDATE_USER_OWN"), upload.single("kyc"), (req, res) => {
-  if (req.file) {
-    if (req.file.mimetype != 'image/jpeg' || req.file.mimetype != 'image/png') {
-      User.findById(req.user._id).exec().then(_user => {
-        if (_user.kyc.verified) {
-          return res.status(400).json({ status: 400, errors: true, data: null, message: "Your KYC is already verified" });
-        } else {
-          let k = `kyc/${req.user._id}/${uuid()}.${req.file.originalname.split('.').pop()}`;
-          S3.upload({
-            Bucket: process.env.AWS_S3_BUCKET, Key: k, Body: req.file.buffer
-          }, (err, data) => {
-            if (err) {
-              console.log(err);
-              return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while uploading the file" });
-            } else {
-              _user.kyc.image = k;
-              _user.save().then(doc => {
-                doc = doc.toObject();
-                delete doc.password;
-                res.status(200).json({ status: 200, errors: false, data: doc, message: "Profile Updated Successfully" });
-              }).catch(err => {
-                console.log(err);
-                return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while updating profile" });
-              })
-            }
-          })
-        }
-      }).catch(err => {
-        console.log(err);
-        return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while getting profile details" });
-      })
-    } else {
-      return res.status(400).json({ status: 400, errors: true, data: null, message: "Invalid file type" });
-    }
-  } else {
-    return res.status(400).json({ status: 400, errors: true, data: null, message: "Please upload the image" });
-  }
-})
+
 // ADD NEW USER
 router.post("/", authorizePrivilege("ADD_NEW_USER"), (req, res) => {
   let result;
@@ -302,7 +213,7 @@ router.post("/", authorizePrivilege("ADD_NEW_USER"), (req, res) => {
 router.put("/changeStatus/", (req, res) => {
   console.log(req.body.is_active)
   if (mongodb.ObjectID.isValid(req.body.id)) {
-    User.findByIdAndUpdate(req.body.id, { $set: { is_active: req.body.is_active } },{new:true}, (err, doc) => {
+    User.findByIdAndUpdate(req.body.id, { $set: { is_active: req.body.is_active } }, { new: true }, (err, doc) => {
       if (err)
         return res.json({ status: 500, errors: true, data: null, message: "Error While updatin" });
       if (doc)

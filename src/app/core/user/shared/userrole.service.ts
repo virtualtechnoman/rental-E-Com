@@ -23,6 +23,10 @@ export class UserRoleService {
     return this.http.get(this.url, { headers: this.headers });
   }
 
+  getAllUserRolesExceptCustomer() {
+    return this.http.get(this.url + '/notcustomer', { headers: this.headers });
+  }
+
   deleteUserRole(id) {
     return this.http.delete(this.url + '/' + id, { headers: this.headers });
   }

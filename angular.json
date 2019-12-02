@@ -43,7 +43,8 @@
               "node_modules/parsleyjs/dist/parsley.min.js",
               "node_modules/feather-icons/dist/feather.min.js",
               "./src/assets/js/dashforge.js",
-              "./src/assets/js/dashforge.aside.js"
+              "./src/assets/js/dashforge.aside.js",
+              "node_modules/select2/dist/js/select2.full.js"
             ]
           },
           "configurations": {

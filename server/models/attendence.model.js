@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const attendanceSchema = new Schema({
     user: { type: String, required: true },
-    dates:[Date]
+    dates: [Date]
 },
-{versionKey:false});
+    { versionKey: false });
 
 module.exports = mongoose.model('attendance', attendanceSchema);

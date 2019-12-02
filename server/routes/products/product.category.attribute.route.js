@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const Attribute = require('../models/product.category.attribute.model');
-const AttributeController = require('../controllers/product.category.attribute.controller');
-const isEmpty = require('../utils/is-empty');
+const Attribute = require('../../models/products/product.category.attribute.model');
+const AttributeController = require('../../controllers/product/product.category.attribute.controller');
+const isEmpty = require('../../utils/is-empty');
 const mongodb = require('mongoose').Types;
-const authorizePrivilege = require("../middleware/authorizationMiddleware");
+const authorizePrivilege = require("../../middleware/authorizationMiddleware");
 
 //GET ALL CATEGORY CREATED BY SELF
 // router.get("/",authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
@@ -18,17 +18,22 @@ const authorizePrivilege = require("../middleware/authorizationMiddleware");
 //     })
 // })
 
+//  *************** GET APIS *********************** //
+
 // GET ALL PRODUCT CATEGORY
-// router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_CATEGORY"), (req, res) => {
-//     Attribute.find().exec().then(docs => {
-//         if (docs.length > 0)
-//             res.json({ status: 200, data: docs, errors: false, message: "All categories" });
-//         else
-//             res.json({ status: 200, data: docs, errors: true, message: "No categories found" });
-//     }).catch(err => {
-//         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting categories" })
-//     })
-// })
+router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_CATEGORY"), (req, res) => {
+    Attribute
+        .find()
+        .exec()
+        .then(docs => {
+            if (docs.length > 0)
+                res.json({ status: 200, data: docs, errors: false, message: "All categories" });
+            else
+                res.json({ status: 200, data: docs, errors: true, message: "No categories found" });
+        }).catch(err => {
+            res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting categories" })
+        })
+})
 
 // GET ALL ATTRIBUTES OF PRODUCT CATEGORY
 router.get("/category/:id", authorizePrivilege("GET_CATEGORY_ATTRIBUTE"), (req, res) => {
@@ -42,14 +47,19 @@ router.get("/category/:id", authorizePrivilege("GET_CATEGORY_ATTRIBUTE"), (req, 
     })
 })
 
-
+// ************************* POST API ***********************
 // ADD NEW PRODUCT CATEGORY
 router.post('/', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE"), async (req, res) => {
     let result = AttributeController.verifyCreate(req.body);
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
     }
-    Attribute.findOneAndUpdate({ category: result.data.category }, { $push: { name: result.data.name } }, { upsert: true, new: true }).exec()
+    Attribute
+        .findOneAndUpdate(
+            { category: result.data.category },
+            { $push: { name: result.data.name } },
+            { upsert: true, new: true })
+        .exec()
         .then(attribute => {
             res.json({ status: 200, data: attribute, errors: false, message: "Attribute added successfully" })
         })
@@ -59,8 +69,26 @@ router.post('/', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE"), async
         });
 });
 
+router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE"), async (req, res) => {
+    console.log('Body', req.body);
+    let result = AttributeController.verifyCreate(req.body);
+    console.log('Result', result);
+    if (!isEmpty(result.errors)) {
+        return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
+    }
+    let newAttribute = new Attribute(result.data);
+    newAttribute
+        .save()
+        .then((_attribute) => {
+            res.json({ status: 200, data: _attribute, errors: false, message: "New Attribute added successfully" });
+        }).catch(err => {
+            console.log(err);
+            res.status(500).json({ status: 500, data: null, errors: true, message: "Attribute added but error occured while populating fields" });
+        })
+});
+
 //UPDATE A PRODUCT
-router.put("/:id", authorizePrivilege("UPDATE_PRODUCT_CATEGORY_ATTRIBUTE"), (req, res) => {
+router.put("update/:id", authorizePrivilege("UPDATE_PRODUCT_CATEGORY_ATTRIBUTE"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         let result = AttributeController.verifyUpdate(req.body);
         if (!isEmpty(result.errors)) {
@@ -99,22 +127,22 @@ router.put("/:id", authorizePrivilege("UPDATE_PRODUCT_CATEGORY_ATTRIBUTE"), (req
 //         })
 // })
 
-//DELETE A PRODUCT CATEGORY
-// router.delete("/:id", authorizePrivilege("DELETE_PRODUCT_CATEGORY"), (req, res) => {
-//     if (!mongodb.ObjectId.isValid(req.params.id)) {
-//         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" });
-//     }
-//     else {
-//         Attribute.findByIdAndDelete(req.params.id, (err, doc) => {
-//             if (err) {
-//                 return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while deleting the category" })
-//             }
-//             if (doc) {
-//                 res.json({ status: 200, data: doc, errors: false, message: "Category deleted successfully!" });
-//             }
-//         })
-//     }
-// })
+// DELETE AN ATTRIBUTE
+router.delete("/delete/:id", authorizePrivilege("DELETE_PRODUCT_CATEGORY"), (req, res) => {
+    if (!mongodb.ObjectId.isValid(req.params.id)) {
+        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" });
+    }
+    else {
+        Attribute.findByIdAndDelete(req.params.id, (err, doc) => {
+            if (err) {
+                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while deleting the category" })
+            }
+            if (doc) {
+                res.json({ status: 200, data: doc, errors: false, message: "Category deleted successfully!" });
+            }
+        })
+    }
+})
 
 // // GET SPECIFIC PRODUCT CATEGORY
 // router.get("/id/:id", authorizePrivilege("GET_PRODUCT_CATEGORY"), (req, res) => {

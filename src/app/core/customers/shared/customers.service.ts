@@ -140,7 +140,7 @@ export class CustomersService {
   }
 
   cancelCustomerOrder(id) {
-    return this.http.put('api/corder/cancel/' + id, {}, { headers: this.headers });
+    return this.http.post('api/corder/cancel/' + id, {}, { headers: this.headers });
   }
   // add subscription
 

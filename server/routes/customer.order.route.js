@@ -11,7 +11,9 @@ const router = express.Router();
 
 //GET all orders placed by self
 router.get("/", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS_OWN"), (req, res) => {
-    CustomerOrder.find({ placed_by: req.user._id }).populate("placed_by placed_to")
+    CustomerOrder.find({ $or: [{ placed_by: req.user._id }, { placed_to: req.user._id }] })
+        .sort('order_date', 1)
+        .populate("placed_by placed_to")
         .populate({
             path: "products.product ",
             populate: {
@@ -42,7 +44,10 @@ router.get("/customer/:id", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req,
 
 //GET all orders
 router.get("/all", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req, res) => {
-    CustomerOrder.find().populate("placed_by placed_to")
+    CustomerOrder
+        .find()
+        .sort({ 'order_date': -1 })
+        .populate({ path: "placed_by placed_to", populate: { path: "role" } })
         .populate({
             path: "products.product",
             populate: {
@@ -90,6 +95,7 @@ router.delete("/:id", authorizePrivilege("DELETE_CUSTOMER_ORDER"), (req, res) =>
         })
     }
 })
+
 //Accept an order
 router.put("/accept/:id", authorizePrivilege("ACCEPT_CUSTOMER_ORDER"), (req, res) => {
     console.log(req.body);
@@ -138,6 +144,7 @@ router.put("/accept/:id", authorizePrivilege("ACCEPT_CUSTOMER_ORDER"), (req, res
             })
     }
 })
+
 // Cancel a order
 router.post("/assigned", authorizePrivilege("GET_CUSTOMER_ORDER_ASSIGNED"), (req, res) => {
     let result = CustomerOrderController.verifyDateForDboy(req.body);

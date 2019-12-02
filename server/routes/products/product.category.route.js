@@ -1,26 +1,69 @@
 const express = require('express');
 const router = express.Router();
-const ProductCategory = require('../models/product.category.model');
-const ProductCategoryController = require('../controllers/product.category.controller');
-const isEmpty = require('../utils/is-empty');
+const ProductCategory = require('../../models/products/product.category.model');
+const ProductCategoryController = require('../../controllers/product/product.category.controller');
+const isEmpty = require('../../utils/is-empty');
 const mongodb = require('mongoose').Types;
-const authorizePrivilege = require("../middleware/authorizationMiddleware");
+const authorizePrivilege = require("../../middleware/authorizationMiddleware");
 
-//GET ALL CATEGORY CREATED BY SELF
-// router.get("/",authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
-//     ProductCategory.find({created_by:req.user._id}).populate("created_by","-password").exec().then(docs => {
-//         if (docs.length > 0)
-//             res.json({ status: 200, data: docs, errors: false, message: "All products" });
-//         else
-//             res.json({ status: 200, data: docs, errors: true, message: "No products found" });
-//     }).catch(err => {
-//         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" })
-//     })
-// })
+router.get("/id/:id", authorizePrivilege("GET_PRODUCT_CATEGORY"), (req, res) => {
+    ProductCategory.aggregate([
+        {
+            $match: { _id: mongodb.ObjectId(req.params.id) }
+        },
+        {
+            $graphLookup: {
+                from: "product_categories",
+                startWith: "$_id",
+                connectFromField: "_id",
+                connectToField: "parent",
+                maxDepth: 0,
+                as: "subcategory"
+            }
+        }
+    ]).exec().then(docs => {
+        if (docs.length > 0)
+            res.json({ status: 200, data: docs, errors: false, message: "Category" });
+        else
+            res.json({ status: 200, data: docs, errors: true, message: "No category found" });
+    }).catch(err => {
+        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting category" })
+    })
+})
 
 // GET ALL PRODUCT CATEGORY
+router.get("/subcat/all/:id", authorizePrivilege("GET_ALL_PRODUCT_CATEGORY"), (req, res) => {
+    let id = req.params.id;
+    ProductCategory.find({ parent: id })
+        .populate("parent")
+        .exec()
+        .then(docs => {
+            if (docs.length > 0)
+                res.json({ status: 200, data: docs, errors: false, message: "All Categories" });
+            else
+                res.json({ status: 200, data: docs, errors: true, message: "No Categories found" });
+        })
+        .catch(err => {
+            res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting routes" })
+        })
+})
+
 router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_CATEGORY"), (req, res) => {
-    ProductCategory.find().exec().then(docs => {
+    ProductCategory.aggregate([
+        {
+            $graphLookup: {
+                from: "product_categories",
+                startWith: "$_id",
+                connectFromField: "_id",
+                connectToField: "parent",
+                maxDepth: 0,
+                as: "subcategory"
+            }
+        },
+        {
+            $match: { parent: { $exists: false } }
+        }
+    ]).exec().then(docs => {
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All categories" });
         else
@@ -30,10 +73,15 @@ router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_CATEGORY"), (req, res) =>
     })
 })
 
-
 // ADD NEW PRODUCT CATEGORY
 router.post('/', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY"), async (req, res) => {
-    let result = ProductCategoryController.verifyCreate(req.body);
+    let result
+    console.log(req.body)
+    if (req.body.type === 'category') {
+        result = ProductCategoryController.verifyCreate(req.body);
+    } else {
+        result = ProductCategoryController.verifyCreateSubcateogry(req.body);
+    }
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
     }
@@ -41,7 +89,11 @@ router.post('/', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY"), async (req, res
     newProductCategory
         .save()
         .then(product => {
-            res.json({ status: 200, data: product, errors: false, message: "Category added successfully" })
+            product.populate("parent parent.parent")
+            .execPopulate()
+            .then(_d => {
+                res.json({ status: 200, data: _d, errors: false, message: "Category added successfully" })
+            })
         })
         .catch(err => {
             console.log(err);
@@ -107,18 +159,20 @@ router.delete("/:id", authorizePrivilege("DELETE_PRODUCT_CATEGORY"), (req, res) 
 })
 
 // GET SPECIFIC PRODUCT CATEGORY
-router.get("/id/:id", authorizePrivilege("GET_PRODUCT_CATEGORY"), (req, res) => {
-    if (mongodb.ObjectId.isValid(req.params.id)) {
-        ProductCategory.findById(req.params.id).exec().then(doc => {
-            res.json({ status: 200, data: doc, errors: false, message: "Category" });
-        }).catch(e => {
-            console.log(e);
-            res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting the category" })
-        });
-    } else {
-        res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" });
-    }
-});
+// router.get("/id/:id", authorizePrivilege("GET_PRODUCT_CATEGORY"), (req, res) => {
+//     if (mongodb.ObjectId.isValid(req.params.id)) {
+//         ProductCategory.findById(req.params.id).exec().then(doc => {
+//             res.json({ status: 200, data: doc, errors: false, message: "Category" });
+//         }).catch(e => {
+//             console.log(e);
+//             res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting the category" })
+//         });
+//     } else {
+//         res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" });
+//     }
+// });
+
+
 module.exports = router;
 
 

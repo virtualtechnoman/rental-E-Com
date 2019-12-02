@@ -1,10 +1,10 @@
 const express = require('express');
-const isEmpty = require("../utils/is-empty");
-const BrandController = require('../controllers/brand.controller');
-const Brand = require('../models/brand.model');
+const isEmpty = require("../../utils/is-empty");
+const BrandController = require('../../controllers/brand.controller');
+const Brand = require('../../models/brand.model');
 var mongodb = require("mongodb");
 const router = express.Router();
-const authorizePrivilege = require("../middleware/authorizationMiddleware");
+const authorizePrivilege = require("../../middleware/authorizationMiddleware");
 
 //GET all brands
 router.get('/', authorizePrivilege("GET_ALL_BRANDS"), async (req, res) => {

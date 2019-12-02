@@ -1,14 +1,13 @@
 const Joi = require('joi');
-const helper = require('../utils/helper');
+const helper = require('../../utils/helper');
 const categoryAttributeUpdateSchema = Joi.object({
     name: Joi.string().required(),
-    category: Joi.string().optional(),
-    // values: Joi.array().items(Joi.string()).optional()
+    is_active: Joi.boolean().required().default(false)
 })
 
 const categoryAttributeCreateSchema = Joi.object({
-    name: Joi.string().required(),
-    category: Joi.string().required(),
+    name: Joi.string().optional(),
+    is_active: Joi.boolean().optional(),
     // values: Joi.array().items(Joi.string().required()).required()
 })
 

@@ -11,13 +11,13 @@ export class UserService {
     'Content-Type': 'application/json',
     'token': this.tokenService.getToken()
   });
-  
-    headers2 = new HttpHeaders({
-      'Content-Type': 'jpeg,png'
-    });
-  
+
+  headers2 = new HttpHeaders({
+    'Content-Type': 'jpeg,png'
+  });
+
   url = '/api/user';
-  url2 = '/api/upload/profile'
+  url2 = '/api/upload/profile';
   constructor(private http: HttpClient, private tokenService: TokenStorage) {
   }
 
@@ -28,6 +28,7 @@ export class UserService {
   getAllUsers() {
     return this.http.get(this.url, { headers: this.headers });
   }
+  
 
   getUserByManager(id) {
     return this.http.get(this.url + '/flmId/' + id, { headers: this.headers });
@@ -54,17 +55,17 @@ export class UserService {
   }
 
   getUrl() {
-    return this.http.get(this.url2 + '/', { headers: this.headers })
+    return this.http.get(this.url2 + '/', { headers: this.headers });
   }
 
   sendUrl(url, file) {
-    return fetch(url,{
-      method:"PUT",
-      body:file,
-      headers:{
-        'Content-Type':"jpeg,png"
+    return fetch(url, {
+      method: 'PUT',
+      body: file,
+      headers: {
+        'Content-Type': 'jpeg,png'
       }
-    })
+    });
   }
 
 }

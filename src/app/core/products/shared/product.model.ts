@@ -1,12 +1,12 @@
+import { ProductTypeModel } from "../types/shared/product.types.model";
+
 export class ProductModel {
     _id: String;
-    available_for: String;
     brand: String;
-    category: String;
+    category: CategoryModel;
     created_by: String;
     created_date: Date;
     details: String;
-    farm_price: Number;
     image: String;
     is_active: Boolean;
     is_available: Boolean;
@@ -15,6 +15,8 @@ export class ProductModel {
     product_id: String;
     selling_price: Number;
     stock: Number;
+    type: any;
+    varients: any[] = [];
 }
 export class CategoryModel {
     _id: string;
