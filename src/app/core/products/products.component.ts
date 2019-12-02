@@ -30,9 +30,9 @@ export class ProductsComponent implements OnInit {
   jQuery: any;
   allproducts: any[] = [];
   allCategories: CategoryModel[] = [];
-  allProductTypes: ProductTypeModel[] = [];
+  allProductTypes: any[] = [];
   checkboxesForm: FormGroup;
-  currentproduct: ProductModel;
+  currentproduct: any;
   currentproductId: String;
   currentIndex: number;
   dtOptions: any = {};
