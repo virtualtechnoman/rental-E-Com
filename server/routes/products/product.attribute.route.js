@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Attribute = require('../../models/products/product.category.attribute.model');
-const AttributeController = require('../../controllers/product/product.category.attribute.controller');
+const Attribute = require('../../models/products/product.attribute.model');
+const AttributeController = require('../../controllers/product/product.attribute.controller');
 const isEmpty = require('../../utils/is-empty');
 const mongodb = require('mongoose').Types;
 const authorizePrivilege = require("../../middleware/authorizationMiddleware");
@@ -23,7 +23,10 @@ const authorizePrivilege = require("../../middleware/authorizationMiddleware");
 // GET ALL PRODUCT CATEGORY
 router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_CATEGORY"), (req, res) => {
     Attribute
-        .find()
+        // .find()
+        .aggregate([
+            {$lookup:{from:"product_options",localField:"_id",foreignField:"parent",as:"options"}}
+        ])
         .exec()
         .then(docs => {
             if (docs.length > 0)
