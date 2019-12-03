@@ -135,6 +135,10 @@ export class ProductsService {
     return this.http.post(this.url8 + '/', attribute, { headers: this.headers });
   }
 
+  getAllAttributes() {
+    return this.http.get(this.url8 + '/all', { headers: this.headers });
+  }
+
   updateAttribute(attribute, id) {
     return this.http.put(this.url8 + '/' + id, attribute, { headers: this.headers });
   }
