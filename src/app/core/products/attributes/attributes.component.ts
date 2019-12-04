@@ -101,9 +101,11 @@ export class AttributesComponent implements OnInit {
   get getAttributeForm() {
     return this.attributeForm.controls;
   }
+
   get getAttributeOptionForm() {
     return this.optionsForm.controls;
   }
+
   get getFormArray() {
     return this.attributeForm.get('options') as FormArray;
   }
@@ -165,6 +167,10 @@ export class AttributesComponent implements OnInit {
       }
     });
   }
+
+  editOption(index) {
+    this.selectedAttribute.options[index].editName = !this.selectedAttribute.options[index].editName;
+  }
   // *************** DELETE FUNCTIONS *****************//
   deleteAttribute(i) {
     if (confirm('You Sure you want to delete this Brand')) {
@@ -210,11 +216,13 @@ export class AttributesComponent implements OnInit {
     this.selectedAttribute = this.allAttributes[i];
     this.selectedID = this.allAttributes[i]._id;
     this.selectedIndex = i;
-    // this.setFormValue();
+    this.setFormValue();
   }
   // *************** SET FUNCTIONS *****************//
   setFormValue() {
-
+    const attribute = this.allAttributes[this.selectedIndex];
+    this.attributeForm.controls['name'].setValue(attribute.name);
+    this.attributeForm.controls['is_active'].setValue(attribute.is_active);
   }
   // *************** RESET FUNCTIONS *****************//
   resetForm() {

@@ -19,12 +19,12 @@
             <td>{{i+1}}</td>
             <td>{{attribute.name | titlecase}}</td>
             <td>
-              <a style="cursor: pointer" (click)="viewAttribute(i)" data-toggle="modal" data-target="#AddFormModal"><i
-                  class="fas fa-eye"></i></a>
+              <a style="cursor: pointer" (click)="viewAttribute(i)" data-toggle="modal"
+                data-target="#viewOptionsModal"><i class="fas fa-eye"></i></a>
               <a style="cursor:pointer" data-toggle="modal" data-target="#AddFormModal" (click)="editAttribute(i)"><i
                   class="fas fa-edit mx-2"></i></a>
-              <a style="cursor:pointer" data-toggle="modal" data-target="#AddOptionFormModal"
-                (click)="editAttribute(i)"><i class="fas fa-plus mx-2"></i></a>
+              <!-- <a style="cursor:pointer" data-toggle="modal" data-target="#AddOptionFormModal"
+                (click)="editAttribute(i)"><i class="fas fa-plus mx-2"></i></a> -->
               <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteAttribute(i)"></i></a>
             </td>
           </tr>
@@ -142,6 +142,41 @@
             </div>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--View Options Modal -->
+<div class="modal fade" id="viewOptionsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">All Options(
+        <a style="cursor:pointer" data-toggle="modal" data-target="#AddOptionFormModal" ><i
+            class="fas fa-plus "></i></a>)
+          </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row" *ngFor="let option of selectedAttribute?.options ; let i = index ;">
+          <div class="form-group col-md-4">
+            <input type="text" class="form-control" [(ngModel)]="option.value"
+              [disabled]="!selectedAttribute.options[i]?.editName">
+          </div>
+          <div class="form-group col-md-2">
+            <button type="button" class="btn btn-primary" (click)="editOption(i)"><i class="fas fa-edit"></i></button>
+          </div>
+          <div class="form-group col-md-2">
+            <button type="button" class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
+          </div>
+          <div class="form-group col-md-2">
+            <button type="button" class="btn btn-info">save</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
