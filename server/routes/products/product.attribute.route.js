@@ -52,7 +52,7 @@ router.get("/category/:id", authorizePrivilege("GET_CATEGORY_ATTRIBUTE"), (req, 
 
 // ************************* POST API ***********************
 // ADD NEW PRODUCT CATEGORY
-router.post('/', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE"), async (req, res) => {
+router.post('/', authorizePrivilege("ADD_NEW_PRODUCT_ATTRIBUTE"), async (req, res) => {
     let result = AttributeController.verifyCreate(req.body);
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
@@ -72,7 +72,7 @@ router.post('/', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE"), async
         });
 });
 
-router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE"), async (req, res) => {
+router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_ATTRIBUTE"), async (req, res) => {
     console.log('Body', req.body);
     let result = AttributeController.verifyCreate(req.body);
     console.log('Result', result);
@@ -91,7 +91,7 @@ router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE"), as
 });
 
 //UPDATE A PRODUCT
-router.put("update/:id", authorizePrivilege("UPDATE_PRODUCT_CATEGORY_ATTRIBUTE"), (req, res) => {
+router.put("update/:id", authorizePrivilege("UPDATE_PRODUCT_ATTRIBUTE"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         let result = AttributeController.verifyUpdate(req.body);
         if (!isEmpty(result.errors)) {

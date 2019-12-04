@@ -6,7 +6,7 @@ const productOptionCreateSchema = Joi.object({
     value: Joi.string().required()
 })
 const productOptionUpdateSchema = Joi.object({
-    parent: Joi.string().optional(),
+    // parent: Joi.string().optional(),
     value: Joi.string().optional()
 })
 

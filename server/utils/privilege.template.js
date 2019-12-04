@@ -197,8 +197,8 @@ module.exports = (p = false) => ({
     COMMENT_ON_EVENT_LEAD: p,
     //Category Attribute Privileges
     GET_CATEGORY_ATTRIBUTE: p,
-    ADD_NEW_PRODUCT_CATEGORY_ATTRIBUTE: p,
-    UPDATE_PRODUCT_CATEGORY_ATTRIBUTE: p,
+    ADD_NEW_PRODUCT_ATTRIBUTE: p,
+    UPDATE_PRODUCT_ATTRIBUTE: p,
     //Payment Privileges
     ADD_NEW_PAYMENT: p,
     GET_ALL_PAYMENTS: p,
