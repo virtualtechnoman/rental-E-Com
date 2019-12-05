@@ -25,6 +25,7 @@ export class AttributesComponent implements OnInit {
   selectedIndex: number;
   selectedAttribute: AttrubuteModel;
   submitted: Boolean = false;
+  newOptionValue: any;
 
   constructor(
     private attributeService: AttributesService,
@@ -38,7 +39,7 @@ export class AttributesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.initDatatable();
+    // this.initDatatable();
     this.getAllAttributes();
     this.initOptionsForm();
   }
@@ -101,14 +102,18 @@ export class AttributesComponent implements OnInit {
   get getAttributeForm() {
     return this.attributeForm.controls;
   }
+
   get getAttributeOptionForm() {
     return this.optionsForm.controls;
   }
+
   get getFormArray() {
     return this.attributeForm.get('options') as FormArray;
   }
 
   getAllAttributes() {
+    this.initDatatable();
+    this.allAttributes.length = 0;
     this.attributeService.getAllAttributes().subscribe((res: ResponseModel) => {
       if (res.errors) {
         this.toasterService.error('Retry Again', 'Error While Fetching Data');
@@ -143,7 +148,9 @@ export class AttributesComponent implements OnInit {
         this.toasterService.error('Error While Adding', 'Refresh And Retry Again');
       } else {
         console.log(res.data);
+        // this.getAllAttributes();
         jQuery('#AddOptionFormModal').modal('hide');
+        this.selectedAttribute.options.push(res.data);
         this.toasterService.success('Option Added!', 'Success!');
         this.resetOptionsForm();
       }
@@ -156,14 +163,18 @@ export class AttributesComponent implements OnInit {
       if (res.errors) {
         this.toasterService.error('Error While Updating Attribute!', 'Refresh and Retry Again');
       } else {
-        jQuery('#modal3').modal('hide');
-        this.toasterService.info('Brand Updated Successfully!', 'Updated!!');
+        jQuery('#AddFormModal').modal('hide');
+        this.toasterService.info('Attribute Updated Successfully!', 'Updated!!');
         this.resetForm();
         this.allAttributes.splice(this.selectedIndex, 1, res.data);
         this.selectedAttribute = null;
         this.editing = false;
       }
     });
+  }
+
+  editOption(index) {
+    this.selectedAttribute.options[index].editName = !this.selectedAttribute.options[index].editName;
   }
   // *************** DELETE FUNCTIONS *****************//
   deleteAttribute(i) {
@@ -210,11 +221,13 @@ export class AttributesComponent implements OnInit {
     this.selectedAttribute = this.allAttributes[i];
     this.selectedID = this.allAttributes[i]._id;
     this.selectedIndex = i;
-    // this.setFormValue();
+    this.setFormValue();
   }
   // *************** SET FUNCTIONS *****************//
   setFormValue() {
-
+    const attribute = this.allAttributes[this.selectedIndex];
+    this.attributeForm.controls['name'].setValue(attribute.name);
+    this.attributeForm.controls['is_active'].setValue(attribute.is_active);
   }
   // *************** RESET FUNCTIONS *****************//
   resetForm() {
@@ -229,5 +242,43 @@ export class AttributesComponent implements OnInit {
     this.submitted = false;
   }
 
+  optionsValueChanged(event, i) {
+    this.newOptionValue = event.target.value;
+  }
+
+  editCurrentOptionValue(i) {
+    const id = this.selectedAttribute.options[i]._id;
+    this.attributeService.updateAttributeOptions(id, { value: this.newOptionValue })
+      .subscribe((res: ResponseModel) => {
+        if (res.errors) {
+          this.toasterService.error('Error While Fetching Data', 'Error');
+        } else {
+          this.allAttributes.splice(i,1,res.data);
+          this.selectedAttribute.options[i].editName = false;
+          this.toasterService.success('Value Updated Successfully', 'Success');
+        }
+      })
+  }
+
+  deleteOptionsValue(i) {
+    const id = this.selectedAttribute.options[i]._id;
+    // if (confirm('You Sure you want to delete this Vehicle')) {
+    //   this.vehicleService.deleteVehicle(this.allVehicles[i]._id).toPromise().then(() => {
+    //     this.allVehicles.splice(i, 1);
+    //     this.toastr.warning('Vehicle Deleted!', 'Deleted!');
+    //   }).catch((err) => console.log(err));
+    // }
+    if (confirm("Are you sure you want to delete this option?")) {
+      this.attributeService.deleteSelectedOption(id)
+        .subscribe((res: ResponseModel) => {
+          if (res.errors) {
+            this.toasterService.error('Error While Fetching Data', 'Error');
+          } else {
+            this.selectedAttribute.options.splice(i,1);
+            this.toasterService.success('Value Updated Successfully', 'Success');
+          }
+        })
+    }
+  }
 
 }

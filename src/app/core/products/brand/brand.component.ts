@@ -34,9 +34,7 @@ export class BrandComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private productService: ProductsService, private toastr: ToastrService,
     private titleService: Title) {
     this.titleService.setTitle('Brand Management');
-
-    this.getAllBrand()
-
+    this.getAllBrand();
   }
 
   ngOnInit() {
@@ -97,7 +95,6 @@ export class BrandComponent implements OnInit {
     if (this.brandForm.invalid) {
       return;
     }
-
     if (this.fileSelected) {
       this.productService.getUrl().subscribe((res: ResponseModel) => {
         console.log(res.data)

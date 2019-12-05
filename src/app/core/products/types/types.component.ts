@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, QueryList, ElementRef, ViewChildren } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
@@ -30,7 +30,8 @@ export class TypesComponent implements OnInit {
   selectedIndex: number;
   selectedProductType: ProductTypeModel;
   submitted: Boolean = false;
-
+  @ViewChildren("checkboxes") checkboxes: QueryList<ElementRef>;
+  @ViewChildren("checkboxes") checkboxes2: any;
   constructor(
     private ProductTypeService: ProductTypeService,
     private formBuilder: FormBuilder,
@@ -39,7 +40,7 @@ export class TypesComponent implements OnInit {
     private attributeService: AttributesService
   ) {
     this.titleSerive.setTitle('ProductType Management');
-    this.initDatatable();
+    // this.initDatatable();
     this.getAllProductTypes();
   }
 
@@ -99,7 +100,7 @@ export class TypesComponent implements OnInit {
     this.ProductTypeForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(40)]],
       is_active: ['', Validators.required],
-      attributes: []
+      attributes: this.formBuilder.array([])
     });
   }
 
@@ -107,6 +108,7 @@ export class TypesComponent implements OnInit {
   get getProductTypeForm() {
     return this.ProductTypeForm.controls;
   }
+
   get getFormArray() {
     return this.ProductTypeForm.get('options') as FormArray;
   }
@@ -124,10 +126,12 @@ export class TypesComponent implements OnInit {
       }
     });
   }
+
   getAllProductTypes() {
     this.allProductTypes.length = 0;
     this.initDatatable();
     this.ProductTypeService.getAllProductType().subscribe((res: ResponseModel) => {
+      console.log(res);
       if (res.errors) {
         this.toasterService.error('Retry Again', 'Error While Fetching Data');
       } else {
@@ -149,10 +153,11 @@ export class TypesComponent implements OnInit {
       if (res.errors) {
         this.toasterService.error('Error While Adding', 'Refresh And Retry Again');
       } else {
-        jQuery('#AddFormModal').modal('hide');
         this.toasterService.success('Product Type Added!', 'Success!');
         this.allProductTypes.push(res.data);
+        this.datatableDestroy();
         this.resetForm();
+        jQuery('#AddFormModal').modal('hide');
       }
     });
   }
@@ -163,12 +168,13 @@ export class TypesComponent implements OnInit {
       if (res.errors) {
         this.toasterService.error('Error While Updating ProductType!', 'Refresh and Retry Again');
       } else {
-        jQuery('#modal3').modal('hide');
         this.toasterService.info('Brand Updated Successfully!', 'Updated!!');
         this.resetForm();
         this.allProductTypes.splice(this.selectedIndex, 1, res.data);
+        this.datatableDestroy();
         this.selectedProductType = null;
         this.editing = false;
+        jQuery('#modal3').modal('hide');
       }
     });
   }
@@ -184,8 +190,22 @@ export class TypesComponent implements OnInit {
   // *************** SUBMIT FUNCTIONS *****************//
   onSubmit() {
     this.submitted = true;
-    this.ProductTypeForm.get('attributes').setValue(this.selectedAttributesArray);
+    // this.ProductTypeForm.get('attributes').setValue(this.selectedAttributesArray);
     console.log(this.ProductTypeForm.value);
+    if (this.editing) {
+      this.ProductTypeForm.value.attributes.length = 0;
+      for (var i = 0; i < this.checkboxes2._results.length; i++) {
+        if (this.checkboxes2._results[i].nativeElement.checked == true) {
+          this.ProductTypeForm.value.attributes.push(this.allAttributes[i]._id)
+        }
+      }
+    } else {
+      for (var i = 0; i < this.checkboxes2._results.length; i++) {
+        if (this.checkboxes2._results[i].nativeElement.checked == true) {
+          this.ProductTypeForm.value.attributes.push(this.allAttributes[i]._id)
+        }
+      }
+    }
     if (this.ProductTypeForm.invalid) {
       return;
     }
@@ -203,10 +223,14 @@ export class TypesComponent implements OnInit {
   }
 
   editProductType(i) {
+    console.log(i);
     this.editing = true;
     this.selectedProductType = this.allProductTypes[i];
     this.selectedID = this.allProductTypes[i]._id;
     this.selectedIndex = i;
+    this.checkboxes.forEach((element) => {
+      element.nativeElement.checked = false;
+    });
     this.setFormValue();
   }
 
@@ -224,6 +248,18 @@ export class TypesComponent implements OnInit {
   // *************** SET FUNCTIONS *****************//
   setFormValue() {
     // this.ProductTypeForm.get('').setValue();
+    console.log(this.selectedProductType);
+    if (this.selectedProductType.attributes) {
+      let attributes: any = this.selectedProductType.attributes;
+      for (let i = 0; i < attributes.length; i++) {
+        let att = attributes[i]._id
+        for (var j = 0; j < this.allAttributes.length; j++) {
+          if (att == this.allAttributes[j]._id) {
+            this.checkboxes2._results[j].nativeElement.checked = true;
+          }
+        }
+      }
+    }
     this.ProductTypeForm.get('name').setValue(this.selectedProductType.name);
     this.ProductTypeForm.get('is_active').setValue(this.selectedProductType.is_active);
   }
@@ -232,7 +268,14 @@ export class TypesComponent implements OnInit {
     this.ProductTypeForm.reset();
     this.initProductTypeForm();
     this.submitted = false;
+    this.checkboxes.forEach((element) => {
+      element.nativeElement.checked = false;
+    });
   }
 
+  datatableDestroy() {
+    jQuery('#typeTable').DataTable().destroy();
+    this.dtTrigger.next();
+  }
 
 }

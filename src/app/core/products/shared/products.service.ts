@@ -19,6 +19,7 @@ export class ProductsService {
   url6 = 'api/product/upload/category';
   url7 = 'api/product/upload/product';
   url8 = 'api/product/pcattribute';
+  subCategoryURL = 'api/product/pcategory';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   getAllProduct() {
@@ -135,6 +136,10 @@ export class ProductsService {
     return this.http.post(this.url8 + '/', attribute, { headers: this.headers });
   }
 
+  getAllAttributes() {
+    return this.http.get(this.url8 + '/all', { headers: this.headers });
+  }
+
   updateAttribute(attribute, id) {
     return this.http.put(this.url8 + '/' + id, attribute, { headers: this.headers });
   }
@@ -142,6 +147,11 @@ export class ProductsService {
   // UPDATE STOCK
   updateProductStock(data) {
     return this.http.put(this.url + '/stock', data, { headers: this.headers });
+  }
+
+  
+  getAllCategorysub(id) {
+    return this.http.get(this.subCategoryURL + '/id/' + id, { headers: this.headers });
   }
 
 }

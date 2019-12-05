@@ -22,7 +22,14 @@ export class ProductVarientService {
     }
 
     addNewProductVarients(varient) {
-        console.log(varient);
         return this.http.post(this.productVarientURL + '/add', varient, { headers: this.headers });
+    }
+
+    updateProductVarients(id,variant) {
+        return this.http.put(this.productVarientURL + '/update/' + id, variant, { headers: this.headers });
+    }
+
+    deleteProductVarients(id) {
+        return this.http.delete(this.productVarientURL + '/delete/' + id, { headers: this.headers });
     }
 }

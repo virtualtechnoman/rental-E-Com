@@ -17,6 +17,7 @@ export class ProductTypeService {
     getAllProductType(): Observable<Object> {
         return this.http.get(this.productTypeURL + '/all', { headers: this.headers });
     }
+
     // *************** POST APIS *****************//
     addProductType(attributes): Observable<Object> {
         return this.http.post(this.productTypeURL + '/add', attributes, { headers: this.headers });

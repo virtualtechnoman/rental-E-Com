@@ -91,7 +91,7 @@ router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_ATTRIBUTE"), async (req,
 });
 
 //UPDATE A PRODUCT
-router.put("update/:id", authorizePrivilege("UPDATE_PRODUCT_ATTRIBUTE"), (req, res) => {
+router.put("/update/:id", authorizePrivilege("UPDATE_PRODUCT_ATTRIBUTE"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         let result = AttributeController.verifyUpdate(req.body);
         if (!isEmpty(result.errors)) {
