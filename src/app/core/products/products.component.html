@@ -439,14 +439,15 @@
               <input type="text" value="{{currentproduct?.name | titlecase}}" class="form-control">
             </div>
             <div class="col-md-3" *ngFor="let attribute of varient?.attributes">
-              <input type="text" value="{{attribute?.option?.value}}" class="form-control">
+              <input type="text" value="{{attribute?.option?.value}}" class="form-control" (change)="attributeValueChange($event)">
             </div>
             <div class="col-md-1">
               <button type="button" class="btn btn-info mx-1" (click)="editVarient(i)"><i
-                class="fas fa-edit"></i></button>
+                  class="fas fa-edit"></i></button>
             </div>
             <div class="col-md-1">
-              <button type="button" class="btn btn-danger" (click)="deleteVarient(i)"><i class="fas fa-trash-alt"></i></button>
+              <button type="button" class="btn btn-danger" (click)="deleteVarient(i)"><i
+                  class="fas fa-trash-alt"></i></button>
             </div>
           </div>
           <br>

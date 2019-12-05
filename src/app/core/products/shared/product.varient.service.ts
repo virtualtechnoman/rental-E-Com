@@ -26,10 +26,10 @@ export class ProductVarientService {
     }
 
     updateProductVarients(id,variant) {
-        return this.http.post(this.productVarientURL + '/update/' + id, variant, { headers: this.headers });
+        return this.http.put(this.productVarientURL + '/update/' + id, variant, { headers: this.headers });
     }
 
     deleteProductVarients(id) {
-        return this.http.post(this.productVarientURL + '/delete/' + id, { headers: this.headers });
+        return this.http.delete(this.productVarientURL + '/delete/' + id, { headers: this.headers });
     }
 }

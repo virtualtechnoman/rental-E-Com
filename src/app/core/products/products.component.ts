@@ -554,4 +554,8 @@ export class ProductsComponent implements OnInit {
       })
     }
   }
+
+  attributeValueChange(event) {
+    console.log(event);
+  }
 }
