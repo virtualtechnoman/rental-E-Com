@@ -18,7 +18,7 @@
             <th scope="col">Type</th>
             <th scope="col">Brand</th>
             <th scope="col">Selling Price</th>
-            <th scope="col">Stock</th>
+            <!-- <th scope="col">Stock</th> -->
             <th scope="col">Created by</th>
             <th scope="col">Status</th>
             <th scope="col">Actions</th>
@@ -38,10 +38,10 @@
             <td>{{product?.brand?.name | titlecase}}</td>
             <td *ngIf="product.selling_price">{{product?.selling_price | number}}</td>
             <td *ngIf="product.base_price">{{product?.base_price | number}}</td>
-            <td>{{product?.stock | number}}
+            <!-- <td>{{product?.stock | number}}
               <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Add Stock"><i
                   class="fas fas fa-plus" data-toggle="modal" data-target="#stockModal"
-                  (click)="editProduct(i)"></i></a></td>
+                  (click)="editProduct(i)"></i></a></td> -->
             <td>{{product?.created_by?.full_name | titlecase}}</td>
             <td>{{product.is_active ? 'Active': 'Inactive'}}</td>
             <td>
@@ -160,8 +160,6 @@
               </div>
             </div>
           </div>
-
-
           <div class="form-row" *ngIf="(allSubCategories2.length > 0)">
             <div class="form-group col-md-4">
               <label for="inputEmail4"><b>Sub Category</b></label>
@@ -421,38 +419,143 @@
 
 <!-- ****************** ADD VARIENT MODAL ********************************** -->
 <div class="modal fade" id="varientModal" tabindex="-1" role="dialog" aria-labelledby="varientModal" aria-hidden="true">
-  <div class="modal-dialog modal-xl" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <!-- <h5 class="modal-title ml-auto font-weight-bold" id="varientModal">
           {{varientEditing ? 'Edit Varient' : 'Create Varient'}}</h5> -->
         <h3 class="font-weight-bold">{{currentproduct?.name | uppercase}}</h3>
+        <button type="button" class="btn btn-primary mx-1" data-toggle="modal" data-target="#addVarientModal">Add
+          Varient</button>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <div class="divider-text" *ngIf="varientArray.length > 0">Existing Varients</div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">SKU ID</th>
+              <th scope="col">NAME</th>
+              <th scope="col">PRICE</th>
+              <th scope="col">STOCK</th>
+              <ng-container *ngFor="let attribute of productAttributeArray; let i=index;">
+                <th scope="col">{{attribute?.name | titlecase}}</th>
+              </ng-container>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let varient of varientArray; let i = index;">
+              <td scope="row">{{i+1}}</td>
+              <td scope="row">{{varient?.sku_id}}</td>
+              <td scope="row">{{varient?.name}}</td>
+              <td scope="row">{{varient?.price}}</td>
+              <td scope="row">{{varient?.stock}}</td>
+              <ng-container *ngFor="let attribute of varient?.attributes ; let index = index;">
+                <td scope="row">{{attribute?.option?.value}}</td>
+              </ng-container>
+              <td scope="row">
+                <button type="button" class="btn btn-info mx-1" data-toggle="modal" data-target="#"
+                  (click)="editVarient(i)">Edit</button>
+                <button type="button" class="btn btn-danger mx-1" (click)="deleteVarient(i)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- <div class="divider-text" *ngIf="varientArray.length > 0">Existing Varients</div>
         <div *ngFor="let varient of varientArray; let i = index;">
           <div class="row">
             <div class="col-md-3">
-              <input type="text" value="{{currentproduct?.name | titlecase}}" class="form-control">
+              <label><b>SKU ID</b></label>
+              <input type="text" value="{{varient?.sku_id}}" class="form-control">
             </div>
-            <div class="col-md-3" *ngFor="let attribute of varient?.attributes">
-              <input type="text" value="{{attribute?.option?.value}}" class="form-control" (change)="attributeValueChange($event)">
+            <div class="col-md-3">
+              <label><b>NAME</b></label>
+              <input type="text" value="{{varient?.name}}" class="form-control">
             </div>
-            <div class="col-md-1">
-              <button type="button" class="btn btn-info mx-1" (click)="editVarient(i)"><i
-                  class="fas fa-edit"></i></button>
+            <div class="col-md-3">
+              <label><b>PRICE</b></label>
+              <input type="number" value="{{varient?.price}}" class="form-control">
             </div>
-            <div class="col-md-1">
-              <button type="button" class="btn btn-danger" (click)="deleteVarient(i)"><i
-                  class="fas fa-trash-alt"></i></button>
+            <div class="col-md-3">
+              <label><b>STOCK</b></label>
+              <input type="number" value="{{varient?.stock}}" class="form-control">
             </div>
           </div>
           <br>
+          <div class="row">
+            <div class="col-md-3" *ngFor="let attribute of varient?.attributes">
+              <label><b>VARIANT</b></label>
+              <input type="text" value="{{attribute?.option?.value}}" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label><b>EDIT</b></label>
+              <button type="button" class="btn btn-info form-control" (click)="editVarient(i)">Edit</button>
+            </div>
+            <div class="col-md-3">
+              <label><b>DELETE</b></label>
+              <button type="button" class="btn btn-danger form-control" (click)="deleteVarient(i)">Delete</button>
+            </div>
+          </div>
+          <hr>
         </div>
         <div class="divider-text">Add Variants</div>
+        <form [formGroup]="productVarient" (ngSubmit)="saveVarient()">
+          <div class="row">
+            <div class="form-group col">
+              <label><b>SKU ID</b></label>
+              <input type="text" formControlName="sku_id" class="form-control" placeholder="Enter SKU ID">
+            </div>
+            <div class="form-group col">
+              <label><b>Name</b></label>
+              <input type="text" formControlName="name" class="form-control" placeholder="Enter Name">
+            </div>
+            <div class="form-group col">
+              <label><b>Price</b></label>
+              <input type="number" formControlName="price" class="form-control" placeholder="Enter Price">
+            </div>
+            <div class="form-group col">
+              <label><b>Stock</b></label>
+              <input type="number" formControlName="stock" class="form-control" placeholder="Enter Stock">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3" formArrayName="attributes"
+              *ngFor="let attribute of productAttributeArray; let i=index;">
+              <div [formGroupName]="i">
+                <label for=""><b>{{attribute.name | titlecase}}</b></label>
+                <select name="" class="form-control" id="" formControlName="option">
+                  <option [ngValue]="option" *ngFor="let option of attribute.product_option">
+                    {{option.value | titlecase}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="text-center">
+            <button type="button" class="btn btn-primary mx-1" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add Varient</button>
+          </div>
+        </form> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Add Varient Modal -->
+<div class="modal fade" id="addVarientModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
         <form [formGroup]="productVarient" (ngSubmit)="saveVarient()">
           <div class="row">
             <div class="form-group col">
