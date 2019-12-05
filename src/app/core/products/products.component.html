@@ -432,14 +432,21 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="divider-text">Existing Varients</div>
+        <div class="divider-text" *ngIf="varientArray.length > 0">Existing Varients</div>
         <div *ngFor="let varient of varientArray; let i = index;">
           <div class="row">
-            <div class="col-md-4">
-              <input type="text" value="{{currentproduct?.name | titlecase}}" class="form-control" disabled>
+            <div class="col-md-3">
+              <input type="text" value="{{currentproduct?.name | titlecase}}" class="form-control">
             </div>
-            <div class="col-md-4" *ngFor="let attribute of varient?.attributes">
-              <input type="text" value="{{attribute?.option?.value}}" class="form-control" disabled>
+            <div class="col-md-3" *ngFor="let attribute of varient?.attributes">
+              <input type="text" value="{{attribute?.option?.value}}" class="form-control">
+            </div>
+            <div class="col-md-1">
+              <button type="button" class="btn btn-info mx-1" (click)="editVarient(i)"><i
+                class="fas fa-edit"></i></button>
+            </div>
+            <div class="col-md-1">
+              <button type="button" class="btn btn-danger" (click)="deleteVarient(i)"><i class="fas fa-trash-alt"></i></button>
             </div>
           </div>
           <br>

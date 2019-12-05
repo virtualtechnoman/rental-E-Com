@@ -535,4 +535,23 @@ export class ProductsComponent implements OnInit {
     }
   }
 
+  editVarient(i: number) {
+    // console.log(i);
+    // const updateVaientArray :any[] = []
+    // updateVaientArray.push({att})
+    // this.productVarientService.updateProductVarients({attri})
+  }
+
+  deleteVarient(index: number) {
+    if (confirm('Are You Sure You Want To Delete The Selected Varient?')) {
+      this.productVarientService.deleteProductVarients(this.varientArray[index]._id).subscribe((res: ResponseModel) => {
+        if (res.errors) {
+          this.toastr.error('Error While Deleting Varient');
+        } else {
+          this.varientArray.splice(index, 1);
+          this.toastr.success('Varient Deleted Succesfully');
+        }
+      })
+    }
+  }
 }

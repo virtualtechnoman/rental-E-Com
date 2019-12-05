@@ -5,7 +5,6 @@ const ProductVarientController = require('../../controllers/product/product.vari
 const isEmpty = require('../../utils/is-empty');
 const mongodb = require('mongoose').Types;
 const authorizePrivilege = require("../../middleware/authorizationMiddleware");
-9711596765
 //  *************** GET APIS *********************** //
 // GET ALL PRODUCT VARIENTS
 router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
@@ -113,7 +112,7 @@ router.post('/add', authorizePrivilege("ADD_NEW_PRODUCT_VARIENTS"), async (req, 
 });
 
 //UPDATE A PRODUCT
-router.put("update/:id", authorizePrivilege("UPDATE_PRODUCT_VARIENTS"), (req, res) => {
+router.put("/update/:id", authorizePrivilege("UPDATE_PRODUCT_VARIENTS"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         let result = ProductVarientController.verifyUpdate(req.body);
         if (!isEmpty(result.errors)) {
