@@ -122,7 +122,12 @@ router.put("/update/:id", authorizePrivilege("UPDATE_PRODUCT_VARIENTS"), (req, r
             if (err)
                 return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating ProductVARIENTS" });
             else {
-                return res.status(200).json({ status: 200, data: doc, errors: false, message: "ProductVARIENTS Updated Successfully" });
+                ProductVarient.find({product:doc.product}).populate("attributes.attribute attributes.option").exec().then(_data=>{
+                    return res.status(200).json({ status: 200, data: _data, errors: false, message: "ProductVARIENTS Updated Successfully" });
+                }).catch(err=>{
+                    console.log(err);
+                    res.json({status:200,data:null,errors:true,message:"Error while getting varients"});
+                })
             }
         })
     } else {
