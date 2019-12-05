@@ -10,7 +10,8 @@ export class AttributesService {
         'Content-Type': 'application/json',
         'token': this.tokenService.getToken()
     });
-    attributesURL = 'api/product/pcattribute';
+    attributesURL = 'api/product/pattribute';
+    optionsURL = 'api/product/poptions'
     constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
     // *************** GET APIS *****************//
@@ -26,8 +27,16 @@ export class AttributesService {
     updateAttributes(id, attributes): Observable<Object> {
         return this.http.put(this.attributesURL + '/update/' + id, attributes, { headers: this.headers });
     }
+
+    updateAttributeOptions(id, optionValue): Observable<Object> {
+        return this.http.put(this.optionsURL + '/update/' + id, optionValue, { headers: this.headers });
+    }
     // *************** DELETE APIS *****************//
     deleteAttributes(id): Observable<Object> {
         return this.http.delete(this.attributesURL + '/delete/' + id, { headers: this.headers });
+    }
+
+    deleteSelectedOption(id): Observable<Object> {
+        return this.http.delete(this.optionsURL + '/delete/' + id, { headers: this.headers });
     }
 }

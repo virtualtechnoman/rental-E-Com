@@ -14,12 +14,14 @@ import { ProductTypeModel } from './types/shared/product.types.model';
 import { AttributesService } from './attributes/shared/attributes.service';
 import { ProductOptionService } from './options/shared/product.types.service';
 import { ProductVarientService } from './shared/product.varient.service';
+import { validateBasis } from '@angular/flex-layout';
 
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
+
 export class ProductsComponent implements OnInit {
   @ViewChildren('checkboxes') checkboxes: QueryList<ElementRef>;
   @ViewChildren('selectallcheckboxes') selectallcheckboxes: QueryList<ElementRef>;
@@ -65,6 +67,16 @@ export class ProductsComponent implements OnInit {
   submitted: Boolean = false;
   uploading: Boolean = false;
   varientArray: any[] = [];
+  allSubCategories: any[] = [];
+  allSubCategories2: any[] = [];
+  allSubCategories3: any[] = [];
+  allSubCategories4: any[] = [];
+  allSubCategories5: any[] = [];
+  subCategory1: any;
+  subCategory2: any;
+  subCategory3: any;
+  subCategory4: any;
+  allCategoryArray: any[] = [];
   constructor(
     private productService: ProductsService,
     private formBuilder: FormBuilder,
@@ -150,7 +162,11 @@ export class ProductsComponent implements OnInit {
   initProductVarientForm() {
     this.productVarient = this.formBuilder.group({
       product: [''],
-      attributes: this.formBuilder.array([])
+      attributes: this.formBuilder.array([]),
+      name: ['', Validators.required],
+      sku_id: ['', Validators.required],
+      price: ['', Validators.required],
+      stock: ['', Validators.required]
     });
   }
   // ************************** GET FUNCTIONS *********************
@@ -174,7 +190,6 @@ export class ProductsComponent implements OnInit {
         this.toastr.error('Error While Fetcing Products', 'Refresh and Retry');
       } else {
         this.allproducts = res.data;
-        console.log(this.allproducts);
         this.dtTrigger.next();
         if (res.data) {
           for (var i = 0; i < res.data.length; i++) {
@@ -193,6 +208,7 @@ export class ProductsComponent implements OnInit {
 
   getAllProductTypes() {
     this.typeService.getAllProductType().subscribe((res: ResponseModel) => {
+      console.log(res);
       if (res.errors) {
         this.toastr.error('Error While Fetching Product Type', 'Refresh and Retry');
       } else {
@@ -204,19 +220,101 @@ export class ProductsComponent implements OnInit {
   getAllProductAttbsributes() {
     this.productAttributeArray.length = 0;
     const productAttributeIdArray: string[] = [];
-    this.currentproduct.type.attributes.forEach(element => {
-      productAttributeIdArray.push(element._id);
-    });
-    this.productOptionService.getAllOptionsOfAttributes(productAttributeIdArray).subscribe((res: ResponseModel) => {
+    if (this.currentproduct.type) {
+      if (this.currentproduct.type.attributes) {
+        this.currentproduct.type.attributes.forEach(element => {
+          productAttributeIdArray.push(element._id);
+        });
+        console.log(this.currentproduct);
+        this.productOptionService.getAllOptionsOfAttributes(productAttributeIdArray).subscribe((res: ResponseModel) => {
+          if (res.errors) {
+            this.toastr.error('Error While Fetching Product Attributes', 'Refresh and Retry');
+          } else {
+            this.productAttributeArray = res.data;
+            const attributeCount = res.data.length;
+            this.generateFormControlForOptions(attributeCount);
+          }
+        });
+      }
+    }
+  }
+
+  getAllSubCategory1() {
+    this.productForm.get('category').setValue(this.subCategory1);
+    // this.allCategoryArray.push(this.subCategory1);
+    this.productService.getAllCategorysub(this.subCategory1).subscribe((res: ResponseModel) => {
       if (res.errors) {
-        this.toastr.error('Error While Fetching Product Attributes', 'Refresh and Retry');
+        this.toastr.error('Error getting Categories', 'Try Again');
       } else {
-        this.productAttributeArray = res.data;
-        console.log('productAttributeArray', this.productAttributeArray);
-        const attributeCount = res.data.length;
-        this.generateFormControlForOptions(attributeCount);
+        if (res.data[0].subcategory.length > 0) {
+          this.allCategoryArray.push(this.subCategory1);
+          this.allSubCategories = res.data[0].subcategory;
+        } else {
+          this.toastr.info('No Sub Categories Found');
+        }
+        // this.productForm.get('category').setValue(this.subCategory1);
       }
     });
+  }
+
+  getAllSubCategory2() {
+    if (this.subCategory2) {
+      // this.allCategoryArray.push(this.subCategory2);
+      this.productForm.get('category').setValue(this.subCategory2);
+      // this.productForm.get('category').setValue(this.subCategory1);
+      // this.productForm.get('subcategories').setValue(this.allCategoryArray);
+      this.productService.getAllCategorysub(this.subCategory2).subscribe((res: ResponseModel) => {
+        if (res.errors) {
+          this.toastr.error('Error getting Categories', 'Try Again');
+        } else {
+          if (res.data[0].subcategory.length > 0) {
+            this.allCategoryArray.push(this.subCategory2);
+            this.allSubCategories2 = res.data[0].subcategory;
+          } else {
+            this.toastr.info('No Sub Categories Found');
+          }
+        }
+      });
+    }
+  }
+
+  getAllSubCategory3() {
+    // this.allCategoryArray.push(this.subCategory3);
+    if (this.subCategory3) {
+      this.productForm.get('category').setValue(this.subCategory3);
+      // this.productForm.get('subcategories').setValue(this.allCategoryArray);
+      this.productService.getAllCategorysub(this.subCategory3).subscribe((res: ResponseModel) => {
+        if (res.errors) {
+          this.toastr.error('Error getting Categories', 'Try Again');
+        } else {
+          if (res.data[0].subcategory.length > 0) {
+            this.allCategoryArray.push(this.subCategory3);
+            this.allSubCategories3 = res.data[0].subcategory;
+          } else {
+            this.toastr.info('No Sub Categories Found');
+          }
+        }
+      });
+    }
+  }
+
+  getAllSubCategory4() {
+    // this.allCategoryArray.push(this.subCategory4);
+    if (this.subCategory4) {
+      this.productForm.get('category').setValue(this.subCategory4);
+      this.productService.getAllCategorysub(this.subCategory4).subscribe((res: ResponseModel) => {
+        if (res.errors) {
+          this.toastr.error('Error getting Categories', 'Try Again');
+        } else {
+          if (res.data[0].subcategory.length > 0) {
+            this.allCategoryArray.push(this.subCategory4);
+            this.allSubCategories4 = res.data[0].subcategory;
+          } else {
+            this.toastr.info('No Sub Categories Found');
+          }
+        }
+      });
+    }
   }
 
   getAllVarientsOfProduct() {
@@ -225,8 +323,8 @@ export class ProductsComponent implements OnInit {
       if (res.errors) {
         this.toastr.error('Unable to Fetch Varients', 'Refresh and Retry');
       } else {
-        console.log(res.data);
         this.varientArray = res.data;
+        console.log(this.varientArray);
       }
     });
   }
@@ -264,7 +362,6 @@ export class ProductsComponent implements OnInit {
 
   updateProductStock() {
     this.productService.updateProductStock({ id: this.currentproduct._id, newStock: this.newStock }).subscribe((res: ResponseModel) => {
-      console.log(res);
       if (res.errors) {
         this.toastr.warning('Error', 'Stock Not Updated');
       } else {
@@ -287,7 +384,6 @@ export class ProductsComponent implements OnInit {
   // ************************** SUBMIT FUNCTIONS *****************************
   submit() {
     this.productForm.get('type').setValue(this.productType);
-    console.log(this.productForm.value);
     this.submitted = true;
     if (this.productForm.invalid) {
       return;
@@ -313,12 +409,10 @@ export class ProductsComponent implements OnInit {
         }
       });
     } else {
-      console.log(this.productForm.value);
       if (this.editing) {
         if (!this.fileSelected) {
           this.productForm.value.image = this.mastImage;
         }
-        console.log(this.mastImage);
         this.updateProduct(this.productForm.value);
 
       } else {
@@ -331,6 +425,8 @@ export class ProductsComponent implements OnInit {
   saveVarient() {
     this.productVarient.value.product = this.currentproduct._id;
     const attribute = this.productVarient.value.attributes;
+    console.log(this.productVarient);
+    console.log(attribute);
     for (let index = 0; index < attribute.length; index++) {
       attribute[index].attribute = attribute[index].option.parent;
       attribute[index].option = attribute[index].option._id;
@@ -341,7 +437,6 @@ export class ProductsComponent implements OnInit {
         this.toastr.error('Error While Adding Varient', 'Refresh And Retry');
       } else {
         this.toastr.success('Varient Added Successfully', 'Success');
-        console.log(res.data);
         this.varientArray.push(res.data);
         jQuery('#varientModal').modal('hide');
         this.emptyOptionFormAray();
@@ -363,9 +458,7 @@ export class ProductsComponent implements OnInit {
   }
 
   emptyOptionFormAray() {
-    while (this.getOptionsForm.length !== 0) {
-      this.getOptionsForm.removeAt(0);
-    }
+    this.initProductVarientForm();
   }
   // ************************** CALCULATION FUNCTIONS *****************************
 
@@ -384,11 +477,11 @@ export class ProductsComponent implements OnInit {
   viewProduct(i) {
     this.array3.length = 0;
     this.currentproduct = this.allproducts[i];
+    console.log(this.productVarient);
     if (this.currentproduct.varients) { this.varientEditing = true; }
     if (this.currentproduct.image) {
       this.showImage = true;
       this.image = this.imageUrl + this.currentproduct.image;
-      console.log(this.image);
     } else {
       this.showImage = false;
     }
@@ -407,7 +500,8 @@ export class ProductsComponent implements OnInit {
     this.productForm.controls['is_active'].setValue(product.is_active);
     this.productForm.controls['name'].setValue(product.name);
     this.productForm.controls['base_price'].setValue(product.base_price);
-    this.productForm.controls['type'].setValue(product.type);
+    this.productForm.controls['type'].setValue(product.type._id);
+    // this. = product.type;
     if (product.image) {
       this.editShowImage = true;
       this.mastImage = product.image;
@@ -415,7 +509,6 @@ export class ProductsComponent implements OnInit {
     } else {
       this.editShowImage = false;
     }
-
   }
 
   checkboxChange(_id: string, isChecked: boolean) {
@@ -427,7 +520,6 @@ export class ProductsComponent implements OnInit {
       checkBoxArray.removeAt(index);
     }
     this.selectallcheckboxes = checkBoxArray.value;
-    console.log(this.selectallcheckboxes);
   }
 
   createAttribute(): FormGroup {
@@ -438,7 +530,6 @@ export class ProductsComponent implements OnInit {
   }
 
   generateFormControlForOptions(attributeCount) {
-    console.log(attributeCount);
     for (let index = 0; index < attributeCount; index++) {
       this.addOptions();
     }

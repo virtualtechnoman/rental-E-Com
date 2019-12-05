@@ -1,9 +1,11 @@
 export class ProductTypeModel {
     name: String;
     is_active: boolean;
-    options: {
+    attributes: [{
         _id: String;
-        value: any;
-    };
+        name: String;
+        is_active: Boolean;
+    }
+    ];
     _id: String;
 }

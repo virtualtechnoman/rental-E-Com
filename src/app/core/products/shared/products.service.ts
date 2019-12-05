@@ -19,6 +19,7 @@ export class ProductsService {
   url6 = 'api/product/upload/category';
   url7 = 'api/product/upload/product';
   url8 = 'api/product/pcattribute';
+  subCategoryURL = 'api/product/pcategory';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   getAllProduct() {
@@ -146,6 +147,11 @@ export class ProductsService {
   // UPDATE STOCK
   updateProductStock(data) {
     return this.http.put(this.url + '/stock', data, { headers: this.headers });
+  }
+
+  
+  getAllCategorysub(id) {
+    return this.http.get(this.subCategoryURL + '/id/' + id, { headers: this.headers });
   }
 
 }

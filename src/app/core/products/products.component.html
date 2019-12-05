@@ -46,7 +46,8 @@
             <td>{{product.is_active ? 'Active': 'Inactive'}}</td>
             <td>
               <a style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="View Product"
-                (click)="viewProduct(i)"><i data-toggle="modal" data-target="#detailModal" class="fas fa-eye mx-1"></i></a>
+                (click)="viewProduct(i)"><i data-toggle="modal" data-target="#detailModal"
+                  class="fas fa-eye mx-1"></i></a>
               <a style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="Create Varient"><i
                   class="fas fa-plus-square mx-1" data-toggle="modal" (click)="viewProduct(i)"
                   data-target="#varientModal"></i></a>
@@ -110,8 +111,8 @@
           <div class="form-row">
             <div class="form-group col-md-4">
               <label for="inputEmail4">Category</label>
-              <select class="form-control" formControlName="category" required
-                [ngClass]="{ 'is-invalid': submitted && f.category.errors }">
+              <select class="form-control" required [(ngModel)]="subCategory1" [ngModelOptions]="{standalone: true}"
+                (change)="getAllSubCategory1()">
                 <option selected disabled>Select Category</option>
                 <option [ngValue]="category._id" *ngFor="let category of allCategories;let i=index">{{category.name}}
                 </option>
@@ -141,6 +142,68 @@
               </div>
               <div class="invalid-feedback" *ngIf="f.base_price.errors && (f.base_price.dirty || f.base_price.touched)">
                 <p *ngIf="f.base_price.errors.pattern" class="text-danger">Number Only</p>
+              </div>
+            </div>
+          </div>
+          <div class="form-row" *ngIf="(allSubCategories.length > 0)">
+            <div class="form-group col-md-4">
+              <label for="inputEmail4"><b>Sub Category</b></label>
+              <select class="form-control" [(ngModel)]="subCategory2" [ngModelOptions]="{standalone: true}" required
+                (change)="getAllSubCategory2()" [ngClass]="{ 'is-invalid': submitted && f.category.errors }">
+                <option selected disabled>Select Sub Category</option>
+                <option [ngValue]="category._id" *ngFor="let category of allSubCategories;let i=index">
+                  {{category?.name | titlecase}}
+                </option>
+              </select>
+              <div *ngIf="submitted && f.category.errors" class="invalid-feedback">
+                <div *ngIf="f.category.errors.required">Category is required</div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="form-row" *ngIf="(allSubCategories2.length > 0)">
+            <div class="form-group col-md-4">
+              <label for="inputEmail4"><b>Sub Category</b></label>
+              <select class="form-control" [(ngModel)]="subCategory3" [ngModelOptions]="{standalone: true}" required
+                (change)="getAllSubCategory3()" [ngClass]="{ 'is-invalid': submitted && f.category.errors }">
+                <option selected disabled>Select Sub Category</option>
+                <option [ngValue]="category._id" *ngFor="let category of allSubCategories2;let i=index">
+                  {{category?.name | titlecase}}
+                </option>
+              </select>
+              <div *ngIf="submitted && f.category.errors" class="invalid-feedback">
+                <div *ngIf="f.category.errors.required">Category is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row" *ngIf="(allSubCategories3.length > 0)">
+            <div class="form-group col-md-4">
+              <label for="inputEmail4"><b>Sub Category</b></label>
+              <select class="form-control" [(ngModel)]="subCategory4" [ngModelOptions]="{standalone: true}" required
+                (change)="getAllSubCategory4()" [ngClass]="{ 'is-invalid': submitted && f.category.errors }">
+                <option selected disabled>Select Sub Category</option>
+                <option [ngValue]="category._id" *ngFor="let category of allSubCategories3;let i=index">
+                  {{category?.name | titlecase}}
+                </option>
+              </select>
+              <div *ngIf="submitted && f.category.errors" class="invalid-feedback">
+                <div *ngIf="f.category.errors.required">Category is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row" *ngIf="(allSubCategories4.length > 0)">
+            <div class="form-group col-md-4">
+              <label for="inputEmail4"><b>Sub Category</b></label>
+              <select class="form-control" [(ngModel)]="subCategory4" [ngModelOptions]="{standalone: true}" required
+                [ngClass]="{ 'is-invalid': submitted && f.category.errors }">
+                <option selected disabled>Select Sub Category</option>
+                <option [ngValue]="category._id" *ngFor="let category of allSubCategories4;let i=index">
+                  {{category?.name | titlecase}}
+                </option>
+              </select>
+              <div *ngIf="submitted && f.category.errors" class="invalid-feedback">
+                <div *ngIf="f.category.errors.required">Category is required</div>
               </div>
             </div>
           </div>
@@ -213,8 +276,7 @@
 </div>
 
 <!-- ****************** PRODUCT DETAIL MODAL ********************************** -->
-<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModal"
-  aria-hidden="true">
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModal" aria-hidden="true">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -359,58 +421,67 @@
 
 <!-- ****************** ADD VARIENT MODAL ********************************** -->
 <div class="modal fade" id="varientModal" tabindex="-1" role="dialog" aria-labelledby="varientModal" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title ml-auto font-weight-bold" id="varientModal">
-          {{varientEditing ? 'Edit Varient' : 'Create Varient'}}</h5>
+        <!-- <h5 class="modal-title ml-auto font-weight-bold" id="varientModal">
+          {{varientEditing ? 'Edit Varient' : 'Create Varient'}}</h5> -->
+        <h3 class="font-weight-bold">{{currentproduct?.name | uppercase}}</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <div class="divider-text">Selected Product</div>
-        <div class="text-center">
-          <h3 class="font-weight-bold">{{currentproduct?.name | uppercase}}</h3>
-        </div>
         <div class="divider-text">Existing Varients</div>
-        <div class="d-inline text-center">
-          <div *ngFor="let varient of varientArray; let i = index;">
-            <h5 class="d-inline">{{currentproduct?.name | titlecase}}</h5>
-            <h5 class="d-inline" *ngFor="let attribute of varient.attributes">
-              {{attribute?.option?.value | titlecase}}
-            </h5>
-
-            <!-- {{attribute?.option?.value | titlecase}} -->
+        <div *ngFor="let varient of varientArray; let i = index;">
+          <div class="row">
+            <div class="col-md-4">
+              <input type="text" value="{{currentproduct?.name | titlecase}}" class="form-control" disabled>
+            </div>
+            <div class="col-md-4" *ngFor="let attribute of varient?.attributes">
+              <input type="text" value="{{attribute?.option?.value}}" class="form-control" disabled>
+            </div>
           </div>
+          <br>
         </div>
-        <div class="divider-text">Select Attributes</div>
-        <div class="row">
-          <form [formGroup]="productVarient" (ngSubmit)="saveVarient()">
-            <div class="d-inline" formArrayName="attributes"
-              *ngFor="let attribute of productAttributeArray; let i=index;" class="list-group text-center">
-              <div [formGroupName]="i" class="d-inline">
-                <label for="" class="h3 text-center">{{attribute.name | titlecase}}</label>
-                <select name="" class="form-control d-inline" id="" formControlName="option">
+        <div class="divider-text">Add Variants</div>
+        <form [formGroup]="productVarient" (ngSubmit)="saveVarient()">
+          <div class="row">
+            <div class="form-group col">
+              <label><b>SKU ID</b></label>
+              <input type="text" formControlName="sku_id" class="form-control" placeholder="Enter SKU ID">
+            </div>
+            <div class="form-group col">
+              <label><b>Name</b></label>
+              <input type="text" formControlName="name" class="form-control" placeholder="Enter Name">
+            </div>
+            <div class="form-group col">
+              <label><b>Price</b></label>
+              <input type="number" formControlName="price" class="form-control" placeholder="Enter Price">
+            </div>
+            <div class="form-group col">
+              <label><b>Stock</b></label>
+              <input type="number" formControlName="stock" class="form-control" placeholder="Enter Stock">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3" formArrayName="attributes"
+              *ngFor="let attribute of productAttributeArray; let i=index;">
+              <div [formGroupName]="i">
+                <label for=""><b>{{attribute.name | titlecase}}</b></label>
+                <select name="" class="form-control" id="" formControlName="option">
                   <option [ngValue]="option" *ngFor="let option of attribute.product_option">
                     {{option.value | titlecase}}</option>
                 </select>
               </div>
             </div>
-          </form>
-        </div>
-        <!-- <div class="row">
-          <ul *ngFor="let attribute of productAttributeArray; let i=index;" class="list-group text-center">
-            <label for="" class="h3 text-center">{{attribute.name | titlecase}}</label>
-            <select name="" id="">
-              <option value="" *ngFor="let option of attribute.product_option">{{option.value | titlecase}}</option>
-            </select>
-          </ul>
-        </div> -->
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-        <button type="submit" (click)="saveVarient()" class="btn btn-primary">Save changes</button>
+          </div>
+          <br>
+          <div class="text-center">
+            <button type="button" class="btn btn-primary mx-1" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add Varient</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

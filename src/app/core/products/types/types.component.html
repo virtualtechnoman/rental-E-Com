@@ -68,7 +68,7 @@
           <div class="divider-text">Add Properties </div>
           <div class="form-row row">
             <div class="mx-1" *ngFor="let att of allAttributes; let i = index">
-              <input type="checkbox" (change)="checkboxChange(att._id, $event.target.checked)">
+              <input #checkboxes type="checkbox">
               {{att.name | titlecase}}
             </div>
           </div>
