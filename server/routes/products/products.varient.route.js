@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ProductVarient = require('../../models/products/product.varient.model');
 const Product = require('../../models/products/Products.model');
+const ProductCategory = require('../../models/products/product.category.model');
 const ProductVarientController = require('../../controllers/product/product.varient.controller');
 const isEmpty = require('../../utils/is-empty');
 const mongodb = require('mongoose').Types;
@@ -46,11 +47,20 @@ router.get("/", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
 })
 router.get("/bycategory/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
-        Product.aggregate([
-        // { $group: { _id: "$product", varients: { $push: "$attributes" } } }
-        {$match:{category:mongodb.ObjectId(req.params.id)}},
-        {$group:{_id:null,products:{$push:"$_id"}}},
-        {$lookup:{from:"product_varients",let:{product:"$products"},pipeline:[{$match:{$expr:{$in:["$product","$$product"]}}}],as:"products"}},
+        ProductCategory.aggregate([
+            {$match:{_id:mongodb.ObjectId(req.params.id)}},
+            {
+                $graphLookup: {
+                    from: "product_categories",
+                    startWith: "$_id",
+                    connectFromField: "_id",
+                    connectToField: "parent",
+                    as: "subcategory"
+                }
+            },
+            {$addFields:{all:{$concatArrays:[["$_id"],"$subcategory._id"]}}},
+            {$lookup:{from:"products",let:{category:"$all"},pipeline:[{$match:{$expr:{$in:["$category","$$category"]}}}],as:"prods"}},
+        {$lookup:{from:"product_varients",let:{product:"$prods._id"},pipeline:[{$match:{$expr:{$in:["$product","$$product"]}}}],as:"products"}},
         {$unwind:"$products"},
         {$replaceRoot:{newRoot:"$products"}}
     ]).exec()
@@ -62,6 +72,7 @@ router.get("/bycategory/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (r
                     res.json({ status: 200, data: docs, errors: true, message: "NO PRODUCT VARIENTS FOUND" });
             })
         }).catch(err => {
+            console.log(err);
             res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE FETCHING PRODUCT VARIENTS" });
         })
     } else {
