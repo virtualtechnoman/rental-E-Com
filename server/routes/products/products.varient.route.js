@@ -1,30 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const ProductVarient = require('../../models/products/product.varient.model');
+const Product = require('../../models/products/Products.model');
 const ProductVarientController = require('../../controllers/product/product.varient.controller');
 const isEmpty = require('../../utils/is-empty');
 const mongodb = require('mongoose').Types;
 const authorizePrivilege = require("../../middleware/authorizationMiddleware");
 //  *************** GET APIS *********************** //
 // GET ALL PRODUCT VARIENTS
-router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
-    ProductVarient
-        .find()
-        // .populate('attributes.value product')
-        .exec()
-        .then(docs => {
-            if (docs.length > 0)
-                res.json({ status: 200, data: docs, errors: false, message: "All PRODUCT VARIENTS" });
-            else
-                res.json({ status: 200, data: docs, errors: false, message: "NO PRODUCT VARIENTS FOUND" });
-        }).catch(err => {
-            console.log(err);
-            res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE GETTING PRODUCT VARIENTS" })
-        })
-})
+// router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
+//     ProductVarient
+//         .find()
+//         // .populate('attributes.value product')
+//         .exec()
+//         .then(docs => {
+//             if (docs.length > 0)
+//                 res.json({ status: 200, data: docs, errors: false, message: "All PRODUCT VARIENTS" });
+//             else
+//                 res.json({ status: 200, data: docs, errors: false, message: "NO PRODUCT VARIENTS FOUND" });
+//         }).catch(err => {
+//             console.log(err);
+//             res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE GETTING PRODUCT VARIENTS" })
+//         })
+// })
 
 // GET SPECIFIC PRODUCT VARIENTS 
-router.get("/products", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
+router.get("/", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
     // if (mongodb.ObjectId.isValid(req.params.id)) {
     // ProductVarient.aggregate([
     //     { $group: { _id: "$product", varients: { $push: "$attributes" } } }
@@ -42,6 +43,30 @@ router.get("/products", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, re
     // } else {
     //     res.status(500).json({ status: 404, data: null, errors: true, message: "INVALID ID" })
     // }
+})
+router.get("/bycategory/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
+    if (mongodb.ObjectId.isValid(req.params.id)) {
+        Product.aggregate([
+        // { $group: { _id: "$product", varients: { $push: "$attributes" } } }
+        {$match:{category:mongodb.ObjectId(req.params.id)}},
+        {$group:{_id:null,products:{$push:"$_id"}}},
+        {$lookup:{from:"product_varients",let:{product:"$products"},pipeline:[{$match:{$expr:{$in:["$product","$$product"]}}}],as:"products"}},
+        {$unwind:"$products"},
+        {$replaceRoot:{newRoot:"$products"}}
+    ]).exec()
+        .then(docs => {
+            ProductVarient.populate(docs,"product attributes.attribute attributes.option").then(docs => {
+                if (docs.length > 0)
+                    res.json({ status: 200, data: docs, errors: false, message: "ALL PRODUCT VARIENTS " });
+                else
+                    res.json({ status: 200, data: docs, errors: true, message: "NO PRODUCT VARIENTS FOUND" });
+            })
+        }).catch(err => {
+            res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE FETCHING PRODUCT VARIENTS" });
+        })
+    } else {
+        res.status(500).json({ status: 404, data: null, errors: true, message: "INVALID ID" })
+    }
 })
 // GET SPECIFIC PRODUCT VARIENTS 
 router.get("/VARIENTS/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
