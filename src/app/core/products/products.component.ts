@@ -442,7 +442,7 @@ export class ProductsComponent implements OnInit {
           this.toastr.success('Varient Added Successfully', 'Success');
           this.varientArray.push(res.data);
           jQuery('#addVarientModal').modal('hide');
-          this.emptyOptionFormAray();
+          // this.emptyOptionFormAray();
         }
       });
     } else {
@@ -609,6 +609,8 @@ export class ProductsComponent implements OnInit {
       this.productVarient.value.attributes[i].attribute = null;
       this.productVarient.value.attributes[i].option = null;
     }
+    // for(let i=0;i<)
+    console.log(this.productVarient);
     this.varientUpdate = false;
   }
 }
