@@ -26,35 +26,11 @@ router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) =>
 // GET SPECIFIC PRODUCT VARIENTS 
 router.get("/products", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
     // if (mongodb.ObjectId.isValid(req.params.id)) {
-    ProductVarient.aggregate([
-        { $group: { _id: "$product", varients: { $push: "$attributes" } } }
-    ]).exec()
-        .then(docs => {
-            ProductVarient.populate(docs, [{ path: "_id", model: "product" }, { path: "varients.attribute", model: "product_attribute" }, { path: "varients.option", model: "product_option" }]).then(docs => {
-                if (docs.length > 0)
-                    res.json({ status: 200, data: docs, errors: false, message: "ALL PRODUCT VARIENTS " });
-                else
-                    res.json({ status: 200, data: docs, errors: true, message: "NO PRODUCT VARIENTS FOUND" });
-            })
-        }).catch(err => {
-            res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE FETCHING PRODUCT VARIENTS" });
-        })
-    // } else {
-    //     res.status(500).json({ status: 404, data: null, errors: true, message: "INVALID ID" })
-    // }
-})
-router.get("/byproduct/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
-    if (mongodb.ObjectId.isValid(req.params.id)) {
-        // ProductVarient.aggregate([
-        //     { $group: { _id: "$product", varients: { $push: "$attributes" } } }
-        // ]).exec()
-        //     .then(docs => {
-        ProductVarient.find({ product: req.params.id })
-            .populate([
-                { path: "attributes.attribute", model: "product_attribute" },
-                { path: "attributes.option", model: "product_option" }
-            ])
-            .then(docs => {
+    // ProductVarient.aggregate([
+    //     { $group: { _id: "$product", varients: { $push: "$attributes" } } }
+    // ]).exec()
+    //     .then(docs => {
+            ProductVarient.find({}).populate("product attributes.attribute attributes.option").then(docs => {
                 if (docs.length > 0)
                     res.json({ status: 200, data: docs, errors: false, message: "ALL PRODUCT VARIENTS " });
                 else
@@ -63,9 +39,9 @@ router.get("/byproduct/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (re
         // }).catch(err => {
         //     res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE FETCHING PRODUCT VARIENTS" });
         // })
-    } else {
-        res.status(400).json({ status: 400, data: null, errors: true, message: "INVALID ID" })
-    }
+    // } else {
+    //     res.status(500).json({ status: 404, data: null, errors: true, message: "INVALID ID" })
+    // }
 })
 // GET SPECIFIC PRODUCT VARIENTS 
 router.get("/VARIENTS/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {

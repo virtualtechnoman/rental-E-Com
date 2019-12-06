@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const Product = mongoose.Schema({
-    product: { type: mongoose.Schema.Types.ObjectId, ref: "product" },
+    product: { type: mongoose.Schema.Types.ObjectId, ref: "product_varient" },
     quantity: { type: Number }
 }, {
         versionKey: false,

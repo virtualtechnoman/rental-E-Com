@@ -14,10 +14,10 @@ router.get("/", authorizePrivilege("GET_CART"), (req, res) => {
     Cart.aggregate([
         { $match: { user: req.user._id } },
         { $unwind: "$products" },
-        { $lookup: { "from": 'products', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
+        { $lookup: { "from": 'product_varients', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
         {
             $project: {
-                _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.selling_price", 0] }
+                _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.price", 0] }
             }
         },
         { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
@@ -72,10 +72,10 @@ router.post("/", authorizePrivilege("ADD_PRODUCT_TO_CART"), (req, res) => {
         Cart.aggregate([
             { $match: { user: req.user._id } },
             { $unwind: "$products" },
-            { $lookup: { "from": 'products', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
+            { $lookup: { "from": 'product_varients', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
             {
                 $project: {
-                    _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.selling_price", 0] }
+                    _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.price", 0] }
                 }
             },
             { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
@@ -120,10 +120,10 @@ router.delete("/:id", authorizePrivilege("DELETE_PRODUCT_FROM_CART"), (req, res)
                 Cart.aggregate([
                     { $match: { user: req.user._id } },
                     { $unwind: "$products" },
-                    { $lookup: { "from": 'products', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
+                    { $lookup: { "from": 'product_varients', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
                     {
                         $project: {
-                            _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.selling_price", 0] }
+                            _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.price", 0] }
                         }
                     },
                     { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
@@ -163,10 +163,10 @@ router.put("/:id", authorizePrivilege("UPDATE_QUANTITY_IN_CART"), (req, res) => 
                 Cart.aggregate([
                     { $match: { user: req.user._id } },
                     { $unwind: "$products" },
-                    { $lookup: { "from": 'products', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
+                    { $lookup: { "from": 'product_varients', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
                     {
                         $project: {
-                            _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.selling_price", 0] }
+                            _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.price", 0] }
                         }
                     },
                     { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
@@ -203,10 +203,10 @@ router.post("/placeorder", authorizePrivilege("PLACE_ORDER"), (req, res) => {
             Cart.aggregate([
                 { $match: { user: req.user._id } },
                 { $unwind: "$products" },
-                { $lookup: { "from": 'products', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
+                { $lookup: { "from": 'product_varients', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
                 {
                     $project: {
-                        _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.selling_price", 0] }
+                        _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.price", 0] }
                     }
                 },
                 { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
