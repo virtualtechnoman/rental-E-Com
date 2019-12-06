@@ -19,6 +19,10 @@ const productVarientUpdateSchema = Joi.object({
         attribute: Joi.string().required(),
         option: Joi.string().required(),
     })).required(),
+    name: Joi.string().optional(),
+    sku_id: Joi.string().optional(),
+    price: Joi.number().optional(),
+    stock: Joi.number().optional()
     // is_active: Joi.boolean().optional()
 })
 
