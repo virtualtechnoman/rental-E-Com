@@ -53,9 +53,11 @@ export class ProductsComponent implements OnInit {
   showImage: Boolean = false;
   image: any;
   editShowImage: Boolean = false;
+  varientUpdate: Boolean = false;
   editImage: any;
-  mastImage: any;
   newStock: Number;
+  mastImage: any;
+  currentVarient: any;
   optionArray: FormArray;
   pattern = '^[0-9]*$';
   productAttributeArray: string[] = [];
@@ -423,25 +425,43 @@ export class ProductsComponent implements OnInit {
   }
 
   saveVarient() {
-    this.productVarient.value.product = this.currentproduct._id;
-    const attribute = this.productVarient.value.attributes;
-    console.log(this.productVarient);
-    console.log(attribute);
-    for (let index = 0; index < attribute.length; index++) {
-      attribute[index].attribute = attribute[index].option.parent;
-      attribute[index].option = attribute[index].option._id;
-    }
-    console.log(this.productVarient.value);
-    this.productVarientService.addNewProductVarients(this.productVarient.value).subscribe((res: ResponseModel) => {
-      if (res.errors) {
-        this.toastr.error('Error While Adding Varient', 'Refresh And Retry');
-      } else {
-        this.toastr.success('Varient Added Successfully', 'Success');
-        this.varientArray.push(res.data);
-        jQuery('#varientModal').modal('hide');
-        this.emptyOptionFormAray();
+    if (this.varientUpdate === false) {
+      this.productVarient.value.product = this.currentproduct._id;
+      const attribute = this.productVarient.value.attributes;
+      console.log(this.productVarient);
+      console.log(attribute);
+      for (let index = 0; index < attribute.length; index++) {
+        attribute[index].attribute = attribute[index].option.parent;
+        attribute[index].option = attribute[index].option._id;
       }
-    });
+      console.log(this.productVarient.value);
+      this.productVarientService.addNewProductVarients(this.productVarient.value).subscribe((res: ResponseModel) => {
+        if (res.errors) {
+          this.toastr.error('Error While Adding Varient', 'Refresh And Retry');
+        } else {
+          this.toastr.success('Varient Added Successfully', 'Success');
+          this.varientArray.push(res.data);
+          jQuery('#addVarientModal').modal('hide');
+          this.emptyOptionFormAray();
+        }
+      });
+    } else {
+      this.productVarient.removeControl('product');
+      for (let i = 0; i < this.currentVarient.attributes.length; i++) {
+        this.productVarient.value.attributes[i].attribute = this.currentVarient.attributes[i].attribute._id
+      }
+      console.log(this.productVarient);
+      this.productVarientService.updateProductVarients(this.currentVarient._id, this.productVarient.value).subscribe((res: ResponseModel) => {
+        console.log(res);
+        if (res.errors) {
+          this.toastr.error('Error While Deleting Varient');
+        } else {
+          this.varientArray = res.data;
+          jQuery('#addVarientModal').modal('hide');
+          this.toastr.success('Varient Updated Succesfully');
+        }
+      })
+    }
   }
   // ************************** RESET FUNCTIONS *****************************
   resetForm() {
@@ -536,16 +556,30 @@ export class ProductsComponent implements OnInit {
   }
 
   editVarient(index: number) {
-    // if (confirm('Are You Sure You Want To Edit The Selected Varient?')) {
-    //   this.productVarientService.updateProductVarients(this.varientArray[index]._id).subscribe((res: ResponseModel) => {
-    //     if (res.errors) {
-    //       this.toastr.error('Error While Deleting Varient');
-    //     } else {
-    //       this.varientArray.splice(index, 1);
-    //       this.toastr.success('Varient Deleted Succesfully');
-    //     }
-    //   })
-    // }
+    // this.initProductVarientForm();
+    this.currentVarient = this.varientArray[index];
+    console.log(this.currentVarient);
+    this.varientUpdate = true;
+    if (this.currentVarient.name) {
+      this.productVarient.controls['name'].setValue(this.currentVarient.name)
+    }
+    if (this.currentVarient.price) {
+      this.productVarient.controls['price'].setValue(this.currentVarient.price)
+    }
+    if (this.currentVarient.sku_id) {
+      this.productVarient.controls['sku_id'].setValue(this.currentVarient.sku_id)
+    }
+    if (this.currentVarient.stock) {
+      this.productVarient.controls['stock'].setValue(this.currentVarient.stock)
+    }
+    if (this.currentVarient.attributes) {
+      for (let i = 0; i < this.currentVarient.attributes.length; i++) {
+        console.log(this.productVarient.value.attributes[i].option)
+        console.log(this.currentVarient.attributes[i].option._id)
+        this.productVarient.value.attributes[i].option = this.currentVarient.attributes[i].option._id;
+      }
+    }
+    console.log(this.productVarient);
   }
 
   deleteVarient(index: number) {
@@ -563,5 +597,18 @@ export class ProductsComponent implements OnInit {
 
   attributeValueChange(event) {
     console.log(event);
+  }
+
+
+  resetProductVarientForm() {
+    this.productVarient.controls['name'].setValue(null);
+    this.productVarient.controls['sku_id'].setValue(null);
+    this.productVarient.controls['price'].setValue(null);
+    this.productVarient.controls['stock'].setValue(null);
+    for (let i = 0; i < this.productVarient.value.attributes.length; i++) {
+      this.productVarient.value.attributes[i].attribute = null;
+      this.productVarient.value.attributes[i].option = null;
+    }
+    this.varientUpdate = false;
   }
 }
