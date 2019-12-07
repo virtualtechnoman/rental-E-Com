@@ -34,6 +34,7 @@ export class ProductsComponent implements OnInit {
   allCategories: CategoryModel[] = [];
   allProductTypes: any[] = [];
   checkboxesForm: FormGroup;
+  attributesForm: FormGroup;
   currentproduct: any;
   currentproductId: String;
   currentIndex: number;
@@ -60,7 +61,7 @@ export class ProductsComponent implements OnInit {
   currentVarient: any;
   optionArray: FormArray;
   pattern = '^[0-9]*$';
-  productAttributeArray: string[] = [];
+  productAttributeArray: any[] = [];
   productImagesArray: any[] = [];
   productOptionsArray: any[] = [];
   productType: ProductTypeModel;
@@ -104,7 +105,6 @@ export class ProductsComponent implements OnInit {
   }
   //  *********************** INIT FUNCTIONS ************************
   initDatatable() {
-
     this.dtOptions = {
       pagingType: 'full_numbers',
       lengthMenu: [
@@ -173,7 +173,7 @@ export class ProductsComponent implements OnInit {
   }
   // ************************** GET FUNCTIONS *********************
   get f() { return this.productForm.controls; }
-  get getOptionsForm() { return this.productVarient.get('attributes')['controls'] as FormArray; }
+  // get getOptionsForm() { return this.productVarient'controls' as FormArray; }
 
   getAllCategory() {
     this.productService.getAllCategory().subscribe((res: ResponseModel) => {
@@ -210,7 +210,6 @@ export class ProductsComponent implements OnInit {
 
   getAllProductTypes() {
     this.typeService.getAllProductType().subscribe((res: ResponseModel) => {
-      console.log(res);
       if (res.errors) {
         this.toastr.error('Error While Fetching Product Type', 'Refresh and Retry');
       } else {
@@ -227,14 +226,11 @@ export class ProductsComponent implements OnInit {
         this.currentproduct.type.attributes.forEach(element => {
           productAttributeIdArray.push(element._id);
         });
-        console.log(this.currentproduct);
         this.productOptionService.getAllOptionsOfAttributes(productAttributeIdArray).subscribe((res: ResponseModel) => {
           if (res.errors) {
             this.toastr.error('Error While Fetching Product Attributes', 'Refresh and Retry');
           } else {
             this.productAttributeArray = res.data;
-            const attributeCount = res.data.length;
-            this.generateFormControlForOptions(attributeCount);
           }
         });
       }
@@ -301,7 +297,6 @@ export class ProductsComponent implements OnInit {
   }
 
   getAllSubCategory4() {
-    // this.allCategoryArray.push(this.subCategory4);
     if (this.subCategory4) {
       this.productForm.get('category').setValue(this.subCategory4);
       this.productService.getAllCategorysub(this.subCategory4).subscribe((res: ResponseModel) => {
@@ -326,7 +321,6 @@ export class ProductsComponent implements OnInit {
         this.toastr.error('Unable to Fetch Varients', 'Refresh and Retry');
       } else {
         this.varientArray = res.data;
-        console.log(this.varientArray);
       }
     });
   }
@@ -344,10 +338,6 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  addOptions(): void {
-    this.optionArray = this.productVarient.get('attributes') as FormArray;
-    this.optionArray.push(this.createAttribute());
-  }
   // ************************** UPDATE FUNCTIONS *****************************
   updateProduct(product) {
     const id = this.allproducts[this.currentIndex]._id;
@@ -381,6 +371,19 @@ export class ProductsComponent implements OnInit {
         this.toastr.warning('Products Deleted!', 'Deleted!');
         this.allproducts.splice(i, 1);
       }).catch((err) => console.log(err));
+    }
+  }
+
+  deleteVarient(index: number) {
+    if (confirm('Are You Sure You Want To Delete The Selected Varient?')) {
+      this.productVarientService.deleteProductVarients(this.varientArray[index]._id).subscribe((res: ResponseModel) => {
+        if (res.errors) {
+          this.toastr.error('Error While Deleting Varient');
+        } else {
+          this.varientArray.splice(index, 1);
+          this.toastr.success('Varient Deleted Succesfully');
+        }
+      })
     }
   }
   // ************************** SUBMIT FUNCTIONS *****************************
@@ -428,13 +431,10 @@ export class ProductsComponent implements OnInit {
     if (this.varientUpdate === false) {
       this.productVarient.value.product = this.currentproduct._id;
       const attribute = this.productVarient.value.attributes;
-      console.log(this.productVarient);
-      console.log(attribute);
+      const attributesLength = this.productVarient.value.attributes.length;
       for (let index = 0; index < attribute.length; index++) {
-        attribute[index].attribute = attribute[index].option.parent;
-        attribute[index].option = attribute[index].option._id;
+        this.productVarient.value.attributes[index].attribute = this.productAttributeArray[index]._id
       }
-      console.log(this.productVarient.value);
       this.productVarientService.addNewProductVarients(this.productVarient.value).subscribe((res: ResponseModel) => {
         if (res.errors) {
           this.toastr.error('Error While Adding Varient', 'Refresh And Retry');
@@ -442,7 +442,6 @@ export class ProductsComponent implements OnInit {
           this.toastr.success('Varient Added Successfully', 'Success');
           this.varientArray.push(res.data);
           jQuery('#addVarientModal').modal('hide');
-          // this.emptyOptionFormAray();
         }
       });
     } else {
@@ -450,9 +449,7 @@ export class ProductsComponent implements OnInit {
       for (let i = 0; i < this.currentVarient.attributes.length; i++) {
         this.productVarient.value.attributes[i].attribute = this.currentVarient.attributes[i].attribute._id
       }
-      console.log(this.productVarient);
       this.productVarientService.updateProductVarients(this.currentVarient._id, this.productVarient.value).subscribe((res: ResponseModel) => {
-        console.log(res);
         if (res.errors) {
           this.toastr.error('Error While Deleting Varient');
         } else {
@@ -477,9 +474,14 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  emptyOptionFormAray() {
+  resetProductVarientForm() {
     this.initProductVarientForm();
+    for (let index = 0; index < this.productAttributeArray.length; index++) {
+      this.addAttributes();
+    }
+    this.varientUpdate = false;
   }
+
   // ************************** CALCULATION FUNCTIONS *****************************
 
   selectFile(event: any) {
@@ -497,7 +499,6 @@ export class ProductsComponent implements OnInit {
   viewProduct(i) {
     this.array3.length = 0;
     this.currentproduct = this.allproducts[i];
-    console.log(this.productVarient);
     if (this.currentproduct.varients) { this.varientEditing = true; }
     if (this.currentproduct.image) {
       this.showImage = true;
@@ -521,7 +522,6 @@ export class ProductsComponent implements OnInit {
     this.productForm.controls['name'].setValue(product.name);
     this.productForm.controls['base_price'].setValue(product.base_price);
     this.productForm.controls['type'].setValue(product.type._id);
-    // this. = product.type;
     if (product.image) {
       this.editShowImage = true;
       this.mastImage = product.image;
@@ -542,23 +542,9 @@ export class ProductsComponent implements OnInit {
     this.selectallcheckboxes = checkBoxArray.value;
   }
 
-  createAttribute(): FormGroup {
-    return this.formBuilder.group({
-      option: [''],
-      attribute: ['']
-    });
-  }
-
-  generateFormControlForOptions(attributeCount) {
-    for (let index = 0; index < attributeCount; index++) {
-      this.addOptions();
-    }
-  }
-
   editVarient(index: number) {
-    // this.initProductVarientForm();
+    this.initProductVarientForm();
     this.currentVarient = this.varientArray[index];
-    console.log(this.currentVarient);
     this.varientUpdate = true;
     if (this.currentVarient.name) {
       this.productVarient.controls['name'].setValue(this.currentVarient.name)
@@ -574,43 +560,28 @@ export class ProductsComponent implements OnInit {
     }
     if (this.currentVarient.attributes) {
       for (let i = 0; i < this.currentVarient.attributes.length; i++) {
-        console.log(this.productVarient.value.attributes[i].option)
-        console.log(this.currentVarient.attributes[i].option._id)
-        this.productVarient.value.attributes[i].option = this.currentVarient.attributes[i].option._id;
+        const attribute = this.formBuilder.group({
+          attribute: [],
+          option: this.currentVarient.attributes[i].option._id
+        });
+        this.currentProductAttributesForms.push(attribute);
       }
     }
-    console.log(this.productVarient);
-  }
-
-  deleteVarient(index: number) {
-    if (confirm('Are You Sure You Want To Delete The Selected Varient?')) {
-      this.productVarientService.deleteProductVarients(this.varientArray[index]._id).subscribe((res: ResponseModel) => {
-        if (res.errors) {
-          this.toastr.error('Error While Deleting Varient');
-        } else {
-          this.varientArray.splice(index, 1);
-          this.toastr.success('Varient Deleted Succesfully');
-        }
-      })
-    }
-  }
-
-  attributeValueChange(event) {
-    console.log(event);
   }
 
 
-  resetProductVarientForm() {
-    this.productVarient.controls['name'].setValue(null);
-    this.productVarient.controls['sku_id'].setValue(null);
-    this.productVarient.controls['price'].setValue(null);
-    this.productVarient.controls['stock'].setValue(null);
-    for (let i = 0; i < this.productVarient.value.attributes.length; i++) {
-      this.productVarient.value.attributes[i].attribute = null;
-      this.productVarient.value.attributes[i].option = null;
-    }
-    // for(let i=0;i<)
-    console.log(this.productVarient);
-    this.varientUpdate = false;
+  // ************************** FORMARRAY FUNCTIONS *****************************
+
+  get currentProductAttributesForms() {
+    return this.productVarient.get('attributes') as FormArray;
   }
+
+  addAttributes() {
+    const attribute = this.formBuilder.group({
+      attribute: [],
+      option: []
+    });
+    this.currentProductAttributesForms.push(attribute);
+  }
+
 }
