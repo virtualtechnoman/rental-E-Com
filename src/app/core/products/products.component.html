@@ -45,9 +45,9 @@
             <td>{{product?.created_by?.full_name | titlecase}}</td>
             <td>{{product.is_active ? 'Active': 'Inactive'}}</td>
             <td>
-              <a style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="View Product"
+              <!-- <a style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="View Product"
                 (click)="viewProduct(i)"><i data-toggle="modal" data-target="#detailModal"
-                  class="fas fa-eye mx-1"></i></a>
+                  class="fas fa-eye mx-1"></i></a> -->
               <a style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="Create Varient"><i
                   class="fas fa-plus-square mx-1" data-toggle="modal" (click)="viewProduct(i)"
                   data-target="#varientModal"></i></a>
@@ -500,28 +500,17 @@
               <input type="number" formControlName="stock" class="form-control" placeholder="Enter Stock">
             </div>
           </div>
-          <div class="row" *ngIf="!varientUpdate">
-            <div class="col-md-3" formArrayName="attributes"
-              *ngFor="let attribute of productAttributeArray; let i=index;">
-              <div [formGroupName]="i">
-                <label for=""><b>{{attribute.name | titlecase}}</b></label>
-                <select name="" class="form-control" id="" formControlName="option">
-                  <option [ngValue]="option" *ngFor="let option of attribute.product_option">
-                    {{option.value | titlecase}}</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div class="row" *ngIf="varientUpdate">
-            <div class="col-md-3" formArrayName="attributes"
-              *ngFor="let attribute of productAttributeArray; let i=index;">
-              <div [formGroupName]="i">
-                <label for=""><b>{{attribute.name | titlecase}}</b></label>
-                <select name="" class="form-control" id="" formControlName="option">
-                  <option [ngValue]="option._id" *ngFor="let option of attribute.product_option">
-                    {{option.value | titlecase}}</option>
-                </select>
-              </div>
+          <div formArrayName="attributes">
+            <div *ngFor="let attribute of currentProductAttributesForms?.controls; let i=index" [formGroupName]="i">
+              <!-- <div class="row"> -->
+                <div class="col-md-3 form-group">
+                  <label for=""><b>{{productAttributeArray[i]?.name | titlecase}}</b></label>
+                  <select name="" class="form-control" id="" formControlName="option">
+                    <option [ngValue]="option._id" *ngFor="let option of productAttributeArray[i]?.product_option">
+                      {{option?.value | titlecase}}</option>
+                  </select>
+                </div>
+              <!-- </div> -->
             </div>
           </div>
           <br>
