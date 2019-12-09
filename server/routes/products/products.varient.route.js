@@ -79,6 +79,32 @@ router.get("/bycategory/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (r
         res.status(500).json({ status: 404, data: null, errors: true, message: "INVALID ID" })
     }
 })
+router.get('/bybrand/:id', authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), async (req, res) => {
+    if (!mongodb.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({status:400,data:null,errors:true,message:"Invalid product id"});
+    }
+      try {
+        const varients = await Product.aggregate([
+          {$match:{brand:mongodb.ObjectId(req.params.id)}},
+          {$group:{_id:null,prods:{$push:"$_id"}}},
+          {$lookup:{from:"product_varients", let:{prods:"$prods"},pipeline:[{$match:{$expr:{$in:["$product","$$prods"]}}}],as:"Products"}},
+          {$unwind:"$Products"},
+          {$replaceRoot:{newRoot:"$Products"}}
+        ]).exec()
+        ProductVarient.populate(varients,"product attributes.attribute attributes.option").then(docs => {
+            if (docs.length > 0)
+                res.json({ status: 200, data: docs, errors: false, message: "ALL PRODUCT VARIENTS " });
+            else
+                res.json({ status: 200, data: docs, errors: true, message: "NO PRODUCT VARIENTS FOUND" });
+        })
+        //.find({ isAvailable: true }).exec();
+        // console.log(allDrivers);
+        // res.json({ status: 200, message: "Product Varients", errors: false, data: varients });
+      }
+      catch (err) {
+        res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching drivers" });
+      }
+  })
 // GET SPECIFIC PRODUCT VARIENTS 
 router.get("/VARIENTS/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
