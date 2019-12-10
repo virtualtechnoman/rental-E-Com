@@ -12,7 +12,7 @@ const productType = new Schema({
     product: { type: mongoose.Schema.Types.ObjectId, ref: 'product' },
     attributes: [att],
     name: { type: String },
-    sku_id: { type: String },
+    // sku_id: { type: String },
     price: { type: Number },
     stock: { type: Number }
     // is_active: { type: Boolean, required: true, default: false }
