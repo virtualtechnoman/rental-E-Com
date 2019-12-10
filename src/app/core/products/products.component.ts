@@ -80,6 +80,7 @@ export class ProductsComponent implements OnInit {
   subCategory3: any;
   subCategory4: any;
   allCategoryArray: any[] = [];
+  showSellingPrice: Boolean = false;
   constructor(
     private productService: ProductsService,
     private formBuilder: FormBuilder,
@@ -239,6 +240,10 @@ export class ProductsComponent implements OnInit {
 
   getAllSubCategory1() {
     this.productForm.get('category').setValue(this.subCategory1);
+    this.allSubCategories.length = 0;
+    this.allSubCategories2.length = 0;
+    this.allSubCategories3.length = 0;
+    this.allSubCategories4.length = 0;
     // this.allCategoryArray.push(this.subCategory1);
     this.productService.getAllCategorysub(this.subCategory1).subscribe((res: ResponseModel) => {
       if (res.errors) {
@@ -499,6 +504,7 @@ export class ProductsComponent implements OnInit {
   viewProduct(i) {
     this.array3.length = 0;
     this.currentproduct = this.allproducts[i];
+    console.log(this.currentproduct)
     if (this.currentproduct.varients) { this.varientEditing = true; }
     if (this.currentproduct.image) {
       this.showImage = true;
@@ -582,6 +588,14 @@ export class ProductsComponent implements OnInit {
       option: []
     });
     this.currentProductAttributesForms.push(attribute);
+  }
+
+  selectedServiceType(event) {
+    if (event.target.value == 'service') {
+      this.showSellingPrice = false;
+    } else if (event.target.value == 'product') {
+      this.showSellingPrice = true
+    }
   }
 
 }
