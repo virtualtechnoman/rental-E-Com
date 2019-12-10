@@ -1,35 +1,52 @@
 <div class="container-fluid">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item text-info" style="cursor: pointer;" (click)="getCategory()"><a>Category</a></li>
+      <li class="breadcrumb-item text-info" style="cursor: pointer;"
+        *ngFor="let category of breadcrumArray; let i = index" (click)="breadcrumFunction(i, category.id)">
+        <a>{{category.name | titlecase}}</a></li>
+    </ol>
+  </nav>
   <div class="card">
     <div class="card-header">
       <h2 class="float-left">Category Management</h2>
-      <a class="btn btn-secondary text-white float-right" (click)="resetForm()" data-toggle="modal"
+      <a class="btn btn-primary text-white float-right" (click)="resetForm()" data-toggle="modal"
         data-target="#modal3">Add New Category</a>
-      <!-- <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
-          data-target="#modal2">Upload CSV</a> -->
     </div>
     <div class="card-body">
-      <table class="table table table-hover" datatable [dtOptions]="dtOptions"
-        [dtTrigger]="dtTrigger">
+      <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
+        [dtTrigger]="dtTrigger" id="example">
         <thead>
           <tr>
             <th scope="col">S no.</th>
             <th scope="col">Category Name</th>
-            <th scope="col">Status</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let category of allCategory; let i = index">
             <td>{{i+1}}</td>
-            <td>{{category.name}}</td>
-            <td *ngIf="category.is_active">Active</td>
-            <td *ngIf="!category.is_active">InActive</td>
+            <td>{{category?.name | titlecase}}</td>
+            <!-- <td *ngIf="category.is_active">Active</td>
+            <td *ngIf="!category.is_active">InActive</td> -->
             <td>
-              <a style="cursor: pointer" (click)="viewCategory(i)" data-toggle="modal" data-target="#exampleModal"><i
-                  class="fas fa-eye"></i></a>
-              <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editCategory(i)"><i
-                  class="fas fa-edit mx-2"></i></a>
-              <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteCategory(i)"></i></a>
+              <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editCategory(i)">
+                <i class="fas fa-edit mx-2" data-toggle="tooltip" data-placement="top" title="Edit Category"></i>
+              </a>
+              <a style="cursor:pointer">
+                <i class="fas fa-trash-alt" (click)="deleteCategory(i)" data-toggle="modal"
+                  data-target="#deleteCategoryModal">
+                </i>
+              </a>
+              <a style="cursor:pointer" data-toggle="modal" data-target="#modal3"
+                (click)="addSubCategory(category._id)">
+                <i class="fas fa-folder-plus mx-2" data-toggle="tooltip" data-placement="top" title="Add SubCategory">
+                </i>
+              </a>
+              <a style="cursor:pointer" (click)="getAllCategory(category._id, category.name)">
+                <i class="far fa-eye" data-toggle="tooltip" data-placement="top" title="View Sub Category">
+                </i>
+              </a>
             </td>
           </tr>
         </tbody>
@@ -38,89 +55,62 @@
   </div>
 </div>
 
+<!-- ADD EDIT CATEGORY MODAL -->
 <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-md" role="document">
     <div class="modal-content tx-14">
-      <div class="modal-header text-center">
-        <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="editing">Edit Category</h6>
-        <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="!editing">Add New Category</h6>
+      <div class="modal-header ">
+        <h6 class="modal-title ml-auto font-weight-bold  h4" id="exampleModalLabel3">
+          {{editing ? 'Edit' : 'Add'}} {{ categorySelectedId ? 'Sub Category' : 'Category' }}
+        </h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <form [formGroup]="categoryForm" (ngSubmit)="submit()">
-          <!-- <div class="divider-text">Give Category a Name</div> -->
-          <div class="form-row">
-            <label for="inputEmail4">Category Name</label>
+          <div class="form-row ml-auto">
+            <label for="inputEmail4"><b>Category Name</b></label>
             <input type="text" class="form-control" placeholder="Category Name Here " formControlName="name" required
               [ngClass]="{ 'is-invalid': submitted && f.name.errors }">
             <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
               <div *ngIf="f.name.errors.required">Category Name Is Required</div>
             </div>
           </div>
-          
-          <div class="form-row" *ngIf="editShowImage">
-              <div class="form-group">
-              <label>Category Image</label>
-              <div class="col-sm-3 col-md-2 col-lg text-center" >
-              <div class="avatar avatar-xxl avatar-online"><img src="{{editImage}}" class="rounded-circle" alt=""></div>
-              </div>
-              </div>
+          <br>
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary tx-13 mx-1" *ngIf="!editing">Save</button>
+            <button type="button" class="btn btn-primary tx-13 mx-1" *ngIf="editing" data-toggle="modal"
+              data-target="#attributesModal">Add New</button>
+            <button type="submit" class="btn btn-primary tx-13 mx-1" *ngIf="editing">Edit</button>
           </div>
-         
-          <div class="form-row offset-md-6">
-             
-              <div class="form-group  custom-file">
-                  <label class="custom-file-label" for="customFile">Select Category Image</label>
-                  <input type="file" formControlName="image" (change)="selectFile($event)" class="custom-file-input" id="customFile">
-                
-                
-              </div>
-           </div>
-          
-          
-          <!-- <div class="divider-text">Select Status </div> -->
-          <div class="form-row">
-            <label for="inputPassword4">Status</label>
-            <p-inputSwitch class="form-control" formControlName="is_active" required
-              [ngClass]="{ 'is-invalid': submitted && f.is_active.errors }"></p-inputSwitch>
-            <div *ngIf="submitted && f.is_active.errors" class="invalid-feedback">
-              <div *ngIf="f.is_active.errors.required">Status is required</div>
-            </div>
-          </div>
-         
-          <div class=" text-center">
-          <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-          <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
-          </div>
-          <!-- <div class="text-center">
-            <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-            <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
-          </div> -->
+          <br>
         </form>
       </div>
     </div>
   </div>
 </div>
 
+
+<!-- CATEGORY ADD MODAL -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Category Details</h5>
+        <h5 class="modal-title ml-auto font-weight-bold " id="exampleModalLabel">Category Details</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-          <div class="form-group" *ngIf="showImage">
-              <label>Category Image</label>
-        <div class="col-sm-3 col-md-2 col-lg text-center" >
-          <div class="avatar avatar-xxl avatar-online"><img src="{{image}}" class="rounded-circle" alt=""></div>
-        </div>
+        <div class="form-group" *ngIf="showImage">
+          <label>Category Image</label>
+          <div class="col-sm-3 col-md-2 col-lg text-center">
+            <div class="avatar avatar-xxl avatar-online"><img src="{{image}}" class="rounded-circle" alt="">
+            </div>
           </div>
+        </div>
         <div class="form-group">
           <label>Category Name</label>
           <input type="text" class="form-control" [(ngModel)]="viewArray.name" disabled />
@@ -128,64 +118,53 @@
         <div class="form-group">
           <label>Status</label>
           <p-inputSwitch class="form-control" [(ngModel)]="viewArray.is_active" disabled></p-inputSwitch>
-          <!-- <input type="text"  class="form-control" [(ngModel)]="viewArray.city" disabled /> -->
         </div>
-
-
         <table class="table table-bordered" *ngIf="specificCategoryAttributes">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Category Attribute Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let attributename of specificCategoryAttributes.name;let i=index">
-                <th scope="row">{{i+1}}</th>
-                <td>{{attributename}}</td>
-              </tr>
-            </tbody>
-          </table>
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Category Attribute Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let attributename of specificCategoryAttributes.name;let i=index">
+              <th scope="row">{{i+1}}</th>
+              <td>{{attributename}}</td>
+            </tr>
+          </tbody>
+        </table>
 
         <div class="form-group">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#attributesModal" (click)="disableViewCategory()">Add Attributes</button>
-          </div>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#attributesModal">Add
+            Attributes</button>
+        </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Attributes Modal -->
-<div class="modal fade" id="attributesModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-      <div class="modal-content tx-14">
-        <div class="modal-header text-center">
-          <!-- <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="editing">Edit Category</h6> -->
-          <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="!editing">Add Category Attribute</h6>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form [formGroup]="attributeForm" (ngSubmit)="submitAttributeForm()">
-              <div class="form-group col">
-                  <label for="inputPassword4">Attribute Name</label>
-                  <input type="text" class="form-control" id="inputPassword4" 
-                    formControlName="name" required [ngClass]="{ 'is-invalid': submitted && f2.name.errors }">
-                  <div *ngIf="submitted && f2.name.errors" class="invalid-feedback">
-                    <div *ngIf="f2.name.errors.required">Attribute Name is required</div>
-                  </div>
-                </div>
-                <div class=" text-center">
-                    <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
-                    </div>
-          </form>
-        </div>
+
+<!-- DELETE CATEGORY MODAL -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this category?
+      </div>
+      <br>
+      <div class="text-center">
+        <button type="button" class="btn btn-primary tx-13 mx-1" (click)="yesDelete()">Yes,delete</button>
+        <button type="button" class="btn btn-primary tx-13" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
-  
+</div>

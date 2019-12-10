@@ -2,9 +2,9 @@
   <div class="card">
     <div class="card-header">
       <h2 class="float-left">User Management</h2>
-      <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+      <a class="btn btn-primary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
         data-target="#modal3">Add New User</a>
-      <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+      <a class="btn btn-primary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
         data-target="#modal2">Upload CSV</a>
       <select class="form-control float-right" (change)="getUserbyRole($event)" 
         style="width:20%" name="customer_name">
@@ -47,7 +47,7 @@
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header">
-        <h6 class="modal-title" id="exampleModalLabel3">Add New User</h6>
+        <h6 class="modal-title ml-auto font-weight-bold" id="exampleModalLabel3">Add New User</h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -232,7 +232,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header">
-        <h6 class="modal-title" id="exampleModalLabel2">Upload CSV</h6>
+        <h6 class="modal-title ml-auto font-weight-bold" id="exampleModalLabel2">Upload CSV</h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -245,7 +245,7 @@
           <a href="https://firebasestorage.googleapis.com/v0/b/dummy-f382e.appspot.com/o/Sample%20Files%2FUsers.csv?alt=media&token=ab0e7809-6db3-4e45-acd2-390ab08cb010"
             class="float-left text-left">Download Sample CSV</a>
         </div>
-        <button type="button" class="btn btn-secondary tx-13" [disabled]="uploading" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary tx-13" [disabled]="uploading" data-dismiss="modal">Close</button>
         <button class="btn btn-primary" type="button" disabled *ngIf="uploading">
           <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           Uploading...
@@ -262,7 +262,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">User Details</h5>
+        <h5 class="modal-title ml-auto font-weight-bold" id="exampleModalLongTitle">User Details</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -322,7 +322,7 @@
           </div>
         </form>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -331,7 +331,7 @@
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">User Details</h5>
+          <h5 class="modal-title ml-auto font-weight-bold" id="exampleModalLabel">User Details</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -374,7 +374,7 @@
 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>

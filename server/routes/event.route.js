@@ -42,7 +42,7 @@ router.get("/all", authorizePrivilege("GET_ALL_EVENTS"), (req, res) => {
     // })
 });
 // Get all events by city
-router.get("/all/bycity/:id", authorizePrivilege("GET_ALL_EVENTS"), (req , res) => {
+router.get("/all/bycity/:id", authorizePrivilege("GET_ALL_EVENTS"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         console.log(res)
         Event.find({ city: req.params.id }).populate([{ path: "type city marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).lean().exec().then(docs => {
@@ -99,12 +99,16 @@ router.post('/', authorizePrivilege("ADD_NEW_EVENT"), async (req, res) => {
     result.data.event_id = "EVNT" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     let newEventType = new Event(result.data);
     newEventType.save().then(_ev => {
-        _ev.populate([{ path: "type city marketingMaterial.material products.product organizer" }, { path: "incharge created_by farm hub", select: "-password" }]).execPopulate().then(_evnt => {
-            res.json({ status: 200, data: _evnt, errors: false, message: "Event Type added successfully" })
-        }).catch(err => {
-            console.log(err);
-            res.status(500).json({ status: 500, data: null, errors: true, message: "Event added but error occured while populating fields" });
-        })
+        _ev.populate([
+            { path: "type city marketingMaterial.material products.product organizer" },
+            { path: "incharge created_by farm hub", select: "-password" }
+        ])
+            .execPopulate().then(_evnt => {
+                res.json({ status: 200, data: _evnt, errors: false, message: "Event Type added successfully" })
+            }).catch(err => {
+                console.log(err);
+                res.status(500).json({ status: 500, data: null, errors: true, message: "Event added but error occured while populating fields" });
+            })
     }).catch(e => {
         console.log(e);
         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while adding event type" })

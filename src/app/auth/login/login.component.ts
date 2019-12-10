@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,10 @@ import { ToastrService } from 'ngx-toastr';
 export class LoginComponent implements OnInit {
 
   constructor(private authService: AuthService, private router: Router, private formBuilder: FormBuilder,
-    private toaster: ToastrService) { }
+    private toaster: ToastrService,
+    private titleService: Title) {
+    this.titleService.setTitle('Login');
+  }
 
   email: string;
   password: string;
@@ -29,6 +33,7 @@ export class LoginComponent implements OnInit {
           this.toaster.error("Check Email or Password", "Validation Error")
         } else {
           this.router.navigateByUrl('/home')
+          window.open('/home' , '_self');
         }
       })
   }

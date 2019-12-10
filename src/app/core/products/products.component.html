@@ -2,22 +2,23 @@
   <div class="card">
     <div class="card-header">
       <h2 class="float-left">Product Management</h2>
-      <a class="btn btn-secondary text-white float-right" (click)="resetForm()" data-toggle="modal"
+      <a class="btn btn-primary text-white float-right" (click)="resetForm()" data-toggle="modal"
         data-target="#modal3">Add New Product</a>
-      <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+      <a class="btn btn-primary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
         data-target="#modal2">Upload CSV</a>
     </div>
     <div class="card-body">
-      <table class="table table table-hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+      <table class="table table table-hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" id="typeTable">
         <thead>
           <tr>
             <!-- <th scope="col">S No.</th> -->
             <th scope="col">Image</th>
             <th scope="col">Name</th>
             <th scope="col">Category</th>
+            <th scope="col">Type</th>
             <th scope="col">Brand</th>
             <th scope="col">Selling Price</th>
-            <th scope="col">Stock</th>
+            <!-- <th scope="col">Stock</th> -->
             <th scope="col">Created by</th>
             <th scope="col">Status</th>
             <th scope="col">Actions</th>
@@ -29,25 +30,33 @@
             <td *ngIf="product.image"><img src="{{productImagesArray[i]}}" alt="" width="25px" class="img-thumbnail">
             </td>
             <td *ngIf="!product.image"></td>
-
-            <td>{{product?.name | titlecase}}</td>
+            <td data-toggle="tooltip" data-placement="top" title="{{product.name}}">
+              {{product?.name |  slice:0:20 |titlecase}}</td>
             <td>{{product?.category?.name | titlecase}}</td>
+            <td *ngIf="product.type">{{product?.type?.name | titlecase}}</td>
+            <td *ngIf="!product.type">-</td>
             <td>{{product?.brand?.name | titlecase}}</td>
-            <td>{{product?.selling_price | number}}</td>
-            <td>{{product?.stock | number}}
-                <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Add Stock"><i
-                    class="fas fas fa-plus" data-toggle="modal" data-target="#stockModal"
-                    (click)="editProduct(i)"></i></a></td>
-            <td>{{product?.created_by?.full_name | titlecase}}</td>
-            <td *ngIf="product.is_active">Active</td>
-            <td *ngIf="!product.is_active">InActive</td>
+            <td *ngIf="product.selling_price">{{product?.selling_price | number}}</td>
+            <td *ngIf="!product.selling_price">{{product?.selling_price | number}}</td>
+            <!-- <td *ngIf="product.base_price">{{product?.base_price | number}}</td> -->
+            <!-- <td>{{product?.stock | number}}
+              <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Add Stock"><i
+                  class="fas fas fa-plus" data-toggle="modal" data-target="#stockModal"
+                  (click)="editProduct(i)"></i></a></td> -->
+            <td *ngIf="product.created_by.full_name">{{product?.created_by?.full_name | titlecase}}</td>
+            <td *ngIf="!product.created_by.full_name">--</td>
+            <td>{{product.is_active ? 'Active': 'Inactive'}}</td>
             <td>
-              <a style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="View Product"
-                (click)="viewProduct(i)"><i class="fas fa-eye"></i></a>
+              <!-- <a style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="View Product"
+                (click)="viewProduct(i)"><i data-toggle="modal" data-target="#detailModal"
+                  class="fas fa-eye mx-1"></i></a> -->
+              <a style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="Create Varient"><i
+                  class="fas fa-plus-square mx-1" data-toggle="modal" (click)="viewProduct(i)"
+                  data-target="#varientModal"></i></a>
               <a style="cursor:pointer" data-toggle="modal" data-target="#modal3" (click)="editProduct(i)"><i
-                  class="fas fa-edit mx-2" data-toggle="tooltip" data-placement="top" title="Edit Product"></i></a>
+                  class="fas fa-edit mx-1" data-toggle="tooltip" data-placement="top" title="Edit Product"></i></a>
               <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Delete Product"><i
-                  class="fas fa-trash-alt" (click)="deleteProduct(i)"></i></a>
+                  class="fas fa-trash-alt " (click)="deleteProduct(i)"></i></a>
             </td>
           </tr>
         </tbody>
@@ -56,12 +65,13 @@
   </div>
 </div>
 
+<!-- ****************** MAIN ADD/EDIT FORM MODAL ********************************** -->
 <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header text-center">
-        <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="editing">Edit Product</h6>
-        <h6 class="modal-title  h4" id="exampleModalLabel3" *ngIf="!editing">Add New Product</h6>
+        <h6 class="modal-title ml-auto font-weight-bold  h4" id="exampleModalLabel3">
+          {{editing? 'Edit Product' : 'Add New Product'}} </h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -78,11 +88,11 @@
               </div>
             </div>
             <div class="form-group col-md-4">
-              <label for="inputEmail4">Brand</label>
+              <label for="brand">Brand</label>
               <!-- <input type="text" class="form-control" placeholder="Brand here " formControlName="brand" required
                 [ngClass]="{ 'is-invalid': submitted && f.brand.errors }"> -->
               <select class="form-control" formControlName="brand" required
-                [ngClass]="{ 'is-invalid': submitted && f.brand.errors }">
+                [ngClass]="{ 'is-invalid': submitted && f.brand.errors }" name="brand">
                 <option selected disabled>Select Brand</option>
                 <option [ngValue]="brand._id" *ngFor="let brand of allBrand;let i=index">{{brand.name}}
                 </option>
@@ -103,78 +113,127 @@
           <div class="form-row">
             <div class="form-group col-md-4">
               <label for="inputEmail4">Category</label>
-              <select class="form-control" formControlName="category" required
-                [ngClass]="{ 'is-invalid': submitted && f.category.errors }" (change)="getCategoryAttributes($event)">
+              <select class="form-control" required [(ngModel)]="subCategory1" [ngModelOptions]="{standalone: true}"
+                (change)="getAllSubCategory1()">
                 <option selected disabled>Select Category</option>
                 <option [ngValue]="category._id" *ngFor="let category of allCategories;let i=index">{{category.name}}
                 </option>
               </select>
-              <!-- <input type="text" class="form-control" placeholder="Category here " formControlName="category" required
-                [ngClass]="{ 'is-invalid': submitted && f.category.errors }"> -->
               <div *ngIf="submitted && f.category.errors" class="invalid-feedback">
                 <div *ngIf="f.category.errors.required">Category is required</div>
               </div>
             </div>
             <div class="form-group col-md-4">
-              <label for="inputEmail4">Selling Price</label>
-              <input type="number" class="form-control" placeholder="Selling Price here" formControlName="selling_price"
-                required [ngClass]="{ 'is-invalid': submitted && f.selling_price.errors }">
-              <div *ngIf="submitted && f.selling_price.errors" class="invalid-feedback">
-                <div *ngIf="f.selling_price.errors.required">Selling Price is required</div>
+              <label for="inputEmail4">Type</label>
+              <select class="form-control" formControlName="type" required
+                [ngClass]="{ 'is-invalid': submitted && f.type.errors }" [(ngModel)]="productType">
+                <option selected disabled>Select product Type</option>
+                <option [ngValue]="type._id" *ngFor="let type of allProductTypes;let i=index">{{type.name | titlecase}}
+                </option>
+              </select>
+              <div *ngIf="submitted && f.type.errors" class="invalid-feedback">
+                <div *ngIf="f.type.errors.required">Type is required</div>
               </div>
-              <div class="invalid-feedback"
-                *ngIf="f.selling_price.errors && (f.selling_price.dirty || f.selling_price.touched)">
-                <p *ngIf="f.selling_price.errors.pattern" class="text-danger">Number Only</p>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="inputEmail4">Service Type</label>
+              <select class="form-control" required (change)="selectedServiceType($event)">
+                <option selected disabled>Select Type</option>
+                <option value="product">Product</option>
+                <option value="service">Service</option>
+              </select>
+              <div *ngIf="submitted && f.base_price.errors" class="invalid-feedback">
+                <div *ngIf="f.base_price.errors.required">Base Price is required</div>
               </div>
             </div>
           </div>
-          <div class="col" *ngIf="specificCategoryAttributes && !editing">
-            <div *ngFor="let attributename of specificCategoryAttributes.name;let i=index">
-              <div class="row">
-                <div class="form-group col-md-4">
-                  <label>Attribute Name</label>
-                  <div class="form-control " aria-disabled="true">{{attributename}}</div>
-                </div>
-                <div class="form-group col-md-4">
-                  <label>Attribute Value</label>
-                  <input type="text" class="form-control" [(ngModel)]="AttributeValueForm.value.values[i]"
-                    [ngModelOptions]="{standalone: true}">
-                </div>
+          <div class="form-row" *ngIf="(allSubCategories.length > 0)">
+            <div class="form-group col-md-4">
+              <label for="inputEmail4"><b>Sub Category</b></label>
+              <select class="form-control" [(ngModel)]="subCategory2" [ngModelOptions]="{standalone: true}" required
+                (change)="getAllSubCategory2()" [ngClass]="{ 'is-invalid': submitted && f.category.errors }">
+                <option selected disabled>Select Sub Category</option>
+                <option [ngValue]="category._id" *ngFor="let category of allSubCategories;let i=index">
+                  {{category?.name | titlecase}}
+                </option>
+              </select>
+              <div *ngIf="submitted && f.category.errors" class="invalid-feedback">
+                <div *ngIf="f.category.errors.required">Category is required</div>
               </div>
             </div>
           </div>
-          <div class="col" *ngIf=" editing && editAttributesArray">
-            <div *ngFor="let attributename of editAttributesArray;let i=index">
-              <div class="row" *ngIf="editAttributesArray">
-                <div class="form-group col-md-4">
-                  <label>Attribute Name</label>
-                  <input type="text" class="form-control" aria-disabled="true" [(ngModel)]="editAttributesArray[i].name"
-                    [ngModelOptions]="{standalone: true}">
-                </div>
-                <div class="form-group col-md-4">
-                  <label>Attribute Value</label>
-                  <input type="text" class="form-control" [(ngModel)]="editAttributesArray[i].value"
-                    [ngModelOptions]="{standalone: true}">
-                </div>
+          <div class="form-row" *ngIf="(allSubCategories2.length > 0)">
+            <div class="form-group col-md-4">
+              <label for="inputEmail4"><b>Sub Category</b></label>
+              <select class="form-control" [(ngModel)]="subCategory3" [ngModelOptions]="{standalone: true}" required
+                (change)="getAllSubCategory3()" [ngClass]="{ 'is-invalid': submitted && f.category.errors }">
+                <option selected disabled>Select Sub Category</option>
+                <option [ngValue]="category._id" *ngFor="let category of allSubCategories2;let i=index">
+                  {{category?.name | titlecase}}
+                </option>
+              </select>
+              <div *ngIf="submitted && f.category.errors" class="invalid-feedback">
+                <div *ngIf="f.category.errors.required">Category is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row" *ngIf="(allSubCategories3.length > 0)">
+            <div class="form-group col-md-4">
+              <label for="inputEmail4"><b>Sub Category</b></label>
+              <select class="form-control" [(ngModel)]="subCategory4" [ngModelOptions]="{standalone: true}" required
+                (change)="getAllSubCategory4()" [ngClass]="{ 'is-invalid': submitted && f.category.errors }">
+                <option selected disabled>Select Sub Category</option>
+                <option [ngValue]="category._id" *ngFor="let category of allSubCategories3;let i=index">
+                  {{category?.name | titlecase}}
+                </option>
+              </select>
+              <div *ngIf="submitted && f.category.errors" class="invalid-feedback">
+                <div *ngIf="f.category.errors.required">Category is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row" *ngIf="(allSubCategories4.length > 0)">
+            <div class="form-group col-md-4">
+              <label for="inputEmail4"><b>Sub Category</b></label>
+              <select class="form-control" [(ngModel)]="subCategory4" [ngModelOptions]="{standalone: true}" required
+                [ngClass]="{ 'is-invalid': submitted && f.category.errors }">
+                <option selected disabled>Select Sub Category</option>
+                <option [ngValue]="category._id" *ngFor="let category of allSubCategories4;let i=index">
+                  {{category?.name | titlecase}}
+                </option>
+              </select>
+              <div *ngIf="submitted && f.category.errors" class="invalid-feedback">
+                <div *ngIf="f.category.errors.required">Category is required</div>
               </div>
             </div>
           </div>
           <div class="form-row">
-            <div class=" col-md-4" *ngIf="editShowImage">
+            <div class="form-group col-md-3" *ngIf="editShowImage">
               <label>Product Image</label>
               <div class="col-sm-3 col-md-2 col-lg text-center">
                 <div class="avatar avatar-xxl avatar-online"><img src="{{editImage}}" class="rounded-circle" alt="">
                 </div>
               </div>
             </div>
-            <div class=" col-md-4">
-              <div class="form-group  custom-file">
+            <div class="form-group col-md-3" *ngIf="showSellingPrice">
+              <label for="inputEmail4">Base Price</label>
+              <input type="number" class="form-control" placeholder="Selling Price here" formControlName="base_price"
+                required [ngClass]="{ 'is-invalid': submitted && f.base_price.errors }">
+              <div *ngIf="submitted && f.base_price.errors" class="invalid-feedback">
+                <div *ngIf="f.base_price.errors.required">Base Price is required</div>
+              </div>
+              <div class="invalid-feedback" *ngIf="f.base_price.errors && (f.base_price.dirty || f.base_price.touched)">
+                <p *ngIf="f.base_price.errors.pattern" class="text-danger">Number Only</p>
+              </div>
+            </div>
+            <div class="form-group col-md-3">
+              <div class="custom-file">
                 <label class="custom-file-label" for="customFile">Select Product Image</label>
                 <input type="file" formControlName="image" (change)="selectFile($event)" class="custom-file-input"
                   id="customFile">
               </div>
             </div>
-            <div class=" col-md-4 text-center">
+            <div class="form-group col-md-3">
               <p-inputSwitch class="form-control" formControlName="is_active" required
                 [ngClass]="{ 'is-invalid': submitted && f.is_active.errors }"></p-inputSwitch>
               <div *ngIf="submitted && f.is_active.errors" class="invalid-feedback">
@@ -184,12 +243,12 @@
           </div>
           <br>
           <div class=" text-center">
-            <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-            <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary mx-1">Save</button>
+            <button type="button" class="btn btn-primary " data-dismiss="modal">Close</button>
           </div>
           <!-- <div class="text-center">
             <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
-            <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary tx-13" data-dismiss="modal">Close</button>
           </div> -->
         </form>
       </div>
@@ -197,18 +256,18 @@
   </div>
 </div>
 
-
+<!-- ****************** CSV UPLOAD MODAL ********************************** -->
 <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content tx-14">
       <div class="modal-header">
-        <h6 class="modal-title" id="exampleModalLabel2">Upload CSV</h6>
+        <h6 class="modal-title ml-auto font-weight-bold" id="exampleModalLabel2">Upload CSV</h6>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <input type="file" id="file" class="for mx-1 float-right" (change)="uploadCSV($event.target.files)">
+        <input type="file" id="file" class="for mx-1 float-right">
       </div>
       <div class="modal-footer">
         <div class="float-left text-left">
@@ -216,7 +275,7 @@
             href="https://firebasestorage.googleapis.com/v0/b/dummy-f382e.appspot.com/o/Sample%20Files%2FProduct.csv?alt=media&token=f9a59723-59ab-4249-bd9e-95f25ecec97a"
             class="float-left text-left">Download Sample CSV</a>
         </div>
-        <button type="button" class="btn btn-secondary tx-13" [disabled]="uploading" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary tx-13" [disabled]="uploading" data-dismiss="modal">Close</button>
         <button class="btn btn-primary" type="button" disabled *ngIf="uploading">
           <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           Uploading...
@@ -227,69 +286,131 @@
   </div>
 </div>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-  *ngIf="viewArray" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+<!-- ****************** PRODUCT DETAIL MODAL ********************************** -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModal" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Product Details</h5>
+        <h5 class="modal-title ml-auto font-weight-bold" id="detailModalLabel">{{currentproduct?.name | titlecase}}
+        </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <div class="form-group" *ngIf="showImage">
-          <label>Product Image</label>
-          <div class="col-sm-3 col-md-2 col-lg text-center">
-            <div class="avatar avatar-xxl avatar-online"><img src="{{image}}" class="rounded-circle" alt=""></div>
+
+        <div class="container">
+          <div class="row">
+            <div class="col-xs-4 item-photo">
+              <img style="max-width:100%;"
+                src="https://ak1.ostkcdn.com/images/products/8818677/Samsung-Galaxy-S4-I337-16GB-AT-T-Unlocked-GSM-Android-Cell-Phone-85e3430e-6981-4252-a984-245862302c78_600.jpg" />
+            </div>
+            <div class="col-xs-5" style="border:0px solid gray">
+              <!-- Datos del vendedor y titulo del producto -->
+              <h3>{{currentproduct?.name | titlecase}}</h3>
+              <h5 style="color:#337ab7">vendido por <a href="#">{{currentproduct?.brand?.name | titlecase}}</a> · <small
+                  style="color:#337ab7">(5054
+                  ventas)</small></h5>
+              <!-- Precios -->
+              <h6 class="title-price"><small>PRECIO OFERTA</small></h6>
+              <h3 style="margin-top:0px;">{{currentproduct?.price | titlecase}}</h3>
+
+              <!-- Detalles especificos del producto -->
+              <div class="section">
+                <h6 class="title-attr" style="margin-top:15px;"><small>COLOR</small></h6>
+                <div>
+                  <div class="attr" style="width:25px;background:#5a5a5a;"></div>
+                  <div class="attr" style="width:25px;background:white;"></div>
+                </div>
+              </div>
+              <div class="section" style="padding-bottom:5px;">
+                <h6 class="title-attr"><small>CAPACIDAD</small></h6>
+                <div>
+                  <div class="attr2">16 GB</div>
+                  <div class="attr2">32 GB</div>
+                </div>
+              </div>
+              <div class="section" style="padding-bottom:20px;">
+                <h6 class="title-attr"><small>CANTIDAD</small></h6>
+                <div>
+                  <div class="btn-minus"><span class="glyphicon glyphicon-minus"></span></div>
+                  <input value="1" />
+                  <div class="btn-plus"><span class="glyphicon glyphicon-plus"></span></div>
+                </div>
+              </div>
+
+              <!-- Botones de compra -->
+              <div class="section" style="padding-bottom:20px;">
+                <button class="btn btn-success"><span style="margin-right:20px"
+                    class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Agregar al carro</button>
+                <h6><a href="#"><span class="glyphicon glyphicon-heart-empty" style="cursor:pointer;"></span> Agregar a
+                    lista de deseos</a></h6>
+              </div>
+            </div>
+
+            <div class="col-xs-9">
+              <ul class="menu-items">
+                <li class="active">Detalle del producto</li>
+                <li>Garantía</li>
+                <li>Vendedor</li>
+                <li>Envío</li>
+              </ul>
+              <div style="width:100%;border-top:1px solid silver">
+                <p style="padding:15px;">
+                  <small>
+                    Stay connected either on the phone or the Web with the Galaxy S4 I337 from Samsung. With 16 GB of
+                    memory and a 4G connection, this phone stores precious photos and video and lets you upload them to
+                    a cloud or social network at blinding-fast speed. With a 17-hour operating life from one charge,
+                    this phone allows you keep in touch even on the go.
+
+                    With its built-in photo editor, the Galaxy S4 allows you to edit photos with the touch of a finger,
+                    eliminating extraneous background items. Usable with most carriers, this smartphone is the perfect
+                    companion for work or entertainment.
+                  </small>
+                </p>
+                <small>
+                  <ul>
+                    <li>Super AMOLED capacitive touchscreen display with 16M colors</li>
+                    <li>Available on GSM, AT T, T-Mobile and other carriers</li>
+                    <li>Compatible with GSM 850 / 900 / 1800; HSDPA 850 / 1900 / 2100 LTE; 700 MHz Class 17 / 1700 /
+                      2100 networks</li>
+                    <li>MicroUSB and USB connectivity</li>
+                    <li>Interfaces with Wi-Fi 802.11 a/b/g/n/ac, dual band and Bluetooth</li>
+                    <li>Wi-Fi hotspot to keep other devices online when a connection is not available</li>
+                    <li>SMS, MMS, email, Push Mail, IM and RSS messaging</li>
+                    <li>Front-facing camera features autofocus, an LED flash, dual video call capability and a sharp
+                      4128 x 3096 pixel picture</li>
+                    <li>Features 16 GB memory and 2 GB RAM</li>
+                    <li>Upgradeable Jelly Bean v4.2.2 to Jelly Bean v4.3 Android OS</li>
+                    <li>17 hours of talk time, 350 hours standby time on one charge</li>
+                    <li>Available in white or black</li>
+                    <li>Model I337</li>
+                    <li>Package includes phone, charger, battery and user manual</li>
+                    <li>Phone is 5.38 inches high x 2.75 inches wide x 0.13 inches deep and weighs a mere 4.59 oz </li>
+                  </ul>
+                </small>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="form-group" *ngIf="viewArray.brand">
-          <label> Brand</label>
-          <input type="text" class="form-control" [(ngModel)]="viewArray.brand.name" disabled />
-        </div>
-        <div class="form-group">
-          <label>Product Name</label>
-          <input type="text" class="form-control" [(ngModel)]="viewArray.name" disabled />
-        </div>
-        <div class="form-group" *ngIf="viewArray.category">
-          <label>Category</label>
-          <input type="text" class="form-control" [(ngModel)]="viewArray.category.name" disabled />
-        </div>
-        <div class="form-group">
-          <label>Selling Price</label>
-          <input type="number" class="form-control" [(ngModel)]="viewArray.selling_price" disabled />
-        </div>
-        <div class="form-group">
-          <label>Available For</label>
-          <div *ngFor="let avail of viewArray.available_for;let i=index">
-            <input type="text" class="form-control" [(ngModel)]="viewArray.available_for[i].full_name" disabled />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Extra Details</label>
-          <input type="text" class="form-control" [(ngModel)]="viewArray.details" disabled />
-        </div>
-        <div class="form-group">
-          <label>Status</label>
-          <p-inputSwitch class="form-control" [(ngModel)]="viewArray.is_active" disabled></p-inputSwitch>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button (click)="updateProductStock()" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
 </div>
 
 
-<!-- Modal -->
+
+<!-- ****************** ADD STOCK MODAL ********************************** -->
 <div class="modal fade" id="stockModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Stock</h5>
+        <h5 class="modal-title ml-auto font-weight-bold" id="exampleModalLabel">Add Stock</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -302,8 +423,134 @@
         <input type="number" class="form-control" [(ngModel)]="newStock" [pattern]="pattern">
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
         <button (click)="updateProductStock()" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ****************** ADD VARIENT MODAL ********************************** -->
+<div class="modal fade" id="varientModal" tabindex="-1" role="dialog" aria-labelledby="varientModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="font-weight-bold">{{currentproduct?.name | uppercase}}</h3>
+        <div class="float-right">
+          <button type="button" class="btn btn-primary mx-1 float-right" data-toggle="modal"
+            data-target="#addVarientModal" (click)="resetProductVarientForm()">Add
+            Varient</button>
+        </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table" *ngIf="(varientArray.length > 0)">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <!-- <th scope="col">SKU ID</th> -->
+              <th scope="col">SKU NAME</th>
+              <th scope="col">PRICE</th>
+              <th scope="col">STOCK</th>
+              <ng-container *ngFor="let attribute of productAttributeArray; let i=index;">
+                <th scope="col">{{attribute?.name | titlecase}}</th>
+              </ng-container>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let varient of varientArray; let i = index;">
+              <td scope="row">{{i+1}}</td>
+              <!-- <td scope="row">{{varient?.sku_id}}</td> -->
+              <td scope="row">{{currentproduct?.name | titlecase}} <span
+                  *ngFor="let attribute of varient?.attributes ; let index = index;">{{attribute?.option?.value | titlecase}}
+                </span></td>
+              <td scope="row">{{varient?.price}}</td>
+              <td scope="row">{{varient?.stock}}</td>
+              <ng-container *ngFor="let attribute of varient?.attributes ; let index = index;">
+                <td scope="row">{{attribute?.option?.value}}</td>
+              </ng-container>
+              <td scope="row">
+                <button type="button" class="btn btn-info mx-1" data-toggle="modal" data-target="#addVarientModal"
+                  (click)="editVarient(i)">Edit</button>
+                <button type="button" class="btn btn-danger mx-1" (click)="deleteVarient(i)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="jumbotron ml-auto text-center" *ngIf="!(varientArray.length > 0)">
+          No Product Varient Found
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Add Varient Modal -->
+<div class="modal fade" id="addVarientModal" tabindex="-1" role="dialog" aria-labelledby="addVarientModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title ml-auto font-weight-bold" id="addVarientModal">
+          {{'varientUpdate'? 'Edit Varient ':'Add Varient'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="productVarient" (ngSubmit)="saveVarient()">
+          <div class="row">
+            <!-- <div class="form-group col">
+              <label><b>SKU ID</b></label>
+              <input type="text" formControlName="sku_id" class="form-control" placeholder="Enter SKU ID">
+            </div> -->
+            <div class="col-md-8">
+              <div class="row">
+                <div class="form-group col">
+                  <label><b>Price</b></label>
+                  <input type="number" formControlName="price" class="form-control" placeholder="Enter Price">
+                </div>
+                <div class="form-group col">
+                  <label><b>Stock</b></label>
+                  <input type="number" formControlName="stock" class="form-control" placeholder="Enter Stock">
+                </div>
+              </div>
+              <!-- <div class="row"> -->
+                <div formArrayName="attributes" class="row">
+                  <div *ngFor="let attribute of currentProductAttributesForms?.controls; let i=index"
+                    [formGroupName]="i" class="col form-group d-inline">
+                    <!-- <div class="row"> -->
+                    <!-- <div class="col-md-3 form-group d-inline"> -->
+                    <label for=""><b>{{productAttributeArray[i]?.name | titlecase}}</b></label>
+                    <select name="" class="form-control" id="" formControlName="option">
+                      <option [ngValue]="option._id" *ngFor="let option of productAttributeArray[i]?.product_option">
+                        {{option?.value | titlecase}}</option>
+                    </select>
+                    <!-- </div> -->
+                    <!-- </div> -->
+                  </div>
+                </div>
+              <!-- </div> -->
+            </div>
+            <div class="col-md-4">
+              <div class="form-group col">
+                <label><b>Description</b></label>
+                <textarea name="" id="" cols="30" rows="10" formControlName="description" class="form-control"
+                  placeholder="Enter Description"></textarea>
+                <!-- <input type="text" formControlName="description" class="form-control" placeholder="Enter Description"> -->
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="text-center">
+            <button type="button" class="btn btn-primary mx-1" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" *ngIf="!varientUpdate">Add Varient</button>
+            <button type="submit" class="btn btn-primary" *ngIf="varientUpdate">Edit Varient</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

@@ -33,10 +33,8 @@ import { SupportModule } from './core/Support/support.module';
 import { RouteModule } from './core/route/route.module';
 import { SubscriptionModule } from './core/customersubscription/subscription.module';
 import { EventModule } from './core/event/event.module';
-import { CalendarModule, DateAdapter } from 'angular-calendar';
-import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { EventSesrvice } from './event.service';
-import { FullCalendarModule } from '@fullcalendar/angular'; // for FullCalendar!
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
   declarations: [

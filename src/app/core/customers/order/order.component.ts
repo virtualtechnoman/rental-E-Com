@@ -4,6 +4,8 @@ import { CustomersService } from '../shared/customers.service';
 import { ResponseModel } from '../../../shared/shared.model';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import * as  moment from 'moment';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-order',
@@ -19,7 +21,9 @@ export class OrderComponent implements OnInit {
   orderStatus: any;
   selectedOrder: any;
   selectedOrderIndex: number;
-  constructor(private customersService: CustomersService, private formBuilder: FormBuilder, private toasterService: ToastrService) {
+  constructor(private customersService: CustomersService, private formBuilder: FormBuilder, private toasterService: ToastrService,
+    private titleService: Title) {
+    this.titleService.setTitle('Order Management');
     this.getAllOrders();
   }
 
@@ -157,10 +161,12 @@ export class OrderComponent implements OnInit {
           console.log('Error');
           this.toasterService.error('Order Not Cancelled', 'Error');
         } else {
-          this.allCustomersOrders.splice(this.selectedOrderIndex, 1, res.data);
-          this.toasterService.success('Order Cancelled', 'Cancelled');
-          jQuery('#exampleModal').modal('hide');
-          console.log('Cancelled');
+          // this.allCustomersOrders.splice(this.selectedOrderIndex, 1, res.data);
+          if (confirm('You Sure you want to cancel this order')) {
+            this.toasterService.success('Order Cancelled', 'Cancelled');
+            jQuery('#exampleModal').modal('hide');
+            console.log('Cancelled');
+          }
         }
       });
     console.log(this.quantityForm.value);

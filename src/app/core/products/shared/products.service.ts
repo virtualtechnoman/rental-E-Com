@@ -11,14 +11,15 @@ export class ProductsService {
     'token': this.tokenService.getToken()
   });
 
-  url = '/api/products';
-  url2 = '/api/pcategory';
-  url3 = '/api/brand';
-  url4 = '/api/user/hub';
-  url5 = 'api/upload/brand';
-  url6 = 'api/upload/category';
-  url7 = 'api/upload/product';
-  url8 = 'api/pcattribute';
+  url = '/api/product/products';
+  url2 = '/api/product/pcategory';
+  url3 = '/api/product/brand';
+  url4 = '/api/product/user/hub';
+  url5 = 'api/product/upload/brand';
+  url6 = 'api/product/upload/category';
+  url7 = 'api/product/upload/product';
+  url8 = 'api/product/pcattribute';
+  subCategoryURL = 'api/product/pcategory';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
   getAllProduct() {
@@ -135,6 +136,10 @@ export class ProductsService {
     return this.http.post(this.url8 + '/', attribute, { headers: this.headers });
   }
 
+  getAllAttributes() {
+    return this.http.get(this.url8 + '/all', { headers: this.headers });
+  }
+
   updateAttribute(attribute, id) {
     return this.http.put(this.url8 + '/' + id, attribute, { headers: this.headers });
   }
@@ -143,4 +148,10 @@ export class ProductsService {
   updateProductStock(data) {
     return this.http.put(this.url + '/stock', data, { headers: this.headers });
   }
+
+  
+  getAllCategorysub(id) {
+    return this.http.get(this.subCategoryURL + '/id/' + id, { headers: this.headers });
+  }
+
 }

@@ -8,7 +8,14 @@ import { DataTablesModule } from 'angular-datatables';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { CategoryComponent } from './category/category.component';
 import { BrandComponent } from './brand/brand.component';
-import { CategoryAttributesComponent } from './category-attributes/category-attributes.component';
+import { AttributesComponent } from './attributes/attributes.component';
+import { AttributesService } from './attributes/shared/attributes.service';
+import { TypesComponent } from './types/types.component';
+import { ProductTypeService } from './types/shared/product.types.service';
+import { OptionsComponent } from './options/options.component';
+import { ProductOptionService } from './options/shared/product.types.service';
+import { ProductsCategoryService } from './category/shared/category.service';
+import { ProductVarientService } from './shared/product.varient.service';
 
 @NgModule({
   imports: [
@@ -19,10 +26,17 @@ import { CategoryAttributesComponent } from './category-attributes/category-attr
     ProductsRoutingModule,
     InputSwitchModule
   ],
-  declarations: [ProductsComponent, CategoryComponent, BrandComponent, CategoryAttributesComponent],
-  exports:[
+  declarations: [ProductsComponent, CategoryComponent, BrandComponent, AttributesComponent, TypesComponent, OptionsComponent],
+  exports: [
     ProductsRoutingModule
   ],
-  providers:[ProductsService]
+  providers: [
+    ProductsService,
+    AttributesService,
+    ProductTypeService,
+    ProductOptionService,
+    ProductsCategoryService,
+    ProductVarientService
+  ]
 })
 export class ProductsModule { }

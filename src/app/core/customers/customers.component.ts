@@ -14,6 +14,7 @@ import { FullCalendarComponent } from '@fullcalendar/angular';
 import { OptionsInput } from '@fullcalendar/core';
 import { EventSesrvice } from '../../event.service';
 import * as swal from 'sweetalert';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-customers',
@@ -77,13 +78,16 @@ export class CustomersComponent implements OnInit {
 
   constructor(protected eventService: EventSesrvice, private productService: ProductsService,
     private customerService: CustomersService, private supportService: SupportService,
-    private formBuilder: FormBuilder, private toastr: ToastrService, private authService: AuthService) {
+    private formBuilder: FormBuilder, private toastr: ToastrService, private authService: AuthService,
+    private titleService: Title) {
+    this.titleService.setTitle('Customer Management');
     this.currentcustomer = new CustomerClass();
     this.registerCustomer = new CustomerClass();
     this.initForm();
   }
 
   ngOnInit() {
+    this.initDatatable();
     this.getProducts();
     this.subscriptionForm = this.formBuilder.group({
       user: [''],
@@ -105,6 +109,22 @@ export class CustomersComponent implements OnInit {
       dob: ['', Validators.required]
     });
 
+    this.get_customers();
+    this.options = {
+      editable: true,
+      header: {
+        left: 'prev,next today ',
+        center: 'title',
+        right: 'month,agendaWeek,agendaDay,listMonth'
+      },
+      defaultView: 'dayGridMonth',
+      plugins: [dayGridPlugin],
+      events: []
+    };
+  }
+
+  initDatatable() {
+    $('#mainTable').DataTable().clear().destroy();
     this.dtOptions = {
       pagingType: 'full_numbers',
       lengthMenu: [
@@ -141,19 +161,8 @@ export class CustomersComponent implements OnInit {
         }
       ]
     };
-    this.get_customers();
-    this.options = {
-      editable: true,
-      header: {
-        left: 'prev,next today ',
-        center: 'title',
-        right: 'month,agendaWeek,agendaDay,listMonth'
-      },
-      defaultView: 'dayGridMonth',
-      plugins: [dayGridPlugin],
-      events: []
-    };
   }
+  
   loadevents() {
     this.eventService.getEvents().subscribe(data => {
       this.events = data;
