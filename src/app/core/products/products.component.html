@@ -436,20 +436,22 @@
     <div class="modal-content">
       <div class="modal-header">
         <h3 class="font-weight-bold">{{currentproduct?.name | uppercase}}</h3>
-        <button type="button" class="btn btn-primary mx-1" data-toggle="modal" data-target="#addVarientModal"
-          (click)="resetProductVarientForm()">Add
-          Varient</button>
+        <div class="float-right">
+          <button type="button" class="btn btn-primary mx-1 float-right" data-toggle="modal"
+            data-target="#addVarientModal" (click)="resetProductVarientForm()">Add
+            Varient</button>
+        </div>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <table class="table">
+        <table class="table" *ngIf="(varientArray.length > 0)">
           <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col">SKU ID</th>
-              <th scope="col">NAME</th>
+              <!-- <th scope="col">SKU ID</th> -->
+              <th scope="col">SKU NAME</th>
               <th scope="col">PRICE</th>
               <th scope="col">STOCK</th>
               <ng-container *ngFor="let attribute of productAttributeArray; let i=index;">
@@ -461,8 +463,10 @@
           <tbody>
             <tr *ngFor="let varient of varientArray; let i = index;">
               <td scope="row">{{i+1}}</td>
-              <td scope="row">{{varient?.sku_id}}</td>
-              <td scope="row">{{varient?.name}}</td>
+              <!-- <td scope="row">{{varient?.sku_id}}</td> -->
+              <td scope="row">{{currentproduct?.name | titlecase}} <span
+                  *ngFor="let attribute of varient?.attributes ; let index = index;">{{attribute?.option?.value | titlecase}}
+                </span></td>
               <td scope="row">{{varient?.price}}</td>
               <td scope="row">{{varient?.stock}}</td>
               <ng-container *ngFor="let attribute of varient?.attributes ; let index = index;">
@@ -476,19 +480,22 @@
             </tr>
           </tbody>
         </table>
+        <div class="jumbotron ml-auto text-center" *ngIf="!(varientArray.length > 0)">
+          No Product Varient Found
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <!--Add Varient Modal -->
-<div class="modal fade" id="addVarientModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<div class="modal fade" id="addVarientModal" tabindex="-1" role="dialog" aria-labelledby="addVarientModal"
   aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel" *ngIf="!varientUpdate">Add Varient</h5>
-        <h5 class="modal-title" id="exampleModalLabel" *ngIf="varientUpdate">Edit Varient</h5>
+        <h5 class="modal-title ml-auto font-weight-bold" id="addVarientModal">
+          {{'varientUpdate'? 'Edit Varient ':'Add Varient'}}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -496,34 +503,45 @@
       <div class="modal-body">
         <form [formGroup]="productVarient" (ngSubmit)="saveVarient()">
           <div class="row">
-            <div class="form-group col">
+            <!-- <div class="form-group col">
               <label><b>SKU ID</b></label>
               <input type="text" formControlName="sku_id" class="form-control" placeholder="Enter SKU ID">
-            </div>
-            <div class="form-group col">
-              <label><b>Name</b></label>
-              <input type="text" formControlName="name" class="form-control" placeholder="Enter Name">
-            </div>
-            <div class="form-group col">
-              <label><b>Price</b></label>
-              <input type="number" formControlName="price" class="form-control" placeholder="Enter Price">
-            </div>
-            <div class="form-group col">
-              <label><b>Stock</b></label>
-              <input type="number" formControlName="stock" class="form-control" placeholder="Enter Stock">
-            </div>
-          </div>
-          <div formArrayName="attributes">
-            <div *ngFor="let attribute of currentProductAttributesForms?.controls; let i=index" [formGroupName]="i">
-              <!-- <div class="row"> -->
-              <div class="col-md-3 form-group">
-                <label for=""><b>{{productAttributeArray[i]?.name | titlecase}}</b></label>
-                <select name="" class="form-control" id="" formControlName="option">
-                  <option [ngValue]="option._id" *ngFor="let option of productAttributeArray[i]?.product_option">
-                    {{option?.value | titlecase}}</option>
-                </select>
+            </div> -->
+            <div class="col-md-8">
+              <div class="row">
+                <div class="form-group col">
+                  <label><b>Price</b></label>
+                  <input type="number" formControlName="price" class="form-control" placeholder="Enter Price">
+                </div>
+                <div class="form-group col">
+                  <label><b>Stock</b></label>
+                  <input type="number" formControlName="stock" class="form-control" placeholder="Enter Stock">
+                </div>
               </div>
+              <!-- <div class="row"> -->
+                <div formArrayName="attributes" class="row">
+                  <div *ngFor="let attribute of currentProductAttributesForms?.controls; let i=index"
+                    [formGroupName]="i" class="col form-group d-inline">
+                    <!-- <div class="row"> -->
+                    <!-- <div class="col-md-3 form-group d-inline"> -->
+                    <label for=""><b>{{productAttributeArray[i]?.name | titlecase}}</b></label>
+                    <select name="" class="form-control" id="" formControlName="option">
+                      <option [ngValue]="option._id" *ngFor="let option of productAttributeArray[i]?.product_option">
+                        {{option?.value | titlecase}}</option>
+                    </select>
+                    <!-- </div> -->
+                    <!-- </div> -->
+                  </div>
+                </div>
               <!-- </div> -->
+            </div>
+            <div class="col-md-4">
+              <div class="form-group col">
+                <label><b>Description</b></label>
+                <textarea name="" id="" cols="30" rows="10" formControlName="description" class="form-control"
+                  placeholder="Enter Description"></textarea>
+                <!-- <input type="text" formControlName="description" class="form-control" placeholder="Enter Description"> -->
+              </div>
             </div>
           </div>
           <br>

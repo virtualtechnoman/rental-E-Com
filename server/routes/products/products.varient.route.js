@@ -32,15 +32,15 @@ router.get("/", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
     //     { $group: { _id: "$product", varients: { $push: "$attributes" } } }
     // ]).exec()
     //     .then(docs => {
-            ProductVarient.find({}).populate("product attributes.attribute attributes.option").then(docs => {
-                if (docs.length > 0)
-                    res.json({ status: 200, data: docs, errors: false, message: "ALL PRODUCT VARIENTS " });
-                else
-                    res.json({ status: 200, data: docs, errors: true, message: "NO PRODUCT VARIENTS FOUND" });
-            })
-        // }).catch(err => {
-        //     res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE FETCHING PRODUCT VARIENTS" });
-        // })
+    ProductVarient.find({}).populate("product attributes.attribute attributes.option").then(docs => {
+        if (docs.length > 0)
+            res.json({ status: 200, data: docs, errors: false, message: "ALL PRODUCT VARIENTS " });
+        else
+            res.json({ status: 200, data: docs, errors: true, message: "NO PRODUCT VARIENTS FOUND" });
+    })
+    // }).catch(err => {
+    //     res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE FETCHING PRODUCT VARIENTS" });
+    // })
     // } else {
     //     res.status(500).json({ status: 404, data: null, errors: true, message: "INVALID ID" })
     // }
@@ -48,7 +48,7 @@ router.get("/", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
 router.get("/bycategory/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         ProductCategory.aggregate([
-            {$match:{_id:mongodb.ObjectId(req.params.id)}},
+            { $match: { _id: mongodb.ObjectId(req.params.id) } },
             {
                 $graphLookup: {
                     from: "product_categories",
@@ -58,40 +58,42 @@ router.get("/bycategory/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (r
                     as: "subcategory"
                 }
             },
-            {$addFields:{all:{$concatArrays:[["$_id"],"$subcategory._id"]}}},
-            {$lookup:{from:"products",let:{category:"$all"},pipeline:[{$match:{$expr:{$in:["$category","$$category"]}}}],as:"prods"}},
-        {$lookup:{from:"product_varients",let:{product:"$prods._id"},pipeline:[{$match:{$expr:{$in:["$product","$$product"]}}}],as:"products"}},
-        {$unwind:"$products"},
-        {$replaceRoot:{newRoot:"$products"}}
-    ]).exec()
-        .then(docs => {
-            ProductVarient.populate(docs,"product attributes.attribute attributes.option").then(docs => {
-                if (docs.length > 0)
-                    res.json({ status: 200, data: docs, errors: false, message: "ALL PRODUCT VARIENTS " });
-                else
-                    res.json({ status: 200, data: docs, errors: true, message: "NO PRODUCT VARIENTS FOUND" });
+            { $addFields: { all: { $concatArrays: [["$_id"], "$subcategory._id"] } } },
+            { $lookup: { from: "products", let: { category: "$all" }, pipeline: [{ $match: { $expr: { $in: ["$category", "$$category"] } } }], as: "prods" } },
+            { $lookup: { from: "product_varients", let: { product: "$prods._id" }, pipeline: [{ $match: { $expr: { $in: ["$product", "$$product"] } } }], as: "products" } },
+            { $unwind: "$products" },
+            { $replaceRoot: { newRoot: "$products" } }
+        ]).exec()
+            .then(docs => {
+                ProductVarient.populate(docs, "product attributes.attribute attributes.option").then(docs => {
+                    if (docs.length > 0)
+                        res.json({ status: 200, data: docs, errors: false, message: "ALL PRODUCT VARIENTS " });
+                    else
+                        res.json({ status: 200, data: docs, errors: true, message: "NO PRODUCT VARIENTS FOUND" });
+                })
+            }).catch(err => {
+                console.log(err);
+                res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE FETCHING PRODUCT VARIENTS" });
             })
-        }).catch(err => {
-            console.log(err);
-            res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE FETCHING PRODUCT VARIENTS" });
-        })
     } else {
         res.status(500).json({ status: 404, data: null, errors: true, message: "INVALID ID" })
     }
 })
+
+// GET VAIRNETS BY BRAND
 router.get('/bybrand/:id', authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), async (req, res) => {
     if (!mongodb.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({status:400,data:null,errors:true,message:"Invalid product id"});
+        return res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid product id" });
     }
-      try {
+    try {
         const varients = await Product.aggregate([
-          {$match:{brand:mongodb.ObjectId(req.params.id)}},
-          {$group:{_id:null,prods:{$push:"$_id"}}},
-          {$lookup:{from:"product_varients", let:{prods:"$prods"},pipeline:[{$match:{$expr:{$in:["$product","$$prods"]}}}],as:"Products"}},
-          {$unwind:"$Products"},
-          {$replaceRoot:{newRoot:"$Products"}}
+            { $match: { brand: mongodb.ObjectId(req.params.id) } },
+            { $group: { _id: null, prods: { $push: "$_id" } } },
+            { $lookup: { from: "product_varients", let: { prods: "$prods" }, pipeline: [{ $match: { $expr: { $in: ["$product", "$$prods"] } } }], as: "Products" } },
+            { $unwind: "$Products" },
+            { $replaceRoot: { newRoot: "$Products" } }
         ]).exec()
-        ProductVarient.populate(varients,"product attributes.attribute attributes.option").then(docs => {
+        ProductVarient.populate(varients, "product attributes.attribute attributes.option").then(docs => {
             if (docs.length > 0)
                 res.json({ status: 200, data: docs, errors: false, message: "ALL PRODUCT VARIENTS " });
             else
@@ -100,11 +102,12 @@ router.get('/bybrand/:id', authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), async
         //.find({ isAvailable: true }).exec();
         // console.log(allDrivers);
         // res.json({ status: 200, message: "Product Varients", errors: false, data: varients });
-      }
-      catch (err) {
+    }
+    catch (err) {
         res.status(500).json({ status: 500, errors: true, data: null, message: "Error while fetching drivers" });
-      }
-  })
+    }
+})
+
 // GET SPECIFIC PRODUCT VARIENTS 
 router.get("/VARIENTS/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {

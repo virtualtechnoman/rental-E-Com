@@ -34,9 +34,13 @@ export class OrderComponent implements OnInit {
 
   getAllOrders() {
     this.customersService.getAllCustomersOrders().subscribe((res: ResponseModel) => {
-      console.log(res.data);
-      this.allCustomersOrders = res.data;
-      this.dtTrigger.next();
+      if (res.errors) {
+
+      } else {
+        console.log(res.data);
+        this.allCustomersOrders = res.data;
+        this.dtTrigger.next();
+      }
     });
   }
 
@@ -46,7 +50,6 @@ export class OrderComponent implements OnInit {
     }
     this.selectedOrder = this.allCustomersOrders[i];
     this.selectedOrderIndex = i;
-    console.log(this.selectedOrder);
     for (let index = 0; index < this.selectedOrder.products.length; index++) {
       if (this.selectedOrder.products) {
         this.quantityFormGetter.push(this.initItemRows());
@@ -126,7 +129,7 @@ export class OrderComponent implements OnInit {
     const product2 = product.products;
     console.log(product);
     for (let index = 0; index < selectedProducts.length; index++) {
-      if (selectedProducts[index].quantity == product.products[index].accepted) {
+      if (selectedProducts[index].quantity === product.products[index].accepted) {
         orderStatus = 'Fullfill';
       } else if (selectedProducts[index].quantity !== product.products[index].accepted) {
         orderStatus = 'Partailly Fullfilled';
@@ -149,7 +152,6 @@ export class OrderComponent implements OnInit {
           console.log('Accepted');
         }
       });
-    console.log(this.quantityForm.value);
   }
 
   cancleOrder() {

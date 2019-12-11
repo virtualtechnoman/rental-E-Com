@@ -158,8 +158,12 @@ router.get("/page/:page?", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) =>
     let order = req.query.order || 'asc';
     let srt = {};
     srt[orderby] = order;
+    // Product.count()
     Product.find()
-        .populate("category brand type").limit(limit).skip(limit * page).sort(srt)
+        .populate("category brand type")
+        .limit(limit)
+        .skip(limit * page)
+        .sort(srt)
         .exec(function (err, products) {
             if (err) {
                 console.log(err);
