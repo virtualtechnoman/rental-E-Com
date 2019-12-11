@@ -12,12 +12,12 @@ const router = express.Router();
 //GET all orders placed by self
 router.get("/", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS_OWN"), (req, res) => {
     CustomerOrder.find({ $or: [{ placed_by: req.user._id }, { placed_to: req.user._id }] })
-        .sort('order_date', 1)
-        .populate("placed_by placed_to")
+        .sort({'order_date': -1})
+        // .populate(" placed_to")
         .populate({
-            path: "products.product ",
+            path: "products.product",
             populate: {
-                path: "created_by category brand available_for", select: "-password"
+                path: "product attributes.attribute attributes.option"
             }
         })
         .exec().then(doc => {
@@ -30,9 +30,9 @@ router.get("/", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS_OWN"), (req, res) =>
 router.get("/customer/:id", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req, res) => {
     CustomerOrder.find({ placed_by: req.params.id }).populate("placed_by placed_to")
         .populate({
-            path: "products.product ",
+            path: "products.product",
             populate: {
-                path: "created_by category brand available_for", select: "-password"
+                path: "product attributes.attribute attributes.option"
             }
         })
         .exec().then(doc => {
