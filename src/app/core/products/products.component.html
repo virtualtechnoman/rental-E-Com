@@ -17,7 +17,7 @@
             <th scope="col">Category</th>
             <th scope="col">Type</th>
             <th scope="col">Brand</th>
-            <th scope="col">Selling Price</th>
+            <th scope="col text-center">Selling Price</th>
             <!-- <th scope="col">Stock</th> -->
             <th scope="col">Created by</th>
             <th scope="col">Status</th>
@@ -36,8 +36,8 @@
             <td *ngIf="product.type">{{product?.type?.name | titlecase}}</td>
             <td *ngIf="!product.type">-</td>
             <td>{{product?.brand?.name | titlecase}}</td>
-            <td *ngIf="product.selling_price">{{product?.selling_price | number}}</td>
-            <td *ngIf="!product.selling_price">{{product?.selling_price | number}}</td>
+            <td *ngIf="product.selling_price">{{product?.base_price | number}}</td>
+            <td *ngIf="!product.selling_price">0</td>
             <!-- <td *ngIf="product.base_price">{{product?.base_price | number}}</td> -->
             <!-- <td>{{product?.stock | number}}
               <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Add Stock"><i
@@ -137,7 +137,7 @@
             </div>
             <div class="form-group col-md-4">
               <label for="inputEmail4">Service Type</label>
-              <select class="form-control" required (change)="selectedServiceType($event)">
+              <select class="form-control" required [(ngModel)]="serviceType" [ngModelOptions]="{standalone: true}">
                 <option selected disabled>Select Type</option>
                 <option value="product">Product</option>
                 <option value="service">Service</option>

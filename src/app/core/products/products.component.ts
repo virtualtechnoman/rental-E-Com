@@ -79,6 +79,7 @@ export class ProductsComponent implements OnInit {
   subCategory2: any;
   subCategory3: any;
   subCategory4: any;
+  serviceType: any;
   allCategoryArray: any[] = [];
   showSellingPrice: Boolean = false;
   constructor(
@@ -152,6 +153,7 @@ export class ProductsComponent implements OnInit {
       name: ['', Validators.required],
       base_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
       image: [''],
+      service_type: [''],
       type: ['']
     });
   }
@@ -194,6 +196,7 @@ export class ProductsComponent implements OnInit {
         this.toastr.error('Error While Fetcing Products', 'Refresh and Retry');
       } else {
         this.allproducts = res.data;
+        console.log(this.allproducts);
         this.dtTrigger.next();
         if (res.data) {
           for (var i = 0; i < res.data.length; i++) {
@@ -396,6 +399,12 @@ export class ProductsComponent implements OnInit {
   // ************************** SUBMIT FUNCTIONS *****************************
   submit() {
     this.productForm.get('type').setValue(this.productType);
+    if (this.serviceType === 'service') {
+      this.showSellingPrice = false;
+    } else if (this.serviceType === 'product') {
+      this.showSellingPrice = true;
+    }
+    this.productForm.get('service_type').setValue(this.serviceType);
     this.submitted = true;
     if (this.productForm.invalid) {
       return;
@@ -597,11 +606,6 @@ export class ProductsComponent implements OnInit {
   }
 
   selectedServiceType(event) {
-    if (event.target.value === 'service') {
-      this.showSellingPrice = false;
-    } else if (event.target.value === 'product') {
-      this.showSellingPrice = true;
-    }
   }
 
 }
