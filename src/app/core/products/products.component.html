@@ -432,7 +432,7 @@
 
 <!-- ****************** ADD VARIENT MODAL ********************************** -->
 <div class="modal fade" id="varientModal" tabindex="-1" role="dialog" aria-labelledby="varientModal" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h3 class="font-weight-bold">{{currentproduct?.name | uppercase}}</h3>
@@ -470,12 +470,14 @@
               <td scope="row">{{varient?.price}}</td>
               <td scope="row">{{varient?.stock}}</td>
               <ng-container *ngFor="let attribute of varient?.attributes ; let index = index;">
-                <td scope="row">{{attribute?.option?.value}}</td>
+                <td scope="row" *ngIf="attribute?.option?.value">{{attribute?.option?.value}}</td>
+                <td scope="row" *ngIf="!(attribute?.option?.value)">-</td>
               </ng-container>
               <td scope="row">
-                <button type="button" class="btn btn-info mx-1" data-toggle="modal" data-target="#addVarientModal"
-                  (click)="editVarient(i)">Edit</button>
-                <button type="button" class="btn btn-danger mx-1" (click)="deleteVarient(i)">Delete</button>
+                <a style="cursor:pointer" data-toggle="modal" data-target="#addVarientModal" (click)="editVarient(i)"><i
+                    class="fas fa-edit mx-1" data-toggle="tooltip" data-placement="top" title="Edit Product"></i></a>
+                <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Delete Product"><i
+                    class="fas fa-trash-alt " (click)="deleteVarient(i)"></i></a>
               </td>
             </tr>
           </tbody>
@@ -540,15 +542,13 @@
                 <label><b>Description</b></label>
                 <textarea name="" id="" cols="30" rows="10" formControlName="description" class="form-control"
                   placeholder="Enter Description"></textarea>
-                <!-- <input type="text" formControlName="description" class="form-control" placeholder="Enter Description"> -->
               </div>
             </div>
           </div>
           <br>
           <div class="text-center">
             <button type="button" class="btn btn-primary mx-1" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary" *ngIf="!varientUpdate">Add Varient</button>
-            <button type="submit" class="btn btn-primary" *ngIf="varientUpdate">Edit Varient</button>
+            <button type="submit" class="btn btn-primary">{{varientUpdate ? 'Edit Varient':'Add Varient'}}</button>
           </div>
         </form>
       </div>

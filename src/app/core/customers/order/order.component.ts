@@ -53,6 +53,7 @@ export class OrderComponent implements OnInit {
     for (let index = 0; index < this.selectedOrder.products.length; index++) {
       if (this.selectedOrder.products) {
         this.quantityFormGetter.push(this.initItemRows());
+        this.quantityFormGetter.controls[index].get('accepted').setValue(this.selectedOrder.products[index].quantity);
         this.quantityFormGetter.controls[index].get('product').setValue(this.selectedOrder.products[index].product._id);
       }
     }
@@ -172,5 +173,14 @@ export class OrderComponent implements OnInit {
         }
       });
     console.log(this.quantityForm.value);
+  }
+
+  calculateTotalAmount() {
+    let total = 0;
+    for (let index = 0; index < this.selectedOrder.products.length; index++) {
+      total = total + (this.quantityFormGetter.controls[index].get('accepted').value * this.selectedOrder.products[index].product.price);
+      console.log(total);
+    }
+    return total;
   }
 }
