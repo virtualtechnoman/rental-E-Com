@@ -11,8 +11,9 @@ const router = express.Router();
 
 //GET all orders placed by self
 router.get("/", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS_OWN"), (req, res) => {
-    CustomerOrder.find({ $or: [{ placed_by: req.user._id }, { placed_to: req.user._id }] })
-        .sort('order_date', 1)
+    CustomerOrder
+        .find({ $or: [{ placed_by: req.user._id }, { placed_to: req.user._id }] })
+        .sort({ 'order_date': 1 })
         .populate("placed_by placed_to")
         .populate({
             path: "products.product ",
