@@ -36,8 +36,10 @@
             <td *ngIf="product.type">{{product?.type?.name | titlecase}}</td>
             <td *ngIf="!product.type">-</td>
             <td>{{product?.brand?.name | titlecase}}</td>
-              <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Add Stock"><i
-                  class="fas fas fa-plus" data-toggle="modal" data-target="#stockModal"
+            <!-- <a style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Add Stock">
+              <i class="fas fas fa-plus" data-toggle="modal" data-target="#stockModal">
+              </i>
+            </a> -->
             <td *ngIf="product.created_by.full_name">{{product?.created_by?.full_name | titlecase}}</td>
             <td *ngIf="!product.created_by.full_name">--</td>
             <td>{{product.is_active ? 'Active': 'Inactive'}}</td>
