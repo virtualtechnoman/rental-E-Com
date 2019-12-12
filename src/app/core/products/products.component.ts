@@ -629,7 +629,6 @@ export class ProductsComponent implements OnInit {
   }
 
   onSelectFile(event) {
-    console.log(this.currentVarient);
     if (event.target.files && event.target.files[0]) {
       const filesAmount = event.target.files.length;
       for (let i = 0; i < filesAmount; i++) {
