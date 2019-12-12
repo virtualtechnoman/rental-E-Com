@@ -114,7 +114,11 @@ export class ProductsService {
 
   // UPLOAD VAIRNET IMAGES
   uploadProductImages(productId, images) {
-    return this.http.put(this.productVarientURL + '/images/' + productId, images, { headers: this.headers });
+    return this.http.put(this.productVarientURL + '/images/' + productId, images, {
+      headers: new HttpHeaders({
+        'token': this.tokenService.getToken()
+      })
+    });
   }
 
   // Product Image Upload

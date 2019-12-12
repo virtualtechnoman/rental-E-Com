@@ -571,6 +571,7 @@ export class ProductsComponent implements OnInit {
   editVarient(index: number) {
     this.initProductVarientForm();
     this.currentVarient = this.varientArray[index];
+    console.log(this.currentVarient);
     this.varientUpdate = true;
     if (this.currentVarient.name) {
       this.productVarient.controls['name'].setValue(this.currentVarient.name);
