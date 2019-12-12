@@ -10,7 +10,6 @@ export class ProductsService {
     'Content-Type': 'application/json',
     'token': this.tokenService.getToken()
   });
-
   url = '/api/product/products';
   url2 = '/api/product/pcategory';
   url3 = '/api/product/brand';
