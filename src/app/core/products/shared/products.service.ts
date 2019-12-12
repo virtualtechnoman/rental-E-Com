@@ -19,6 +19,7 @@ export class ProductsService {
   url6 = 'api/product/upload/category';
   url7 = 'api/product/upload/product';
   url8 = 'api/product/pcattribute';
+  productVarientURL = 'api/product/pvarients';
   subCategoryURL = 'api/product/pcategory';
   constructor(private http: HttpClient, private tokenService: TokenStorage) { }
 
@@ -111,8 +112,12 @@ export class ProductsService {
     });
   }
 
-  // Product Image Upload
+  // UPLOAD VAIRNET IMAGES
+  uploadProductImages(productId, images) {
+    return this.http.put(this.productVarientURL + '/images/' + productId, images, { headers: this.headers });
+  }
 
+  // Product Image Upload
   getUrlProduct() {
     return this.http.get(this.url7 + '/', { headers: this.headers });
   }
@@ -149,7 +154,7 @@ export class ProductsService {
     return this.http.put(this.url + '/stock', data, { headers: this.headers });
   }
 
-  
+
   getAllCategorysub(id) {
     return this.http.get(this.subCategoryURL + '/id/' + id, { headers: this.headers });
   }
