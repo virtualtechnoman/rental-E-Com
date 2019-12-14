@@ -134,14 +134,11 @@
             </div>
             <div class="form-group col-md-4">
               <label for="inputEmail4">Service Type</label>
-              <select class="form-control" required (change)="selectedServiceType($event)">
+              <select class="form-control" required formControlName="service_type" (change)="selectedServiceType($event)">
                 <option selected disabled>Select Type</option>
                 <option value="product">Product</option>
                 <option value="service">Service</option>
               </select>
-              <div *ngIf="submitted && f.base_price.errors" class="invalid-feedback">
-                <div *ngIf="f.base_price.errors.required">Base Price is required</div>
-              </div>
             </div>
           </div>
           <div class="form-row" *ngIf="(allSubCategories.length > 0)">
@@ -224,6 +221,7 @@
               </div>
             </div>
             <div class="form-group col-md-3">
+              <label for="">Upload Image</label>
               <div class="custom-file">
                 <label class="custom-file-label" for="customFile">Select Product Image</label>
                 <input type="file" formControlName="image" (change)="selectFile($event)" class="custom-file-input"
@@ -231,6 +229,7 @@
               </div>
             </div>
             <div class="form-group col-md-3">
+              <label for="Status">Status</label>
               <p-inputSwitch class="form-control" formControlName="is_active" required
                 [ngClass]="{ 'is-invalid': submitted && f.is_active.errors }"></p-inputSwitch>
               <div *ngIf="submitted && f.is_active.errors" class="invalid-feedback">
@@ -558,7 +557,7 @@
       </div>
       <div class="modal-body">
         <ngx-gallery [options]="galleryOptions" [images]="galleryImages"></ngx-gallery>
-        <input type="file" name="" id="" (change)="onSelectFile($event)" formControlName="images" multiple>
+        <input type="file" name="" id="" (change)="onSelectFile($event)" multiple>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

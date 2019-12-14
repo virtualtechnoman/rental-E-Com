@@ -157,6 +157,7 @@ export class ProductsComponent implements OnInit {
       name: ['', Validators.required],
       base_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
       image: [''],
+      service_type: [''],
       type: ['']
     });
   }
@@ -446,6 +447,12 @@ export class ProductsComponent implements OnInit {
   submit() {
     this.productForm.get('type').setValue(this.productType);
     this.submitted = true;
+    if (!this.productForm.get('image').value) {
+      this.productForm.removeControl('image');
+    }
+    if (!(this.showSellingPrice)) { this.productForm.removeControl('base_price') }
+    else { this.productForm.addControl('base_price', new FormControl('')) }
+    console.log(this.productForm.value);
     if (this.productForm.invalid) {
       return;
     } else {
