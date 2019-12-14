@@ -23,6 +23,7 @@ export class AttributesComponent implements OnInit {
   optionsForm: FormGroup;
   selectedID: String;
   selectedIndex: number;
+  selectedOptionIndex: number;
   selectedAttribute: AttrubuteModel;
   submitted: Boolean = false;
   newOptionValue: any;
@@ -118,8 +119,10 @@ export class AttributesComponent implements OnInit {
       if (res.errors) {
         this.toasterService.error('Retry Again', 'Error While Fetching Data');
       } else {
-        this.allAttributes = res.data;
-        console.log(this.allAttributes);
+        if (res.data.length > 0) {
+          this.allAttributes = res.data;
+          console.log(this.allAttributes);
+        }
       }
     });
   }
@@ -163,10 +166,10 @@ export class AttributesComponent implements OnInit {
       if (res.errors) {
         this.toasterService.error('Error While Updating Attribute!', 'Refresh and Retry Again');
       } else {
-        jQuery('#AddFormModal').modal('hide');
+        jQuery('#viewOptionsModal').modal('hide');
         this.toasterService.info('Attribute Updated Successfully!', 'Updated!!');
         this.resetForm();
-        this.allAttributes.splice(this.selectedIndex, 1, res.data);
+        this.selectedAttribute.options.splice(this.selectedIndex, 1, res.data);
         this.selectedAttribute = null;
         this.editing = false;
       }
@@ -175,6 +178,7 @@ export class AttributesComponent implements OnInit {
 
   editOption(index) {
     this.selectedAttribute.options[index].editName = !this.selectedAttribute.options[index].editName;
+    this.selectedOptionIndex = index;
   }
   // *************** DELETE FUNCTIONS *****************//
   deleteAttribute(i) {
@@ -253,11 +257,12 @@ export class AttributesComponent implements OnInit {
         if (res.errors) {
           this.toasterService.error('Error While Fetching Data', 'Error');
         } else {
-          this.allAttributes.splice(i,1,res.data);
+          jQuery('#viewOptionsModal').modal('hide');
+          this.selectedAttribute.options.splice(i, 1, res.data);
           this.selectedAttribute.options[i].editName = false;
-          this.toasterService.success('Value Updated Successfully', 'Success');
+          this.toasterService.info('Option Updated Successfully', 'Success');
         }
-      })
+      });
   }
 
   deleteOptionsValue(i) {
@@ -268,16 +273,16 @@ export class AttributesComponent implements OnInit {
     //     this.toastr.warning('Vehicle Deleted!', 'Deleted!');
     //   }).catch((err) => console.log(err));
     // }
-    if (confirm("Are you sure you want to delete this option?")) {
+    if (confirm('Are you sure you want to delete this option?')) {
       this.attributeService.deleteSelectedOption(id)
         .subscribe((res: ResponseModel) => {
           if (res.errors) {
             this.toasterService.error('Error While Fetching Data', 'Error');
           } else {
-            this.selectedAttribute.options.splice(i,1);
+            this.selectedAttribute.options.splice(i, 1);
             this.toasterService.success('Value Updated Successfully', 'Success');
           }
-        })
+        });
     }
   }
 

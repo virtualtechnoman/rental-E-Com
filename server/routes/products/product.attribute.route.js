@@ -32,7 +32,7 @@ router.get("/all", authorizePrivilege("GET_ALL_PRODUCT_CATEGORY"), (req, res) =>
             if (docs.length > 0)
                 res.json({ status: 200, data: docs, errors: false, message: "All categories" });
             else
-                res.json({ status: 200, data: docs, errors: true, message: "No categories found" });
+                res.json({ status: 200, data: docs, errors: false, message: "No categories found" });
         }).catch(err => {
             res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting categories" })
         })
@@ -44,7 +44,7 @@ router.get("/category/:id", authorizePrivilege("GET_CATEGORY_ATTRIBUTE"), (req, 
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All atrributes for given category" });
         else
-            res.json({ status: 200, data: docs, errors: true, message: "No attribute found for the given category" });
+            res.json({ status: 200, data: docs, errors: false, message: "No attribute found for the given category" });
     }).catch(err => {
         res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting attributes for category" })
     })

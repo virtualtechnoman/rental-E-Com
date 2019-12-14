@@ -170,13 +170,15 @@ export class ProductsComponent implements OnInit {
   initProductVarientForm() {
     this.productVarient = this.formBuilder.group({
       product: [''],
+      stock: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
+      price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
+      description: [''],
       attributes: this.formBuilder.array([]),
       // name: ['', Validators.required],
-      description: ['', Validators.required],
     });
   }
 
-  
+
   initGallery(photos) {
     this.galleryOptions = [
       {
@@ -370,8 +372,10 @@ export class ProductsComponent implements OnInit {
       if (res.errors) {
         this.toastr.error('Unable to Fetch Varients', 'Refresh and Retry');
       } else {
-        this.varientArray = res.data;
-        console.log(this.varientArray);
+        if (res.data.length > 0) {
+          this.varientArray = res.data;
+          console.log(this.varientArray);
+        }
       }
     });
   }
