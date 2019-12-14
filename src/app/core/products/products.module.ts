@@ -26,7 +26,6 @@ import { NgxGalleryModule } from 'ngx-gallery';
     DataTablesModule,
     ProductsRoutingModule,
     InputSwitchModule,
-    Select2Module,
     NgxGalleryModule
   ],
   declarations: [ProductsComponent, CategoryComponent, BrandComponent, AttributesComponent, TypesComponent, OptionsComponent],
