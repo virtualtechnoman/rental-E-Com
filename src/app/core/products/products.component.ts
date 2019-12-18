@@ -171,8 +171,10 @@ export class ProductsComponent implements OnInit {
   initProductVarientForm() {
     this.productVarient = this.formBuilder.group({
       product: [''],
-      stock: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
-      price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
+      stock: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(3), Validators.max(999), Validators.min(0)]],
+      price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(3), Validators.max(999), Validators.min(0)]],
+      rent_per_day: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(3), Validators.max(999), Validators.min(0)]],
+      deposite_amount: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(4), Validators.max(999), Validators.min(0)]],
       description: [''],
       attributes: this.formBuilder.array([]),
       // name: ['', Validators.required],

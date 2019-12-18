@@ -9,6 +9,8 @@ const ProductSchema = new Schema({
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
     created_date: { type: Date, default: Date.now },
     details: { type: String, default: "", lowercase: true, trim: true },
+    deposite_amount: { type: Number, default: 0 },
+    rent_per_day: { type: Number, default: 0 },
     is_active: { type: Boolean, default: true, required: true },
     is_available: { type: Boolean, default: false, required: false },
     service_type: { type: String, default: false, required: false },

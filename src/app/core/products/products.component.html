@@ -212,13 +212,7 @@
             <div class="form-group col-md-3" *ngIf="showSellingPrice">
               <label for="inputEmail4">Base Price</label>
               <input type="number" class="form-control" placeholder="Selling Price here" formControlName="base_price"
-                required [ngClass]="{ 'is-invalid': submitted && f.base_price.errors }">
-              <div *ngIf="submitted && f.base_price.errors" class="invalid-feedback">
-                <div *ngIf="f.base_price.errors.required">Base Price is required</div>
-              </div>
-              <div class="invalid-feedback" *ngIf="f.base_price.errors && (f.base_price.dirty || f.base_price.touched)">
-                <p *ngIf="f.base_price.errors.pattern" class="text-danger">Number Only</p>
-              </div>
+                required>
             </div>
             <div class="form-group col-md-3">
               <label for="">Upload Image</label>
@@ -516,6 +510,16 @@
             <div class="form-group col">
               <label><b>Stock</b></label>
               <input type="number" formControlName="stock" class="form-control" placeholder="Enter Stock">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col">
+              <label><b>Deposite Amount </b></label>
+              <input type="number" formControlName="deposite_amount" class="form-control" placeholder="Enter Deposite Amount">
+            </div>
+            <div class="form-group col">
+              <label><b>Per Day Rent</b></label>
+              <input type="number" formControlName="rent_per_day" class="form-control" placeholder="Enter Per Day Rent">
             </div>
           </div>
           <div class="form-row ">

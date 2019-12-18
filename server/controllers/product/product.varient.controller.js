@@ -7,12 +7,12 @@ const productVarientCreateSchema = Joi.object({
         option: Joi.string().required(),
     })).required(),
     description: Joi.string().optional(),
-    // name: Joi.string().required(),
     images: Joi.any().optional(),
-    price: Joi.number().required(),
+    price: Joi.number().required().default(0).min(0).max(9999),
     product: Joi.string().required(),
-    // sku_id: Joi.string().required(),
-    stock: Joi.number().required()
+    rent_per_day: Joi.number().default(0).min(0).max(999).optional().allow(''),
+    deposite_amount: Joi.number().default(0).min(0).max(9999).optional().allow(''),
+    stock: Joi.number().required().default(0).min(0).max(999)
     // is_active: Joi.boolean().required()
 })
 const productVarientUpdateSchema = Joi.object({
@@ -22,11 +22,11 @@ const productVarientUpdateSchema = Joi.object({
         option: Joi.string().required(),
     })).required(),
     description: Joi.string().optional(),
-    // name: Joi.string().optional(),
-    price: Joi.number().optional(),
+    price: Joi.number().optional().default(0).min(0).max(999),
     images: Joi.any().optional(),
-    // sku_id: Joi.string().optional(),
-    stock: Joi.number().optional()
+    stock: Joi.number().optional().default(0).min(0).max(999),
+    rent_per_day: Joi.number().default(0).min(0).max(999).optional().allow(''),
+    deposite_amount: Joi.number().default(0).min(0).max(9999).optional().allow(''),
     // is_active: Joi.boolean().optional()
 })
 
