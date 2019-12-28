@@ -48,7 +48,7 @@ router.get("/all", authorizePrivilege("GET_ALL_CUSTOMER_ORDERS"), (req, res) => 
     CustomerOrder
         .find()
         .sort({ 'order_date': -1 })
-        .populate({ path: "placed_by placed_to"})
+        .populate({ path: "placed_by placed_to", populate: { path: "role" } })
         .populate({
             path: "products.product",
             populate: {
