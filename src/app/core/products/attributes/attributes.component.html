@@ -1,0 +1,182 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="float-left">Attributes Management</h2>
+      <a class="btn btn-primary text-white float-right" (click)="resetForm()" data-toggle="modal"
+        data-target="#AddFormModal">Add New Attribute</a>
+    </div>
+    <div class="card-body">
+      <table class="table table table-hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+        <thead>
+          <tr>
+            <th scope="col">S no.</th>
+            <th scope="col">Attribute Name</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let attribute of allAttributes; let i = index">
+            <td>{{i+1}}</td>
+            <td>{{attribute.name | titlecase}}</td>
+            <td>
+              <a style="cursor: pointer" (click)="viewAttribute(i)" data-toggle="modal"
+                data-target="#viewOptionsModal"><i class="fas fa-eye"></i></a>
+              <a style="cursor:pointer" data-toggle="modal" data-target="#AddFormModal" (click)="editAttribute(i)"><i
+                  class="fas fa-edit mx-2"></i></a>
+              <!-- <a style="cursor:pointer" data-toggle="modal" data-target="#AddOptionFormModal"
+                (click)="editAttribute(i)"><i class="fas fa-plus mx-2"></i></a> -->
+              <a style="cursor:pointer"><i class="fas fa-trash-alt" (click)="deleteAttribute(i)"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- **************** ADD/UPDATE ATTRIBUTE MODAL ****************** -->
+<div class="modal fade" id="AddFormModal" tabindex="-1" role="dialog" aria-labelledby="AddFormModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header text-center">
+        <h6 class="modal-title ml-auto font-weight-bold  h4" id="exampleModalLabel3">
+          {{editing?'Edit Attribute': 'Add New Attribute'}}</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="attributeForm" (ngSubmit)="onSubmit()">
+          <div class="divider-text">Give Attribute a Name</div>
+          <div class="form-row">
+            <input type="text" class="form-control" placeholder="Attribute Name Here " formControlName="name" required
+              [ngClass]="{ 'is-invalid': submitted && getAttributeForm.name.errors }">
+            <div *ngIf="submitted && getAttributeForm.name.errors" class="invalid-feedback">
+              <div *ngIf="getAttributeForm.name.errors.required">Attribute Name Is Required</div>
+            </div>
+          </div>
+          <div class="divider-text">Is Product Type Active</div>
+          <div class="form-row ml-auto">
+            <p-inputSwitch class="text-center" formControlName="is_active">
+            </p-inputSwitch>
+          </div>
+          <div class="form-row">
+            <br>
+            <div class=" text-center">
+              <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+              <button type="button" class="btn btn-primary tx-13" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- *********************** ATTRIBUTE DETAILS MODAL **************************** -->
+<!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title ml-auto font-weight-bold" id="exampleModalLabel">Brand Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group" *ngIf="showImage">
+          <label>Brand Image</label>
+          <div class="col-sm-3 col-md-2 col-lg text-center">
+            <div class="avatar avatar-xxl avatar-online"><img src="{{image}}" class="rounded-circle" alt=""></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Brand Name</label>
+          <input type="text" class="form-control" [(ngModel)]="viewArray.name" disabled />
+        </div>
+        <div class="form-group">
+          <label>Brand Address</label>
+          <input type="text" class="form-control" [(ngModel)]="viewArray.address" disabled />
+        </div>
+        <div class="form-group">
+          <label>Contact No.</label>
+          <input type="text" class="form-control" [(ngModel)]="viewArray.contact" disabled />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+<div class="modal fade" id="AddOptionFormModal" tabindex="-1" role="dialog" aria-labelledby="AddOptionFormModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header text-center">
+        <h6 class="modal-title ml-auto h4" id="exampleModalLabel3">
+          Add New Attribute Option</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="optionsForm" (ngSubmit)="onOptionFormSubmit()">
+          <div class="divider-text">Give Attribute Option Value</div>
+          <div class="form-row">
+            <input type="text" class="form-control" placeholder="Attribute Value Here " formControlName="value" required
+              [ngClass]="{ 'is-invalid': submitted && getAttributeOptionForm.value.errors }">
+            <div *ngIf="submitted && getAttributeOptionForm.value.errors" class="invalid-feedback">
+              <div *ngIf="getAttributeOptionForm.value.errors.required">Attribute Option Value Is Required</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <br>
+            <div class="ml-auto text-center">
+              <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+              <button type="button" class="btn btn-primary tx-13" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--View Options Modal -->
+<div class="modal fade" id="viewOptionsModal" tabindex="-1" role="dialog" aria-labelledby="viewOptionsModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <h5 class="modal-title" id="exampleModalLabel">All Options -->
+        <button style="cursor:pointer" class="float-right btn btn-primary" data-toggle="modal" data-target="#AddOptionFormModal" >Add Option</button>
+          <!-- </h5> -->
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row" *ngFor="let option of selectedAttribute?.options ; let i = index ;">
+          <div class="form-group col-md-4">
+            <input type="text" class="form-control" [(ngModel)]="option.value"
+              [disabled]="!selectedAttribute.options[i]?.editName" (change)="optionsValueChanged($event,i)">
+          </div>
+          <div class="form-group col-md-2">
+            <button type="button" class="btn btn-primary" (click)="editOption(i)"><i class="fas fa-edit"></i></button>
+          </div>
+          <div class="form-group col-md-2">
+            <button type="button" class="btn btn-danger" (click)="deleteOptionsValue(i)"><i class="fas fa-trash-alt"></i></button>
+          </div>
+          <div class="form-group col-md-2">
+            <button type="button" class="btn btn-info" (click)="editCurrentOptionValue(i)">save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

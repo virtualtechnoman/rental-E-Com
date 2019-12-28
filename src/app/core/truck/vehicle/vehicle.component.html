@@ -1,0 +1,153 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="float-left">Vehicle Management</h2>
+      <a class="btn btn-secondary float-right text-white" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal3">Add New
+        Vehicle</a>
+      <a class="btn btn-secondary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal2">Upload CSV</a>
+    </div>
+    <div class="card-body">
+      <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
+        [dtTrigger]="dtTrigger">
+        <thead>
+          <tr>
+            <th scope="col">S.No</th>
+            <th scope="col">Vehicle Number</th>
+            <th scope="col">Vehicle Type</th>
+            <th scope="col">Available</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let vehicle of allVehicles; let i = index">
+            <td>{{i+1}}</td>
+            <td>{{vehicle.number}}</td>
+            <td>{{vehicle.type}}</td>
+            <td *ngIf="vehicle.isAvailable">Available</td>
+            <td *ngIf="!vehicle.isAvailable">Unavailable</td>
+            <td>
+              <a style="cursor: pointer" (click)="viewVehicle(i)" data-toggle="modal" data-target="#exampleModal"><i
+                  class="fas fa-eye"></i></a>
+              <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editVehicle(i)"><i
+                  class="fas fa-edit mx-2"></i> </a>
+              <a style="cursor: pointer" (click)="deleteVehicle(i)"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header">
+        <h6 class="modal-title text-center" id="exampleModalLabel3" *ngIf="!editing">Add New Vehicle</h6>
+        <h6 class="modal-title text-center" id="exampleModalLabel3" *ngIf="editing">Edit Vehicle</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="VehicleForm" (ngSubmit)="submit()">
+          <div class="divider-text">Fill Vehicle Details</div>
+          <div class="form-row">
+            <label for="inputEmail4">Vehicle Number</label>
+            <input type="text" class="form-control" placeholder="Vehicle Number" name="number" formControlName="number"
+              [ngClass]="{ 'is-invalid': submitted && f.number.errors }" required>
+            <div *ngIf="submitted && f.number.errors" class="invalid-feedback">
+              <div *ngIf="f.number.errors.required">Vehicle Number is required</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="inputEmail4">Vehicle Type</label>
+            <input type="text" class="form-control" placeholder="Vehicle Type" name="type" formControlName="type"
+              [ngClass]="{ 'is-invalid': submitted && f.type.errors }" required>
+            <div *ngIf="submitted && f.type.errors" class="invalid-feedback">
+              <div *ngIf="f.type.errors.required">Vehicle Type is required</div>
+            </div>
+          </div>
+          <div class="form-row" *ngIf="editShowImage">
+              <div class="form-group">
+              <label>Vehicle Image</label>
+              <div class="col-sm-3 col-md-2 col-lg text-center" >
+              <div class="avatar avatar-xxl avatar-online"><img src="{{editImage}}" class="rounded-circle" alt=""></div>
+              </div>
+              </div>
+          </div>
+          <div class="form-row offset-md-6">
+             
+            <div class="form-group custom-file">
+                <input type="file" class="custom-file-input" id="customFile" formControlName="image" (change)="selectFile($event)">
+              <label class="custom-file-label" for="customFile">Select Vehicle Image</label>
+              
+            </div>
+            </div>
+          <div class="form-row">
+            <label for="inputEmail4">Extra Notes</label>
+            <input type="text" class="form-control"  name="type" formControlName="note">
+          </div>
+          <div class="form-row">
+            <label for="inputPassword4">Is Available</label>
+            <p-inputSwitch class="form-control" formControlName="isAvailable" required></p-inputSwitch>
+          </div>
+          <br>
+          <div class=" text-center">
+          <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+          <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+          </div>
+          <!-- <div class="text-center">
+            <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+            <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+          </div> -->
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title ml-auto font-weight-bold" id="exampleModalLabel">Vehicle Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="form-group">
+              <!-- <label>Vehicle Image</label> -->
+        <div class="col-sm-3 col-md-2 col-lg text-center" *ngIf="showImage">
+          <div class="avatar avatar-xxl avatar-online"><img src="{{image}}" class="rounded-circle" alt=""></div>
+        </div>
+          </div>
+        <div class="form-group">
+          <label>Vehicle Number</label>
+          <input type="text" class="form-control" [(ngModel)]="viewArray.number" disabled />
+        </div>
+        <div class="form-group">
+          <label>Vehicle Type</label>
+          <input type="text" class="form-control" [(ngModel)]="viewArray.type" disabled />
+        </div>
+        
+        <div class="form-group" *ngIf="viewArray.note">
+          <label>Notes</label>
+          <input type="text" class="form-control" [(ngModel)]="viewArray.note" disabled />
+        </div>
+
+        <div class="form-group">
+          <label>Status</label>
+          <p-inputSwitch class="form-control" [(ngModel)]="viewArray.isAvailable" disabled></p-inputSwitch>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

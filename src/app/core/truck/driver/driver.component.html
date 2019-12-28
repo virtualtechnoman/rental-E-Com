@@ -1,0 +1,284 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="float-left">Driver Management</h2>
+      <!-- <a class="btn btn-secondary float-right text-white"  data-toggle="modal"
+        data-target="#modal3" *ngIf="!editing">Add New Driver</a> -->
+        <a class="btn btn-secondary float-right text-white"  data-toggle="modal"
+        data-target="#modal3" *ngIf="editing">Edit Driver</a>
+    </div>
+    <div class="card-body">
+      <table class="table table table-bordered table-hover table-striped" datatable [dtOptions]="dtOptions"
+        [dtTrigger]="dtTrigger">
+        <thead>
+          <tr>
+            <th scope="col">S.No</th>
+            <th scope="col">Driver Name</th>
+            <th scope="col">Contact Number</th>
+            <th scope="col">DL Number</th>
+            <th scope="col">Is Available</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let driver of allDrivers; let i = index">
+            <td>{{i+1}}</td>
+            <td>{{driver.full_name}}</td>
+            <td>{{driver.mobile_number}}</td>
+            <td>{{driver.dl_number}}</td>
+            <td *ngIf="driver.is_active">Available</td>
+            <td *ngIf="!driver.is_active">Unavailable</td>
+            <td>
+                <a style="cursor: pointer" (click)="viewDriver(i)" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-eye"></i></a>
+              <!-- <a style="cursor: pointer" data-toggle="modal" data-target="#modal3" (click)="editDriver(i)"><i
+                  class="fas fa-edit mx-2"></i> </a>
+              <a style="cursor: pointer" (click)="deleteDriver(i)"><i class="fas fa-trash-alt"></i></a> -->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header">
+        <h6 class="modal-title ml-auto font-weight-bold" id="exampleModalLabel3">Add New Driver</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="DriverForm" (ngSubmit)="submit()">
+          <div class="form-row  text-center">
+              <label>Driver Name</label>
+              <input type="text" formControlName="name" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.name.errors }" />
+              <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+                  <div *ngIf="f.name.errors.required"> Name is required</div>
+              </div>
+          </div>
+          <div class="form-row  text-center">
+              <label>DL Number</label>
+              <input type="text" formControlName="dl_number" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.dl_number.errors }" />
+              <div *ngIf="submitted && f.dl_number.errors" class="invalid-feedback">
+                  <div *ngIf="f.dl_number.errors.required">DL Number is required</div>
+              </div>
+          </div>
+          <div class="form-row  text-center">
+              <label>Mobile</label>
+              <input type="text" formControlName="mobile" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.mobile.errors }" />
+              <div *ngIf="submitted && f.mobile.errors" class="invalid-feedback">
+                  <div *ngIf="f.mobile.errors.required">Mobile is required</div>
+              </div>
+          </div>
+          <div class="form-row">
+              <label>Status</label>
+              <p-inputSwitch class="form-control" formControlName="isAvailable" required [ngClass]="{ 'is-invalid': submitted && f.isAvailable.errors }"></p-inputSwitch>
+              <!-- <input type="password" formControlName="password" class="form-control"  /> -->
+              <div *ngIf="submitted && f.isAvailable.errors" class="invalid-feedback">
+                  <div *ngIf="f.isAvailable.errors.required">Status is required</div>
+              </div>
+          </div>
+          <br>
+          <div class=" text-center">
+          <button type="submit" class="btn btn-primary tx-13 mx-1">Save</button>
+          <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+          </div>
+          <!-- <div class="text-center">
+              <button type="submit" class="btn btn-primary">Save</button>
+              <button class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div> -->
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title ml-auto font-weight-bold" id="exampleModalLabel">Driver Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                  <div class="form-group" *ngIf="showImage">
+                      <label>Driver Image</label>
+                <div class="col-sm-3 col-md-2 col-lg text-center" >
+                  <div class="avatar avatar-xxl "><img src="{{image}}" class="rounded-circle" alt=""></div>
+                </div>
+                  </div>
+              </div>
+              <div class='col-md-8'>
+                <table class="table table-bordered">
+                  <tr>
+                    <td>Name</td>
+                    <td>{{viewArray?.full_name}}</td>
+                    <td>Recent Hub</td>
+                    <td>Hub name</td>
+                  </tr>
+                  <tr>
+                      <td>Phone</td>
+                      <td>9898989898</td>
+                      <td>Vehicle Type</td>
+                      <td>Truck</td>
+                    </tr>
+                    <tr>
+                        <td>Age</td>
+                        <td>23 Years</td>
+                        <td>Average Distance</td>
+                        <td>10 km</td>
+                      </tr>
+                      <tr>
+                          <td>Gender</td>
+                          <td>Male</td>
+                          <td>Average Time Type</td>
+                          <td>3.5 HOurs</td>
+
+                        </tr>
+                        <tr>
+                            <td>DOB</td>
+                            <td>22 Oct 1990</td>
+                            <td>DL Number</td>
+                            <td>UP 189 bNH</td>
+                          </tr>
+                </table>
+              </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.14039971747!2d77.29417381503546!3d28.595564582432456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce4853f48407b%3A0xbb5fdc3bdb26cf49!2sUnited%20India%20Apartments!5e0!3m2!1sen!2sin!4v1567228388943!5m2!1sen!2sin" width="100%" height="450" frameborder="0"  allowfullscreen="" ></iframe>
+              
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <table class="table table-bordered" >
+                    <thead>
+                      <tr>
+                        <th>Sno</th>
+                        <th>Date</th>
+                        <th>Hub</th>
+                        <th>Hubs Connected</th>
+                        <th>Total Time</th>
+                        <th>Distance Covered</th>
+                        <th>Ideal Time</th>
+                        <th>Ideal Stop count</th>
+                        <th>Total Time</th>
+                        <th>Distance Covered</th>
+                        <th>Ideal Time</th>
+                        <th>Ideal Stop count</th>
+                        <th>View Route Map</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1</td>
+                        <td>22 AUg</td>
+                        <td>Noida</td>
+                        <td>5</td>
+                        <td>4 HOurs</td>
+                        <td>20km</td>
+                        <td>3 hours</td>
+                        <td>3</td>
+                        <td>4 hours</td>
+                        <td>15 km</td>
+                        <td>7 hours</td>
+                        <td>5</td>
+                        <td>view</td>
+                      </tr>
+                      <tr>
+                        <td>2</td>
+                        <td>13 june</td>
+                        <td>Noida 2</td>
+                        <td>1</td>
+                        <td>3 HOurs</td>
+                        <td>10km</td>
+                        <td>1 hours</td>
+                        <td>2</td>
+                        <td>2 hours</td>
+                        <td>18 km</td>
+                        <td>6 hours</td>
+                        <td>4</td>
+                        <td>view</td>
+    
+                      </tr>
+                    </tbody>
+                  </table> 
+              </div>
+          </div>
+          <!-- <div class="form-row">
+            
+
+
+
+            <table class="table table-bordered" >
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Driving Licence Number</th>
+                    <th>Mobile Number</th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{viewArray?.full_name}}</td>
+                    <td>{{viewArray?.street_address}},{{viewArray?.city}}</td>
+                    <td>{{viewArray?.dl_number}}</td>
+                    <td>{{viewArray?.mobile_number}}</td>
+
+                  </tr>
+                </tbody>
+              </table>
+
+            </div> -->
+
+
+
+
+
+
+            <!-- <div class="form-group">
+                <label> Name</label>
+                <input type="text"  class="form-control" [(ngModel)]="viewArray.full_name" disabled />
+            </div> -->
+            <!-- <div class="form-group">
+              <label>Email</label>
+              <input type="text"  class="form-control" [(ngModel)]="viewArray.email" disabled />
+          </div> -->
+            <!-- <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="text"  class="form-control" [(ngModel)]="viewArray.mobile_number" disabled />
+            </div>   -->
+            <!-- <div class="form-group" *ngIf="driverAddress">
+              <label>Address</label>
+              <input type="text"  class="form-control" [(ngModel)]="driverAddress" disabled />
+          </div>   -->
+            <!-- <div class="form-group">
+                <label>DL Number</label>
+                <input type="text"  class="form-control" [(ngModel)]="viewArray.dl_number" disabled />
+            </div> -->
+            <!-- <div class="form-group">
+                <label>Status</label>
+                <p-inputSwitch class="form-control" [(ngModel)]="viewArray.is_active" disabled></p-inputSwitch>
+                <input type="text"  class="form-control" [(ngModel)]="viewArray.isAvailable" disabled />
+            </div> -->
+            
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>

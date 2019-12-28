@@ -1,0 +1,164 @@
+<header class="navbar navbar-header navbar-header-fixed" style="width:100%">
+  <a id="mainMenuOpen" class="burger-menu"><i></i></a>
+  
+  <div id="navbarMenu" class="navbar-menu-wrapper">
+    <div class="navbar-menu-header">
+      <a routerLink="/home" class="df-logo">dash<span>forge</span></a>
+      <a id="mainMenuClose" href=""><i></i></a>
+    </div>
+    <!-- <ul class="nav navbar-menu"> -->
+      <!-- <li class="nav-label pd-l-20 pd-lg-l-25 d-lg-none">Main Navigation</li> -->
+      <!-- <li class="nav-item with-sub dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false" class="nav-link"><i data-feather="layers"></i> User Management</a>
+        <div class="navbar-menu-sub">
+          <div class="d-lg-flex">
+            <ul>
+              <li class="nav-label">Manager Users</li>
+              <li class="nav-sub-item">
+                <a class="nav-sub-link" routerLink="user">
+                  <i data-feather="log-in"></i> User Management
+                </a>
+              </li>
+            </ul>
+            <ul>
+              <li class="nav-label">Manage User Roles</li>
+              <a class="dropdown-item" routerLink="userrole">User
+                Roles</a>
+            </ul>
+          </div>
+        </div>
+      </li> -->
+      <!-- <li class="nav-item"><a routerLink="product" class="nav-link"><i data-feather="box"></i> Produts Management</a>
+      </li> -->
+      <!-- <li class="nav-item"><a routerLink="orders" class="nav-link"> Order Management</a></li> -->
+      <!-- <li class="nav-item"><a routerLink="returnorder"> Return Order</a></li> -->
+      <!-- <li class="nav-item"><a routerLink="challan"> Challan Management</a></li> -->
+      <!-- <li class="nav-item with-sub dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false" class="nav-link"><i data-feather="layers"></i> Admin Panel</a>
+        <div class="navbar-menu-sub">
+          <div class="d-lg-flex">
+            <ul>
+              <li class="nav-sub-item">
+                <a class="nav-sub-link" routerLink="customer">
+                  <i data-feather="log-in"></i> Customer Management
+                </a>
+              </li>
+              <li class="nav-sub-item">
+                <a class="nav-sub-link" routerLink="vehicle">
+                  <i data-feather="log-in"></i> Vehicle Management
+                </a>
+              </li>
+              <li class="nav-sub-item">
+                <a class="nav-sub-link" routerLink="drivers">
+                  <i data-feather="log-in"></i> Driver Management
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </li> -->
+    <!-- </ul> -->
+  </div>
+  <div class="navbar-right">
+    <a id="navbarSearch" href="" class="search-link"><i></i></a>
+    <div class="dropdown dropdown-message">
+      <a href="" class="dropdown-link new-indicator" data-toggle="dropdown">
+        <i class="far fa-envelope"></i>
+        <span>0</span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-right">
+        <div class="dropdown-header">New Messages</div>
+        <a href="" class="dropdown-item">
+          <div class="media">
+            <div class="avatar avatar-sm avatar-online"><img
+                src="assets/img/dummy-profile-pic"
+                class="rounded-circle" alt=""></div>
+            <div class="media-body mg-l-15">
+              <strong>Dummy User Name</strong>
+              <p>Dummy Notification Content</p>
+              <span>Mar 15 12:32pm</span>
+            </div>
+          </div>
+        </a>
+        <div class="dropdown-footer"><a href="">View all Messages</a></div>
+        <!-- <!-- <div class="dropdown-footer"><a href="">No New Messages</a></div> -->
+      </div>
+    </div>
+    <div class="dropdown dropdown-notification">
+      <a href="" class="dropdown-link new-indicator" data-toggle="dropdown">
+        <i data-feather="bell"></i>
+        <!-- <!-- <i class="far fa-bell"></i> -->
+        <span>0</span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-right">
+        <div class="dropdown-header">Notifications</div>
+        <a href="" class="dropdown-item">
+          <div class="media">
+            <div class="avatar avatar-sm avatar-online"><img
+                src="assets/img/dummy-profile-pic"
+                class="rounded-circle" alt=""></div>
+            <div class="media-body mg-l-15">
+              <p>Congratulate <strong>Socrates Itumay</strong> for work anniversaries</p>
+              <span>Mar 15 12:32pm</span>
+            </div>
+          </div>
+        </a> -->
+        <div class="dropdown-footer"><a href="">View all Notifications</a></div>
+        <div class="dropdown-footer"><a href="">No New Notifications</a></div>
+      </div>
+    </div>
+    <div class="dropdown dropdown-profile">
+      <a href="" class="dropdown-link" data-toggle="dropdown" data-display="static">
+        <div class="avatar avatar-sm"><img src="http://www.mecgale.com/wp-content/uploads/2017/08/dummy-profile.png"
+            class="rounded-circle" alt=""></div>
+      </a>
+      <div class="dropdown-menu dropdown-menu-right tx-13">
+        <div class="avatar avatar-lg mg-b-15"><img
+            src="http://www.mecgale.com/wp-content/uploads/2017/08/dummy-profile.png" class="rounded-circle" alt="">
+        </div>
+        <h6 class="tx-semibold mg-b-5" *ngIf="authService.user">{{me?.full_name | titlecase}} </h6>
+        <p class="mg-b-25 tx-12 tx-color-03" *ngIf="authService.user">{{me?.role.name | titlecase}}</p>
+
+        <a routerLink="auth/editprofile" class="dropdown-item"><i data-feather="edit-3"></i> Edit Profile</a>
+        <a routerLink="auth/profile" class="dropdown-item"><i data-feather="user"></i> View Profile</a>
+        <div class="dropdown-divider"></div>
+        <a href="page-help-center.html" class="dropdown-item"><i data-feather="help-circle"></i> Help Center</a>
+        <a href="" class="dropdown-item"><i data-feather="life-buoy"></i> Forum</a>
+        <a href="" class="dropdown-item"><i data-feather="settings"></i>Account Settings</a>
+        <a href="" class="dropdown-item"><i data-feather="settings"></i>Privacy Settings</a>
+        <a (click)="logout()" class="dropdown-item"><i data-feather="log-out"></i>Sign Out</a>
+      </div>
+    </div>
+  </div>
+  <div class="navbar-search">
+    <div class="navbar-search-header">
+      <input type="search" class="form-control" placeholder="Type and hit enter to search...">
+      <button class="btn"><i data-feather="search"></i></button>
+      <a id="navbarSearchClose" href="" class="link-03 mg-l-5 mg-lg-l-10"><i data-feather="x"></i></a>
+    </div>
+    <div class="navbar-search-body">
+      <label class="tx-10 tx-medium tx-uppercase tx-spacing-1 tx-color-03 mg-b-10 d-flex align-items-center">Recent
+        Searches</label>
+      <ul class="list-unstyled">
+        <li><a routerLink="oops">modern dashboard</a></li>
+        <li><a routerLink="oops">calendar app</a></li>
+        <li><a routerLink="oops">modal examples</a></li>
+        <li><a routerLink="oops">avatar</a></li>
+      </ul>
+
+      <hr class="mg-y-30 bd-0">
+
+      <label class="tx-10 tx-medium tx-uppercase tx-spacing-1 tx-color-03 mg-b-10 d-flex align-items-center">Search
+        Suggestions</label>
+
+      <ul class="list-unstyled">
+        <li><a routerLink="oops">cryptocurrency</a></li>
+        <li><a routerLink="oops">button groups</a></li>
+        <li><a routerLink="oops">form elements</a></li>
+        <li><a routerLink="oops">contact app</a></li>
+      </ul>
+    </div>
+  </div>
+</header>

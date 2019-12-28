@@ -1,0 +1,231 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="float-left">Customer Order Management</h2>
+      <!-- <a class="btn btn-primary float-right text-white" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal3">Add New
+        State</a> -->
+      <!-- <a class="btn btn-primary text-white mx-1 float-right" (click)="resetForm()" data-toggle="modal"
+        data-target="#modal2">Upload CSV</a> -->
+    </div>
+    <div class="card-body">
+      <table class="table table table-bordered table-hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+        <thead>
+          <tr>
+            <th scope="col">S.No</th>
+            <th scope="col">Order Number</th>
+            <th scope="col">Order Date</th>
+            <th scope="col">Placed By</th>
+            <th scope="col">Total Amount</th>
+            <th scope="col">Status</th>
+            <th scope="col">Item Returned</th>
+            <th scope="col">Deposit Refunded</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of allCustomersOrders; let i = index" [ngClass]="{
+            'partially-fullfilled': order?.status == 'Partailly Fullfilled' ,
+            'cancelled': order?.status == 'Cancelled' ,
+            'fullfilled': order?.status == 'Fullfill' 
+          }">
+            <td>{{i+1}}</td>
+            <td>#{{order?.order_id}}</td>
+            <td>{{order?.order_date | date:'dd/MM/yy'}}</td>
+            <td>{{order?.placed_by?.full_name | titlecase}}</td>
+            <td>₹{{order?.amount}}</td>
+            <td>{{order?.status | titlecase}}</td>
+            <td>
+              <ng-container *ngFor="let product of order?.products">
+                  <ng-container *ngIf="product?.returned == true || product?.returned == false">
+                    <span *ngIf="product?.returned == true">Returned</span>
+                    <span *ngIf="product?.returned == false">Didn't Returned</span>
+                  </ng-container>
+              </ng-container>
+            </td>
+            <td>
+              <ng-container *ngFor="let product of order?.products">
+                <ng-container *ngIf="product?.depositRefunded == true || product?.depositRefunded == false">
+                  <span *ngIf="product?.depositRefunded == true">Refunded</span>
+                  <span *ngIf="product?.depositRefunded == false">Didn't Refund</span>
+                </ng-container>
+              </ng-container>
+            </td>
+            <td>
+              <a style="cursor: pointer" (click)="viewCustomerOrder(i)" data-toggle="modal"
+                data-target="#exampleModal"><i class="fas fa-eye"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!--View Example Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document" *ngIf="selectedOrder">
+    <div class="modal-content tx-14">
+      <div class="modal-header">
+        <div class="d-sm-flex align-items-center justify-content-between">
+          <div>
+            <h4 class="mg-b-5">Order Details</h4>
+          </div>
+        </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="content tx-13">
+          <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="" *ngIf="selectedOrder?.placed_to && selectedOrder?.placed_to?.role.name == 'Customer'">
+                  <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Customer Details</label>
+                  <h6 class="tx-15 mg-b-10">{{selectedOrder?.placed_to?.full_name | titlecase}}</h6>
+                  <p class="mg-b-0">{{selectedOrder?.placed_to?.email}}</p>
+                  <p class="mg-b-0">{{selectedOrder?.placed_to?.H_no_society}}</p>
+                  <p class="mg-b-0">{{selectedOrder?.placed_to?.street_address  | titlecase}}</p>
+                  <p class="mg-b-0">{{selectedOrder?.placed_to?.landmark  | titlecase}}</p>
+                </div>
+
+                <h6 *ngIf="selectedOrder?.placed_by && selectedOrder?.placed_by?.role?.name == 'Customer'"
+                  class="tx-15 mg-b-10">
+                  {{selectedOrder?.placed_by?.full_name | titlecase}}
+                  <p class="mg-b-0">{{selectedOrder?.placed_by?.email}}</p>
+                  <p class="mg-b-0">{{selectedOrder?.placed_by?.H_no_society}}</p>
+                  <p class="mg-b-0">{{selectedOrder?.placed_by?.street_address  | titlecase}}</p>
+                  <p class="mg-b-0">{{selectedOrder?.placed_by?.landmark  | titlecase}}</p>
+                </h6>
+              </div>
+              <div class="col-sm-6 tx-right d-none d-md-block">
+                <label *ngIf="selectedOrder?.placed_by && selectedOrder?.placed_by?.role.name == 'Sales'"
+                  class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Ordered By</label>
+                <h6 *ngIf="selectedOrder?.placed_by && selectedOrder?.placed_by?.role.name == 'Sales'"
+                  class="tx-15 mg-b-10">
+                  {{selectedOrder?.placed_by?.full_name | titlecase}}
+                </h6>
+                <label
+                  class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">{{selectedOrder?.order_date | date : 'dd/MM/yy'}}</label>
+                <h4 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{selectedOrder?.order_id}}</h4>
+              </div>
+            </div>
+            <div class="table-responsive mg-t-40">
+              <table class="table table-invoice bd-b">
+                <thead>
+                  <tr>
+                    <th class="text-center">Product</th>
+                    <th class="text-center">Quantity</th>
+                    <th class="text-center">Price</th>
+                    <th class="text-center">Start Rent Date</th>
+                    <th class="text-center">End Rent Date</th>
+                    <th class="text-center">No. Of Days</th>
+                    <th class="text-center">Item Returned</th>
+                    <th class="text-center">Deposit Refunded</th>
+                    <!-- <th class="wd-20p text-center" *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">Accepted</th>
+                    <th class="wd-20p text-center" *ngIf="(selectedOrder.accepted) && !(selectedOrder.isCancelled)">Accepted</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let product of selectedOrder?.products;let i=index">
+                    <td class="tx-nowrap text-center">{{product?.product?.product?.name | titlecase}} (<span
+                        *ngFor="let option of product.product.attributes; let i = index">
+                        {{option?.option?.value | titlecase}}</span> )</td>
+                    <td class="tx-nowrap text-center">{{product?.quantity | number}}</td>
+                    <td class=" text-center">
+                      {{(product?.product?.price) * (quantityFormGetter.controls[i].get('accepted').value) | number}}
+                    </td>
+                    <td class="tx-nowrap text-center">{{product?.startRentDate | date:'dd/MM/yy'}}</td>
+                    <td class="tx-nowrap text-center">{{product?.endRentDate | date:'dd/MM/yy'}}</td>
+                    <td class="tx-nowrap text-center">{{calculateDays(product?.startRentDate,product?.endRentDate)}}
+                    </td>
+                    <td class="tx-nowrap text-center">
+                      <ng-container *ngIf="product?.returned == true || product?.returned == false">
+                        <p-inputSwitch (onChange)="changeItemReturnedStatus($event,i)" [ngModel]="product.returned">
+                        </p-inputSwitch>
+                      </ng-container>
+                    </td>
+                    <td class="tx-nowrap text-center">
+                      <ng-container *ngIf="product?.depositRefunded == true || product?.depositRefunded == false">
+                        <p-inputSwitch (onChange)="changeDepositRefundStatus($event,i)"
+                          [ngModel]="product.depositRefunded">
+                        </p-inputSwitch>
+                      </ng-container>
+                    </td>
+                    <!-- <td *ngIf="(selectedOrder.accepted) && !(selectedOrder.isCancelled)" class=" text-center">{{product.accepted | number}}</td>
+                    <td *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)" class=" text-center">
+                      <form [formGroup]="quantityForm">
+                        <div formArrayName="products">
+                          <div [formGroupName]="i">
+                            <input type="text" class="form-control" formControlName="accepted" (change)="calculateTotalAmount()">
+                          </div>
+                        </div>
+                      </form>
+                    </td> -->
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="row justify-content-between">
+              <div class="col-sm-6 col-lg-6 order-2 order-sm-0 mg-t-40 mg-sm-t-0">
+                <h5><label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">Status</label></h5>
+                <h5>{{selectedOrder?.status}} </h5>
+              </div>
+              <div class="col-sm-6 col-lg-4 order-1 order-sm-0">
+                <ul class="list-unstyled lh-7 pd-r-10">
+                  <li class="d-flex justify-content-between">
+                    <h5><b>Total Due</b></h5>
+                    <h5 *ngIf="(selectedOrder.accepted) && !(selectedOrder.isCancelled)">
+                      <b>₹{{selectedOrder?.amount}}</b></h5>
+                    <h5 *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">
+                      <b>₹{{calculateTotalAmount()}}</b></h5>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary tx-13" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary tx-13" (click)="acceptOrder()"
+          *ngIf="!(selectedOrder.accepted) || !(selectedOrder.isCancelled)">Accept</button>
+        <button type="button" class="btn btn-primary tx-13" (click)="cancleOrder()"
+          *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="acceptOrderModal" tabindex="-1" role="dialog" aria-labelledby="acceptOrderModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content tx-14">
+      <div class="modal-header">
+        <div class="d-sm-flex align-items-center justify-content-between">
+          <div>
+            <h4 class="mg-b-5">Accept Order</h4>
+          </div>
+        </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="content tx-13">
+          <div class="container pd-x-0 pd-lg-x-10 pd-xl-x-0">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary tx-13" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary tx-13" data-toggle="modal" data-target="">Accept</button>
+      </div>
+    </div>
+  </div>
+</div>
