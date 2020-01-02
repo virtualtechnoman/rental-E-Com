@@ -10,6 +10,9 @@ export class ProductsService {
     'Content-Type': 'application/json',
     'token': this.tokenService.getToken()
   });
+  headersFormData = new HttpHeaders({
+    'token': this.tokenService.getToken()
+  });
   url = '/api/product/products';
   url2 = '/api/product/pcategory';
   url3 = '/api/product/brand';
@@ -27,7 +30,7 @@ export class ProductsService {
   }
 
   addProduct(product) {
-    return this.http.post(this.url + '/', product, { headers: this.headers });
+    return this.http.post(this.url + '/', product, { headers: this.headersFormData });
   }
 
   deleteProduct(id) {
@@ -35,7 +38,7 @@ export class ProductsService {
   }
 
   updateProduct(product, id) {
-    return this.http.put(this.url + '/id/' + id, product, { headers: this.headers });
+    return this.http.put(this.url + '/id/' + id, product, { headers: this.headersFormData });
   }
 
   importCustomer(csv) {
@@ -47,7 +50,7 @@ export class ProductsService {
   }
 
   addCategory(category) {
-    return this.http.post(this.url2 + '/', category, { headers: this.headers });
+    return this.http.post(this.url2 + '/', category, { headers: this.headersFormData });
   }
 
   deleteCategory(id) {
@@ -55,7 +58,7 @@ export class ProductsService {
   }
 
   updateCategory(category, id) {
-    return this.http.put(this.url2 + '/' + id, category, { headers: this.headers });
+    return this.http.put(this.url2 + '/' + id, category, { headers: this.headersFormData });
   }
   // Brand API
   getAllBrand() {
@@ -63,7 +66,7 @@ export class ProductsService {
   }
 
   addBrand(brand) {
-    return this.http.post(this.url3 + '/', brand, { headers: this.headers });
+    return this.http.post(this.url3 + '/', brand, { headers: this.headersFormData });
   }
 
   deleteBrand(id) {
@@ -71,7 +74,7 @@ export class ProductsService {
   }
 
   updateBrand(brand, id) {
-    return this.http.put(this.url3 + '/' + id, brand, { headers: this.headers });
+    return this.http.put(this.url3 + '/' + id, brand, { headers: this.headersFormData });
   }
 
   // Hub User
@@ -160,5 +163,14 @@ export class ProductsService {
   getAllCategorysub(id) {
     return this.http.get(this.subCategoryURL + '/id/' + id, { headers: this.headers });
   }
+
+    // UPLOAD VARIENT IMAGES
+    uploadVarientImages(productId, images) {
+      return this.http.put(this.productVarientURL + '/images/' + productId, images, {
+        headers: new HttpHeaders({
+          'token': this.tokenService.getToken()
+        })
+      });
+    }
 
 }

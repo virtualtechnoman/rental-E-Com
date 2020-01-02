@@ -35,6 +35,7 @@ import { SubscriptionModule } from './core/customersubscription/subscription.mod
 import { EventModule } from './core/event/event.module';
 import { EventSesrvice } from './event.service';
 import { FullCalendarModule } from '@fullcalendar/angular';
+import { BannerModule } from './core/banner/banner.module';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,7 @@ import { FullCalendarModule } from '@fullcalendar/angular';
     HeaderComponent,
     HomeComponent,
     MaintainanceComponent,
-    CoreComponent,
+    CoreComponent
   ],
   imports: [
     BrowserModule,
@@ -68,7 +69,8 @@ import { FullCalendarModule } from '@fullcalendar/angular';
     RouteModule,
     SubscriptionModule,
     EventModule,
-    FullCalendarModule
+    FullCalendarModule,
+    BannerModule
   ],
   providers: [
     LoginAuthGraud,

@@ -10,6 +10,9 @@ export class ProductsCategoryService {
         'Content-Type': 'application/json',
         'token': this.tokenService.getToken()
     });
+    headersFormData = new HttpHeaders({
+        'token': this.tokenService.getToken()
+    });
     productCategoryURL = 'api/product/pcategory';
     constructor(private http: HttpClient, private tokenService: TokenStorage) { }
     getAllCategory() {
@@ -21,7 +24,7 @@ export class ProductsCategoryService {
     }
 
     addCategory(category) {
-        return this.http.post(this.productCategoryURL + '/', category, { headers: this.headers });
+        return this.http.post(this.productCategoryURL + '/', category, { headers: this.headersFormData });
     }
 
     deleteCategory(id) {
@@ -29,6 +32,6 @@ export class ProductsCategoryService {
     }
 
     updateCategory(category, id) {
-        return this.http.put(this.productCategoryURL + '/' + id, category, { headers: this.headers });
+        return this.http.put(this.productCategoryURL + '/' + id, category, { headers: this.headersFormData });
     }
 }

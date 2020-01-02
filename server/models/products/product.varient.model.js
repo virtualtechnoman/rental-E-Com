@@ -13,7 +13,10 @@ const productType = new Schema({
     attributes: [att],
     name: { type: String },
     description: { type: String },
-    images: [String],
+    images: {
+        primary: String,
+        secondary: String
+    },
     rent_per_day: { type: Number },
     deposit_amount: { type: Number },
     price: { type: Number },

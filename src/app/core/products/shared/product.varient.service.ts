@@ -9,6 +9,10 @@ export class ProductVarientService {
         'Content-Type': 'application/json',
         'token': this.tokenService.getToken()
     });
+    headersFormData = new HttpHeaders({
+        // 'Content-Type': 'application/json',
+        'token': this.tokenService.getToken()
+    });
 
     productVarientURL = '/api/product/pvarients';
     constructor(private http: HttpClient, private tokenService: TokenStorage) { }

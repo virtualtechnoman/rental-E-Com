@@ -224,39 +224,33 @@ router.get("/byproduct/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (re
 })
 
 //UPLOAD IMAGES
-router.put("/images/:id", authorizePrivilege("UPDATE_PRODUCT_VARIENTS"), upload.array("images", 4), async (req, res) => {
+router.put("/images/:id", authorizePrivilege("UPDATE_PRODUCT_VARIENTS"), upload.fields([{ name: "primary", maxCount: 1 }, { name: "secondary", maxCount: 1 }]), async (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
-        console.log(req.files)
-        let arr = [];
-        try {
-            req.files.forEach(e => {
-                arr.push(S3Upload('products/' + req.params.id, e));
-            })
-            Promise.all(arr).then(data => {
-                ProductVarient
-                    .findByIdAndUpdate(req.params.id, { $set: { images: data } }, { new: true }, (err, doc) => {
-                        if (err)
-                            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating ProductVARIENTS" });
-                        else {
-                            if (doc)
-                                ProductVarient.find({ product: doc.product }).populate("attributes.attribute attributes.option").exec().then(_data => {
-                                    return res.status(200).json({ status: 200, data: _data, errors: false, message: "ProductVARIENTS Updated Successfully" });
-                                }).catch(err => {
-                                    console.log(err);
-                                    res.json({ status: 200, data: null, errors: true, message: "Error while getting varients" });
-                                })
-                            else {
-                                return res.status(200).json({ status: 200, data: [], errors: false, message: "No vairants found" });
-                            }
-                        }
-                    })
-            })
-        } catch (err) {
-            console.log(err);
-            return res.status(500).json({ status: 500, data: null, errors: true, message: "Something went wrong" });
+        let keys = Object.keys(req.files);
+        let obj ={};
+        if (keys.length) {
+            obj["images.primary"] = (req.files["primary"] && req.files["primary"].length) ? (await S3Upload("varient/" + req.params.id, req.files["primary"][0])) : null;
+            obj["images.secondary"] = (req.files["secondary"] && req.files["secondary"].length) ? (await S3Upload("varient/" + req.params.id, req.files["secondary"][0])) : null;
         }
+        // let obj = {};
+        // for (let index = 0; index < allKeys.length; index++) {
+        //     let x = allKeys[index];
+        //     obj[`image.${x}`] = (await S3Upload("products/" + result.data.product, req.files[x][0]));
+        // }
+        if(keys.length)
+        ProductVarient.findByIdAndUpdate(req.params.id, { $set: obj }, { new: true })
+            .populate("attributes.attribute attributes.option").exec()
+            .then(_data => {
+                return res.status(200).json({ status: 200, data: _data, errors: false, message: "ProductVARIENTS Updated Successfully" });
+            }).catch(err => {
+                console.log(err);
+                res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating varients" });
+            })
+        else
+        return res.status(400).json({ status: 400, data: null, errors: true, message: "Please select a image" });
+
     } else {
-        res.json({ status: 200, data: null, errors: true, message: "Invalid ProductVARIENTS id" });
+        return res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid id" });
     }
 })
 module.exports = router;

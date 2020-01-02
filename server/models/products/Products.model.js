@@ -9,17 +9,20 @@ const ProductSchema = new Schema({
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
     created_date: { type: Date, default: Date.now },
     details: { type: String, default: "", lowercase: true, trim: true },
-    deposite_amount: { type: Number, default: 0 },
-    rent_per_day: { type: Number, default: 0 },
     is_active: { type: Boolean, default: true, required: true },
     is_available: { type: Boolean, default: false, required: false },
     // service_type: { type: String, default: false, required: false },
-    image: { type: String },
+    images: {
+        primary: String,
+        secondary: String
+    },
     name: { type: String, required: true, lowercase: true, trim: true },
     product_id: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    base_price: { type: Number },
+    // base_price: { type: Number, required: true },
     type: { type: mongoose.Schema.Types.ObjectId, ref: 'product_type', required: true },
     stock: { type: Number, default: 0, required: true },
+    rent_per_day: { type: Number, default: 0},
+    deposit_amount: { type: Number, default: 0},
 }, {
     versionKey: false
 });

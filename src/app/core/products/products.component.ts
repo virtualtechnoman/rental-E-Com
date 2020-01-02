@@ -15,7 +15,7 @@ import { AttributesService } from './attributes/shared/attributes.service';
 import { ProductOptionService } from './options/shared/product.types.service';
 import { ProductVarientService } from './shared/product.varient.service';
 import { validateBasis } from '@angular/flex-layout';
-import { NgxGalleryOptions, NgxGalleryImage, NgxGalleryAnimation } from 'ngx-gallery';
+import { element } from '@angular/core/src/render3/instructions';
 
 @Component({
   selector: 'app-products',
@@ -28,10 +28,8 @@ export class ProductsComponent implements OnInit {
   @ViewChildren('selectallcheckboxes') selectallcheckboxes: QueryList<ElementRef>;
   @ViewChildren('selectallcheckboxes') selectallcheckboxes2: any;
   @ViewChildren('checkboxes') checkboxes2: any;
-  galleryOptions: NgxGalleryOptions[];
-  galleryImages: NgxGalleryImage[] = [];
   fileSelected: any;
-  imageUrl = 'https://sgsmarketing.s3.ap-south-1.amazonaws.com/';
+  imageUrl = 'https://mindful-rental.s3.ap-south-1.amazonaws.com';
   jQuery: any;
   allproducts: any[] = [];
   allCategories: CategoryModel[] = [];
@@ -66,7 +64,7 @@ export class ProductsComponent implements OnInit {
   optionArray: FormArray;
   pattern = '^[0-9]*$';
   productAttributeArray: any[] = [];
-  productFormData: FormData;
+  productFormData: FormData = new FormData();
   productImagesArray: any[] = [];
   productOptionsArray: any[] = [];
   productType: ProductTypeModel;
@@ -86,6 +84,16 @@ export class ProductsComponent implements OnInit {
   subCategory4: any;
   allCategoryArray: any[] = [];
   showSellingPrice: Boolean = false;
+  uploadingImages: Boolean = false;
+  varientIndex: number;
+  primaryProductImage: any;
+  filenamePrimaryProductImage: string | ArrayBuffer;
+  secondaryProductImage: any;
+  filenameSecondaryProductImage: string | ArrayBuffer;
+  primaryVarientProductImage: any;
+  filenamePrimaryVarientProductImage: string | ArrayBuffer;
+  secondaryVarientProductImage: any;
+  filenameSecondaryVarientProductImage: string | ArrayBuffer;
   constructor(
     private productService: ProductsService,
     private formBuilder: FormBuilder,
@@ -97,7 +105,7 @@ export class ProductsComponent implements OnInit {
     private productOptionService: ProductOptionService,
     private productVarientService: ProductVarientService
   ) {
-    this.titleService.setTitle('Product Management');
+    this.titleService.setTitle('StyleFusion | Product Management');
     this.initForm();
   }
 
@@ -148,6 +156,11 @@ export class ProductsComponent implements OnInit {
     };
   }
 
+  rerenderDatatable() {
+    jQuery('#typeTable').DataTable().destroy();
+    this.dtTrigger.next();
+  }
+
   initForm() {
     this.productForm = this.formBuilder.group({
       brand: ['', Validators.required],
@@ -155,9 +168,7 @@ export class ProductsComponent implements OnInit {
       details: [''],
       is_active: [false],
       name: ['', Validators.required],
-      base_price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1)]],
-      image: [''],
-      // service_type: [''],
+      // image: [''],
       type: ['']
     });
   }
@@ -171,56 +182,15 @@ export class ProductsComponent implements OnInit {
   initProductVarientForm() {
     this.productVarient = this.formBuilder.group({
       product: [''],
-      stock: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(3), Validators.max(999), Validators.min(0)]],
-      price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(3), Validators.max(999), Validators.min(0)]],
-      rent_per_day: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(3), Validators.max(9999), Validators.min(0)]],
-      deposit_amount: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(4), Validators.max(9999), Validators.min(0)]],
-      description: [''],
       attributes: this.formBuilder.array([]),
       // name: ['', Validators.required],
+      description: ['', Validators.required],
+      images: ['', Validators.required],
+      price: ['', Validators.required],
+      stock: ['', Validators.required],
+      rent_per_day: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(3), Validators.max(99999), Validators.min(0)]],
+      deposit_amount:['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(3), Validators.max(99999), Validators.min(0)]]
     });
-  }
-
-
-  initGallery(photos) {
-    this.galleryOptions = [
-      {
-        imageSize: 'containe',
-        width: '600px',
-        height: '400px',
-        thumbnailsColumns: 4,
-        imageAnimation: NgxGalleryAnimation.Slide
-      },
-      // max-width 800
-      {
-        breakpoint: 800,
-        width: '100%',
-        height: '600px',
-        imagePercent: 80,
-        thumbnailsPercent: 20,
-        thumbnailsMargin: 20,
-        thumbnailMargin: 20
-      },
-      // max-width 400
-      {
-        breakpoint: 400,
-        preview: false
-      }
-    ];
-    const imageArray: any[] = [];
-    for (let index = 0; index < photos.length; index++) {
-      const imageObject: { small: String, medium: String, big: String } = { small: '', medium: '', big: '' };
-      imageObject.small = 'https://sgsmarketing.s3.ap-south-1.amazonaws.com/' + photos[index];
-      imageObject.medium = 'https://sgsmarketing.s3.ap-south-1.amazonaws.com/' + photos[index];
-      imageObject.big = 'https://sgsmarketing.s3.ap-south-1.amazonaws.com/' + photos[index];
-      imageArray.push(imageObject);
-    }
-    this.galleryImages = imageArray;
-    // if (this.galleryImages.length > 0) {
-    //   this.imagesPresent = true;
-    // } else {
-    //   this.imagesPresent = false;
-    // }
   }
   // ************************** GET FUNCTIONS *********************
   get f() { return this.productForm.controls; }
@@ -242,14 +212,10 @@ export class ProductsComponent implements OnInit {
       if (res.errors) {
         this.toastr.error('Error While Fetcing Products', 'Refresh and Retry');
       } else {
+        // if (this.allproducts.length > 0) {
         this.allproducts = res.data;
-        console.log(res.data);
         this.dtTrigger.next();
-        if (res.data) {
-          for (let i = 0; i < res.data.length; i++) {
-            this.productImagesArray.push(this.imageUrl + res.data[i].image);
-          }
-        }
+        console.log(this.allproducts);
       }
     });
   }
@@ -303,6 +269,7 @@ export class ProductsComponent implements OnInit {
         if (res.data[0].subcategory.length > 0) {
           this.allCategoryArray.push(this.subCategory1);
           this.allSubCategories = res.data[0].subcategory;
+          this.toastr.info(res.data[0].subcategory.length + '' + 'subcategories found');
         } else {
           this.toastr.info('No Sub Categories Found');
         }
@@ -324,6 +291,7 @@ export class ProductsComponent implements OnInit {
           if (res.data[0].subcategory.length > 0) {
             this.allCategoryArray.push(this.subCategory2);
             this.allSubCategories2 = res.data[0].subcategory;
+            this.toastr.info(res.data[0].subcategory.length + '' + 'subcategories found');
           } else {
             this.toastr.info('No Sub Categories Found');
           }
@@ -344,6 +312,7 @@ export class ProductsComponent implements OnInit {
           if (res.data[0].subcategory.length > 0) {
             this.allCategoryArray.push(this.subCategory3);
             this.allSubCategories3 = res.data[0].subcategory;
+            this.toastr.info(res.data[0].subcategory.length + '' + 'subcategories found');
           } else {
             this.toastr.info('No Sub Categories Found');
           }
@@ -362,6 +331,7 @@ export class ProductsComponent implements OnInit {
           if (res.data[0].subcategory.length > 0) {
             this.allCategoryArray.push(this.subCategory4);
             this.allSubCategories4 = res.data[0].subcategory;
+            this.toastr.info(res.data[0].subcategory.length + '' + 'subcategories found');
           } else {
             this.toastr.info('No Sub Categories Found');
           }
@@ -376,10 +346,8 @@ export class ProductsComponent implements OnInit {
       if (res.errors) {
         this.toastr.error('Unable to Fetch Varients', 'Refresh and Retry');
       } else {
-        if (res.data.length > 0) {
-          this.varientArray = res.data;
-          console.log(this.varientArray);
-        }
+        console.log(res.data);
+        this.varientArray = res.data;
       }
     });
   }
@@ -387,12 +355,15 @@ export class ProductsComponent implements OnInit {
   // ************************** ADD FUNCTIONS *****************************
   addProduct(product) {
     this.productService.addProduct(product).subscribe((res: ResponseModel) => {
+      console.log(res);
       if (res.errors) {
         this.toastr.error('Error While Adding !', 'Error!');
       } else {
-        jQuery('#modal3').modal('hide');
-        this.toastr.success('Product Added!', 'Success!');
         this.allproducts.push(res.data);
+        console.log(this.allproducts);
+        this.rerenderDatatable();
+        this.toastr.success('Product Added!', 'Success!');
+        jQuery('#modal3').modal('hide');
         this.resetForm();
       }
     });
@@ -402,13 +373,15 @@ export class ProductsComponent implements OnInit {
   updateProduct(product) {
     const id = this.allproducts[this.currentIndex]._id;
     this.productService.updateProduct(product, id).subscribe((res: ResponseModel) => {
-      jQuery('#modal3').modal('hide');
-      this.toastr.info('Product Updated Successfully!', 'Updated!!');
-      this.resetForm();
+      console.log(res.data);
       this.allproducts.splice(this.currentIndex, 1, res.data);
+      this.rerenderDatatable();
+      this.toastr.info('Product Updated Successfully!', 'Updated!!');
       this.currentproductId = null;
       this.editing = false;
       this.masterArray.length = 0;
+      jQuery('#modal3').modal('hide');
+      this.resetForm();
     });
   }
 
@@ -430,6 +403,7 @@ export class ProductsComponent implements OnInit {
       this.productService.deleteProduct(this.allproducts[i]._id).toPromise().then(() => {
         this.toastr.warning('Products Deleted!', 'Deleted!');
         this.allproducts.splice(i, 1);
+        this.rerenderDatatable();
       }).catch((err) => console.log(err));
     }
   }
@@ -450,45 +424,18 @@ export class ProductsComponent implements OnInit {
   submit() {
     this.productForm.get('type').setValue(this.productType);
     this.submitted = true;
-    if (!this.productForm.get('image').value) {
-      this.productForm.removeControl('image');
-    }
-    if (!(this.showSellingPrice)) { this.productForm.removeControl('base_price') }
-    else { this.productForm.addControl('base_price', new FormControl('')) }
-    console.log(this.productForm.value);
+    console.log(this.productForm);
+    Object.keys(this.productForm.controls).forEach(control => {
+      this.productFormData.append(control, this.productForm.get(control).value);
+    });
     if (this.productForm.invalid) {
+      this.toastr.error('Invalid Form', 'Error');
       return;
     } else {
-
-    }
-    if (this.fileSelected) {
-      this.productService.getUrlProduct().subscribe((res: ResponseModel) => {
-        this.keyProductImage = res.data.key;
-        this.urlProductImage = res.data.url;
-        if (this.urlProductImage) {
-          this.productService.sendUrlProduct(this.urlProductImage, this.fileSelected)
-            .then(resp => {
-              if (resp.status === 200) {
-                this.productForm.value.image = this.keyProductImage;
-                if (this.editing) {
-                  this.updateProduct(this.productForm.value);
-                } else {
-                  this.addProduct(this.productForm.value);
-                }
-              }
-            });
-        }
-      });
-    } else {
       if (this.editing) {
-        if (!this.fileSelected) {
-          this.productForm.value.image = this.mastImage;
-        }
-        this.updateProduct(this.productForm.value);
-
+        this.updateProduct(this.productFormData);
       } else {
-        delete this.productForm.value.image;
-        this.addProduct(this.productForm.value);
+        this.addProduct(this.productFormData);
       }
     }
   }
@@ -528,24 +475,28 @@ export class ProductsComponent implements OnInit {
       });
     } else {
       this.productVarient.removeControl('product');
+      const attributesArray: any = {};
+      attributesArray['attributes'] = [];
       for (let i = 0; i < this.currentVarient.attributes.length; i++) {
-        this.productVarient.value.attributes[i].attribute = this.currentVarient.attributes[i].attribute._id;
+        attributesArray.attributes[i] = { attribute: this.currentVarient.attributes[i].attribute._id, option: this.productVarient.value.attributes[i].option }
       }
-      this.productFormData = new FormData();
-      this.productFormData.append('product', this.productVarient.get('product').value);
-      this.productFormData.append('attributes', this.productVarient.get('attributes').value);
-      this.productFormData.append('description', this.productVarient.get('description').value);
-      this.productFormData.append('price', this.productVarient.get('price').value);
-      this.productFormData.append('stock', this.productVarient.get('stock').value);
-      this.productFormData.append('images', this.productVarient.get('images').value);
-      if (this.productVarient.value.rent_per_day) {
-        this.productFormData.append('rent_per_day', this.productVarient.get('rent_per_day').value);
-      }
-      if (this.productVarient.value.deposit_amount) {
-        this.productFormData.append('deposit_amount', this.productVarient.get('deposit_amount').value);
-      }
-      this.productVarientService.updateProductVarients(this.currentVarient._id, this.productFormData)
+      this.productVarient.get('attributes').setValue(attributesArray.attributes);
+      // console.log(this.currentVarient);
+      // this.productFormData = new FormData();
+      // this.productFormData.append('product', this.currentVarient.product);
+      // this.productFormData.append('attributes', JSON.stringify(this.productVarient.value.attributes));
+      // this.productFormData.append('description', this.productVarient.get('description').value);
+      // this.productFormData.append('price', this.productVarient.get('price').value);
+      // this.productFormData.append('stock', this.productVarient.get('stock').value);
+      // this.productFormData.forEach((element) => {
+      //   console.log(element);
+      // })
+      // this.productFormData.append('images', this.productVarient.get('images').value);
+      this.productVarient.removeControl('images');
+      console.log(this.productVarient);
+      this.productVarientService.updateProductVarients(this.currentVarient._id, this.productVarient.value)
         .subscribe((res: ResponseModel) => {
+          console.log(res.data);
           if (res.errors) {
             this.toastr.error('Error While Deleting Varient');
           } else {
@@ -561,13 +512,28 @@ export class ProductsComponent implements OnInit {
     this.editing = false;
     this.submitted = false;
     this.productForm.reset();
+    this.initForm();
+    // this.allCategories.length = 0;
+    this.subCategory1 = null;
+    this.allSubCategories.length = 0;
+    this.subCategory2 = null;
+    this.allSubCategories2.length = 0;
+    this.subCategory3 = null;
+    this.allSubCategories3.length = 0;
+    this.subCategory4 = null;
+    this.allSubCategories4.length = 0;
     this.editShowImage = false;
-    this.checkboxes.forEach((element) => {
-      element.nativeElement.checked = false;
-    });
-    this.selectallcheckboxes.forEach((element) => {
-      element.nativeElement.checked = false;
-    });
+    this.primaryProductImage = null;
+    this.filenamePrimaryProductImage = null;
+    this.secondaryProductImage = null;
+    this.filenameSecondaryProductImage = null;
+    this.productFormData = new FormData();
+    // this.checkboxes.forEach((element) => {
+    //   element.nativeElement.checked = false;
+    // });
+    // this.selectallcheckboxes.forEach((element) => {
+    //   element.nativeElement.checked = false;
+    // });
   }
 
   resetProductVarientForm() {
@@ -584,9 +550,94 @@ export class ProductsComponent implements OnInit {
     this.fileSelected = event.target.files[0];
   }
 
+  onSelectFile(event, type) {
+    if (event.target.files && event.target.files[0]) {
+      const filesAmount = event.target.files.length;
+      for (let i = 0; i < filesAmount; i++) {
+        this.imageFormData.append(type, event.target.files[i]);
+      }
+    }
+  }
+
+  onPrimaryVarientImageSelect(event, type) {
+    if (this.imageFormData.get('type') != undefined) {
+      this.imageFormData.delete('type');
+    } else {
+      this.imageFormData.append(type, event.target.files[0]);
+    }
+    if (event.target.files && event.target.files[0]) {
+      var reader = new FileReader();
+      reader.readAsDataURL(event.target.files[0]); // read file as data url
+      this.primaryVarientProductImage = event.target.files[0];
+      reader.onload = (event) => { // called once readAsDataURL is completed
+        this.filenamePrimaryVarientProductImage = event.target.result;
+      }
+    }
+  }
+
+  onProductImageSelectPrimary(event, type) {
+    if (this.productFormData.get('type') != undefined) {
+      this.productFormData.delete('type');
+    } else {
+      this.productFormData.append(type, event.target.files[0]);
+    }
+    if (event.target.files && event.target.files[0]) {
+      var reader = new FileReader();
+      reader.readAsDataURL(event.target.files[0]); // read file as data url
+      this.primaryProductImage = event.target.files[0];
+      reader.onload = (event) => { // called once readAsDataURL is completed
+        this.filenamePrimaryProductImage = event.target.result;
+      }
+    }
+  }
+
+  onSecondaryVarientImageSelect(event, type) {
+    if (this.imageFormData.get('type') != undefined) {
+      this.imageFormData.delete('type');
+    } else {
+      this.imageFormData.append(type, event.target.files[0]);
+    }
+    if (event.target.files && event.target.files[0]) {
+      var reader = new FileReader();
+      reader.readAsDataURL(event.target.files[0]); // read file as data url
+      this.secondaryVarientProductImage = event.target.files[0];
+      reader.onload = (event) => { // called once readAsDataURL is completed
+        this.filenameSecondaryVarientProductImage = event.target.result;
+      }
+    }
+    // if (event.target.files && event.target.files[0]) {
+    //   const filesAmount = event.target.files.length;
+    //   for (let i = 0; i < filesAmount; i++) {
+    //     this.productFormData.append(type, event.target.files[i]);
+    //   }
+    // }
+  }
+  onProductImageSelectSecondary(event, type) {
+    if (this.productFormData.get('type') != undefined) {
+      this.productFormData.delete('type');
+    } else {
+      this.productFormData.append(type, event.target.files[0]);
+    }
+    if (event.target.files && event.target.files[0]) {
+      var reader = new FileReader();
+      reader.readAsDataURL(event.target.files[0]); // read file as data url
+      this.secondaryProductImage = event.target.files[0];
+      reader.onload = (event) => { // called once readAsDataURL is completed
+        this.filenameSecondaryProductImage = event.target.result;
+      }
+    }
+    // if (event.target.files && event.target.files[0]) {
+    //   const filesAmount = event.target.files.length;
+    //   for (let i = 0; i < filesAmount; i++) {
+    //     this.productFormData.append(type, event.target.files[i]);
+    //   }
+    // }
+  }
+
   editProduct(i) {
     this.editing = true;
     this.currentproduct = this.allproducts[i];
+    console.log(this.currentproduct);
     this.currentproductId = this.allproducts[i]._id;
     this.currentIndex = i;
     this.setFormValue();
@@ -611,20 +662,13 @@ export class ProductsComponent implements OnInit {
 
   setFormValue() {
     const product: any = this.allproducts[this.currentIndex];
+    console.log(product);
     this.productForm.controls['brand'].setValue(product.brand._id);
     this.productForm.controls['category'].setValue(product.category._id);
     this.productForm.controls['details'].setValue(product.details);
     this.productForm.controls['is_active'].setValue(product.is_active);
     this.productForm.controls['name'].setValue(product.name);
-    this.productForm.controls['base_price'].setValue(product.base_price);
     this.productForm.controls['type'].setValue(product.type._id);
-    if (product.image) {
-      this.editShowImage = true;
-      this.mastImage = product.image;
-      this.editImage = this.imageUrl + product.image;
-    } else {
-      this.editShowImage = false;
-    }
   }
 
   checkboxChange(_id: string, isChecked: boolean) {
@@ -641,7 +685,6 @@ export class ProductsComponent implements OnInit {
   editVarient(index: number) {
     this.initProductVarientForm();
     this.currentVarient = this.varientArray[index];
-    this.initGallery(this.currentVarient.images);
     console.log(this.currentVarient);
     this.varientUpdate = true;
     if (this.currentVarient.name) {
@@ -672,10 +715,8 @@ export class ProductsComponent implements OnInit {
           option: this.currentVarient.attributes[i].option._id
         });
         this.currentProductAttributesForms.push(attribute);
-        console.log(attribute);
       }
     }
-    // this.selectallcheckboxes = checkBoxArray.value;
   }
 
   // ************************** FORMARRAY FUNCTIONS *****************************
@@ -702,30 +743,41 @@ export class ProductsComponent implements OnInit {
 
   appFormDataFuntion(data) {
     for (let index = 0; index < data.length; index++) {
-      console.log(data[index]);
-    }
-  }
-
-  onSelectFile(event) {
-    if (event.target.files && event.target.files[0]) {
-      const filesAmount = event.target.files.length;
-      for (let i = 0; i < filesAmount; i++) {
-        this.imageFormData.append('images', event.target.files[i]);
-      }
     }
   }
 
   uploadImages() {
-    this.productService.uploadProductImages(this.currentVarient._id, this.imageFormData).subscribe((res: ResponseModel) => {
+    this.uploadingImages = true;
+    this.productService.uploadVarientImages(this.currentVarient._id, this.imageFormData).subscribe((res: ResponseModel) => {
       if (res.errors) {
         this.toastr.error('Error While Uploading Images', 'Try Again ');
+        this.uploadingImages = false;
+        this.imageFormData = new FormData();
       } else {
+        this.varientArray.splice(this.varientIndex, 1, res.data);
         this.toastr.success('Images Uploaded Successfully');
+        this.uploadingImages = false;
         jQuery('#imageModal').modal('hide');
+        this.imageFormData = new FormData();
       }
     });
-    // this.currentProductAttributesForms.push(attribute);
   }
 
+  // uploadProductImages() {
+  //   this.uploadingImages = true;
+  //   this.productService.uploadVarientImages(this.currentVarient._id, this.imageFormData).subscribe((res: ResponseModel) => {
+  //     if (res.errors) {
+  //       this.toastr.error('Error While Uploading Images', 'Try Again ');
+  //       this.uploadingImages = false;
+  //       this.imageFormData = new FormData();
+  //     } else {
+  //       this.varientArray.splice(this.varientIndex, 1, res.data);
+  //       this.toastr.success('Images Uploaded Successfully');
+  //       this.uploadingImages = false;
+  //       jQuery('#imageModal').modal('hide');
+  //       this.imageFormData = new FormData();
+  //     }
+  //   });
+  // }
 }
 

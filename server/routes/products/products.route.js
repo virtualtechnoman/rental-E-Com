@@ -6,7 +6,7 @@ const isEmpty = require('../../utils/is-empty');
 const mongodb = require('mongoose').Types;
 const moment = require('moment');
 const authorizePrivilege = require("../../middleware/authorizationMiddleware");
-
+const { upload, S3Upload } = require("../../utils/image-upload");
 //GET ALL PRODUCTS CREATED BY SELFF
 router.get("/", authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
     Product.find({ created_by: req.user._id })
@@ -17,7 +17,7 @@ router.get("/", authorizePrivilege("GET_ALL_PRODUCTS_OWN"), (req, res) => {
             if (docs.length > 0)
                 return res.json({ status: 200, data: docs, errors: false, message: "All products" });
             else
-                return res.json({ status: 200, data: docs, errors: true, message: "No products found" });
+                return res.json({ status: 200, data: docs, errors: false, message: "No products found" });
         }).catch(err => {
             console.log(err);
             return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" })
@@ -36,11 +36,12 @@ router.get("/all", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
             if (docs.length > 0)
                 return res.json({ status: 200, data: docs, errors: false, message: "All products" });
             else
-                res.json({ status: 200, data: docs, errors: true, message: "No products found" });
+                res.json({ status: 200, data: docs, errors: false, message: "No products found" });
         }).catch(err => {
             return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" })
         })
 })
+
 // GET ALL PRODUCTS
 router.get("/bycategory/:id", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
@@ -53,7 +54,7 @@ router.get("/bycategory/:id", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res)
                 if (docs.length > 0)
                     return res.json({ status: 200, data: docs, errors: false, message: "All products" });
                 else
-                    res.json({ status: 200, data: docs, errors: true, message: "No products found" });
+                    res.json({ status: 200, data: docs, errors: false, message: "No products found" });
             }).catch(err => {
                 return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" });
             })
@@ -62,6 +63,7 @@ router.get("/bycategory/:id", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res)
         return res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid category id" })
     }
 })
+
 // GET ALL PRODUCTS
 router.get("/bybrand/:id", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
@@ -74,7 +76,7 @@ router.get("/bybrand/:id", authorizePrivilege("GET_ALL_PRODUCTS"), (req, res) =>
                 if (docs.length > 0)
                     return res.json({ status: 200, data: docs, errors: false, message: "All products" });
                 else
-                    res.json({ status: 200, data: docs, errors: true, message: "No products found" });
+                    res.json({ status: 200, data: docs, errors: false, message: "No products found" });
             }).catch(err => {
                 return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" });
             })
@@ -92,15 +94,14 @@ router.get("/customer", authorizePrivilege("GET_ALL_CUSTOMER_PRODUCTS"), (req, r
         if (docs.length > 0)
             res.json({ status: 200, data: docs, errors: false, message: "All products" });
         else
-            res.json({ status: 200, data: docs, errors: true, message: "No products found" });
+            res.json({ status: 200, data: docs, errors: false, message: "No products found" });
     }).catch(err => {
         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting products" });
     })
 })
 
-
 // ADD NEW PRODUCT
-router.post('/', authorizePrivilege("ADD_NEW_PRODUCT"), async (req, res) => {
+router.post('/', authorizePrivilege("ADD_NEW_PRODUCT"), upload.fields([{ name: "primary", maxCount: 1 }, { name: "secondary", maxCount: 1 }]), async (req, res) => {
     let result = productCtrl.verifyCreate(req.body);
     if (!isEmpty(result.errors)) {
         return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
@@ -109,12 +110,23 @@ router.post('/', authorizePrivilege("ADD_NEW_PRODUCT"), async (req, res) => {
     let productId = "P" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
     result.data.product_id = productId;
     let newProduct = new Product(result.data);
+    let keys = Object.keys(req.files);
+    if (keys.length) {
+        newProduct.images = {};
+        try {
+            for (let x of keys)
+                if ((req.files[x] && req.files[x].length))
+                    newProduct.images[x] = (await S3Upload("products/" + newProduct.id, req.files[x][0]));
+        }catch(err){
+            console.log(err);
+        }
+    }
     newProduct
         .save()
         .then(product => {
             product
                 .populate("created_by", "-password")
-                .populate("category brand type")
+                .populate({ path: "category brand type", populate: { path: "attributes" } })
                 .execPopulate()
                 .then(p => res.json({ status: 200, data: p, errors: false, message: "Product added successfully" }))
                 .catch(e => {
@@ -127,15 +139,27 @@ router.post('/', authorizePrivilege("ADD_NEW_PRODUCT"), async (req, res) => {
             return res.json({ status: 500, data: null, errors: true, message: "Error while creating new product" });
         });
 });
-
 //UPDATE A PRODUCT
-router.put("/id/:id", authorizePrivilege("UPDATE_PRODUCT"), (req, res) => {
+router.put("/id/:id", authorizePrivilege("UPDATE_PRODUCT"), upload.fields([{ name: "primary", maxCount: 1 }, { name: "secondary", maxCount: 1 }]), async (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         let result = productCtrl.verifyUpdate(req.body);
         if (!isEmpty(result.errors)) {
             return res.status(400).json({ status: 400, data: null, errors: result.errors, message: "Fields Required" });
         }
-        Product.findByIdAndUpdate(req.params.id, { $set: result.data }, { new: true }).populate("created_by category brand available_for", "-password").populate("category brand")
+        let keys = Object.keys(req.files);
+        if (keys.length) {
+            try {
+                if (keys.length) {
+                    for (let x of keys)
+                        if ((req.files[x] && req.files[x].length))
+                            result.data[`images.${x}`] = (await S3Upload("products/" + req.params.id, req.files[x][0]));
+                    // result.data.images["secondary"] = (req.files["secondary"] && req.files["secondary"].length) ? (await S3Upload("products/" + req.params.id, req.files["secondary"][0])) : null;
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        Product.findByIdAndUpdate(req.params.id, { $set: result.data }, { new: true }).populate({ path: "created_by category brand available_for type", select: "-password", populate: { path: "attributes" } }).populate("category brand")
             .exec()
             .then(doc => res.status(200).json({ status: 200, data: doc, errors: false, message: "Product Updated Successfully" }))
             .catch(err => {

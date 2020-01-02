@@ -31,6 +31,8 @@ export class BrandComponent implements OnInit {
   editShowImage: boolean = false;
   editImage: any;
   mastImage: any;
+  brandImage: any;
+  filenameBrandImage: string | ArrayBuffer;
   constructor(private formBuilder: FormBuilder, private productService: ProductsService, private toastr: ToastrService,
     private titleService: Title) {
     this.titleService.setTitle('Brand Management');
@@ -89,65 +91,52 @@ export class BrandComponent implements OnInit {
     console.log(this.fileSelected)
   }
 
-  onSubmit() {
+  onSubmit() {  
     this.submitted = true;
-    console.log(this.brandForm.value);
     if (this.brandForm.invalid) {
       return;
     }
-    if (this.fileSelected) {
-      this.productService.getUrl().subscribe((res: ResponseModel) => {
-        console.log(res.data)
-        this.keyProductImage = res.data.key;
-        this.urlProductImage = res.data.url;
-
-        if (this.urlProductImage) {
-          this.productService.sendUrl(this.urlProductImage, this.fileSelected).then(resp => {
-            if (resp.status == 200) {
-              this.brandForm.value.logo = this.keyProductImage;
-
-              console.log(this.brandForm.value)
-              if (this.editing) {
-                this.updateBrand(this.brandForm.value);
-              } else {
-                this.addBrand(this.brandForm.value);
-              }
-              // this.addVehicle(this.VehicleForm.value);
-            }
-          })
-        }
-      })
-    } else {
-
-      console.log(this.brandForm.value)
-      if (this.editing) {
-        if (!this.fileSelected) {
-          this.brandForm.value.logo = this.mastImage
-        }
-        console.log(this.mastImage)
-        this.updateBrand(this.brandForm.value);
-
+    const formData = new FormData();
+    if (this.editing) {
+      if (this.brandImage) {
+        formData.append('logo', this.brandImage);
+        formData.append('name', this.brandForm.get('name').value);
+        formData.append('contact', this.brandForm.get('contact').value);
+        formData.append('address', this.brandForm.get('address').value);
       } else {
-        delete this.brandForm.value.logo;
-        this.addBrand(this.brandForm.value);
+        formData.append('name', this.brandForm.get('name').value);
+        formData.append('contact', this.brandForm.get('contact').value);
+        formData.append('address', this.brandForm.get('address').value);
       }
+      this.updateBrand(formData);
+    } else {
+      if (this.brandImage) {
+        formData.append('logo', this.brandImage);
+        formData.append('name', this.brandForm.get('name').value);
+        formData.append('contact', this.brandForm.get('contact').value);
+        formData.append('address', this.brandForm.get('address').value);
+      } else {
+        formData.append('name', this.brandForm.get('name').value);
+        formData.append('contact', this.brandForm.get('contact').value);
+        formData.append('address', this.brandForm.get('address').value);
+      }
+      this.addBrand(formData);
     }
   }
-  addBrand(brand) {
-    console.log(brand)
+
+   addBrand(brand) {
     this.productService.addBrand(brand).subscribe((res: ResponseModel) => {
-      jQuery('#modal3').modal('hide');
+      console.log()
       this.toastr.success('Brand Added!', 'Success!');
       this.allBrand.push(res.data);
-      console.log(res.data)
+      jQuery('#modal3').modal('hide');
       this.resetForm();
+      this.rerenderDatatable();
     })
   }
 
   updateBrand(brand) {
     const id = this.allBrand[this.currentIndex]._id;
-    // product._id = id;
-    console.log(brand);
     this.productService.updateBrand(brand, id).subscribe((res: ResponseModel) => {
       jQuery('#modal3').modal('hide');
       this.toastr.info('Brand Updated Successfully!', 'Updated!!');
@@ -155,7 +144,13 @@ export class BrandComponent implements OnInit {
       this.allBrand.splice(this.currentIndex, 1, res.data);
       this.currentBrandId = null;
       this.editing = false;
+      this.rerenderDatatable();
     });
+  }
+
+  rerenderDatatable() {
+    jQuery('#mainTable').DataTable().destroy();
+    this.dtTrigger.next();
   }
 
   getAllBrand() {
@@ -193,6 +188,7 @@ export class BrandComponent implements OnInit {
       this.productService.deleteBrand(this.allBrand[i]._id).toPromise().then(() => {
         this.toastr.warning('Brand Deleted!', 'Deleted!');
         this.allBrand.splice(i, 1);
+        this.rerenderDatatable();
       }).catch((err) => console.log(err));
     }
   }
@@ -212,11 +208,25 @@ export class BrandComponent implements OnInit {
       this.editShowImage = false
     }
   }
+  
+  onBrandImageSelect(event) {
+    if (event.target.files && event.target.files[0]) {
+      var reader = new FileReader();
+      reader.readAsDataURL(event.target.files[0]); // read file as data url
+      this.brandImage = event.target.files[0];
+      reader.onload = (event) => { // called once readAsDataURL is completed
+        this.filenameBrandImage = event.target.result;
+      }
+      // }
+    }
+  }
 
   resetForm() {
     this.editing = false;
     this.submitted = false;
     this.editShowImage = false;
+    this.filenameBrandImage = null;
+    this.brandImage = null;
     this.brandForm.reset();
   }
 }

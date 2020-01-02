@@ -5,6 +5,7 @@ const Brand = require('../../models/brand.model');
 var mongodb = require("mongodb");
 const router = express.Router();
 const authorizePrivilege = require("../../middleware/authorizationMiddleware");
+const { upload, S3Upload } = require("../../utils/image-upload");
 
 //GET all brands
 router.get('/', authorizePrivilege("GET_ALL_BRANDS"), async (req, res) => {
@@ -67,11 +68,18 @@ router.delete('/:id', authorizePrivilege("DELETE_BRAND"), (req, res) => {
 
 
 // UPDATE A Brand
-router.put('/:id', authorizePrivilege("UPDATE_BRAND"), (req, res) => {
+router.put('/:id', authorizePrivilege("UPDATE_BRAND"), upload.single("logo"),async (req, res) => {
   if (mongodb.ObjectID.isValid(req.params.id)) {
     const result = BrandController.verifyUpdate(req.body);
     if (!isEmpty(result.errors)) {
       return res.json(res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields Required" }))
+    }
+    if (req.file) {
+      try {
+        result.data.logo = await S3Upload("brands", req.file);
+      } catch (err) {
+        console.log(err);
+      }
     }
     Brand.findByIdAndUpdate(req.params.id, result.data, { new: true }, (err, doc) => {
       if (err) {
@@ -89,19 +97,24 @@ router.put('/:id', authorizePrivilege("UPDATE_BRAND"), (req, res) => {
 })
 
 // ADD NEW Brand
-router.post("/", authorizePrivilege("ADD_NEW_BRAND"), (req, res) => {
+router.post("/", authorizePrivilege("ADD_NEW_BRAND"), upload.single("logo"), async (req, res) => {
   let result = BrandController.verifyCreate(req.body)
-  if (isEmpty(result.errors)) {
-    const newBrand = new Brand(result.data);
-    newBrand.save().then(data => {
-      res.status(200).json({ status: 200, errors: false, data, message: "Brand Added successfully" });
-    }).catch(err => {
-      res.status(500).json({ status: 500, errors: true, data: null, message: "Error while adding new brand" });
-    })
+  if (!isEmpty(result.errors)) {
+    return res.json({ status: 500, errors: result.errors, data: null, message: "Fields required" });
   }
-  else {
-    res.json({ status: 500, errors: result.errors, data: null, message: "Fields required" });
+  if (req.file) {
+    try {
+      result.data.logo = await S3Upload("brands", req.file);
+    } catch (err) {
+      console.log(err);
+    }
   }
+  const newBrand = new Brand(result.data);
+  newBrand.save().then(data => {
+    res.status(200).json({ status: 200, errors: false, data, message: "Brand Added successfully" });
+  }).catch(err => {
+    res.status(500).json({ status: 500, errors: true, data: null, message: "Error while adding new brand" });
+  })
 })
 
 module.exports = router;

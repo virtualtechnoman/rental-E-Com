@@ -17,6 +17,7 @@ import { ProductsCategoryService } from './shared/category.service';
 export class CategoryComponent implements OnInit {
   imageUrl = 'https://binsar.s3.ap-south-1.amazonaws.com/';
   breadcrumArray: any[] = [];
+  categoryFormData: FormData = new FormData();
   submitted = false;
   categoryForm: FormGroup;
   subCategoryForm: FormGroup;
@@ -34,6 +35,7 @@ export class CategoryComponent implements OnInit {
   showImage: Boolean = false;
   image: any;
   editShowImage: Boolean = false;
+  showImageForSubcategories: Boolean = false;
   editImage: any;
   mastImage: any;
   attributeForm: FormGroup;
@@ -43,6 +45,8 @@ export class CategoryComponent implements OnInit {
   specificCategoryAttributes: any[] = []
   showSpecificCategoryAttributesLength: Boolean = false;
   deleteIndex: any;
+  categoryImage: any;
+  filenameCategoryImage: string | ArrayBuffer;
   constructor(private formBuilder: FormBuilder,
     private productService: ProductsService,
     private toastr: ToastrService,
@@ -115,18 +119,23 @@ export class CategoryComponent implements OnInit {
     if (!(this.categorySelectedId) && !(this.editing)) {
       this.categoryForm.get('type').setValue('category');
       this.categoryForm.removeControl('parent');
+    } else if (!(this.categorySelectedId) && (this.editing)) {
+      this.categoryForm.removeControl('parent');
+      this.categoryForm.removeControl('type');
     } else {
       this.categoryForm.get('type').setValue('subcategory');
       this.categoryForm.get('parent').setValue(this.categorySelectedId);
     }
+    Object.keys(this.categoryForm.controls).forEach(control => {
+      this.categoryFormData.append(control, this.categoryForm.get(control).value);
+    });
     if (this.categoryForm.invalid) {
-      console.log('Invalid Form');
       return;
     }
     if (this.editing) {
-      this.updateCategory(this.categoryForm.value);
+      this.updateCategory(this.categoryFormData);
     } else {
-      this.addCategory(this.categoryForm.value);
+      this.addCategory(this.categoryFormData);
     }
   }
 
@@ -136,6 +145,7 @@ export class CategoryComponent implements OnInit {
     this.productService.getAllCategory().subscribe((res: ResponseModel) => {
       this.allCategory = res.data;
       this.categorySelectedId = undefined;
+      this.showImageForSubcategories = false;
       this.dtTrigger.next();
     });
   }
@@ -145,6 +155,7 @@ export class CategoryComponent implements OnInit {
     this.breadcrumArray.push({ id: id, name: name });
     this.allCategory.length = 0;
     this.productsCategoryService.getAllCategorysub(id).subscribe((res: ResponseModel) => {
+      this.showImageForSubcategories = true;
       if (res.errors) {
         this.toastr.error(res.message);
       } else {
@@ -156,27 +167,25 @@ export class CategoryComponent implements OnInit {
   }
 
   addCategory(category) {
-    this.categoryForm.get('type').setValue('value');
-    this.categoryForm.removeControl('parent');
     this.productService.addCategory(category).subscribe((res: ResponseModel) => {
       if (res.errors) {
         this.toastr.error('Error While Adding', 'Error');
       } else {
-        jQuery('#modal3').modal('hide');
         if (!(this.categorySelectedId) && !(this.editing)) {
           this.allCategory.push(res.data);
           this.toastr.success('Category Added!', 'Success!');
         } else {
-
           this.toastr.success('Subcategory Added!', 'Success!');
         }
+        jQuery('#modal3').modal('hide');
+        this.resetForm();
         jQuery('#example').modal('hide');
       }
-      this.resetForm();
     });
   }
 
   addSubCategory(i) {
+    this.categoryFormData = new FormData();
     this.categorySelectedId = i;
     this.categoryForm.get('parent').setValue(i);
     this.categoryForm.get('type').setValue('subcategory');
@@ -205,6 +214,7 @@ export class CategoryComponent implements OnInit {
   editCategory(i) {
     this.editing = true;
     this.currentcategory = this.allCategory[i];
+    this.categorySelectedId = null;
     this.currentcategoryId = this.allCategory[i]._id;
     this.currentIndex = i;
     // this.router.navigate(['/subcategory/', this.currentcategoryId]);
@@ -217,10 +227,11 @@ export class CategoryComponent implements OnInit {
 
   yesDelete() {
     this.productService.deleteCategory(this.allCategory[this.deleteIndex]._id).toPromise().then(() => {
-      this.toastr.warning('Products Deleted!', 'Deleted!');
+      this.toastr.warning('Category Deleted!', 'Deleted!');
       this.allCategory.splice(this.deleteIndex, 1);
       this.deleteIndex = null;
       jQuery('#deleteCategoryModal').modal('hide');
+      this.rerenderDatatable();
     }).catch((err) => console.log(err));
   }
 
@@ -229,10 +240,11 @@ export class CategoryComponent implements OnInit {
     this.productService.updateCategory(category, id).subscribe((res: ResponseModel) => {
       jQuery('#modal3').modal('hide');
       this.toastr.info('Category Updated Successfully!', 'Updated!!');
-      this.resetForm();
       this.allCategory.splice(this.currentIndex, 1, res.data);
       this.currentcategoryId = null;
+      this.currentIndex = null;
       this.editing = false;
+      this.resetForm();
     });
   }
 
@@ -260,6 +272,9 @@ export class CategoryComponent implements OnInit {
     this.categorySelectedId = null;
     this.currentcategoryId = null;
     this.currentIndex = null;
+    this.filenameCategoryImage = null;
+    this.categoryImage = null;
+    this.categoryFormData = new FormData();
     this.categoryForm.reset();
     this.initForm();
   }
@@ -277,5 +292,27 @@ export class CategoryComponent implements OnInit {
         this.dtTrigger.next();
       }
     });
+  }
+
+  onCategoryImageSelect(event) {
+    if (event.target.files && event.target.files[0]) {
+      this.categoryFormData.delete('image');
+      var reader = new FileReader();
+      reader.readAsDataURL(event.target.files[0]); // read file as data url
+      this.categoryImage = event.target.files[0];
+      reader.onload = (event) => { // called once readAsDataURL is completed
+        this.filenameCategoryImage = event.target.result;
+      }
+      // const filesAmount = event.target.files.length;
+      // for (let i = 0; i < filesAmount; i++) {
+      this.categoryFormData.append('image', event.target.files[0]);
+      // }
+    }
+  }
+
+
+  rerenderDatatable() {
+    jQuery('#example').DataTable().destroy();
+    this.dtTrigger.next();
   }
 }

@@ -6,7 +6,7 @@
         data-target="#modal3">Add New Brand</a>
     </div>
     <div class="card-body">
-      <table class="table table table-hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+      <table class="table table table-hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" id="mainTable">
         <thead>
           <tr>
             <th scope="col">S no.</th>
@@ -73,21 +73,29 @@
             </div>
           </div>
           <div class="divider-text">Brand Logo</div>
-          <div class="form-row" *ngIf="editShowImage">
-            <div class="form-group">
-              <label>Brand Image</label>
-              <div class="col-sm-3 col-md-2 col-lg text-center">
-                <div class="avatar avatar-xxl avatar-online"><img src="{{editImage}}" class="rounded-circle" alt="">
-                </div>
-              </div>
-            </div>
+          <div class="form-row " *ngIf="!editing">
+            <img *ngIf="!filenameBrandImage"
+              src="https://binsar.s3.ap-south-1.amazonaws.com/default-images/profile-picture.png" class="img-thumbnail"
+              style="height: 150px;" />
+            <img *ngIf="filenameBrandImage" [src]="filenameBrandImage" alt="{{filenameBrandImage}}"
+              class="img-thumbnail" style="height: 150px;" />
+            <br>
+            <label class="custom-file-upload caption center-block" style="color: green;margin-left: 10px;">
+              <input type="file" (change)="onBrandImageSelect($event)" style="display: none;" />
+              <b>Choose image</b>
+            </label>
           </div>
-          <div class="form-row offset-md-6">
-            <div class="form-group custom-file">
-              <label class="custom-file-label" for="customFile">Select Brand Image</label>
-              <input type="file" formControlName="logo" (change)="selectFile($event)" class="custom-file-input"
-                id="customFile">
-            </div>
+          <div class="form-row" *ngIf="editing">
+            <img *ngIf="!filenameBrandImage"
+              src="https://mindful-rental.s3.ap-south-1.amazonaws.com/{{currentBrand?.logo}}"
+              class="img-thumbnail" style="height: 150px;" />
+            <img *ngIf="filenameBrandImage" [src]="filenameBrandImage" alt="{{filenameBrandImage}}"
+              class="img-thumbnail" style="height: 150px;" />
+            <br>
+            <label class="custom-file-upload" style="color: green;;margin-left: 10px;">
+              <input type="file" (change)="onBrandImageSelect($event)" style="display: none;" />
+              <b>Choose image</b>
+            </label>
           </div>
           <br>
           <div class="text-center">
