@@ -15,6 +15,7 @@ import { Title } from '@angular/platform-browser';
 export class OrderComponent implements OnInit {
 
   allCustomersOrders: any[] = [];
+  allCustomersOrdersAmount: any[] = [];
   quantityForm: FormGroup;
   dtOptions: any = {};
   dtTrigger: Subject<any> = new Subject();
@@ -49,6 +50,7 @@ export class OrderComponent implements OnInit {
       this.quantityFormGetter.removeAt(0);
     }
     this.selectedOrder = this.allCustomersOrders[i];
+    console.log(this.selectedOrder);
     this.selectedOrderIndex = i;
     for (let index = 0; index < this.selectedOrder.products.length; index++) {
       if (this.selectedOrder.products) {
@@ -194,7 +196,21 @@ export class OrderComponent implements OnInit {
     }
   }
 
-  changeItemReturnedStatus(event,i) {
+  calculateAmount(order) {
+    if (order.products.length > 0) {
+      let sum = 0;
+      for (let i = 0; i < order.products.length; i++) {
+        if (order.products[i].product.rent_per_day) {
+          let totalDays = this.calculateDays(order.products[i].startRentDate, order.products[i].endRentDate);
+          sum = sum + (totalDays * order.products[i].product.rent_per_day);
+        }
+      }
+      this.allCustomersOrdersAmount.push(sum);
+      return sum;
+    }
+  }
+
+  changeItemReturnedStatus(event, i) {
     let object = {};
     object['product'] = this.selectedOrder.products[i].product._id;
     object['order'] = this.selectedOrder._id;
@@ -205,12 +221,12 @@ export class OrderComponent implements OnInit {
         this.toasterService.error('error while fetching');
       } else {
         this.selectedOrder = res.data;
-        this.allCustomersOrders.splice(this.selectedOrderIndex,1,res.data);
+        this.allCustomersOrders.splice(this.selectedOrderIndex, 1, res.data);
       }
     })
   }
 
-  changeDepositRefundStatus(event,i) {
+  changeDepositRefundStatus(event, i) {
     let object = {};
     object['product'] = this.selectedOrder.products[i].product._id;
     object['order'] = this.selectedOrder._id;
@@ -221,7 +237,7 @@ export class OrderComponent implements OnInit {
         this.toasterService.error('error while fetching');
       } else {
         this.selectedOrder = res.data;
-        this.allCustomersOrders.splice(this.selectedOrderIndex,1,res.data);
+        this.allCustomersOrders.splice(this.selectedOrderIndex, 1, res.data);
       }
     })
   }

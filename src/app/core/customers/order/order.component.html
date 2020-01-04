@@ -33,7 +33,7 @@
             <td>#{{order?.order_id}}</td>
             <td>{{order?.order_date | date:'dd/MM/yy'}}</td>
             <td>{{order?.placed_by?.full_name | titlecase}}</td>
-            <td>₹{{order?.amount}}</td>
+            <td>₹{{calculateAmount(order)}}</td>
             <td>{{order?.status | titlecase}}</td>
             <td>
               <ng-container *ngFor="let product of order?.products">
