@@ -11,47 +11,61 @@ const Product = require("../models/products/Products.model");
 
 //GET own cart
 router.get("/", authorizePrivilege("GET_CART"), (req, res) => {
-    Cart.aggregate([
-        { $match: { user: req.user._id } },
-        { $unwind: "$products" },
-        { $lookup: { "from": 'product_varients', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
-        {
-            $project: {
-                _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.price", 0] }
-            }
-        },
-        { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
-        { $project: { _id: 0, c_id: 1, products: 1, total: 1 } }
-    ], (err, doc) => {
-        if (err) {
-            console.log(err);
-            return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
-        }
-        if (doc) {
-            Cart.populate(doc, [{ path: "products.product", populate: { path: "product attributes.option attributes.attribute", populate: { path: "category brand" } } }], (err, doc) => {
-                if (err) {
-                    console.log(err);
-                    res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
-                } else {
-                    // console.log("DOC : ",doc);
-                    if (doc.length)
-                        return res.json({ status: 200, data: doc[0], errors: false, message: "Your Cart" });
-                    else
-                        return res.json({ status: 200, data: { products: [], total: 0 }, errors: false, message: "Your Cart" });
-
-                }
-            })
-            // .then(doc => {
-            //     console.log("DOC IS : ", doc)
-            //     if (doc)
-            //         return res.json({ status: 200, data: doc.products, errors: false, message: "Your Cart" });
-            //     else
-            //         return res.json({ status: 200, data: [], errors: false, message: "Your Cart" });
-            // }).catch(err => {
-            //     return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
-            // });
-        }
+    Cart.findOne({ user: req.user._id })
+    .populate([{ path: "products.product", populate: { path: "product attributes.option attributes.attribute", populate: { path: "category brand" } } }]).lean().exec().then(_cart => {
+        if (!_cart)
+            return res.json({ status: 200, data: { products: [], total: 0 }, errors: false, message: "Your Cart" });
+        let total = 0;
+        _cart.products.forEach(varient => {
+            total += (varient.product.rent_per_day * (moment(varient.endRentDate).diff(varient.startRentDate, "day") + 1))
+        })
+        _cart.total = total;
+        return res.json({ status: 200, data: _cart, errors: false, message: "Your Cart" });
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" });
     })
+    // Cart.aggregate([
+    //     { $match: { user: req.user._id } },
+    //     { $unwind: "$products" },
+    //     { $lookup: { "from": 'product_varients', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
+    //     {
+    //         $project: {
+    //             _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.price", 0] }
+    //         }
+    //     },
+    //     { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
+    //     { $project: { _id: 0, c_id: 1, products: 1, total: 1 } }
+    // ], (err, doc) => {
+    //     if (err) {
+    //         console.log(err);
+    //         return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
+    //     }
+    //     if (doc) {
+    //         Cart.populate(doc, [{ path: "products.product", populate: { path: "product attributes.option attributes.attribute", populate: { path: "category brand" } } }], (err, doc) => {
+    //             if (err) {
+    //                 console.log(err);
+    //                 res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" });
+    //             } else {
+    //                 // console.log("DOC : ",doc);
+    //                 if (doc.length)
+    //                     return res.json({ status: 200, data: doc[0], errors: false, message: "Your Cart" });
+    //                 else
+    //                     return res.json({ status: 200, data: { products: [], total: 0 }, errors: false, message: "Your Cart" });
+
+    //             }
+    //         })
+    //         // .then(doc => {
+    //         //     console.log("DOC IS : ", doc)
+    //         //     if (doc)
+    //         //         return res.json({ status: 200, data: doc.products, errors: false, message: "Your Cart" });
+    //         //     else
+    //         //         return res.json({ status: 200, data: [], errors: false, message: "Your Cart" });
+    //         // }).catch(err => {
+    //         //     return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
+    //         // });
+    //     }
+    // })
 })
 
 // //GET all orders
@@ -68,37 +82,39 @@ router.post("/", authorizePrivilege("ADD_PRODUCT_TO_CART"), (req, res) => {
     let result = CartController.verifyAdd(req.body);
     if (!isEmpty(result.errors))
         return res.status(400).json({ status: 400, errors: result.errors, data: null, message: "Fields required" });
-    Cart.findOneAndUpdate({ user: req.user._id }, { $push: { products: result.data } }, { upsert: true, new: true }).exec().then(d => {
-        Cart.aggregate([
-            { $match: { user: req.user._id } },
-            { $unwind: "$products" },
-            { $lookup: { "from": 'product_varients', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
-            {
-                $project: {
-                    _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.price", 0] }
-                }
-            },
-            { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
-            { $project: { _id: 0, c_id: 1, products: 1, total: 1 } }
-        ], (err, doc) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
-            }
-            if (doc) {
-                Cart.populate(doc, [{ path: "products.product", populate: { path: "product attributes.option attributes.attribute", populate: { path: "category brand" } } }], (err, doc) => {
-                    if (err) {
-                        console.log(err);
-                        res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
-                    } else {
-                        return res.json({ status: 200, data: doc[0], errors: false, message: "Item added to cart" });
-                    }
-                })
-            }
-        })
-    }).catch(e => {
-        return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while adding item to cart" });
-    })
+    Cart.find
+    // Cart.findOneAndUpdate({ user: req.user._id }, { $push: { products: result.data } }, { upsert: true, new: true }).exec().then(d => {
+    //     Cart.aggregate([
+    //         { $match: { user: req.user._id } },
+    //         { $unwind: "$products" },
+    //         { $lookup: { "from": 'product_varients', "localField": 'products.product', "foreignField": '_id', "as": 'prod' } },
+    //         {
+    //             $project: {
+    //                 _id: null, products: 1, quantity: 1, price: { $arrayElemAt: ["$prod.price", 0] }
+    //             }
+    //         },
+    //         { $group: { _id: null, products: { $push: "$products" }, total: { $sum: { $multiply: ["$price", "$products.quantity"] } } } },
+    //         { $project: { _id: 0, c_id: 1, products: 1, total: 1 } }
+    //     ], (err, doc) => {
+    //         if (err) {
+    //             console.log(err);
+    //             return res.status(500).json({ status: 500, data: null, errors: true, message: "Error while aggregate" })
+    //         }
+    //         if (doc) {
+    //             Cart.populate(doc, [{ path: "products.product", populate: { path: "product attributes.option attributes.attribute", populate: { path: "category brand" } } }], (err, doc) => {
+    //                 if (err) {
+    //                     console.log(err);
+    //                     res.status(500).json({ status: 500, data: null, errors: true, message: "Error while getting cart" })
+    //                 } else {
+    //                     return res.json({ status: 200, data: doc[0], errors: false, message: "Item added to cart" });
+    //                 }
+    //             })
+    //         }
+    //     })
+    // }).catch(e => {
+    //     console.log(e);
+    //     return res.status(500).json({ status: 500, errors: true, data: null, message: "Error while adding item to cart" });
+    // })
 })
 
 // Delete a order
