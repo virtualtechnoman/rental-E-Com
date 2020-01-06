@@ -179,9 +179,9 @@
                   <li class="d-flex justify-content-between">
                     <h5><b>Total Due</b></h5>
                     <h5 *ngIf="(selectedOrder.accepted) && !(selectedOrder.isCancelled)">
-                      <b>₹{{selectedOrder?.amount}}</b></h5>
+                      <b>₹{{allCustomersOrdersAmount[selectedOrderIndex]}}</b></h5>
                     <h5 *ngIf="!(selectedOrder.accepted) && !(selectedOrder.isCancelled)">
-                      <b>₹{{calculateTotalAmount()}}</b></h5>
+                      <b>₹{{allCustomersOrdersAmount[selectedOrderIndex]}}</b></h5>
                   </li>
                 </ul>
               </div>
