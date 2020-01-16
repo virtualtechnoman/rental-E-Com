@@ -47,7 +47,7 @@ router.get("/", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
 })
 
 
-router.get("/bycategory/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
+router.get("/bycategory/buy/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         ProductCategory.aggregate([
             { $match: { _id: mongodb.ObjectId(req.params.id) } },
@@ -62,12 +62,46 @@ router.get("/bycategory/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (r
             },
             { $addFields: { all: { $concatArrays: [["$_id"], "$subcategory._id"] } } },
             { $lookup: { from: "products", let: { category: "$all" }, pipeline: [{ $match: { $expr: { $in: ["$category", "$$category"] } } }], as: "prods" } },
-            { $lookup: { from: "product_varients", let: { product: "$prods._id" }, pipeline: [{ $match: { $expr: { $in: ["$product", "$$product"] } } }], as: "products" } },
+            { $lookup: { from: "product_varients", let: { product: "$prods._id" }, pipeline: [{ $match: { $expr: { $in: ["$product", "$$product"] }, price: { $exists: true } } }], as: "products" } },
             { $unwind: "$products" },
             { $replaceRoot: { newRoot: "$products" } }
         ]).exec()
             .then(docs => {
-                ProductVarient.populate(docs, {path:"product attributes.attribute attributes.option",populate:[{path:"created_by brand category",select:"name full_name"}]}).then(docs => {
+                ProductVarient.populate(docs, { path: "product attributes.attribute attributes.option", populate: [{ path: "created_by brand category", select: "name full_name" }] }).then(docs => {
+                    if (docs.length > 0)
+                        res.json({ status: 200, data: docs, errors: false, message: "ALL PRODUCT VARIENTS " });
+                    else
+                        res.json({ status: 200, data: docs, errors: true, message: "NO PRODUCT VARIENTS FOUND" });
+                })
+            }).catch(err => {
+                console.log(err);
+                res.status(500).json({ status: 500, data: null, errors: true, message: "ERROR WHILE FETCHING PRODUCT VARIENTS" });
+            })
+    } else {
+        res.status(500).json({ status: 404, data: null, errors: true, message: "INVALID ID" })
+    }
+})
+router.get("/bycategory/rent/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (req, res) => {
+    if (mongodb.ObjectId.isValid(req.params.id)) {
+        ProductCategory.aggregate([
+            { $match: { _id: mongodb.ObjectId(req.params.id) } },
+            {
+                $graphLookup: {
+                    from: "product_categories",
+                    startWith: "$_id",
+                    connectFromField: "_id",
+                    connectToField: "parent",
+                    as: "subcategory"
+                }
+            },
+            { $addFields: { all: { $concatArrays: [["$_id"], "$subcategory._id"] } } },
+            { $lookup: { from: "products", let: { category: "$all" }, pipeline: [{ $match: { $expr: { $in: ["$category", "$$category"] } } }], as: "prods" } },
+            { $lookup: { from: "product_varients", let: { product: "$prods._id" }, pipeline: [{ $match: { $expr: { $in: ["$product", "$$product"] }, price: { $exists: false } } }], as: "products" } },
+            { $unwind: "$products" },
+            { $replaceRoot: { newRoot: "$products" } }
+        ]).exec()
+            .then(docs => {
+                ProductVarient.populate(docs, { path: "product attributes.attribute attributes.option", populate: [{ path: "created_by brand category", select: "name full_name" }] }).then(docs => {
                     if (docs.length > 0)
                         res.json({ status: 200, data: docs, errors: false, message: "ALL PRODUCT VARIENTS " });
                     else
@@ -227,7 +261,7 @@ router.get("/byproduct/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"), (re
 router.put("/images/:id", authorizePrivilege("UPDATE_PRODUCT_VARIENTS"), upload.fields([{ name: "primary", maxCount: 1 }, { name: "secondary", maxCount: 1 }]), async (req, res) => {
     if (mongodb.ObjectId.isValid(req.params.id)) {
         let keys = Object.keys(req.files);
-        let obj ={};
+        let obj = {};
         if (keys.length) {
             obj["images.primary"] = (req.files["primary"] && req.files["primary"].length) ? (await S3Upload("varient/" + req.params.id, req.files["primary"][0])) : null;
             obj["images.secondary"] = (req.files["secondary"] && req.files["secondary"].length) ? (await S3Upload("varient/" + req.params.id, req.files["secondary"][0])) : null;
@@ -237,17 +271,17 @@ router.put("/images/:id", authorizePrivilege("UPDATE_PRODUCT_VARIENTS"), upload.
         //     let x = allKeys[index];
         //     obj[`image.${x}`] = (await S3Upload("products/" + result.data.product, req.files[x][0]));
         // }
-        if(keys.length)
-        ProductVarient.findByIdAndUpdate(req.params.id, { $set: obj }, { new: true })
-            .populate("attributes.attribute attributes.option").exec()
-            .then(_data => {
-                return res.status(200).json({ status: 200, data: _data, errors: false, message: "ProductVARIENTS Updated Successfully" });
-            }).catch(err => {
-                console.log(err);
-                res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating varients" });
-            })
+        if (keys.length)
+            ProductVarient.findByIdAndUpdate(req.params.id, { $set: obj }, { new: true })
+                .populate("attributes.attribute attributes.option").exec()
+                .then(_data => {
+                    return res.status(200).json({ status: 200, data: _data, errors: false, message: "ProductVARIENTS Updated Successfully" });
+                }).catch(err => {
+                    console.log(err);
+                    res.status(500).json({ status: 500, data: null, errors: true, message: "Error while updating varients" });
+                })
         else
-        return res.status(400).json({ status: 400, data: null, errors: true, message: "Please select a image" });
+            return res.status(400).json({ status: 400, data: null, errors: true, message: "Please select a image" });
 
     } else {
         return res.status(400).json({ status: 400, data: null, errors: true, message: "Invalid id" });

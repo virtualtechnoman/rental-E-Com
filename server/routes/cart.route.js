@@ -314,7 +314,10 @@ router.post("/placeorder", authorizePrivilege("PLACE_ORDER"), (req, res) => {
                     order.placed_by = req.user._id;
                     order.order_id = "C_ORD" + moment().year() + moment().month() + moment().date() + moment().hour() + moment().minute() + moment().second() + moment().milliseconds() + Math.floor(Math.random() * (99 - 10) + 10);
                     order.amount = doc.products.reduce((acc, varient) => {
-                        return acc += ((moment(varient.endRentDate).diff(moment(varient.startRentDate), "day") + 1) * varient.product.rent_per_day)
+                        if (varient.price && (!isNaN(Number(varient.pice))))
+                            return acc += Number(varient.pice);
+                        else
+                            return acc += ((moment(varient.endRentDate).diff(moment(varient.startRentDate), "day") + 1) * varient.product.rent_per_day)
                     }, 0);
                     order.status = "Placed";
                     let newOrder = new CustomerOrder(order);
