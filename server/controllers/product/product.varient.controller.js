@@ -8,11 +8,11 @@ const productVarientCreateSchema = Joi.object({
     })).required(),
     description: Joi.string().optional(),
     images: Joi.any().optional(),
-    price: Joi.number().required().default(0).min(0).max(99999),
+    price: Joi.number().optional(),
     product: Joi.string().required(),
-    rent_per_day: Joi.number().default(0).min(0).max(99999).optional().allow(''),
-    deposit_amount: Joi.number().default(0).min(0).max(99999).optional().allow(''),
-    stock: Joi.number().required().default(0).min(0).max(99999)
+    rent_per_day: Joi.number().optional(),
+    deposit_amount: Joi.number().optional(),
+    stock: Joi.number().required()
     // is_active: Joi.boolean().required()
 })
 const productVarientUpdateSchema = Joi.object({
@@ -22,11 +22,11 @@ const productVarientUpdateSchema = Joi.object({
         option: Joi.string().required(),
     })).required(),
     description: Joi.string().optional(),
-    price: Joi.number().optional().default(0).min(0).max(99999),
+    price: Joi.number().optional(),
     images: Joi.any().optional(),
-    stock: Joi.number().optional().default(0).min(0).max(99999),
-    rent_per_day: Joi.number().default(0).min(0).max(99999).optional().allow(''),
-    deposit_amount: Joi.number().default(0).min(0).max(99999).optional().allow(''),
+    stock: Joi.number().optional(),
+    rent_per_day: Joi.number().optional(),
+    deposit_amount: Joi.number().optional(),
     // is_active: Joi.boolean().optional()
 })
 

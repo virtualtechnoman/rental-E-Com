@@ -189,7 +189,7 @@ export class ProductsComponent implements OnInit {
       price: ['', Validators.required],
       stock: ['', Validators.required],
       rent_per_day: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(3), Validators.max(99999), Validators.min(0)]],
-      deposit_amount:['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(3), Validators.max(99999), Validators.min(0)]]
+      deposit_amount: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(3), Validators.max(99999), Validators.min(0)]]
     });
   }
   // ************************** GET FUNCTIONS *********************
@@ -245,6 +245,7 @@ export class ProductsComponent implements OnInit {
           productAttributeIdArray.push(element._id);
         });
         this.productOptionService.getAllOptionsOfAttributes(productAttributeIdArray).subscribe((res: ResponseModel) => {
+          console.log(res);
           if (res.errors) {
             this.toastr.error('Error While Fetching Product Attributes', 'Refresh and Retry');
           } else {
@@ -441,17 +442,23 @@ export class ProductsComponent implements OnInit {
   }
 
   saveVarient() {
+    if (this.productVarient.get('price').value == '') {
+      this.productVarient.removeControl('price');
+    }
+    if (this.productVarient.get('rent_per_day').value == '') {
+      this.productVarient.removeControl('rent_per_day');
+    }
+    if (this.productVarient.get('deposit_amount').value == '') {
+      this.productVarient.removeControl('deposit_amount');
+    }
+    if (this.productVarient.get('description').value == '') {
+      this.productVarient.removeControl('description');
+    }
     if (this.varientUpdate === false) {
       this.productVarient.value.product = this.currentproduct._id;
       const attribute = this.productVarient.value.attributes;
       for (let index = 0; index < attribute.length; index++) {
         this.productVarient.value.attributes[index].attribute = this.productAttributeArray[index]._id;
-      }
-      if (this.productVarient.get('rent_per_day').value == '') {
-        this.productVarient.removeControl('rent_per_day');
-      }
-      if (this.productVarient.get('deposit_amount').value == '') {
-        this.productVarient.removeControl('deposit_amount');
       }
       // rent_per_day: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.minLength(1), Validators.maxLength(3), Validators.max(9999), Validators.min(0)]],
       // deposit_amount
@@ -471,6 +478,7 @@ export class ProductsComponent implements OnInit {
           this.toastr.success('Varient Added Successfully', 'Success');
           this.varientArray.push(res.data);
           jQuery('#addVarientModal').modal('hide');
+          this.resetProductVarientForm();
         }
       });
     } else {
@@ -503,6 +511,7 @@ export class ProductsComponent implements OnInit {
             this.varientArray = res.data;
             jQuery('#addVarientModal').modal('hide');
             this.toastr.info('Varient Updated Succesfully');
+            this.resetProductVarientForm();
           }
         });
     }
@@ -537,6 +546,8 @@ export class ProductsComponent implements OnInit {
   }
 
   resetProductVarientForm() {
+    this.productVarient.enable();
+    this.productVarient.reset();
     this.initProductVarientForm();
     for (let index = 0; index < this.productAttributeArray.length; index++) {
       this.addAttributes();
@@ -683,7 +694,7 @@ export class ProductsComponent implements OnInit {
   }
 
   editVarient(index: number) {
-    this.initProductVarientForm();
+    this.resetProductVarientForm();
     this.imageFormData = new FormData();
     this.currentVarient = this.varientArray[index];
     this.varientIndex = index;
@@ -692,6 +703,7 @@ export class ProductsComponent implements OnInit {
     this.secondaryVarientProductImage = null;
     this.filenameSecondaryVarientProductImage = null;
     this.varientUpdate = true;
+    this.currentProductAttributesForms.controls = [];
     if (this.currentVarient.name) {
       this.productVarient.controls['name'].setValue(this.currentVarient.name);
     }
@@ -722,6 +734,8 @@ export class ProductsComponent implements OnInit {
         this.currentProductAttributesForms.push(attribute);
       }
     }
+    console.log(this.currentVarient.attributes);
+    console.log(this.currentProductAttributesForms);
   }
 
   // ************************** FORMARRAY FUNCTIONS *****************************
@@ -784,5 +798,39 @@ export class ProductsComponent implements OnInit {
   //     }
   //   });
   // }
+
+  onEnteringPrice(searchValue: any): void {
+    if (searchValue.length > 0) {
+      this.disableDepositAmountAndRentPerDay();
+    } else {
+      this.enableDepositAmountAndRentPerDay();
+    }
+  }
+
+  disableDepositAmountAndRentPerDay() {
+    this.productVarient.controls['deposit_amount'].disable();
+    this.productVarient.controls['rent_per_day'].disable();
+  }
+
+  enableDepositAmountAndRentPerDay() {
+    this.productVarient.controls['deposit_amount'].enable();
+    this.productVarient.controls['rent_per_day'].enable();
+  }
+
+  onEnteringDepositOrRent(searchValue: any): void {
+    if (searchValue.length > 0) {
+      this.disablePrice();
+    } else {
+      this.enablePrice();
+    }
+  }
+
+  disablePrice() {
+    this.productVarient.controls['price'].disable();
+  }
+
+  enablePrice() {
+    this.productVarient.controls['price'].enable();
+  }
 }
 
