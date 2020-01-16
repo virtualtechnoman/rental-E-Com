@@ -62,7 +62,7 @@ router.get("/bycategory/buy/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS")
             },
             { $addFields: { all: { $concatArrays: [["$_id"], "$subcategory._id"] } } },
             { $lookup: { from: "products", let: { category: "$all" }, pipeline: [{ $match: { $expr: { $in: ["$category", "$$category"] } } }], as: "prods" } },
-            { $lookup: { from: "product_varients", let: { product: "$prods._id" }, pipeline: [{ $match: { $expr: { $in: ["$product", "$$product"] }, price: { $exists: true } } }], as: "products" } },
+            { $lookup: { from: "product_varients", let: { product: "$prods._id" }, pipeline: [{ $match: { $expr: { $in: ["$product", "$$product"] }, price: { $exists: true }, rent_per_day: { $exists: false } } }], as: "products" } },
             { $unwind: "$products" },
             { $replaceRoot: { newRoot: "$products" } }
         ]).exec()
@@ -96,7 +96,7 @@ router.get("/bycategory/rent/:id", authorizePrivilege("GET_ALL_PRODUCT_VARIENTS"
             },
             { $addFields: { all: { $concatArrays: [["$_id"], "$subcategory._id"] } } },
             { $lookup: { from: "products", let: { category: "$all" }, pipeline: [{ $match: { $expr: { $in: ["$category", "$$category"] } } }], as: "prods" } },
-            { $lookup: { from: "product_varients", let: { product: "$prods._id" }, pipeline: [{ $match: { $expr: { $in: ["$product", "$$product"] }, price: { $exists: false } } }], as: "products" } },
+            { $lookup: { from: "product_varients", let: { product: "$prods._id" }, pipeline: [{ $match: { $expr: { $in: ["$product", "$$product"] }, price: { $exists: false }, rent_per_day: { $exists: true } } }], as: "products" } },
             { $unwind: "$products" },
             { $replaceRoot: { newRoot: "$products" } }
         ]).exec()
