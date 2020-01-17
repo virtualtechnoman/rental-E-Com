@@ -15,12 +15,12 @@ router.get("/", authorizePrivilege("GET_CART"), (req, res) => {
         .populate([{ path: "products.product", populate: { path: "product attributes.option attributes.attribute", populate: { path: "category brand" } } }]).lean().exec().then(_cart => {
             if (!_cart)
                 return res.json({ status: 200, data: { products: [], total: 0 }, errors: false, message: "Your Cart" });
-                _cart.total = doc.products.reduce((acc, varient) => {
-                    if (varient.product && (!isNaN(Number(varient.product.price))))
-                        return acc += (Number(varient.product.price) * varient.quantity);
-                    else
-                        return acc += ((moment(varient.endRentDate).diff(moment(varient.startRentDate), "day") + 1) * varient.product.rent_per_day)
-                }, 0);
+            _cart.total = doc.products.reduce((acc, varient) => {
+                if (varient.product && (!isNaN(Number(varient.product.price))))
+                    return acc += (Number(varient.product.price) * varient.quantity);
+                else
+                    return acc += ((moment(varient.endRentDate).diff(moment(varient.startRentDate), "day") + 1) * varient.product.rent_per_day)
+            }, 0);
             // let total = 0;
             // _cart.products.forEach(varient => {
             //     total += (varient.product.rent_per_day * (moment(varient.endRentDate).diff(varient.startRentDate, "day") + 1))
