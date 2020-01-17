@@ -19,7 +19,7 @@ router.get("/", authorizePrivilege("GET_CART"), (req, res) => {
                 if (varient.product && (!isNaN(Number(varient.product.price))))
                     return acc += (Number(varient.product.price) * varient.quantity);
                 else
-                    return acc += ((moment(varient.endRentDate).diff(moment(varient.startRentDate), "day") + 1) * varient.product.rent_per_day)
+                    return acc += (((moment(varient.endRentDate).diff(moment(varient.startRentDate), "day") + 1) * varient.product.rent_per_day) + varient.product.deposit_amount)
             }, 0);
             // let total = 0;
             // _cart.products.forEach(varient => {
@@ -323,7 +323,7 @@ router.post("/placeorder", authorizePrivilege("PLACE_ORDER"), (req, res) => {
                         if (varient.product && (!isNaN(Number(varient.product.price))))
                             return acc += (Number(varient.product.price) * varient.quantity);
                         else
-                            return acc += ((moment(varient.endRentDate).diff(moment(varient.startRentDate), "day") + 1) * varient.product.rent_per_day)
+                            return acc += (((moment(varient.endRentDate).diff(moment(varient.startRentDate), "day") + 1) * varient.product.rent_per_day) + varient.product.deposit_amount)
                     }, 0);
                     order.status = "Placed";
                     let newOrder = new CustomerOrder(order);
